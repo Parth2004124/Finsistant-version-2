@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finsistant Version 2 — All-in-One Quant, Fundamental &amp; Multi-Agent Platform</title>
+  <meta name="description" content="Finsistant Version 2 merges StockSight V2 (4-Pillar Fundamental & Porter's 5 Forces + Moreshwar Levels), Finsistant (Execution Queue, Polynomial Regression & Stocky AI), and Multi-Agent Orchestration (TechBot_1, FundBot_1, ExecBot_1)." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" onerror="this.href='styles.css'" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-group">
+      <div class="brand-mark">FV2</div>
+      <div>
+        <h1 class="brand-title">Finsistant Version 2 <span style="color: var(--text-muted); font-weight: 400;">/</span> All-in-One Terminal</h1>
+        <div class="brand-subtitle">Good morning Parth! · StockSight V2 + Finsistant Execution + Multi-Agent Orchestrator</div>
+      </div>
+    </div>
+
+    <div class="portfolio-ribbon">
+      <div class="ribbon-stat">
+        <span>Invested:</span>
+        <strong id="hdrInvested">₹1,57,000</strong>
+      </div>
+      <div class="ribbon-stat">
+        <span>Current:</span>
+        <strong id="hdrCurrent">₹1,68,265</strong>
+      </div>
+      <div class="ribbon-stat">
+        <span>Net P&amp;L:</span>
+        <strong id="hdrPnl" style="color: var(--accent-emerald);">+₹11,265 (+7.18%)</strong>
+      </div>
+      <div class="ribbon-stat">
+        <span>Cash Balance:</span>
+        <strong id="hdrBalance">₹4,85,000</strong>
+      </div>
+      <div class="ribbon-stat">
+        <span>Portfolio Health:</span>
+        <strong id="hdrHealth" style="color: var(--accent-cyan);">78.4 / 100</strong>
+      </div>
+
+      <nav class="nav-tabs" aria-label="Platform Modules">
+        <button type="button" class="nav-tab active" data-tab="mission">1. Execution Mission Control</button>
+        <button type="button" class="nav-tab" data-tab="stocksight">2. StockSight V2 &amp; Portfolio</button>
+        <button type="button" class="nav-tab" data-tab="agents">3. Multi-Agent &amp; .env Setup</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- TAB 1: EXECUTION MISSION CONTROL (FINSISTANT + STOCKSIGHT + MULTI-AGENT) -->
+    <section class="tab-panel active" id="panel-mission">
+      <div class="mission-grid">
+        <!-- LEFT COLUMN: TOP PICKS QUEUE + SELL WARNINGS + EXECUTION TERMINAL -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Top Picks Queue (TechSight + StockSight)</div>
+              <div class="panel-subtitle">Click a setup to inspect · Press Enter to execute</div>
+            </div>
+            <button type="button" class="btn-secondary" id="scanNowBtn">Scan Now</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.3fr repeat(4, auto); gap: 6px; padding: 0 8px; font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono);">
+            <span>SYMBOL</span>
+            <span>ENTRY</span>
+            <span>TARGET</span>
+            <span>STOP</span>
+            <span>SCORE</span>
+          </div>
+
+          <div class="picks-list" id="picksQueueContainer"></div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+            <button type="button" class="btn-primary" id="executeSelectedBtn" style="flex: 1;">EXECUTE SELECTED</button>
+            <button type="button" class="btn-danger" id="executeAllBtn">EXECUTE ALL</button>
+          </div>
+
+          <!-- SELL WARNINGS BOX -->
+          <div id="sellWarningContainer"></div>
+
+          <!-- ANALYSIS & KITE EXECUTION TERMINAL -->
+          <div class="terminal-box" id="analysisTerminalBox"></div>
+        </div>
+
+        <!-- CENTER COLUMN: UNIFIED CHART (CANDLESTICKS + 30D REGRESSION + MORESHWAR LEVELS) + 3-AGENT PIPELINE -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title" id="centerChartTitle">RELIANCE — Reliance Industries Ltd (NSE · 1D)</div>
+                <div class="panel-subtitle" id="centerChartSub">Degree-2 Polynomial Regression + Moreshwar Target / Entry / Stop-Loss</div>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 10px;">
+                <span style="font-family: var(--font-mono); font-size: 20px; font-weight: 700;" id="centerSpotPrice">₹2,985.00</span>
+                <span id="centerSpotChg" style="font-family: var(--font-mono); font-size: 12px; color: var(--accent-emerald);">+1.45%</span>
+                <span class="tag-pill tag-target" id="centerDecisionBadge">BUY NOW</span>
+              </div>
+            </div>
+
+            <div class="chart-box">
+              <canvas id="unifiedChart"></canvas>
+            </div>
+
+            <div class="chart-legend">
+              <span><i class="legend-dot" style="background: var(--accent-emerald);"></i>Moreshwar Target (TP): <strong id="legTarget">₹3,225</strong></span>
+              <span><i class="legend-dot" style="background: var(--accent-cyan);"></i>Spot / Entry (CP): <strong id="legEntry">₹2,985</strong></span>
+              <span><i class="legend-dot" style="background: var(--accent-crimson);"></i>Stop-Loss (SL): <strong id="legStop">₹2,918</strong></span>
+              <span><i class="legend-dot" style="background: var(--accent-amber);"></i>30D Quant Regression: <strong id="legReg">₹3,142</strong></span>
+            </div>
+          </div>
+
+          <!-- 3-AGENT ORCHESTRATOR PIPELINE CARDS -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Multi-Agent Orchestrator Pipeline (AgentRunner)</div>
+                <div class="panel-subtitle" id="pipelineMetaText">TechBot_1 + FundBot_1 + ExecBot_1 Real-Time Deliberation</div>
+              </div>
+              <button type="button" class="btn-secondary" id="switchToStockSightBtn">View 4-Pillar &amp; Porter Breakdown →</button>
+            </div>
+
+            <div class="agents-row">
+              <div class="agent-card">
+                <div class="agent-head">
+                  <strong style="font-family: var(--font-mono); font-size: 12.5px;">TechBot_1</strong>
+                  <span class="tag-pill tag-target" id="agTechBadge">BULLISH</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary);">TechnicalAnalyst · Conf: <strong id="agTechConf">78%</strong></div>
+                <div class="progress-track"><div class="progress-fill" id="agTechBar" style="width: 78%;"></div></div>
+                <div style="font-size: 11.5px; color: var(--text-secondary);" id="agTechDesc"></div>
+              </div>
+
+              <div class="agent-card">
+                <div class="agent-head">
+                  <strong style="font-family: var(--font-mono); font-size: 12.5px;">FundBot_1</strong>
+                  <span class="tag-pill tag-target" id="agFundBadge">BULLISH</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary);">FundamentalAnalyst · Score: <strong id="agFundConf">82%</strong></div>
+                <div class="progress-track"><div class="progress-fill" id="agFundBar" style="width: 82%;"></div></div>
+                <div style="font-size: 11.5px; color: var(--text-secondary);" id="agFundDesc"></div>
+              </div>
+
+              <div class="agent-card">
+                <div class="agent-head">
+                  <strong style="font-family: var(--font-mono); font-size: 12.5px;">ExecBot_1</strong>
+                  <span class="tag-pill tag-entry" id="agExecBadge">APPROVED</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary);">ExecutionAgent · Conviction: <strong id="agExecConf">80%</strong></div>
+                <div class="progress-track"><div class="progress-fill" id="agExecBar" style="width: 80%;"></div></div>
+                <div style="font-size: 11.5px; color: var(--text-secondary);" id="agExecDesc"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: HOLDINGS SUMMARY + AUTO-EXECUTION RULES + STOCKY AI ASSISTANT -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Live Kite Holdings</div>
+                <div class="panel-subtitle">Click any holding to analyze</div>
+              </div>
+              <button type="button" class="btn-secondary" id="manageHoldingsBtn">Edit Qty / Watchlist</button>
+            </div>
+
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>Qty</th>
+                  <th>LTP</th>
+                  <th>P&amp;L</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="miniHoldingsTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Stocky AI Assistant</div>
+                <div class="panel-subtitle">Context-aware Quant, Fundamental &amp; Order Execution Bot</div>
+              </div>
+            </div>
+
+            <div class="chip-row">
+              <button type="button" class="prompt-chip" data-prompt="Analyze RELIANCE">🔍 Analyze RELIANCE</button>
+              <button type="button" class="prompt-chip" data-prompt="Compare HDFCBANK vs ICICIBANK">⚖️ Compare HDFC vs ICICI</button>
+              <button type="button" class="prompt-chip" data-prompt="Invest 5 Lakh">💰 Invest 5 Lakh</button>
+              <button type="button" class="prompt-chip" data-prompt="Portfolio efficiency check">🛡️ Efficiency Audit</button>
+            </div>
+
+            <div class="chat-messages" id="stockyChatMessages"></div>
+
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="stockyChatInput" class="input-field" style="flex: 1;" placeholder="Ask Stocky (e.g. 'Buy 10 TCS' or 'Explain TATAMOTORS')..." />
+              <button type="button" class="btn-primary" id="stockySendBtn">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: STOCKSIGHT V2 DEEP-DIVE SCORING & PORTFOLIO MANAGER -->
+    <section class="tab-panel" id="panel-stocksight">
+      <div class="two-col-grid">
+        <!-- 4-PILLAR FUNDAMENTAL SCORE & PORTER'S 5 FORCES -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title" id="ssDeepDiveTitle">StockSight V2 Dual-Scoring Engine — RELIANCE</div>
+              <div class="panel-subtitle" id="ssIndustryBadge">Industry Profile: POWER · Normalized Fundamental &amp; Porter Moat</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <span class="tag-pill tag-target" id="ssFundTotalBadge">Fundamental: 82 / 100</span>
+              <span class="tag-pill tag-entry" id="ssPorterTotalBadge">Porter Moat: 85 / 100</span>
+            </div>
+          </div>
+
+          <div class="pillar-grid" id="ssFourPillarsContainer"></div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+            <div class="panel-title" style="margin-bottom: 8px;">Porter's 5 Forces Qualitative Moat Breakdown (Max 100)</div>
+            <div class="pillar-grid" id="ssPortersGrid"></div>
+          </div>
+
+          <div class="terminal-box" id="ssDecisionMatrixBox"></div>
+        </div>
+
+        <!-- PORTFOLIO & WATCHLIST INTERACTIVE MANAGER -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">StockSight V2 Portfolio &amp; Watchlist Manager</div>
+              <div class="panel-subtitle">Set Qty &gt; 0 to move to Portfolio; set Qty = 0 to move to Watchlist</div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="addSymbolInput" class="input-field" placeholder="Add Ticker (e.g. ITC)" style="width: 150px;" />
+              <button type="button" class="btn-primary" id="addSymbolBtn">Add Asset</button>
+            </div>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Fund / Porter</th>
+                <th>Decision</th>
+                <th>Qty</th>
+                <th>Avg Price</th>
+                <th>LTP / Target</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="fullPortfolioManagerBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: MULTI-AGENT HEALTH, AUTO-EXECUTION RULES & .ENV SETUP -->
+    <section class="tab-panel" id="panel-agents">
+      <div class="two-col-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Finsistant Version 2 Runtime Configuration (.env)</div>
+              <div class="panel-subtitle">Unified Credentials, Multi-Agent Guardrails &amp; Auto-Execution Rules</div>
+            </div>
+            <button type="button" class="btn-primary" id="saveUnifiedConfigBtn">Save &amp; Re-Verify</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">FINSISTANT_API_KEY</label>
+              <input type="text" id="cfgApiKey" class="input-field" value="fnv2_live_98f2a4d7c1e3b506" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">FINSISTANT_ENVIRONMENT</label>
+              <select id="cfgEnv" class="select-field">
+                <option value="sandbox">sandbox</option>
+                <option value="staging">staging</option>
+                <option value="production" selected>production</option>
+              </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">AGENT_MODE</label>
+              <select id="cfgMode" class="select-field">
+                <option value="backtest">backtest</option>
+                <option value="paper_trading" selected>paper_trading</option>
+                <option value="live">live</option>
+              </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">MAX_CONCURRENT_TRADES</label>
+              <input type="number" id="cfgMaxTrades" class="input-field" value="5" min="1" max="50" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">EXECUTION_PASSWORD</label>
+              <input type="text" id="cfgExecPwd" class="input-field" value="parth_exec_2026" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_API_KEY</label>
+              <input type="text" id="cfgKiteKey" class="input-field" value="kite_live_71e9b0a2" />
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+            <div class="panel-title" style="margin-bottom: 8px;">Finsistant Auto-Execution Rule Sets</div>
+            <div id="autoRulesList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Unified Verification Console (<code>scripts/verify_setup.py</code>)</div>
+              <div class="panel-subtitle">Health status across StockSight V2, Finsistant &amp; Multi-Agent Orchestrator</div>
+            </div>
+            <button type="button" class="btn-secondary" id="runUnifiedVerifyBtn">Run verify_setup.py</button>
+          </div>
+
+          <pre class="terminal-box" id="unifiedVerifyOutput" style="min-height: 310px; overflow-x: auto;"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/app.js" onerror="var s=document.createElement('script');s.src='app.js';document.body.appendChild(s);"></script>
+</body>
+</html>
