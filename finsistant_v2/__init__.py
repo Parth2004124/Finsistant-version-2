@@ -8,6 +8,12 @@ Merges:
 
 from .agents import AgentMessage, AgentRunner, ExecutionAgent, FundamentalAnalyst, PipelineResult, TechnicalAnalyst
 from .config import FinsistantSettings, load_settings
+from .kite_auth import (
+    auto_fetch_kite_access_token,
+    exchange_request_token,
+    get_kite_auth_status,
+    resolve_kite_session,
+)
 from .live_data import DEFAULT_SYMBOL_CONFIG, fetch_kite_portfolio, fetch_live_market_snapshot
 from .quant_engine import ASSET_UNIVERSE, get_asset_full_analysis
 from .scoring_engine import (
@@ -27,6 +33,10 @@ __all__ = [
     "ExecutionAgent",
     "FinsistantSettings",
     "load_settings",
+    "auto_fetch_kite_access_token",
+    "exchange_request_token",
+    "get_kite_auth_status",
+    "resolve_kite_session",
     "DEFAULT_SYMBOL_CONFIG",
     "fetch_kite_portfolio",
     "fetch_live_market_snapshot",

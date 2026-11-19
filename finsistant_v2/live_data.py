@@ -353,27 +353,30 @@ def fetch_live_market_snapshot(symbol: str, force_refresh: bool = False) -> dict
     return snapshot
 
 
-def fetch_kite_portfolio() -> dict[str, Any]:
-    """Fetch live holdings and cash margins from Zerodha Kite Connect v3 if configured.
+def fetch_kite_portfolio(force_token_refresh: bool = False) -> dict[str, Any]:
+    """Fetch live holdings and cash margins from Zerodha Kite Connect v3.
 
-    Never returns simulated/fake holdings. If no valid KITE_ACCESS_TOKEN is set,
-    returns empty holdings (0 holdings) and an honest connection status.
+    Uses Finsistant's daily Kite token resolver (`KITE_ACCESS_TOKEN`, daily `token.txt`,
+    `KITE_REQUEST_TOKEN` exchange, or automated TOTP login when credentials exist).
+    Never returns simulated/fake holdings.
     """
-    api_key = os.getenv("KITE_API_KEY", "").strip()
-    access_token = os.getenv("KITE_ACCESS_TOKEN", "").strip()
-    if not api_key or not access_token or api_key.startswith("your_") or api_key == "kite_live_71e9b0a2":
+    from .kite_auth import clear_daily_token_file, resolve_kite_session
+
+    session = resolve_kite_session(force_refresh=force_token_refresh)
+    if not session["ready"]:
         return {
             "connected": False,
-            "status": "0 holdings (Kite access token not configured — live market feed active)",
+            "status": session["message"],
+            "token_source": session["source"],
             "holdings": [],
             "cash_balance": 0.0,
         }
 
-    headers = {
-        "X-Kite-Version": "3",
-        "Authorization": f"token {api_key}:{access_token}",
-    }
-    try:
+    def _query_kite(api_key: str, access_token: str) -> tuple[list[dict[str, Any]], float]:
+        headers = {
+            "X-Kite-Version": "3",
+            "Authorization": f"token {api_key}:{access_token}",
+        }
         req_h = urllib.request.Request("https://api.kite.trade/portfolio/holdings", headers=headers)
         with urllib.request.urlopen(req_h, timeout=10) as resp:
             h_payload = json.loads(resp.read().decode("utf-8"))
@@ -389,7 +392,7 @@ def fetch_kite_portfolio() -> dict[str, Any]:
         except Exception:
             cash_balance = 0.0
 
-        holdings = []
+        holdings: list[dict[str, Any]] = []
         for item in raw_holdings:
             qty = int(item.get("quantity") or 0) + int(item.get("t1_quantity") or 0)
             if qty <= 0:
@@ -403,16 +406,40 @@ def fetch_kite_portfolio() -> dict[str, Any]:
                     "pnl": float(item.get("pnl") or 0.0),
                 }
             )
+        return holdings, round(cash_balance, 2)
+
+    try:
+        try:
+            holdings, cash_balance = _query_kite(session["api_key"], session["access_token"])
+        except urllib.error.HTTPError as http_exc:
+            if http_exc.code in (401, 403) and not force_token_refresh:
+                clear_daily_token_file()
+                refreshed = resolve_kite_session(force_refresh=True)
+                if refreshed["ready"]:
+                    session = refreshed
+                    holdings, cash_balance = _query_kite(session["api_key"], session["access_token"])
+                else:
+                    return {
+                        "connected": False,
+                        "status": f"Kite session expired ({refreshed['message']})",
+                        "token_source": refreshed["source"],
+                        "holdings": [],
+                        "cash_balance": 0.0,
+                    }
+            else:
+                raise
         return {
             "connected": True,
-            "status": f"Zerodha Kite Live ({len(holdings)} holdings)",
+            "status": f"Zerodha Kite Live ({len(holdings)} holdings · {session['source']})",
+            "token_source": session["source"],
             "holdings": holdings,
-            "cash_balance": round(cash_balance, 2),
+            "cash_balance": cash_balance,
         }
     except Exception as exc:
         return {
             "connected": False,
             "status": f"Kite API error ({exc}) — 0 holdings loaded",
+            "token_source": session.get("source", "error"),
             "holdings": [],
             "cash_balance": 0.0,
         }

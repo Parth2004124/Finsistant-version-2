@@ -39,6 +39,10 @@ class FinsistantSettings:
     max_concurrent_trades: int = 5
     execution_password: str = ""
     kite_api_key: str = ""
+    kite_api_secret: str = ""
+    kite_user_id: str = ""
+    kite_password: str = ""
+    kite_totp_secret: str = ""
     kite_access_token: str = ""
     gemini_api_key: str = ""
 
@@ -50,6 +54,9 @@ def load_settings(env_path: str | Path | None = None) -> FinsistantSettings:
     target_path = Path(env_path) if env_path else Path(".env")
     if target_path.exists():
         _parse_env_file(target_path)
+    secrets_path = target_path.parent / "secrets.env"
+    if secrets_path.exists():
+        _parse_env_file(secrets_path)
 
     env_val = os.getenv("FINSISTANT_ENVIRONMENT", "production").lower()
     if env_val not in ("sandbox", "staging", "production"):
@@ -72,6 +79,10 @@ def load_settings(env_path: str | Path | None = None) -> FinsistantSettings:
         max_concurrent_trades=max_trades,
         execution_password=os.getenv("EXECUTION_PASSWORD", ""),
         kite_api_key=os.getenv("KITE_API_KEY", ""),
+        kite_api_secret=os.getenv("KITE_API_SECRET", ""),
+        kite_user_id=os.getenv("KITE_USER_ID", ""),
+        kite_password=os.getenv("KITE_PASSWORD", ""),
+        kite_totp_secret=os.getenv("KITE_TOTP_SECRET", ""),
         kite_access_token=os.getenv("KITE_ACCESS_TOKEN", ""),
         gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
     )

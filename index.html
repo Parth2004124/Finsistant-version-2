@@ -298,12 +298,45 @@
               <input type="password" id="cfgKiteKey" class="input-field" placeholder="Set in .env or GitHub Secrets" />
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px;">
-              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_ACCESS_TOKEN (Server .env)</label>
-              <input type="password" id="cfgKiteToken" class="input-field" placeholder="Set in .env or GitHub Secrets" />
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_API_SECRET (Server .env)</label>
+              <input type="password" id="cfgKiteSecret" class="input-field" placeholder="Set in .env or GitHub Secrets" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_USER_ID (Auto-TOTP)</label>
+              <input type="text" id="cfgKiteUser" class="input-field" placeholder="Zerodha Client ID (optional)" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_PASSWORD (Auto-TOTP)</label>
+              <input type="password" id="cfgKitePass" class="input-field" placeholder="Set in .env or GitHub Secrets" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_TOTP_SECRET (Base32)</label>
+              <input type="password" id="cfgKiteTotp" class="input-field" placeholder="Set in .env or GitHub Secrets" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_ACCESS_TOKEN (Daily)</label>
+              <input type="password" id="cfgKiteToken" class="input-field" placeholder="Auto-fetched daily to token.txt" />
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">DATA_POLICY</label>
               <input type="text" class="input-field" value="LIVE_ONLY (ZERO SIMULATION)" readonly />
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">Kite Daily Token Engine (<code>kite_auth.py</code>)</div>
+                <div class="panel-subtitle" id="kiteEngineStatusText">Checking daily Kite token status...</div>
+              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn-primary" id="kiteAutoLoginBtn">Auto-Fetch Daily Token</button>
+                <button type="button" class="btn-secondary" id="kiteLoginLinkBtn">Open Kite Login</button>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <input type="text" id="kiteReqTokenInput" class="input-field" placeholder="Paste request_token from Kite callback redirect" style="flex: 1; min-width: 200px;" />
+              <button type="button" class="btn-secondary" id="kiteExchangeTokenBtn">Exchange request_token</button>
             </div>
           </div>
 

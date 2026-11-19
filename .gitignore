@@ -4,6 +4,10 @@ __pycache__/
 venv/
 .venv/
 .env
+secrets.env
+*.env
+token.txt
+.kite_token.json
 *.db
 .DS_Store
 *.log

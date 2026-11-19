@@ -13,10 +13,11 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import mimetypes
+import os
 from pathlib import Path
 import time
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from finsistant_v2 import (
     ASSET_UNIVERSE,
@@ -26,10 +27,14 @@ from finsistant_v2 import (
     FundamentalAnalyst,
     StockyAssistant,
     TechnicalAnalyst,
+    auto_fetch_kite_access_token,
+    exchange_request_token,
     fetch_kite_portfolio,
     get_asset_full_analysis,
+    get_kite_auth_status,
     load_settings,
 )
+from finsistant_v2.kite_auth import write_daily_token_file
 
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = BASE_DIR / "web"
@@ -224,10 +229,15 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         else None
     )
 
+    def _mask_val(k: str, v: Any) -> Any:
+        is_secret = any(word in k for word in ("key", "token", "password", "secret", "totp"))
+        return "***" if is_secret and v else v
+
     return {
         "data_mode": "LIVE_ONLY",
         "data_source": "Yahoo Finance Live Market Data + 3-Agent Orchestrator",
         "kite_status": KITE_STATUS,
+        "kite_auth": get_kite_auth_status(),
         "generated_at": LAST_SCAN_AT or datetime.now(timezone.utc).isoformat(),
         "portfolio": {
             "stats": {
@@ -253,7 +263,7 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "active_pipeline": active_pipeline,
         "health": runner.health_check(),
         "config": {
-            k: ("***" if ("key" in k or "token" in k or "password" in k) and v else v)
+            k: _mask_val(k, v)
             for k, v in runner.settings.model_dump().items()
         },
     }
@@ -294,6 +304,31 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 self._send_json(_build_full_state_payload("RELIANCE"))
             except Exception as exc:
                 self._send_json({"error": str(exc), "data_mode": "LIVE_ONLY"}, status=502)
+            return
+        if path == "/api/kite/status":
+            self._send_json({"kite_status": KITE_STATUS, "kite_auth": get_kite_auth_status()})
+            return
+        if path == "/api/kite/callback":
+            params = parse_qs(parsed.query)
+            req_token = (params.get("request_token") or [""])[0].strip()
+            api_key = os.getenv("KITE_API_KEY", "").strip()
+            api_secret = os.getenv("KITE_API_SECRET", "").strip()
+            if not req_token:
+                self._send_json({"error": "Missing request_token query parameter"}, status=400)
+                return
+            try:
+                exchange_request_token(api_key, api_secret, req_token)
+                _initialize_platform_state(force_refresh=False)
+                self._send_json(
+                    {
+                        "status": "success",
+                        "message": "Kite request_token exchanged and daily access_token activated.",
+                        "kite_status": KITE_STATUS,
+                        "kite_auth": get_kite_auth_status(),
+                    }
+                )
+            except Exception as exc:
+                self._send_json({"error": str(exc)}, status=400)
             return
         if path.startswith("/api/analyze/"):
             sym = path.split("/api/analyze/", 1)[1].upper().strip()
@@ -432,7 +467,84 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 self._send_json({"reply": f"❌ Live lookup error: {exc}"})
             return
 
+        if path == "/api/kite/auto-login":
+            try:
+                sess = auto_fetch_kite_access_token()
+                _initialize_platform_state(force_refresh=False)
+                payload = _build_full_state_payload(str(body.get("active_symbol", "RELIANCE")).upper())
+                payload["kite_session"] = {
+                    "status": "success",
+                    "source": sess.get("source", "auto_totp_login"),
+                    "user_id": sess.get("user_id", ""),
+                    "login_time": sess.get("login_time", ""),
+                }
+                self._send_json(payload)
+            except Exception as exc:
+                self._send_json({"error": str(exc)}, status=400)
+            return
+
+        if path == "/api/kite/exchange-token":
+            req_token = str(body.get("request_token", "")).strip()
+            api_key = str(body.get("api_key", "")).strip() or os.getenv("KITE_API_KEY", "").strip()
+            api_secret = str(body.get("api_secret", "")).strip() or os.getenv("KITE_API_SECRET", "").strip()
+            if api_key and api_key != "***":
+                os.environ["KITE_API_KEY"] = api_key
+            if api_secret and api_secret != "***":
+                os.environ["KITE_API_SECRET"] = api_secret
+            try:
+                sess = exchange_request_token(api_key, api_secret, req_token)
+                _initialize_platform_state(force_refresh=False)
+                payload = _build_full_state_payload(str(body.get("active_symbol", "RELIANCE")).upper())
+                payload["kite_session"] = {
+                    "status": "success",
+                    "source": "request_token_exchange",
+                    "user_id": sess.get("user_id", ""),
+                }
+                self._send_json(payload)
+            except Exception as exc:
+                self._send_json({"error": str(exc)}, status=400)
+            return
+
+        if path == "/api/update_token":
+            expected_secret = os.getenv("EXECUTION_PASSWORD", "") or os.getenv("FINSISTANT_API_KEY", "")
+            provided_secret = str(body.get("secret", "")).strip()
+            if expected_secret and provided_secret != expected_secret:
+                self._send_json({"status": "error", "detail": "Unauthorized"}, status=401)
+                return
+            new_token = str(body.get("token", "")).strip()
+            if not new_token:
+                self._send_json({"status": "error", "detail": "No token provided"}, status=400)
+                return
+            try:
+                write_daily_token_file(new_token)
+                _initialize_platform_state(force_refresh=False)
+                self._send_json(
+                    {
+                        "status": "success",
+                        "message": "Token updated successfully",
+                        "kite_status": KITE_STATUS,
+                        "kite_auth": get_kite_auth_status(),
+                    }
+                )
+            except Exception as exc:
+                self._send_json({"status": "error", "detail": str(exc)}, status=400)
+            return
+
         if path == "/api/config":
+            def _pick_secret(field: str, env_key: str, current_val: str) -> str:
+                raw = str(body.get(field, "")).strip()
+                if raw and raw != "***":
+                    os.environ[env_key] = raw
+                    return raw
+                return current_val
+
+            kite_key = _pick_secret("kite_api_key", "KITE_API_KEY", runner.settings.kite_api_key)
+            kite_sec = _pick_secret("kite_api_secret", "KITE_API_SECRET", runner.settings.kite_api_secret)
+            kite_uid = _pick_secret("kite_user_id", "KITE_USER_ID", runner.settings.kite_user_id)
+            kite_pwd = _pick_secret("kite_password", "KITE_PASSWORD", runner.settings.kite_password)
+            kite_totp = _pick_secret("kite_totp_secret", "KITE_TOTP_SECRET", runner.settings.kite_totp_secret)
+            kite_tok = _pick_secret("kite_access_token", "KITE_ACCESS_TOKEN", runner.settings.kite_access_token)
+
             new_settings = FinsistantSettings(
                 finsistant_api_key=str(body.get("finsistant_api_key", runner.settings.finsistant_api_key)),
                 finsistant_environment=body.get("finsistant_environment", "production"),
@@ -440,16 +552,23 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 default_currency=str(body.get("default_currency", "INR")).upper().strip() or "INR",
                 max_concurrent_trades=max(1, min(50, int(body.get("max_concurrent_trades", 5)))),
                 execution_password=str(body.get("execution_password", runner.settings.execution_password)),
-                kite_api_key=str(body.get("kite_api_key", runner.settings.kite_api_key)),
-                kite_access_token=str(body.get("kite_access_token", runner.settings.kite_access_token)),
+                kite_api_key=kite_key,
+                kite_api_secret=kite_sec,
+                kite_user_id=kite_uid,
+                kite_password=kite_pwd,
+                kite_totp_secret=kite_totp,
+                kite_access_token=kite_tok,
                 gemini_api_key=runner.settings.gemini_api_key,
             )
             runner.settings = new_settings
+            _initialize_platform_state(force_refresh=False)
             self._send_json(
                 {
                     "status": "updated",
+                    "kite_status": KITE_STATUS,
+                    "kite_auth": get_kite_auth_status(),
                     "config": {
-                        k: ("***" if ("key" in k or "token" in k or "password" in k) and v else v)
+                        k: ("***" if any(w in k for w in ("key", "token", "password", "secret", "totp")) and v else v)
                         for k, v in new_settings.model_dump().items()
                     },
                     "health": runner.health_check(),

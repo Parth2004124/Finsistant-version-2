@@ -12,6 +12,7 @@ let appState = {
   backendConnected: false,
   dataSource: "",
   kiteStatus: "Checking...",
+  kiteAuth: null,
   generatedAt: "",
   activeSymbol: "RELIANCE",
   cashBalance: 0,
@@ -151,6 +152,7 @@ function drawUnifiedChart(asset) {
 function applyPayload(payload) {
   appState.dataSource = payload.data_source || "Live Market Data";
   appState.kiteStatus = payload.kite_status || "0 holdings";
+  appState.kiteAuth = payload.kite_auth || null;
   appState.generatedAt = payload.generated_at || new Date().toISOString();
   appState.cashBalance = Number((payload.portfolio && payload.portfolio.stats && payload.portfolio.stats.balance) || 0);
   appState.assets = payload.assets || {};
@@ -484,6 +486,18 @@ function renderAllViews() {
     rulesBox.appendChild(div);
   });
 
+  const kiteEngineEl = document.getElementById("kiteEngineStatusText");
+  if (kiteEngineEl) {
+    const ka = appState.kiteAuth;
+    if (ka) {
+      kiteEngineEl.textContent = ka.access_token_active
+        ? `Session Active (${ka.trading_day_ist}) · API Key: ${ka.api_key_configured ? "Ready" : "Missing"} · Auto-TOTP: ${ka.auto_login_ready ? "Enabled" : "Needs Secrets"}`
+        : `Daily Token Idle · API Key: ${ka.api_key_configured ? "Ready" : "Not Set"} · Auto-TOTP: ${ka.auto_login_ready ? "Enabled" : "Set KITE_* Secrets"}`;
+    } else {
+      kiteEngineEl.textContent = appState.kiteStatus;
+    }
+  }
+
   document.getElementById("unifiedVerifyOutput").textContent =
     `$ python scripts/verify_setup.py\n` +
     `Live Telemetry (${appState.dataSource})\n` +
@@ -491,6 +505,7 @@ function renderAllViews() {
       pipeline_status: appState.health?.pipeline_status || "HEALTHY",
       data_mode: "LIVE_ONLY (ZERO SIMULATION)",
       kite_status: appState.kiteStatus,
+      kite_auth: appState.kiteAuth,
       generated_at: appState.generatedAt,
       active_symbol: active.symbol,
       live_price: active.price,
@@ -639,24 +654,27 @@ async function runLiveScan(isAuto = false) {
   const metaEl = document.getElementById("pipelineMetaText");
   if (metaEl) metaEl.textContent = isAuto ? "Running auto-scan on live market feed..." : "Refreshing live orchestration scan...";
 
-  // 1. Try live Python backend first (when hosted by server.py)
-  try {
-    const endpoint = isAuto ? "/api/state" : "/api/scan";
-    const res = await fetch(endpoint, {
-      method: isAuto ? "GET" : "POST",
-      headers: isAuto ? undefined : { "Content-Type": "application/json" },
-      body: isAuto ? undefined : JSON.stringify({ symbol: appState.activeSymbol })
-    });
-    const ct = res.headers.get("content-type") || "";
-    if (res.ok && ct.includes("application/json")) {
-      appState.backendConnected = true;
-      applyPayload(await res.json());
-      renderAllViews();
-      renderChat();
-      return;
+  // 1. Try live Python backend first when not hosted on static GitHub Pages
+  const isStaticPages = window.location.hostname.endsWith("github.io") || window.location.protocol === "file:";
+  if (!isStaticPages) {
+    try {
+      const endpoint = isAuto ? "/api/state" : "/api/scan";
+      const res = await fetch(endpoint, {
+        method: isAuto ? "GET" : "POST",
+        headers: isAuto ? undefined : { "Content-Type": "application/json" },
+        body: isAuto ? undefined : JSON.stringify({ symbol: appState.activeSymbol })
+      });
+      const ct = res.headers.get("content-type") || "";
+      if (res.ok && ct.includes("application/json")) {
+        appState.backendConnected = true;
+        applyPayload(await res.json());
+        renderAllViews();
+        renderChat();
+        return;
+      }
+    } catch (_) {
+      // Not running under server.py; proceed to cloud-generated live_scan.json
     }
-  } catch (_) {
-    // Not running under server.py; proceed to cloud-generated live_scan.json
   }
 
   // 2. Load cloud-generated live_scan.json (GitHub Actions + Yahoo Finance + 3-Agent Orchestrator)
@@ -758,22 +776,106 @@ function bootFinsistantApp() {
     }
   });
 
+  async function saveRuntimeConfig() {
+    if (!appState.backendConnected) return false;
+    const res = await fetch("/api/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        finsistant_environment: document.getElementById("cfgEnv").value,
+        agent_mode: document.getElementById("cfgMode").value,
+        max_concurrent_trades: parseInt(document.getElementById("cfgMaxTrades").value, 10) || 5,
+        kite_api_key: document.getElementById("cfgKiteKey").value,
+        kite_api_secret: document.getElementById("cfgKiteSecret").value,
+        kite_user_id: document.getElementById("cfgKiteUser").value,
+        kite_password: document.getElementById("cfgKitePass").value,
+        kite_totp_secret: document.getElementById("cfgKiteTotp").value,
+        kite_access_token: document.getElementById("cfgKiteToken").value
+      })
+    });
+    return res.ok;
+  }
+
   document.getElementById("saveUnifiedConfigBtn").addEventListener("click", async () => {
-    if (appState.backendConnected) {
-      await fetch("/api/config", {
+    await saveRuntimeConfig();
+    runLiveScan(false);
+  });
+
+  const autoLoginBtn = document.getElementById("kiteAutoLoginBtn");
+  if (autoLoginBtn) {
+    autoLoginBtn.addEventListener("click", async () => {
+      const statusEl = document.getElementById("kiteEngineStatusText");
+      if (!appState.backendConnected) {
+        if (statusEl) {
+          statusEl.textContent = "Cloud Mode: Add KITE_API_KEY, KITE_API_SECRET, KITE_USER_ID, KITE_PASSWORD, KITE_TOTP_SECRET to GitHub Repository Secrets for automated daily cloud login.";
+        }
+        return;
+      }
+      if (statusEl) statusEl.textContent = "Fetching fresh daily Kite access_token via TOTP...";
+      await saveRuntimeConfig();
+      const res = await fetch("/api/kite/auto-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active_symbol: appState.activeSymbol })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.assets) {
+        applyPayload(data);
+        renderAllViews();
+      } else if (statusEl) {
+        statusEl.textContent = `Auto-login failed: ${data.error || res.status}`;
+      }
+    });
+  }
+
+  const loginLinkBtn = document.getElementById("kiteLoginLinkBtn");
+  if (loginLinkBtn) {
+    loginLinkBtn.addEventListener("click", () => {
+      const enteredKey = (document.getElementById("cfgKiteKey")?.value || "").trim();
+      const url = (appState.kiteAuth && appState.kiteAuth.login_url) ||
+        (enteredKey ? `https://kite.zerodha.com/connect/login?v=3&api_key=${encodeURIComponent(enteredKey)}` : "");
+      if (url) {
+        window.open(url, "_blank", "noopener,noreferrer");
+      } else {
+        const statusEl = document.getElementById("kiteEngineStatusText");
+        if (statusEl) statusEl.textContent = "Enter KITE_API_KEY (or set it in .env / GitHub Secrets) to open Zerodha Kite Login.";
+      }
+    });
+  }
+
+  const exchangeBtn = document.getElementById("kiteExchangeTokenBtn");
+  if (exchangeBtn) {
+    exchangeBtn.addEventListener("click", async () => {
+      const statusEl = document.getElementById("kiteEngineStatusText");
+      const reqToken = (document.getElementById("kiteReqTokenInput")?.value || "").trim();
+      if (!reqToken) {
+        if (statusEl) statusEl.textContent = "Paste the request_token from Zerodha's redirect URL first.";
+        return;
+      }
+      if (!appState.backendConnected) {
+        if (statusEl) statusEl.textContent = "Connect Python backend (server.py) or configure GitHub Secrets for automated TOTP token exchange.";
+        return;
+      }
+      const res = await fetch("/api/kite/exchange-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          finsistant_environment: document.getElementById("cfgEnv").value,
-          agent_mode: document.getElementById("cfgMode").value,
-          max_concurrent_trades: parseInt(document.getElementById("cfgMaxTrades").value, 10) || 5,
-          kite_api_key: document.getElementById("cfgKiteKey").value,
-          kite_access_token: document.getElementById("cfgKiteToken").value
+          request_token: reqToken,
+          api_key: document.getElementById("cfgKiteKey")?.value || "",
+          api_secret: document.getElementById("cfgKiteSecret")?.value || "",
+          active_symbol: appState.activeSymbol
         })
       });
-    }
-    runLiveScan(false);
-  });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.assets) {
+        document.getElementById("kiteReqTokenInput").value = "";
+        applyPayload(data);
+        renderAllViews();
+      } else if (statusEl) {
+        statusEl.textContent = `Token exchange failed: ${data.error || res.status}`;
+      }
+    });
+  }
 
   document.getElementById("runUnifiedVerifyBtn").addEventListener("click", () => runLiveScan(false));
 
