@@ -32,14 +32,15 @@ def _parse_env_file(env_path: Path) -> None:
 class FinsistantSettings:
     """Validated runtime settings for Finsistant Version 2."""
 
-    finsistant_api_key: str = "fnv2_live_98f2a4d7c1e3b506"
+    finsistant_api_key: str = ""
     finsistant_environment: Literal["sandbox", "staging", "production"] = "production"
     agent_mode: Literal["backtest", "paper_trading", "live"] = "paper_trading"
     default_currency: str = "INR"
     max_concurrent_trades: int = 5
-    execution_password: str = "parth_exec_2026"
-    kite_api_key: str = "kite_live_71e9b0a2"
-    gemini_api_key: str = "gem_configured"
+    execution_password: str = ""
+    kite_api_key: str = ""
+    kite_access_token: str = ""
+    gemini_api_key: str = ""
 
     def model_dump(self) -> dict[str, Any]:
         return asdict(self)
@@ -64,12 +65,13 @@ def load_settings(env_path: str | Path | None = None) -> FinsistantSettings:
         max_trades = 5
 
     return FinsistantSettings(
-        finsistant_api_key=os.getenv("FINSISTANT_API_KEY", "fnv2_live_98f2a4d7c1e3b506"),
+        finsistant_api_key=os.getenv("FINSISTANT_API_KEY", ""),
         finsistant_environment=env_val,  # type: ignore[arg-type]
         agent_mode=mode_val,  # type: ignore[arg-type]
         default_currency=os.getenv("DEFAULT_CURRENCY", "INR"),
         max_concurrent_trades=max_trades,
-        execution_password=os.getenv("EXECUTION_PASSWORD", "parth_exec_2026"),
-        kite_api_key=os.getenv("KITE_API_KEY", "kite_live_71e9b0a2"),
-        gemini_api_key=os.getenv("GEMINI_API_KEY", "gem_configured"),
+        execution_password=os.getenv("EXECUTION_PASSWORD", ""),
+        kite_api_key=os.getenv("KITE_API_KEY", ""),
+        kite_access_token=os.getenv("KITE_ACCESS_TOKEN", ""),
+        gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
     )

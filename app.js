@@ -1,164 +1,73 @@
 /**
- * Finsistant Version 2 — Unified All-in-One Frontend Controller
- * Combines:
- * 1. StockSight Version 2 (4-Pillar Fundamental Engine, Porter's 5 Forces, Moreshwar Levels, Decision Matrix, Portfolio/Watchlist)
- * 2. Finsistant (Execution Terminal, Top Picks Queue, Sell Warnings, Auto-Execution Rules, Degree-2 Polynomial Regression, Stocky AI)
- * 3. Multi-Agent Trading Orchestrator (AgentRunner: TechBot_1, FundBot_1, ExecBot_1)
+ * Finsistant Version 2 — Live Data & Multi-Agent Frontend Controller
+ *
+ * ZERO SIMULATION POLICY:
+ * - No hardcoded fallback prices, no seededRandom candles, no synthetic holdings.
+ * - Loads live Yahoo Finance OHLCV candles, fundamentals, and 3-Agent Orchestrator
+ *   outputs either from the Python backend (/api/state, /api/scan) or from the
+ *   cloud-generated ./live_scan.json snapshot (GitHub Actions).
  */
 
-const UNIVERSE_FALLBACK = {
-  RELIANCE: { name: "Reliance Industries Ltd", exchange: "NSE", sector: "Energy, Telecom & Retail", price: 2985, chg: 1.45, pe: 26.4, roe: 16.8, roce: 18.4, opm: 22.5, sales_g: 16.2, profit_g: 18.5, mcap: 2015000, qty: 15, avg: 2790, setup: "Institutional Breakout", industry: "POWER" },
-  TCS: { name: "Tata Consultancy Services Ltd", exchange: "NSE", sector: "IT Services & Enterprise AI", price: 4120, chg: 0.92, pe: 29.8, roe: 48.5, roce: 58.2, opm: 26.4, sales_g: 12.4, profit_g: 15.8, mcap: 1490000, qty: 10, avg: 3890, setup: "Moat Accumulation", industry: "IT" },
-  HDFCBANK: { name: "HDFC Bank Ltd", exchange: "NSE", sector: "Private Sector Banking", price: 1745, chg: 1.18, pe: 18.6, roe: 17.4, roce: 16.2, opm: 28.0, sales_g: 18.5, profit_g: 19.4, mcap: 1325000, qty: 25, avg: 1610, setup: "High Quality Value", industry: "BANKING" },
-  ICICIBANK: { name: "ICICI Bank Ltd", exchange: "NSE", sector: "Private Sector Banking & Credit", price: 1288, chg: 1.74, pe: 19.2, roe: 18.9, roce: 17.5, opm: 31.0, sales_g: 19.8, profit_g: 22.4, mcap: 908000, qty: 30, avg: 1165, setup: "Momentum Leader", industry: "BANKING" },
-  INFY: { name: "Infosys Ltd", exchange: "NSE", sector: "Digital Cloud & Enterprise AI", price: 1865, chg: 0.85, pe: 27.1, roe: 31.8, roce: 39.4, opm: 23.8, sales_g: 11.2, profit_g: 14.6, mcap: 774000, qty: 0, avg: 1865, setup: "Channel Breakout", industry: "IT" },
-  TATAMOTORS: { name: "Tata Motors Ltd", exchange: "NSE", sector: "Automotive, EV & Mobility", price: 945, chg: 2.15, pe: 11.8, roe: 24.6, roce: 21.8, opm: 15.6, sales_g: 17.4, profit_g: 26.0, mcap: 348000, qty: 0, avg: 945, setup: "Deep Value Turnaround", industry: "AUTO" },
-  NVDA: { name: "NVIDIA Corporation", exchange: "NASDAQ", sector: "AI Compute & Semiconductors", price: 142.8, chg: 2.64, pe: 44.2, roe: 68.0, roce: 62.0, opm: 58.4, sales_g: 78.0, profit_g: 89.0, mcap: 2850000, qty: 0, avg: 142.8, setup: "AI Momentum Continuation", industry: "IT" },
-  ZEEL: { name: "Zee Entertainment Enterprises", exchange: "NSE", sector: "Media & Broadcasting", price: 134.5, chg: -2.4, pe: 48.0, roe: 4.2, roce: 5.8, opm: 8.4, sales_g: -6.5, profit_g: -18.0, mcap: 12900, qty: 40, avg: 158.0, setup: "Risk Breakdown Warning", industry: "GENERAL" }
-};
-
 let appState = {
+  backendConnected: false,
+  dataSource: "",
+  kiteStatus: "Checking...",
+  generatedAt: "",
   activeSymbol: "RELIANCE",
-  selectedPickId: null,
-  cashBalance: 485000,
-  assets: {},
-  rules: [
-    { rule_id: "rule-1", name: "Strict Breakout Rules (Score > 80 & R:R > 1.8)", active: true },
-    { rule_id: "rule-2", name: "Moat Compounders (Fundamental >= 75 & Porter >= 75)", active: true },
-    { rule_id: "rule-3", name: "Auto-Exit Capital Traps (Fundamental <= 40)", active: true }
-  ],
-  chatHistory: [
-    {
-      role: "bot",
-      text: "🤖 Welcome to Finsistant Version 2! I merge StockSight V2 (4-Pillar + Porter's 5 Forces + Moreshwar Levels), Finsistant Execution Queue & Polynomial Regression, and the 3-Agent Orchestrator (TechBot_1, FundBot_1, ExecBot_1).\n\nClick any quick chip above or ask me to analyze a stock, compare peers, or allocate capital."
-    }
-  ]
+  cashBalance: 0,
+  assets: {},       // keyed by symbol -> live analysis payload
+  pipelines: {},    // keyed by symbol -> AgentRunner PipelineResult payload
+  holdingsMap: {},  // keyed by symbol -> { qty, avg_price }
+  queue: { buys: [], sells: [], executed: [] },
+  rules: [],
+  health: null,
+  config: null,
+  errorMsg: null,
+  chatHistory: []
 };
 
-const fmtINR = (n, d = 0) => "₹" + Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: d, maximumFractionDigits: d });
-
-function seededRandom(seedStr) {
-  let h = 2166136261 >>> 0;
-  for (let i = 0; i < seedStr.length; i++) {
-    h ^= seedStr.charCodeAt(i);
-    h = Math.imul(h, 16777619);
+const fmtCurrency = (n, currency = "INR", d = 0) => {
+  const cur = String(currency || "INR").toUpperCase();
+  const num = Number(n || 0);
+  if (cur === "USD") {
+    return "$" + num.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   }
-  return function () {
-    h += 0x6D2B79F5;
-    let t = Math.imul(h ^ (h >>> 15), 1 | h);
-    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function computeAssetModel(sym, raw) {
-  const isFin = raw.industry === "BANKING";
-  let bus = (raw.sales_g > 15 ? 15 : raw.sales_g > 8 ? 10 : raw.sales_g > 0 ? 5 : 2) +
-            (raw.profit_g > 15 ? 15 : raw.profit_g > 8 ? 10 : raw.profit_g > 0 ? 5 : 2) +
-            (isFin ? (raw.roe > 15 ? 10 : 5) : (raw.opm > 20 ? 10 : raw.opm > 12 ? 5 : 2));
-  bus = Math.min(40, bus);
-
-  let moat = (isFin ? (raw.roe > 18 ? 8 : 5) : ((raw.opm > 18 ? 5 : 2) + (raw.roce > 20 ? 5 : 2))) +
-             (raw.mcap > 20000 ? 5 : 3) + (raw.profit_g > raw.sales_g ? 5 : 2);
-  moat = Math.min(20, moat);
-
-  let mgmt = raw.pe < 15 ? 18 : raw.pe < 28 ? 14 : raw.pe < 45 ? 10 : 5;
-  let risk = (raw.mcap > 5000 ? 10 : 5) + (raw.chg >= 0 ? 8 : 3);
-  let fTotal = Math.min(98, bus + moat + mgmt + risk);
-
-  let entrants = raw.mcap > 10000 && raw.roce > 18 ? 20 : 14;
-  let suppliers = raw.opm > 24 ? 20 : raw.opm > 16 ? 15 : 10;
-  let buyers = raw.roe > 22 ? 20 : raw.roe > 16 ? 16 : 10;
-  let substitutes = raw.sales_g > 15 ? 20 : raw.sales_g > 10 ? 15 : 8;
-  let rivalry = raw.profit_g > 15 ? 20 : raw.profit_g > 10 ? 15 : 8;
-  let pTotal = Math.min(98, entrants + suppliers + buyers + substitutes + rivalry);
-
-  const xBlend = Number(((fTotal + pTotal) / 2).toFixed(1));
-  const scale = Math.max(1, raw.price / 1000);
-  const target = Number((raw.price + xBlend * scale).toFixed(2));
-  const stopLoss = Number((raw.price - (100 - xBlend) * scale).toFixed(2));
-  const entryPrice = raw.qty > 0 ? raw.price : Number((raw.price - (100 - xBlend) * 0.55 * scale).toFixed(2));
-  const rr = Number(((target - raw.price) / Math.max(1, raw.price - stopLoss)).toFixed(2));
-
-  let decision = "BUY NOW";
-  if (xBlend <= 45) decision = raw.qty > 0 ? "EXIT" : "AVOID";
-  else if (xBlend >= 65) decision = raw.qty > 0 ? "ADD" : "BUY NOW";
-  else decision = raw.qty > 0 ? "HOLD" : "SIP ONLY";
-
-  // Generate 36 candles + polynomial regression curve
-  const rand = seededRandom(sym);
-  const candles = [];
-  let p = raw.price * (raw.chg >= 0 ? 0.92 : 1.08);
-  const drift = raw.chg >= 0 ? 0.0023 : -0.0021;
-  for (let i = 0; i < 36; i++) {
-    const shock = (rand() - 0.48) * 0.025 + drift;
-    const open = p;
-    const close = i === 35 ? raw.price : open * (1 + shock);
-    const high = Math.max(open, close) * (1 + 0.008 + rand() * 0.008);
-    const low = Math.min(open, close) * (1 - 0.008 - rand() * 0.008);
-    const reg = raw.price * (0.93 + (i / 35) * (raw.chg >= 0 ? 0.08 : -0.07));
-    candles.push({
-      open: Number(open.toFixed(2)),
-      high: Number(high.toFixed(2)),
-      low: Number(low.toFixed(2)),
-      close: Number(close.toFixed(2)),
-      reg_value: Number(reg.toFixed(2))
-    });
-    p = close;
-  }
-
-  const reg30d = Number((raw.price * (raw.chg >= 0 ? 1.058 : 0.94)).toFixed(2));
-  const techConf = raw.chg >= 0 ? 0.79 : 0.36;
-  const fundConf = Number((xBlend / 100).toFixed(2));
-  const execConf = Number((0.45 * techConf + 0.55 * fundConf).toFixed(2));
-  const autoQty = Math.max(1, Math.min(50, Math.floor((appState.cashBalance * 0.015) / Math.max(1, raw.price - stopLoss))));
-
-  return {
-    symbol: sym,
-    ...raw,
-    fScore: { business: bus, moat, management: mgmt, risk, total: fTotal },
-    pScore: { entrants, suppliers, buyers, substitutes, rivalry, total: pTotal },
-    moreshwar: { xBlend, entry: entryPrice, target, stopLoss, rr },
-    decision,
-    reg30d,
-    techConf,
-    fundConf,
-    execConf,
-    autoQty,
-    candles
-  };
-}
-
-function initFallbackUniverse() {
-  Object.keys(UNIVERSE_FALLBACK).forEach((sym) => {
-    appState.assets[sym] = computeAssetModel(sym, UNIVERSE_FALLBACK[sym]);
-  });
-}
+  return "₹" + num.toLocaleString("en-IN", { minimumFractionDigits: d, maximumFractionDigits: d });
+};
 
 function drawUnifiedChart(asset) {
   const canvas = document.getElementById("unifiedChart");
-  if (!canvas || !asset) return;
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
+  canvas.width = Math.max(300, rect.width) * dpr;
+  canvas.height = Math.max(200, rect.height) * dpr;
   ctx.scale(dpr, dpr);
 
-  const w = rect.width;
-  const h = rect.height;
+  const w = Math.max(300, rect.width);
+  const h = Math.max(200, rect.height);
   ctx.clearRect(0, 0, w, h);
 
-  const candles = asset.candles || [];
-  if (!candles.length) return;
+  if (!asset || !Array.isArray(asset.candles) || asset.candles.length === 0) {
+    ctx.font = "13px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "hsl(350, 84%, 65%)";
+    ctx.fillText(appState.errorMsg || "LIVE DATA UNAVAILABLE — SIMULATION DISABLED", 20, h / 2);
+    return;
+  }
 
-  let minP = Math.min(asset.moreshwar.stopLoss * 0.992, ...candles.map((c) => c.low));
-  let maxP = Math.max(asset.moreshwar.target * 1.008, asset.reg30d * 1.005, ...candles.map((c) => c.high));
+  const candles = asset.candles;
+  const currency = asset.currency || "INR";
+  const symPrefix = currency === "USD" ? "$" : "₹";
+  const m = asset.moreshwar_levels || {};
 
-  const padTop = 16, padBot = 20, padLeft = 10, padRight = 72;
+  let minP = Math.min(m.stop_loss ? m.stop_loss * 0.992 : Infinity, ...candles.map((c) => c.low));
+  let maxP = Math.max(m.target ? m.target * 1.008 : -Infinity, asset.projected_30d_target || -Infinity, ...candles.map((c) => c.high));
+
+  const padTop = 18, padBot = 24, padLeft = 10, padRight = 76;
   const plotW = w - padLeft - padRight;
   const plotH = h - padTop - padBot;
-  const yFor = (val) => padTop + plotH - ((val - minP) / Math.max(1, maxP - minP)) * plotH;
+  const yFor = (val) => padTop + plotH - ((val - minP) / Math.max(1e-6, maxP - minP)) * plotH;
   const stepX = plotW / candles.length;
 
   // Grid lines
@@ -173,8 +82,17 @@ function drawUnifiedChart(asset) {
     ctx.moveTo(padLeft, y);
     ctx.lineTo(w - padRight, y);
     ctx.stroke();
-    ctx.fillText(`₹${val.toFixed(0)}`, w - padRight + 6, y + 3);
+    ctx.fillText(`${symPrefix}${val.toFixed(val < 500 ? 1 : 0)}`, w - padRight + 6, y + 3);
   }
+
+  // Real Date labels on X-axis (start, mid, end)
+  const firstDate = candles[0].date || "";
+  const midDate = candles[Math.floor(candles.length / 2)].date || "";
+  const lastDate = candles[candles.length - 1].date || "";
+  ctx.fillStyle = "hsl(215, 15%, 55%)";
+  ctx.fillText(firstDate, padLeft, h - 6);
+  ctx.fillText(midDate, padLeft + plotW * 0.45, h - 6);
+  ctx.fillText(lastDate, w - padRight - 72, h - 6);
 
   // Degree-2 Polynomial Regression Curve (Amber)
   ctx.strokeStyle = "hsl(38, 92%, 55%)";
@@ -182,13 +100,13 @@ function drawUnifiedChart(asset) {
   ctx.beginPath();
   candles.forEach((c, idx) => {
     const x = padLeft + idx * stepX + stepX * 0.5;
-    const y = yFor(c.reg_value || c.close);
+    const y = yFor(c.reg_value ?? c.close);
     if (idx === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   });
   ctx.stroke();
 
-  // Candlesticks
+  // Real OHLC Candlesticks
   candles.forEach((c, idx) => {
     const x = padLeft + idx * stepX + stepX * 0.5;
     const isBull = c.close >= c.open;
@@ -208,8 +126,9 @@ function drawUnifiedChart(asset) {
     ctx.fillRect(x - bW / 2, bTop, bW, bH);
   });
 
-  // Horizontal Moreshwar Target (Green), Entry/Spot (Cyan), Stop-Loss (Red)
+  // Moreshwar Levels
   const drawLevelLine = (price, color, label) => {
+    if (typeof price !== "number" || Number.isNaN(price)) return;
     const y = yFor(price);
     ctx.save();
     ctx.setLineDash([4, 4]);
@@ -220,243 +139,346 @@ function drawUnifiedChart(asset) {
     ctx.lineTo(w - padRight, y);
     ctx.stroke();
     ctx.fillStyle = color;
-    ctx.fillText(label, padLeft + 6, y - 5);
+    ctx.fillText(label, padLeft + 6, Math.max(12, y - 5));
     ctx.restore();
   };
 
-  drawLevelLine(asset.moreshwar.target, "hsl(158, 74%, 44%)", `TP ₹${asset.moreshwar.target}`);
-  drawLevelLine(asset.price, "hsl(196, 86%, 54%)", `CP ₹${asset.price}`);
-  drawLevelLine(asset.moreshwar.stopLoss, "hsl(350, 84%, 60%)", `SL ₹${asset.moreshwar.stopLoss}`);
+  drawLevelLine(m.target, "hsl(158, 74%, 44%)", `TP ${symPrefix}${m.target}`);
+  drawLevelLine(asset.price, "hsl(196, 86%, 54%)", `CP ${symPrefix}${asset.price}`);
+  drawLevelLine(m.stop_loss, "hsl(350, 84%, 60%)", `SL ${symPrefix}${m.stop_loss}`);
+}
+
+function applyPayload(payload) {
+  appState.dataSource = payload.data_source || "Live Market Data";
+  appState.kiteStatus = payload.kite_status || "0 holdings";
+  appState.generatedAt = payload.generated_at || new Date().toISOString();
+  appState.cashBalance = Number((payload.portfolio && payload.portfolio.stats && payload.portfolio.stats.balance) || 0);
+  appState.assets = payload.assets || {};
+  appState.pipelines = payload.pipelines || {};
+  appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
+  appState.rules = payload.rules || [];
+  appState.health = payload.health || null;
+  appState.config = payload.config || null;
+  appState.errorMsg = null;
+
+  appState.holdingsMap = {};
+  const allPortfolioItems = [
+    ...((payload.portfolio && payload.portfolio.holdings) || []),
+    ...((payload.portfolio && payload.portfolio.watchlist) || [])
+  ];
+  allPortfolioItems.forEach((item) => {
+    appState.holdingsMap[item.symbol] = {
+      qty: Number(item.qty || 0),
+      avg_price: Number(item.avg_price || item.ltp || 0)
+    };
+  });
+
+  if (!appState.assets[appState.activeSymbol]) {
+    const firstSym = Object.keys(appState.assets)[0];
+    if (firstSym) appState.activeSymbol = firstSym;
+  }
+
+  if (appState.chatHistory.length === 0) {
+    const syms = Object.keys(appState.assets).length;
+    appState.chatHistory.push({
+      role: "bot",
+      text: `🤖 Connected to LIVE DATA ONLY (${appState.dataSource}).\n• Scanned ${syms} live symbols via 3-Agent Orchestrator (TechBot_1, FundBot_1, ExecBot_1).\n• Portfolio: ${appState.kiteStatus}.\n\nClick any quick chip or ask me to analyze or compare any scanned stock.`
+    });
+  }
 }
 
 function renderAllViews() {
   const assetsList = Object.values(appState.assets);
-  const holdings = assetsList.filter((a) => a.qty > 0);
-  const buysQueue = assetsList.filter((a) => a.fScore.total >= 65);
-  const sellsQueue = holdings.filter((a) => a.fScore.total <= 45);
 
-  // Portfolio Stats
-  const invested = holdings.reduce((s, a) => s + a.qty * a.avg, 0);
-  const current = holdings.reduce((s, a) => s + a.qty * a.price, 0);
+  // Subtitle & Kite Status
+  const subEl = document.getElementById("liveSourceSubtitle");
+  if (subEl) {
+    if (appState.errorMsg) {
+      subEl.textContent = `❌ ${appState.errorMsg}`;
+      subEl.style.color = "var(--accent-crimson)";
+    } else {
+      const dtText = appState.generatedAt ? new Date(appState.generatedAt).toLocaleString() : "";
+      subEl.textContent = `${appState.backendConnected ? "Live Backend API" : "GitHub Cloud Scan"} · ${appState.dataSource} · Updated ${dtText}`;
+      subEl.style.color = "";
+    }
+  }
+  const kiteEl = document.getElementById("kiteStatusSubtitle");
+  if (kiteEl) kiteEl.textContent = appState.kiteStatus;
+
+  // Holdings from live state (0 holdings when none held)
+  const holdings = assetsList.filter((a) => (appState.holdingsMap[a.symbol]?.qty || 0) > 0);
+  const invested = holdings.reduce((s, a) => s + (appState.holdingsMap[a.symbol].qty * appState.holdingsMap[a.symbol].avg_price), 0);
+  const current = holdings.reduce((s, a) => s + (appState.holdingsMap[a.symbol].qty * a.price), 0);
   const pnl = current - invested;
   const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
   const healthScore = holdings.length
-    ? (holdings.reduce((s, a) => s + a.fScore.total * (a.qty * a.price), 0) / Math.max(1, current)).toFixed(1)
-    : "78.4";
+    ? `${(holdings.reduce((s, a) => s + a.fundamental_score.total * (appState.holdingsMap[a.symbol].qty * a.price), 0) / Math.max(1, current)).toFixed(1)} / 100`
+    : "0 Holdings";
 
-  document.getElementById("hdrInvested").textContent = fmtINR(invested);
-  document.getElementById("hdrCurrent").textContent = fmtINR(current);
+  document.getElementById("hdrInvested").textContent = fmtCurrency(invested, "INR");
+  document.getElementById("hdrCurrent").textContent = fmtCurrency(current, "INR");
   const pnlEl = document.getElementById("hdrPnl");
-  pnlEl.textContent = `${pnl >= 0 ? "+" : ""}${fmtINR(pnl)} (${pnl >= 0 ? "+" : ""}${pnlPct.toFixed(2)}%)`;
-  pnlEl.style.color = pnl >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)";
-  document.getElementById("hdrBalance").textContent = fmtINR(appState.cashBalance);
-  document.getElementById("hdrHealth").textContent = `${healthScore} / 100`;
+  pnlEl.textContent = `${pnl >= 0 && invested > 0 ? "+" : ""}${fmtCurrency(pnl, "INR")} (${pnlPct.toFixed(2)}%)`;
+  pnlEl.style.color = pnl > 0 ? "var(--accent-emerald)" : (pnl < 0 ? "var(--accent-crimson)" : "var(--text-primary)");
+  document.getElementById("hdrBalance").textContent = fmtCurrency(appState.cashBalance, "INR");
+  document.getElementById("hdrHealth").textContent = healthScore;
 
-  // Top Picks Queue
+  // Top Picks Queue (strictly from live orchestrator queue.buys)
   const picksContainer = document.getElementById("picksQueueContainer");
   picksContainer.innerHTML = "";
-  buysQueue.forEach((a) => {
-    const row = document.createElement("div");
-    row.className = `pick-row ${a.symbol === appState.activeSymbol ? "selected" : ""}`;
-    row.innerHTML = `
-      <div>
-        <span class="pick-sym">${a.symbol}</span>
-        <span class="pick-sub">${a.setup}</span>
-      </div>
-      <span class="tag-pill tag-entry">${fmtINR(a.price)}</span>
-      <span class="tag-pill tag-target">${fmtINR(a.moreshwar.target)}</span>
-      <span class="tag-pill tag-stop">${fmtINR(a.moreshwar.stopLoss)}</span>
-      <span class="tag-pill tag-score">${a.fScore.total}</span>
-    `;
-    row.addEventListener("click", () => {
-      appState.activeSymbol = a.symbol;
-      renderAllViews();
+  const buysQueue = appState.queue.buys || [];
+  if (buysQueue.length === 0) {
+    picksContainer.innerHTML = `<div class="terminal-box" style="color: var(--text-secondary);">No active orchestrator picks loaded.</div>`;
+  } else {
+    buysQueue.forEach((p) => {
+      const cur = p.currency || appState.assets[p.symbol]?.currency || "INR";
+      const row = document.createElement("div");
+      row.className = `pick-row ${p.symbol === appState.activeSymbol ? "selected" : ""}`;
+      row.innerHTML = `
+        <div>
+          <span class="pick-sym">${p.symbol}</span>
+          <span class="pick-sub">${p.setup_type} · ${p.decision_badge}</span>
+        </div>
+        <span class="tag-pill tag-entry">${fmtCurrency(p.entry, cur, p.entry < 500 ? 2 : 0)}</span>
+        <span class="tag-pill tag-target">${fmtCurrency(p.target, cur, p.target < 500 ? 2 : 0)}</span>
+        <span class="tag-pill tag-stop">${fmtCurrency(p.stop_loss, cur, p.stop_loss < 500 ? 2 : 0)}</span>
+        <span class="tag-pill tag-score">${p.fundamental_score}</span>
+      `;
+      row.addEventListener("click", () => {
+        appState.activeSymbol = p.symbol;
+        renderAllViews();
+      });
+      picksContainer.appendChild(row);
     });
-    picksContainer.appendChild(row);
-  });
+  }
 
-  // Sell Warning Box
+  // Sell Warning Box (only real held assets that drop below safety floor)
   const sellContainer = document.getElementById("sellWarningContainer");
+  const sellsQueue = appState.queue.sells || [];
   if (sellsQueue.length > 0) {
     const s = sellsQueue[0];
     sellContainer.innerHTML = `
       <div class="sell-warning-box">
         <div>
           <strong style="color: var(--accent-crimson); font-family: var(--font-mono);">⚠️ SELL WARNING: ${s.symbol}</strong>
-          <div style="font-size: 11px; color: var(--text-secondary);">Fundamental Score ${s.fScore.total}/100 · Decision: ${s.decision} (${s.qty} sh)</div>
+          <div style="font-size: 11px; color: var(--text-secondary);">Fundamental Score ${s.fundamental_score}/100 · Decision: ${s.decision_badge} (${s.qty} sh)</div>
         </div>
         <button type="button" class="btn-danger" id="sellWarnBtn">Exit Now</button>
       </div>
     `;
-    document.getElementById("sellWarnBtn").addEventListener("click", () => {
-      appState.cashBalance += s.qty * s.price;
-      s.qty = 0;
-      appState.assets[s.symbol] = computeAssetModel(s.symbol, s);
-      renderAllViews();
-    });
+    document.getElementById("sellWarnBtn").addEventListener("click", () => executeQueueTrades([s.id]));
   } else {
     sellContainer.innerHTML = `
       <div class="terminal-box" style="color: var(--text-secondary); text-align: center;">
-        ✅ Zero Active Sell Warnings — All Holdings Above Safety Floor
+        ${holdings.length === 0 ? "✅ 0 Holdings — No Active Sell Warnings" : "✅ Zero Active Sell Warnings — All Holdings Above Safety Floor"}
       </div>
     `;
   }
 
-  // Active Asset Center Panel & Analysis Terminal
-  const active = appState.assets[appState.activeSymbol] || assetsList[0];
-  document.getElementById("centerChartTitle").textContent = `${active.symbol} — ${active.name} (${active.exchange} · 1D)`;
-  document.getElementById("centerSpotPrice").textContent = fmtINR(active.price, 2);
-  const chgEl = document.getElementById("centerSpotChg");
-  chgEl.textContent = `${active.chg >= 0 ? "+" : ""}${active.chg}%`;
-  chgEl.style.color = active.chg >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)";
-
-  const decBadge = document.getElementById("centerDecisionBadge");
-  decBadge.textContent = active.decision;
-  decBadge.className = `tag-pill ${active.fScore.total >= 65 ? "tag-target" : active.fScore.total <= 45 ? "tag-stop" : "tag-score"}`;
-
-  document.getElementById("legTarget").textContent = fmtINR(active.moreshwar.target);
-  document.getElementById("legEntry").textContent = fmtINR(active.price);
-  document.getElementById("legStop").textContent = fmtINR(active.moreshwar.stopLoss);
-  document.getElementById("legReg").textContent = fmtINR(active.reg30d);
-
-  // Analysis Terminal Box
-  document.getElementById("analysisTerminalBox").innerHTML = `
-    <div style="color: var(--accent-cyan); font-weight: 600;">${active.symbol} Unified Execution Terminal</div>
-    <div>• StockSight V2 Score: <strong>${active.fScore.total}/100</strong> | Porter Moat: <strong>${active.pScore.total}/100</strong></div>
-    <div>• Moreshwar Levels: Entry <strong>${fmtINR(active.moreshwar.entry)}</strong> · Target <strong>${fmtINR(active.moreshwar.target)}</strong> · SL <strong>${fmtINR(active.moreshwar.stopLoss)}</strong> (R:R 1:${active.moreshwar.rr})</div>
-    <div>• Auto-Risk Sized Qty: <strong>${active.autoQty} Shares</strong> (${fmtINR(active.autoQty * active.price)})</div>
-    <div>• Multi-Agent Verdict: <strong style="color: var(--accent-emerald);">${active.decision}</strong> (${(active.execConf * 100).toFixed(1)}% Conviction)</div>
-  `;
-
-  // 3-Agent Orchestrator Cards
-  document.getElementById("agTechBadge").textContent = active.techConf >= 0.55 ? "BULLISH" : "BEARISH";
-  document.getElementById("agTechBadge").className = `tag-pill ${active.techConf >= 0.55 ? "tag-target" : "tag-stop"}`;
-  document.getElementById("agTechConf").textContent = `${(active.techConf * 100).toFixed(0)}%`;
-  document.getElementById("agTechBar").style.width = `${active.techConf * 100}%`;
-  document.getElementById("agTechDesc").textContent = `30D Regression Target ${fmtINR(active.reg30d)}. Momentum ${active.chg >= 0 ? "positive above 20D SMA" : "below key resistance"}.`;
-
-  document.getElementById("agFundBadge").textContent = active.fScore.total >= 65 ? "BULLISH" : active.fScore.total <= 45 ? "BEARISH" : "NEUTRAL";
-  document.getElementById("agFundBadge").className = `tag-pill ${active.fScore.total >= 65 ? "tag-target" : active.fScore.total <= 45 ? "tag-stop" : "tag-score"}`;
-  document.getElementById("agFundConf").textContent = `${active.fScore.total}/100`;
-  document.getElementById("agFundBar").style.width = `${active.fScore.total}%`;
-  document.getElementById("agFundDesc").textContent = `Bus ${active.fScore.business}/40 · Moat ${active.fScore.moat}/20 · Mgmt ${active.fScore.management}/20 · Risk ${active.fScore.risk}/20 | Porter ${active.pScore.total}/100.`;
-
-  document.getElementById("agExecBadge").textContent = active.fScore.total >= 65 ? "APPROVED" : "GUARDRAIL";
-  document.getElementById("agExecConf").textContent = `${(active.execConf * 100).toFixed(1)}%`;
-  document.getElementById("agExecBar").style.width = `${active.execConf * 100}%`;
-  document.getElementById("agExecDesc").textContent = `Decision Matrix: ${active.decision}. Sized ${active.autoQty} shares via Zerodha Kite Execution Bridge.`;
-
-  // Right Column Mini Holdings
+  // Right Column Live Kite Holdings
   const miniBody = document.getElementById("miniHoldingsTableBody");
   miniBody.innerHTML = "";
-  holdings.forEach((h) => {
-    const tr = document.createElement("tr");
-    tr.style.cursor = "pointer";
-    const hPnl = (h.price - h.avg) * h.qty;
-    tr.innerHTML = `
-      <td style="font-family: var(--font-mono); font-weight: 600;">${h.symbol}</td>
-      <td style="font-family: var(--font-mono);">${h.qty}</td>
-      <td style="font-family: var(--font-mono);">${fmtINR(h.price)}</td>
-      <td style="font-family: var(--font-mono); color: ${hPnl >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${hPnl >= 0 ? "+" : ""}${fmtINR(hPnl)}</td>
-      <td><span class="tag-pill ${h.fScore.total >= 65 ? "tag-target" : "tag-stop"}">${h.fScore.total}</span></td>
-    `;
-    tr.addEventListener("click", () => {
-      appState.activeSymbol = h.symbol;
-      renderAllViews();
+  if (holdings.length === 0) {
+    miniBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:14px;">0 Live Holdings (${appState.kiteStatus})</td></tr>`;
+  } else {
+    holdings.forEach((h) => {
+      const qty = appState.holdingsMap[h.symbol].qty;
+      const avg = appState.holdingsMap[h.symbol].avg_price;
+      const hPnl = (h.price - avg) * qty;
+      const cur = h.currency || "INR";
+      const tr = document.createElement("tr");
+      tr.style.cursor = "pointer";
+      tr.innerHTML = `
+        <td style="font-family: var(--font-mono); font-weight: 600;">${h.symbol}</td>
+        <td style="font-family: var(--font-mono);">${qty}</td>
+        <td style="font-family: var(--font-mono);">${fmtCurrency(h.price, cur, 2)}</td>
+        <td style="font-family: var(--font-mono); color: ${hPnl >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${hPnl >= 0 ? "+" : ""}${fmtCurrency(hPnl, cur)}</td>
+        <td><span class="tag-pill ${h.fundamental_score.total >= 65 ? "tag-target" : "tag-stop"}">${h.fundamental_score.total}</span></td>
+      `;
+      tr.addEventListener("click", () => {
+        appState.activeSymbol = h.symbol;
+        renderAllViews();
+      });
+      miniBody.appendChild(tr);
     });
-    miniBody.appendChild(tr);
-  });
+  }
+
+  // Active Asset Center Panel & 3-Agent Pipeline
+  const active = appState.assets[appState.activeSymbol] || assetsList[0];
+  if (!active) {
+    drawUnifiedChart(null);
+    return;
+  }
+
+  const cur = active.currency || "INR";
+  const f = active.fundamental_score;
+  const p = active.porters_score;
+  const m = active.moreshwar_levels;
+  const d = active.decision_matrix;
+  const pipe = appState.pipelines[active.symbol] || {};
+  const msgs = pipe.messages || [];
+
+  document.getElementById("centerChartTitle").textContent = `${active.symbol} (${active.yahoo_symbol || active.symbol}) — ${active.name} (${active.exchange} · 1D)`;
+  document.getElementById("centerChartSub").textContent = `Real OHLCV (${active.candles[0]?.date || ""} → ${active.candles[active.candles.length - 1]?.date || ""}) · Degree-2 Polynomial Regression (${active.regression_curve})`;
+  document.getElementById("centerSpotPrice").textContent = fmtCurrency(active.price, cur, 2);
+  const chgEl = document.getElementById("centerSpotChg");
+  chgEl.textContent = `${active.change_pct >= 0 ? "+" : ""}${active.change_pct}%`;
+  chgEl.style.color = active.change_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)";
+
+  const decBadge = document.getElementById("centerDecisionBadge");
+  decBadge.textContent = d.action;
+  decBadge.className = `tag-pill ${f.total >= 65 ? "tag-target" : f.total <= 45 ? "tag-stop" : "tag-score"}`;
+
+  document.getElementById("legTarget").textContent = fmtCurrency(m.target, cur, 2);
+  document.getElementById("legEntry").textContent = fmtCurrency(active.price, cur, 2);
+  document.getElementById("legStop").textContent = fmtCurrency(m.stop_loss, cur, 2);
+  document.getElementById("legReg").textContent = fmtCurrency(active.projected_30d_target, cur, 2);
+
+  const execQty = pipe.quantity || 0;
+  const convPct = ((pipe.conviction_score || 0) * 100).toFixed(1);
+  document.getElementById("analysisTerminalBox").innerHTML = `
+    <div style="color: var(--accent-cyan); font-weight: 600;">${active.symbol} Live Orchestrator Verdict</div>
+    <div>• StockSight V2 Score: <strong>${f.total}/100</strong> | Porter Moat: <strong>${p.total}/100</strong></div>
+    <div>• Moreshwar Levels: Entry <strong>${fmtCurrency(m.entry_price, cur, 2)}</strong> · Target <strong>${fmtCurrency(m.target, cur, 2)}</strong> · SL <strong>${fmtCurrency(m.stop_loss, cur, 2)}</strong> (R:R 1:${m.rr_ratio})</div>
+    <div>• Auto-Risk Sized Qty: <strong>${execQty} Shares</strong> (${fmtCurrency(execQty * active.price, cur, 2)})</div>
+    <div>• Multi-Agent Verdict: <strong style="color: var(--accent-emerald);">${d.action}</strong> (${convPct}% Conviction)</div>
+  `;
+
+  // 3-Agent Cards from real pipeline messages
+  const mTech = msgs[0] || {};
+  const mFund = msgs[1] || {};
+  const mExec = msgs[2] || {};
+
+  const stamp = appState.generatedAt ? new Date(appState.generatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "";
+  document.getElementById("pipelineMetaText").textContent = `Live Orchestration Scan (${stamp}) · ${(appState.queue.buys || []).length} Queued Picks · ${(appState.queue.sells || []).length} Sell Warnings`;
+
+  const techConfPct = Math.round((mTech.confidence || 0) * 100);
+  document.getElementById("agTechBadge").textContent = mTech.signal || "NEUTRAL";
+  document.getElementById("agTechBadge").className = `tag-pill ${mTech.signal === "BULLISH" ? "tag-target" : mTech.signal === "BEARISH" ? "tag-stop" : "tag-score"}`;
+  document.getElementById("agTechConf").textContent = `${techConfPct}%`;
+  document.getElementById("agTechBar").style.width = `${techConfPct}%`;
+  document.getElementById("agTechDesc").textContent = mTech.summary || `RSI(14)=${active.rsi_14}, 20D SMA=${fmtCurrency(active.sma_20, cur, 2)}`;
+
+  document.getElementById("agFundBadge").textContent = mFund.signal || "NEUTRAL";
+  document.getElementById("agFundBadge").className = `tag-pill ${f.total >= 65 ? "tag-target" : f.total <= 45 ? "tag-stop" : "tag-score"}`;
+  document.getElementById("agFundConf").textContent = `${f.total}/100`;
+  document.getElementById("agFundBar").style.width = `${f.total}%`;
+  document.getElementById("agFundDesc").textContent = mFund.summary || "";
+
+  document.getElementById("agExecBadge").textContent = mExec.signal || "STANDBY";
+  document.getElementById("agExecConf").textContent = `${convPct}%`;
+  document.getElementById("agExecBar").style.width = `${Math.min(100, Number(convPct))}%`;
+  document.getElementById("agExecDesc").textContent = mExec.summary || "";
 
   // TAB 2: StockSight V2 Deep-Dive & Portfolio Manager
+  const r = f.ratios || {};
   document.getElementById("ssDeepDiveTitle").textContent = `StockSight V2 Dual-Scoring Engine — ${active.symbol} (${active.name})`;
-  document.getElementById("ssIndustryBadge").textContent = `Industry Profile: ${active.industry} · P/E ${active.pe}x · ROE ${active.roe}% · ROCE ${active.roce}%`;
-  document.getElementById("ssFundTotalBadge").textContent = `Fundamental: ${active.fScore.total} / 100`;
-  document.getElementById("ssPorterTotalBadge").textContent = `Porter Moat: ${active.pScore.total} / 100`;
+  document.getElementById("ssIndustryBadge").textContent = `Industry Profile: ${f.industry} · P/E ${r.pe}x · ROE ${r.roe}% · ROCE ${r.roce}%`;
+  document.getElementById("ssFundTotalBadge").textContent = `Fundamental: ${f.total} / 100`;
+  document.getElementById("ssPorterTotalBadge").textContent = `Porter Moat: ${p.total} / 100`;
 
   document.getElementById("ssFourPillarsContainer").innerHTML = `
     <div class="pillar-card">
-      <div style="display:flex;justify-content:space-between;"><span>1. Business Pillar</span><strong>${active.fScore.business} / 40</strong></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${(active.fScore.business/40)*100}%;"></div></div>
-      <span style="font-size:11px;color:var(--text-secondary);">Sales Growth ${active.sales_g}% · Profit Growth ${active.profit_g}% · OPM ${active.opm}%</span>
+      <div style="display:flex;justify-content:space-between;"><span>1. Business Pillar</span><strong>${f.business} / 40</strong></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${(f.business / 40) * 100}%;"></div></div>
+      <span style="font-size:11px;color:var(--text-secondary);">Sales Growth ${r.sales_growth}% · Profit Growth ${r.profit_growth}% · OPM ${r.opm}%</span>
     </div>
     <div class="pillar-card">
-      <div style="display:flex;justify-content:space-between;"><span>2. Economic Moat Pillar</span><strong>${active.fScore.moat} / 20</strong></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${(active.fScore.moat/20)*100}%;"></div></div>
-      <span style="font-size:11px;color:var(--text-secondary);">ROE ${active.roe}% · ROCE ${active.roce}% · MCap ₹${active.mcap.toLocaleString()} Cr</span>
+      <div style="display:flex;justify-content:space-between;"><span>2. Economic Moat Pillar</span><strong>${f.moat} / 20</strong></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${(f.moat / 20) * 100}%;"></div></div>
+      <span style="font-size:11px;color:var(--text-secondary);">ROE ${r.roe}% · ROCE ${r.roce}% · MCap ${Number(r.mcap_cr || 0).toLocaleString()} ${cur === "USD" ? "M" : "Cr"}</span>
     </div>
     <div class="pillar-card">
-      <div style="display:flex;justify-content:space-between;"><span>3. Management &amp; Valuation</span><strong>${active.fScore.management} / 20</strong></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${(active.fScore.management/20)*100}%;"></div></div>
-      <span style="font-size:11px;color:var(--text-secondary);">Trailing P/E ${active.pe}x relative to earnings expansion</span>
+      <div style="display:flex;justify-content:space-between;"><span>3. Management &amp; Valuation</span><strong>${f.management} / 20</strong></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${(f.management / 20) * 100}%;"></div></div>
+      <span style="font-size:11px;color:var(--text-secondary);">Trailing P/E ${r.pe}x · Beta ${r.beta}</span>
     </div>
     <div class="pillar-card">
-      <div style="display:flex;justify-content:space-between;"><span>4. Risk &amp; Stability</span><strong>${active.fScore.risk} / 20</strong></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${(active.fScore.risk/20)*100}%;"></div></div>
-      <span style="font-size:11px;color:var(--text-secondary);">Large-Cap Safety Floor &amp; Volatility Check</span>
+      <div style="display:flex;justify-content:space-between;"><span>4. Risk &amp; Stability</span><strong>${f.risk} / 20</strong></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${(f.risk / 20) * 100}%;"></div></div>
+      <span style="font-size:11px;color:var(--text-secondary);">${f.explanation}</span>
     </div>
   `;
 
   document.getElementById("ssPortersGrid").innerHTML = `
-    <div class="pillar-card"><span>Barriers to Entry (MCap/ROCE)</span><strong>${active.pScore.entrants} / 20</strong></div>
-    <div class="pillar-card"><span>Supplier Power (OPM Proxy)</span><strong>${active.pScore.suppliers} / 20</strong></div>
-    <div class="pillar-card"><span>Buyer Pricing Power (ROE)</span><strong>${active.pScore.buyers} / 20</strong></div>
-    <div class="pillar-card"><span>Threat of Substitutes &amp; Rivalry</span><strong>${active.pScore.substitutes + active.pScore.rivalry} / 40</strong></div>
+    <div class="pillar-card"><span>Barriers to Entry (MCap/ROCE)</span><strong>${p.entrants} / 20</strong></div>
+    <div class="pillar-card"><span>Supplier Power (OPM Proxy)</span><strong>${p.suppliers} / 20</strong></div>
+    <div class="pillar-card"><span>Buyer Pricing Power (ROE)</span><strong>${p.buyers} / 20</strong></div>
+    <div class="pillar-card"><span>Threat of Substitutes &amp; Rivalry</span><strong>${p.substitutes + p.rivalry} / 40</strong></div>
   `;
 
   document.getElementById("ssDecisionMatrixBox").innerHTML = `
     <div style="color:var(--accent-emerald);font-weight:600;">Moreshwar Mathematical Model &amp; Final Decision Matrix</div>
-    <div>• Composite Quality (X): <strong>${active.moreshwar.xBlend} / 100</strong> | Spot Price (Y): <strong>${fmtINR(active.price, 2)}</strong></div>
-    <div>• Dynamic Entry: <strong>${fmtINR(active.moreshwar.entry, 2)}</strong> | Dynamic Target: <strong>${fmtINR(active.moreshwar.target, 2)}</strong> | Dynamic Stop-Loss: <strong>${fmtINR(active.moreshwar.stopLoss, 2)}</strong></div>
-    <div>• Final Matrix Signal: <strong>${active.decision}</strong> (${active.qty > 0 ? "Currently Held in Portfolio" : "Watchlist Candidate"})</div>
+    <div>• Composite Quality (X): <strong>${m.x_composite_score} / 100</strong> | Spot Price (Y): <strong>${fmtCurrency(active.price, cur, 2)}</strong></div>
+    <div>• Dynamic Entry: <strong>${fmtCurrency(m.entry_price, cur, 2)}</strong> | Dynamic Target: <strong>${fmtCurrency(m.target, cur, 2)}</strong> | Dynamic Stop-Loss: <strong>${fmtCurrency(m.stop_loss, cur, 2)}</strong></div>
+    <div>• Final Matrix Signal: <strong>${d.action}</strong> (${d.rationale})</div>
   `;
 
-  // Full Portfolio & Watchlist Interactive Table
   const mgrBody = document.getElementById("fullPortfolioManagerBody");
   mgrBody.innerHTML = "";
   assetsList.forEach((a) => {
+    const aCur = a.currency || "INR";
+    const heldQty = appState.holdingsMap[a.symbol]?.qty || 0;
+    const heldAvg = appState.holdingsMap[a.symbol]?.avg_price || a.price;
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>
         <strong style="font-family:var(--font-mono);cursor:pointer;color:var(--accent-cyan);" class="sym-link">${a.symbol}</strong>
-        <span style="display:block;font-size:10.5px;color:var(--text-secondary);">${a.qty > 0 ? "PORTFOLIO HOLDING" : "WATCHLIST"}</span>
+        <span style="display:block;font-size:10.5px;color:var(--text-secondary);">${heldQty > 0 ? "PORTFOLIO HOLDING" : "WATCHLIST (0 SH)"}</span>
       </td>
-      <td style="font-family:var(--font-mono);">${a.fScore.total} / ${a.pScore.total}</td>
-      <td><span class="tag-pill ${a.fScore.total >= 65 ? "tag-target" : a.fScore.total <= 45 ? "tag-stop" : "tag-score"}">${a.decision}</span></td>
-      <td><input type="number" class="input-field qty-in" value="${a.qty}" min="0" style="width:74px;" /></td>
-      <td><input type="number" class="input-field avg-in" value="${a.avg}" min="1" style="width:94px;" /></td>
-      <td style="font-family:var(--font-mono);">${fmtINR(a.price)} → <span style="color:var(--accent-emerald);">${fmtINR(a.moreshwar.target)}</span></td>
+      <td style="font-family:var(--font-mono);">${a.fundamental_score.total} / ${a.porters_score.total}</td>
+      <td><span class="tag-pill ${a.fundamental_score.total >= 65 ? "tag-target" : a.fundamental_score.total <= 45 ? "tag-stop" : "tag-score"}">${a.decision_matrix.action}</span></td>
+      <td><input type="number" class="input-field qty-in" value="${heldQty}" min="0" style="width:74px;" /></td>
+      <td><input type="number" class="input-field avg-in" value="${heldAvg}" min="0" step="0.01" style="width:94px;" /></td>
+      <td style="font-family:var(--font-mono);">${fmtCurrency(a.price, aCur, 2)} → <span style="color:var(--accent-emerald);">${fmtCurrency(a.moreshwar_levels.target, aCur, 2)}</span></td>
       <td><button type="button" class="btn-secondary save-row-btn">Update</button></td>
     `;
     tr.querySelector(".sym-link").addEventListener("click", () => {
       appState.activeSymbol = a.symbol;
       renderAllViews();
     });
-    tr.querySelector(".save-row-btn").addEventListener("click", () => {
-      const newQty = parseInt(tr.querySelector(".qty-in").value, 10) || 0;
+    tr.querySelector(".save-row-btn").addEventListener("click", async () => {
+      const newQty = Math.max(0, parseInt(tr.querySelector(".qty-in").value, 10) || 0);
       const newAvg = parseFloat(tr.querySelector(".avg-in").value) || a.price;
-      a.qty = newQty;
-      a.avg = newAvg;
-      appState.assets[a.symbol] = computeAssetModel(a.symbol, a);
+      if (appState.backendConnected) {
+        const res = await fetch("/api/portfolio/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ symbol: a.symbol, qty: newQty, avg_price: newAvg })
+        });
+        if (res.ok) applyPayload(await res.json());
+      } else {
+        appState.holdingsMap[a.symbol] = { qty: newQty, avg_price: newAvg };
+      }
       renderAllViews();
     });
     mgrBody.appendChild(tr);
   });
 
-  // TAB 3: Auto Rules & Verify Output
+  // TAB 3: Rules & Verification Console
   const rulesBox = document.getElementById("autoRulesList");
   rulesBox.innerHTML = "";
-  appState.rules.forEach((r) => {
+  appState.rules.forEach((rule) => {
     const div = document.createElement("div");
     div.className = "pillar-card";
     div.style.flexDirection = "row";
     div.style.alignItems = "center";
     div.style.justifyContent = "space-between";
     div.innerHTML = `
-      <span style="font-size:12px;">${r.name}</span>
-      <button type="button" class="btn-secondary">${r.active ? "ACTIVE ✓" : "PAUSED"}</button>
+      <span style="font-size:12px;">${rule.name}</span>
+      <button type="button" class="btn-secondary">${rule.active ? "ACTIVE ✓" : "PAUSED"}</button>
     `;
-    div.querySelector("button").addEventListener("click", () => {
-      r.active = !r.active;
+    div.querySelector("button").addEventListener("click", async () => {
+      if (appState.backendConnected) {
+        const res = await fetch("/api/rules/toggle", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rule_id: rule.rule_id })
+        });
+        if (res.ok) appState.rules = (await res.json()).rules || appState.rules;
+      } else {
+        rule.active = !rule.active;
+      }
       renderAllViews();
     });
     rulesBox.appendChild(div);
@@ -464,21 +486,22 @@ function renderAllViews() {
 
   document.getElementById("unifiedVerifyOutput").textContent =
     `$ python scripts/verify_setup.py\n` +
-    `Verifying Finsistant Version 2 (All-in-One) platform status...\n` +
+    `Live Telemetry (${appState.dataSource})\n` +
     JSON.stringify({
-      pipeline_status: "HEALTHY",
-      platform: "Finsistant Version 2 (All-in-One)",
-      merged_modules: [
-        "1. StockSight Version 2 (4-Pillar + Porter's 5 Forces + Moreshwar Levels)",
-        "2. Finsistant Execution Terminal (TechSight Queue + Polynomial Regression + Stocky AI)",
-        "3. Multi-Agent Orchestrator (TechBot_1 + FundBot_1 + ExecBot_1)"
-      ],
+      pipeline_status: appState.health?.pipeline_status || "HEALTHY",
+      data_mode: "LIVE_ONLY (ZERO SIMULATION)",
+      kite_status: appState.kiteStatus,
+      generated_at: appState.generatedAt,
       active_symbol: active.symbol,
-      fundamental_score: `${active.fScore.total}/100`,
-      porters_5_forces: `${active.pScore.total}/100`,
-      moreshwar_target: active.moreshwar.target,
-      moreshwar_stop_loss: active.moreshwar.stopLoss,
-      decision_matrix: active.decision
+      live_price: active.price,
+      currency: cur,
+      fundamental_score: `${f.total}/100`,
+      porters_5_forces: `${p.total}/100`,
+      moreshwar_target: m.target,
+      moreshwar_stop_loss: m.stop_loss,
+      projected_30d_target: active.projected_30d_target,
+      regression_curve: active.regression_curve,
+      decision_matrix: d.action
     }, null, 2);
 
   drawUnifiedChart(active);
@@ -496,27 +519,53 @@ function renderChat() {
   box.scrollTop = box.scrollHeight;
 }
 
-function handleStockyQuery(rawText) {
+async function handleStockyQuery(rawText) {
   const q = rawText.trim();
   if (!q) return;
   appState.chatHistory.push({ role: "user", text: q });
+  renderChat();
+
+  if (appState.backendConnected) {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: q })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.action_symbol && appState.assets[data.action_symbol]) {
+          appState.activeSymbol = data.action_symbol;
+          renderAllViews();
+        }
+        appState.chatHistory.push({ role: "bot", text: data.reply || "No reply." });
+        renderChat();
+        return;
+      }
+    } catch (_) {
+      // fall through to live snapshot query evaluator
+    }
+  }
+
   const ql = q.toLowerCase();
   let reply = "";
-
   const cmp = ql.match(/(?:compare|vs)\s+([a-z0-9_-]+)\s+(?:and|with|vs)\s+([a-z0-9_-]+)/);
   const inv = ql.match(/(?:invest|allocate)\s+([\d,.]+)\s*(k|l|lakh|cr)?/);
-  const buy = ql.match(/buy\s+(\d+)\s+([a-z0-9_-]+)/);
 
   if (cmp) {
     const s1 = cmp[1].toUpperCase(), s2 = cmp[2].toUpperCase();
-    const a1 = appState.assets[s1] || appState.assets["HDFCBANK"];
-    const a2 = appState.assets[s2] || appState.assets["ICICIBANK"];
-    const win = (a1.fScore.total + a1.pScore.total) >= (a2.fScore.total + a2.pScore.total) ? a1 : a2;
-    reply =
-      `📊 Stocky Head-to-Head: ${a1.symbol} vs ${a2.symbol}\n\n` +
-      `• ${a1.symbol} (${fmtINR(a1.price)}): Fund ${a1.fScore.total}/100 · Porter ${a1.pScore.total}/100 · Decision ${a1.decision} · Target ${fmtINR(a1.moreshwar.target)}\n` +
-      `• ${a2.symbol} (${fmtINR(a2.price)}): Fund ${a2.fScore.total}/100 · Porter ${a2.pScore.total}/100 · Decision ${a2.decision} · Target ${fmtINR(a2.moreshwar.target)}\n\n` +
-      `🏆 Verdict: ${win.symbol} leads on risk-adjusted composite moat & growth quality.`;
+    const a1 = appState.assets[s1];
+    const a2 = appState.assets[s2];
+    if (!a1 || !a2) {
+      reply = `❌ Both ${s1} and ${s2} must be present in the live market scan (simulation disabled).`;
+    } else {
+      const win = (a1.fundamental_score.total + a1.porters_score.total) >= (a2.fundamental_score.total + a2.porters_score.total) ? a1 : a2;
+      reply =
+        `📊 Live Head-to-Head: ${a1.symbol} vs ${a2.symbol}\n\n` +
+        `• ${a1.symbol} (${fmtCurrency(a1.price, a1.currency, 2)}): Fund ${a1.fundamental_score.total}/100 · Porter ${a1.porters_score.total}/100 · ${a1.decision_matrix.action} · Target ${fmtCurrency(a1.moreshwar_levels.target, a1.currency, 2)}\n` +
+        `• ${a2.symbol} (${fmtCurrency(a2.price, a2.currency, 2)}): Fund ${a2.fundamental_score.total}/100 · Porter ${a2.porters_score.total}/100 · ${a2.decision_matrix.action} · Target ${fmtCurrency(a2.moreshwar_levels.target, a2.currency, 2)}\n\n` +
+        `🏆 Verdict: ${win.symbol} leads on risk-adjusted composite moat & growth quality.`;
+    }
   } else if (inv) {
     let amt = parseFloat(inv[1].replace(/,/g, "")) || 100000;
     const u = (inv[2] || "").toLowerCase();
@@ -524,70 +573,114 @@ function handleStockyQuery(rawText) {
     else if (u.startsWith("l")) amt *= 100000;
     else if (u.startsWith("c")) amt *= 10000000;
 
-    const top = Object.values(appState.assets).filter((a) => a.fScore.total >= 65).slice(0, 4);
-    const sumS = top.reduce((s, a) => s + a.moreshwar.xBlend, 0) || 1;
-    reply = `💰 Score-Weighted Allocation Plan for ${fmtINR(amt)}:\n\n`;
+    const top = Object.values(appState.assets)
+      .filter((a) => (a.currency || "INR") === "INR" && a.fundamental_score.total >= 55)
+      .sort((a, b) => b.moreshwar_levels.x_composite_score - a.moreshwar_levels.x_composite_score)
+      .slice(0, 4);
+    const sumS = top.reduce((s, a) => s + a.moreshwar_levels.x_composite_score, 0) || 1;
+    reply = `💰 Score-Weighted Live Allocation Plan for ${fmtCurrency(amt, "INR")}:\n\n`;
     top.forEach((a) => {
-      const w = a.moreshwar.xBlend / sumS;
-      const sh = Math.max(1, Math.floor((amt * w) / a.price));
-      reply += `• ${a.symbol} (Score ${a.moreshwar.xBlend} · ${a.decision}): Buy ${sh} sh @ ${fmtINR(a.price)} = ${fmtINR(sh * a.price)}\n`;
+      const w = a.moreshwar_levels.x_composite_score / sumS;
+      const sh = Math.floor((amt * w) / a.price);
+      reply += `• ${a.symbol} (Score ${a.moreshwar_levels.x_composite_score} · ${a.decision_matrix.action}): ${sh} sh @ ${fmtCurrency(a.price, "INR", 2)} = ${fmtCurrency(sh * a.price, "INR")}\n`;
     });
-  } else if (buy) {
-    const qty = parseInt(buy[1], 10) || 1;
-    const sym = buy[2].toUpperCase();
-    const a = appState.assets[sym] || appState.assets[appState.activeSymbol];
-    a.qty += qty;
-    appState.cashBalance = Math.max(0, appState.cashBalance - qty * a.price);
-    appState.activeSymbol = a.symbol;
-    renderAllViews();
-    reply = `✅ Executed via Kite Bridge: Bought ${qty} shares of ${a.symbol} @ ${fmtINR(a.price)} (Target ${fmtINR(a.moreshwar.target)} | SL ${fmtINR(a.moreshwar.stopLoss)}).`;
   } else if (ql.includes("efficiency") || ql.includes("portfolio") || ql.includes("trap")) {
-    const traps = Object.values(appState.assets).filter((a) => a.qty > 0 && a.fScore.total <= 45);
-    reply =
-      `🛡️ Stocky Portfolio Efficiency Audit:\n` +
-      `• Core Compounders: RELIANCE, TCS, HDFCBANK, ICICIBANK\n` +
-      (traps.length
-        ? `• ⚠️ Capital Trap Detected: ${traps.map((t) => `${t.symbol} (Score ${t.fScore.total}/100)`).join(", ")} — Recommend immediate exit.`
-        : `• ✅ Zero Capital Traps: All holdings exceed fundamental quality thresholds.`);
+    const held = Object.values(appState.assets).filter((a) => (appState.holdingsMap[a.symbol]?.qty || 0) > 0);
+    if (held.length === 0) {
+      reply = `🛡️ Live Portfolio Audit:\n• Currently 0 holdings (${appState.kiteStatus}).\n• Connect Zerodha Kite or add a live position to audit capital traps.`;
+    } else {
+      const traps = held.filter((a) => a.fundamental_score.total <= 45);
+      reply = traps.length
+        ? `⚠️ Capital Trap Detected: ${traps.map((t) => `${t.symbol} (${t.fundamental_score.total}/100)`).join(", ")}`
+        : `✅ Zero Capital Traps across ${held.length} holdings.`;
+    }
   } else {
     const found = Object.keys(appState.assets).find((s) => ql.includes(s.toLowerCase()));
     const a = appState.assets[found || appState.activeSymbol];
-    appState.activeSymbol = a.symbol;
-    renderAllViews();
-    reply =
-      `🔍 Deep-Dive Analysis: ${a.symbol} (${a.name})\n` +
-      `• Total Fundamental Score: ${a.fScore.total}/100 (Bus ${a.fScore.business}/40, Moat ${a.fScore.moat}/20, Mgmt ${a.fScore.management}/20, Risk ${a.fScore.risk}/20)\n` +
-      `• Porter's 5 Forces Moat: ${a.pScore.total}/100\n` +
-      `• Moreshwar Levels: Entry ${fmtINR(a.moreshwar.entry)} | Target ${fmtINR(a.moreshwar.target)} | SL ${fmtINR(a.moreshwar.stopLoss)}\n` +
-      `• 30D Quant Regression Target: ${fmtINR(a.reg30d)} | Final Decision: ${a.decision}`;
+    if (!a) {
+      reply = "❌ Symbol not found in live market scan (simulation disabled).";
+    } else {
+      appState.activeSymbol = a.symbol;
+      renderAllViews();
+      reply =
+        `🔍 Live Analysis: ${a.symbol} (${a.name})\n` +
+        `• Live Spot: ${fmtCurrency(a.price, a.currency, 2)} (${a.change_pct >= 0 ? "+" : ""}${a.change_pct}%)\n` +
+        `• Fundamental Score: ${a.fundamental_score.total}/100 | Porter Moat: ${a.porters_score.total}/100\n` +
+        `• Moreshwar Levels: Entry ${fmtCurrency(a.moreshwar_levels.entry_price, a.currency, 2)} | Target ${fmtCurrency(a.moreshwar_levels.target, a.currency, 2)} | SL ${fmtCurrency(a.moreshwar_levels.stop_loss, a.currency, 2)}\n` +
+        `• 30D Polynomial Regression: ${fmtCurrency(a.projected_30d_target, a.currency, 2)} (${a.regression_curve}) | Decision: ${a.decision_matrix.action}`;
+    }
   }
 
   appState.chatHistory.push({ role: "bot", text: reply });
   renderChat();
 }
 
-function runUniverseScan(isAuto = false) {
-  Object.keys(appState.assets).forEach((sym) => {
-    appState.assets[sym] = computeAssetModel(sym, appState.assets[sym]);
+async function executeQueueTrades(tradeIds) {
+  if (!appState.backendConnected) {
+    appState.chatHistory.push({
+      role: "bot",
+      text: "ℹ️ Order execution requires the live Python backend (`server.py`) with Zerodha Kite Connect. Simulated local fills are disabled."
+    });
+    renderChat();
+    return;
+  }
+  const res = await fetch("/api/approve", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ trade_ids: tradeIds, active_symbol: appState.activeSymbol })
   });
-  renderAllViews();
+  if (res.ok) {
+    applyPayload(await res.json());
+    renderAllViews();
+  }
+}
 
-  const assetsList = Object.values(appState.assets);
-  const buysCount = assetsList.filter((a) => a.fScore.total >= 65).length;
-  const sellsCount = assetsList.filter((a) => a.qty > 0 && a.fScore.total <= 45).length;
-  const stamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+async function runLiveScan(isAuto = false) {
   const metaEl = document.getElementById("pipelineMetaText");
-  if (metaEl) {
-    metaEl.textContent = `${isAuto ? "Auto-scan" : "Manual scan"} complete (${stamp}) · ${buysCount} Buy Picks · ${sellsCount} Sell Warning${sellsCount === 1 ? "" : "s"}`;
+  if (metaEl) metaEl.textContent = isAuto ? "Running auto-scan on live market feed..." : "Refreshing live orchestration scan...";
+
+  // 1. Try live Python backend first (when hosted by server.py)
+  try {
+    const endpoint = isAuto ? "/api/state" : "/api/scan";
+    const res = await fetch(endpoint, {
+      method: isAuto ? "GET" : "POST",
+      headers: isAuto ? undefined : { "Content-Type": "application/json" },
+      body: isAuto ? undefined : JSON.stringify({ symbol: appState.activeSymbol })
+    });
+    const ct = res.headers.get("content-type") || "";
+    if (res.ok && ct.includes("application/json")) {
+      appState.backendConnected = true;
+      applyPayload(await res.json());
+      renderAllViews();
+      renderChat();
+      return;
+    }
+  } catch (_) {
+    // Not running under server.py; proceed to cloud-generated live_scan.json
+  }
+
+  // 2. Load cloud-generated live_scan.json (GitHub Actions + Yahoo Finance + 3-Agent Orchestrator)
+  try {
+    const res = await fetch(`live_scan.json?ts=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const payload = await res.json();
+    if (!payload.assets || Object.keys(payload.assets).length === 0) {
+      throw new Error("live_scan.json contained 0 live assets");
+    }
+    appState.backendConnected = false;
+    applyPayload(payload);
+    renderAllViews();
+    renderChat();
+  } catch (err) {
+    appState.errorMsg = `Live market data unavailable (${err.message}). Simulated fallback is disabled.`;
+    renderAllViews();
+    renderChat();
   }
 }
 
 function bootFinsistantApp() {
-  initFallbackUniverse();
-  runUniverseScan(true);
-  renderChat();
+  runLiveScan(true);
 
-  // Tabs
   document.querySelectorAll(".nav-tab").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".nav-tab").forEach((b) => b.classList.remove("active"));
@@ -608,55 +701,45 @@ function bootFinsistantApp() {
   });
 
   document.getElementById("executeSelectedBtn").addEventListener("click", () => {
-    const a = appState.assets[appState.activeSymbol];
-    if (!a) return;
-    const cost = a.autoQty * a.price;
-    appState.cashBalance = Math.max(0, appState.cashBalance - cost);
-    a.qty += a.autoQty;
-    appState.assets[a.symbol] = computeAssetModel(a.symbol, a);
-    handleStockyQuery(`Buy ${a.autoQty} ${a.symbol}`);
+    const pick = (appState.queue.buys || []).find((b) => b.symbol === appState.activeSymbol);
+    if (pick) executeQueueTrades([pick.id]);
   });
 
   document.getElementById("executeAllBtn").addEventListener("click", () => {
-    Object.values(appState.assets).filter((a) => a.fScore.total >= 70).forEach((a) => {
-      const q = Math.max(1, Math.floor(a.autoQty / 2));
-      a.qty += q;
-      appState.cashBalance = Math.max(0, appState.cashBalance - q * a.price);
-    });
-    renderAllViews();
+    const ids = (appState.queue.buys || []).map((b) => b.id);
+    executeQueueTrades(ids);
   });
 
   document.getElementById("scanNowBtn").addEventListener("click", () => {
-    runUniverseScan(false);
+    runLiveScan(false);
   });
 
-  document.getElementById("addSymbolBtn").addEventListener("click", () => {
+  document.getElementById("addSymbolBtn").addEventListener("click", async () => {
     const inp = document.getElementById("addSymbolInput");
     const sym = inp.value.trim().toUpperCase();
     if (!sym) return;
-    if (!appState.assets[sym]) {
-      appState.assets[sym] = computeAssetModel(sym, {
-        name: `${sym} Enterprises Ltd`,
-        exchange: "NSE",
-        sector: "Diversified Growth Equity",
-        price: 1420,
-        chg: 1.65,
-        pe: 21.4,
-        roe: 20.5,
-        roce: 22.1,
-        opm: 21.0,
-        sales_g: 16.4,
-        profit_g: 19.2,
-        mcap: 58000,
-        qty: 0,
-        avg: 1420,
-        setup: "Fresh Scanner Setup",
-        industry: "GENERAL"
+    if (appState.backendConnected) {
+      const res = await fetch("/api/portfolio/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symbol: sym, qty: 0, avg_price: 0 })
       });
+      if (res.ok) {
+        applyPayload(await res.json());
+        appState.activeSymbol = sym;
+        inp.value = "";
+        renderAllViews();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(`Live lookup failed for ${sym}: ${err.error || res.status}`);
+      }
+    } else if (appState.assets[sym]) {
+      appState.activeSymbol = sym;
+      inp.value = "";
+      renderAllViews();
+    } else {
+      alert(`'${sym}' is not in the latest cloud live_scan.json snapshot. Connect server.py for ad-hoc live ticker queries (simulated data is disabled).`);
     }
-    appState.activeSymbol = sym;
-    inp.value = "";
-    renderAllViews();
   });
 
   document.querySelectorAll(".prompt-chip").forEach((chip) => {
@@ -675,8 +758,24 @@ function bootFinsistantApp() {
     }
   });
 
-  document.getElementById("saveUnifiedConfigBtn").addEventListener("click", renderAllViews);
-  document.getElementById("runUnifiedVerifyBtn").addEventListener("click", renderAllViews);
+  document.getElementById("saveUnifiedConfigBtn").addEventListener("click", async () => {
+    if (appState.backendConnected) {
+      await fetch("/api/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          finsistant_environment: document.getElementById("cfgEnv").value,
+          agent_mode: document.getElementById("cfgMode").value,
+          max_concurrent_trades: parseInt(document.getElementById("cfgMaxTrades").value, 10) || 5,
+          kite_api_key: document.getElementById("cfgKiteKey").value,
+          kite_access_token: document.getElementById("cfgKiteToken").value
+        })
+      });
+    }
+    runLiveScan(false);
+  });
+
+  document.getElementById("runUnifiedVerifyBtn").addEventListener("click", () => runLiveScan(false));
 
   window.addEventListener("resize", () => {
     drawUnifiedChart(appState.assets[appState.activeSymbol]);

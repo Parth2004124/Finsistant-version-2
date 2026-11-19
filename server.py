@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Unified Backend API & Web UI Server for Finsistant Version 2 (All-in-One Platform).
+"""Unified Backend API & Web UI Server for Finsistant Version 2 (Live Data Only).
 
-Merges:
-1. StockSight Version 2 (Portfolio & Watchlist Manager, 4-Pillar Fundamental Engine, Porter's 5 Forces, Moreshwar Levels, Decision Matrix)
-2. Finsistant (Execution Terminal, Top Picks Trade Queue, Sell Warnings, Auto-Execution Rules, Polynomial Regression, Stocky AI)
-3. Multi-Agent Trading Orchestrator (AgentRunner: TechBot_1, FundBot_1, ExecBot_1)
+Zero simulation policy:
+- Uses live Yahoo Finance OHLCV candles & fundamentals for all stocks and charts.
+- Uses Zerodha Kite Connect v3 when configured; otherwise starts with 0 holdings.
+- Runs the 3-Agent Orchestrator (TechBot_1, FundBot_1, ExecBot_1) on live market data.
 """
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import mimetypes
@@ -25,6 +26,7 @@ from finsistant_v2 import (
     FundamentalAnalyst,
     StockyAssistant,
     TechnicalAnalyst,
+    fetch_kite_portfolio,
     get_asset_full_analysis,
     load_settings,
 )
@@ -39,8 +41,10 @@ exec_agent = ExecutionAgent(name="ExecBot_1")
 runner = AgentRunner(agents=[tech_agent, fund_agent, exec_agent], settings=current_settings)
 stocky = StockyAssistant()
 
-# Unified In-Memory State (Holdings + Watchlist + Trade Queue + Execution History + Auto Rules)
+# Unified Live State (0 simulated holdings; live Kite holdings when connected)
 PORTFOLIO_STATE: dict[str, dict[str, Any]] = {}
+ANALYSIS_CACHE: dict[str, dict[str, Any]] = {}
+PIPELINE_CACHE: dict[str, dict[str, Any]] = {}
 TRADE_QUEUE: list[dict[str, Any]] = []
 EXECUTED_LOG: list[dict[str, Any]] = []
 AUTO_RULES: list[dict[str, Any]] = [
@@ -48,22 +52,37 @@ AUTO_RULES: list[dict[str, Any]] = [
     {"rule_id": "rule-2", "name": "Moat Compounders (Fundamental >= 75 & Porter >= 75)", "min_score": 75, "active": True},
     {"rule_id": "rule-3", "name": "Auto-Exit Capital Traps (Fundamental <= 40)", "min_score": 40, "active": True},
 ]
-CASH_BALANCE: float = 485000.0
+CASH_BALANCE: float = 0.0
+KITE_STATUS: str = "0 holdings (Kite access token not configured)"
+LAST_SCAN_AT: str = ""
 
 
-def _initialize_platform_state() -> None:
-    """Seed portfolio holdings, watchlist, and Finsistant pending trade queue."""
+def _initialize_platform_state(force_refresh: bool = False) -> None:
+    """Seed watchlist from live Yahoo Finance and load real Zerodha Kite holdings (0 if none)."""
+    global CASH_BALANCE, KITE_STATUS
     PORTFOLIO_STATE.clear()
+    ANALYSIS_CACHE.clear()
+    PIPELINE_CACHE.clear()
     TRADE_QUEUE.clear()
 
-    for sym, meta in ASSET_UNIVERSE.items():
-        qty = int(meta.get("default_qty", 0))
-        avg = float(meta.get("default_avg", 0.0))
-        snap = get_asset_full_analysis(sym, is_holding=(qty > 0))
+    kite_data = fetch_kite_portfolio()
+    KITE_STATUS = kite_data["status"]
+    CASH_BALANCE = float(kite_data.get("cash_balance", 0.0))
+    kite_holdings_map = {h["symbol"]: h for h in kite_data.get("holdings", [])}
+
+    symbols = list(dict.fromkeys(list(ASSET_UNIVERSE.keys()) + list(kite_holdings_map.keys())))
+    for sym in symbols:
+        kh = kite_holdings_map.get(sym)
+        qty = int(kh["qty"]) if kh else 0
+        avg = float(kh["avg_price"]) if kh else 0.0
+        snap = get_asset_full_analysis(sym, is_holding=(qty > 0), force_refresh=force_refresh)
+        ANALYSIS_CACHE[sym] = snap
         PORTFOLIO_STATE[sym] = {
             "symbol": sym,
+            "yahoo_symbol": snap.get("yahoo_symbol", sym),
             "name": snap["name"],
             "exchange": snap["exchange"],
+            "currency": snap.get("currency", "INR"),
             "sector": snap["sector"],
             "asset_type": snap["asset_type"],
             "qty": qty,
@@ -76,23 +95,39 @@ def _initialize_platform_state() -> None:
             "moreshwar": snap["moreshwar_levels"],
         }
 
-    _scan_and_populate_queue()
+    _scan_and_populate_queue(force_refresh=False)
 
 
-def _scan_and_populate_queue() -> list[dict[str, Any]]:
-    """Run TechSight + StockSight V2 + Multi-Agent scanner across the asset universe."""
+def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]:
+    """Run TechSight + StockSight V2 + 3-Agent Orchestrator scan on live market data."""
+    global LAST_SCAN_AT
     TRADE_QUEUE.clear()
-    for sym in ASSET_UNIVERSE:
-        p_item = PORTFOLIO_STATE.get(sym, {})
+    sizing_capital = CASH_BALANCE if CASH_BALANCE > 0 else 100000.0
+
+    for sym in list(PORTFOLIO_STATE.keys()):
+        p_item = PORTFOLIO_STATE[sym]
         is_held = int(p_item.get("qty", 0)) > 0
-        snap = get_asset_full_analysis(sym, is_holding=is_held)
+        snap = get_asset_full_analysis(sym, is_holding=is_held, force_refresh=force_refresh)
+        ANALYSIS_CACHE[sym] = snap
+
+        p_item["ltp"] = snap["price"]
+        p_item["change_pct"] = snap["change_pct"]
+        p_item["fundamental_score"] = snap["fundamental_score"]["total"]
+        p_item["porters_score"] = snap["porters_score"]["total"]
+        p_item["decision"] = snap["decision_matrix"]["action"]
+        p_item["moreshwar"] = snap["moreshwar_levels"]
+        if not is_held:
+            p_item["avg_price"] = snap["price"]
+
         run = runner.run_pipeline(
             symbol=sym,
             timeframe="1D",
-            capital=CASH_BALANCE,
-            active_trades=2,
+            capital=sizing_capital,
+            active_trades=len([t for t in EXECUTED_LOG if t.get("side") == "BUY"]),
             is_holding=is_held,
         )
+        PIPELINE_CACHE[sym] = run.model_dump()
+
         f_tot = snap["fundamental_score"]["total"]
         p_tot = snap["porters_score"]["total"]
         m = snap["moreshwar_levels"]
@@ -100,7 +135,7 @@ def _scan_and_populate_queue() -> list[dict[str, Any]]:
 
         if dec["action"] in ("EXIT", "REDUCE") and is_held:
             tx_type = "SELL"
-        elif dec["action"] in ("BUY NOW", "ADD", "SIP ONLY") or f_tot >= 70:
+        elif dec["action"] in ("BUY NOW", "ADD", "SIP ONLY") or f_tot >= 65:
             tx_type = "BUY"
         else:
             continue
@@ -110,6 +145,7 @@ def _scan_and_populate_queue() -> list[dict[str, Any]]:
                 "id": f"pick-{sym.lower()}-{int(time.time()) % 10000}",
                 "symbol": sym,
                 "name": snap["name"],
+                "currency": snap.get("currency", "INR"),
                 "setup_type": snap["setup_type"],
                 "transaction_type": tx_type,
                 "status": "PENDING",
@@ -122,16 +158,17 @@ def _scan_and_populate_queue() -> list[dict[str, Any]]:
                 "target": m["target"],
                 "stop_loss": m["stop_loss"],
                 "rr_ratio": m["rr_ratio"],
-                "qty": p_item.get("qty", 10) if tx_type == "SELL" else max(1, run.quantity),
+                "qty": p_item.get("qty", 1) if tx_type == "SELL" else max(1, run.quantity),
                 "horizon_days": "5D" if tx_type == "SELL" else "14D",
                 "rationale": f"{run.messages[1].summary} {run.messages[2].summary}",
             }
         )
+
+    LAST_SCAN_AT = datetime.now(timezone.utc).isoformat()
     return TRADE_QUEUE
 
 
 def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]:
-    global CASH_BALANCE
     holdings = []
     watchlist = []
     invested_total = 0.0
@@ -160,15 +197,23 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         else:
             watchlist.append(enriched)
 
+    if active_symbol not in PORTFOLIO_STATE and PORTFOLIO_STATE:
+        active_symbol = next(iter(PORTFOLIO_STATE.keys()))
+
     is_held = PORTFOLIO_STATE.get(active_symbol, {}).get("qty", 0) > 0
-    active_analysis = get_asset_full_analysis(active_symbol, is_holding=is_held)
-    active_pipeline = runner.run_pipeline(
-        symbol=active_symbol,
-        timeframe="1D",
-        capital=CASH_BALANCE,
-        active_trades=len([t for t in EXECUTED_LOG if t.get("side") == "BUY"]),
-        is_holding=is_held,
-    )
+    active_analysis = ANALYSIS_CACHE.get(active_symbol) or get_asset_full_analysis(active_symbol, is_holding=is_held)
+    ANALYSIS_CACHE[active_symbol] = active_analysis
+
+    active_pipeline = PIPELINE_CACHE.get(active_symbol)
+    if not active_pipeline:
+        active_pipeline = runner.run_pipeline(
+            symbol=active_symbol,
+            timeframe="1D",
+            capital=CASH_BALANCE if CASH_BALANCE > 0 else 100000.0,
+            active_trades=len([t for t in EXECUTED_LOG if t.get("side") == "BUY"]),
+            is_holding=is_held,
+        ).model_dump()
+        PIPELINE_CACHE[active_symbol] = active_pipeline
 
     weighted_health = (
         round(
@@ -176,16 +221,20 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
             1,
         )
         if holdings
-        else 78.0
+        else None
     )
 
     return {
+        "data_mode": "LIVE_ONLY",
+        "data_source": "Yahoo Finance Live Market Data + 3-Agent Orchestrator",
+        "kite_status": KITE_STATUS,
+        "generated_at": LAST_SCAN_AT or datetime.now(timezone.utc).isoformat(),
         "portfolio": {
             "stats": {
                 "invested": round(invested_total, 2),
                 "current": round(current_total, 2),
                 "pnl": round(current_total - invested_total, 2),
-                "pnl_pct": round(((current_total - invested_total) / max(1.0, invested_total)) * 100.0, 2),
+                "pnl_pct": round(((current_total - invested_total) / max(1.0, invested_total)) * 100.0, 2) if invested_total > 0 else 0.0,
                 "balance": round(CASH_BALANCE, 2),
                 "health_score": weighted_health,
             },
@@ -197,15 +246,17 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
             "sells": [t for t in TRADE_QUEUE if t["status"] == "PENDING" and t["transaction_type"] == "SELL"],
             "executed": EXECUTED_LOG[:15],
         },
+        "assets": ANALYSIS_CACHE,
+        "pipelines": PIPELINE_CACHE,
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,
-        "active_pipeline": active_pipeline.model_dump(),
+        "active_pipeline": active_pipeline,
         "health": runner.health_check(),
-        "config": runner.settings.model_dump(),
+        "config": {
+            k: ("***" if ("key" in k or "token" in k or "password" in k) and v else v)
+            for k, v in runner.settings.model_dump().items()
+        },
     }
-
-
-_initialize_platform_state()
 
 
 class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
@@ -237,11 +288,19 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
         path = parsed.path
 
         if path == "/api/state":
-            self._send_json(_build_full_state_payload("RELIANCE"))
+            try:
+                if not PORTFOLIO_STATE:
+                    _initialize_platform_state(force_refresh=False)
+                self._send_json(_build_full_state_payload("RELIANCE"))
+            except Exception as exc:
+                self._send_json({"error": str(exc), "data_mode": "LIVE_ONLY"}, status=502)
             return
         if path.startswith("/api/analyze/"):
             sym = path.split("/api/analyze/", 1)[1].upper().strip()
-            self._send_json(_build_full_state_payload(sym))
+            try:
+                self._send_json(_build_full_state_payload(sym))
+            except Exception as exc:
+                self._send_json({"error": str(exc)}, status=400)
             return
         if path == "/api/health":
             self._send_json(runner.health_check())
@@ -269,9 +328,15 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
         body = json.loads(self.rfile.read(length).decode("utf-8")) if length > 0 else {}
 
         if path == "/api/scan":
-            _scan_and_populate_queue()
-            sym = str(body.get("symbol", "RELIANCE")).upper()
-            self._send_json(_build_full_state_payload(sym))
+            try:
+                if not PORTFOLIO_STATE:
+                    _initialize_platform_state(force_refresh=True)
+                else:
+                    _scan_and_populate_queue(force_refresh=True)
+                sym = str(body.get("symbol", "RELIANCE")).upper()
+                self._send_json(_build_full_state_payload(sym))
+            except Exception as exc:
+                self._send_json({"error": str(exc)}, status=502)
             return
 
         if path == "/api/approve":
@@ -315,12 +380,19 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
             sym = str(body.get("symbol", "RELIANCE")).upper().strip()
             qty = max(0, int(body.get("qty", 0)))
             avg = float(body.get("avg_price", 0.0))
-            if sym not in PORTFOLIO_STATE:
+            try:
                 snap = get_asset_full_analysis(sym, is_holding=(qty > 0))
+            except Exception as exc:
+                self._send_json({"error": str(exc)}, status=400)
+                return
+            ANALYSIS_CACHE[sym] = snap
+            if sym not in PORTFOLIO_STATE:
                 PORTFOLIO_STATE[sym] = {
                     "symbol": sym,
+                    "yahoo_symbol": snap.get("yahoo_symbol", sym),
                     "name": snap["name"],
                     "exchange": snap["exchange"],
+                    "currency": snap.get("currency", "INR"),
                     "sector": snap["sector"],
                     "asset_type": snap["asset_type"],
                     "qty": qty,
@@ -336,9 +408,9 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 PORTFOLIO_STATE[sym]["qty"] = qty
                 if avg > 0:
                     PORTFOLIO_STATE[sym]["avg_price"] = avg
-                snap = get_asset_full_analysis(sym, is_holding=(qty > 0))
                 PORTFOLIO_STATE[sym]["decision"] = snap["decision_matrix"]["action"]
                 PORTFOLIO_STATE[sym]["moreshwar"] = snap["moreshwar_levels"]
+            _scan_and_populate_queue(force_refresh=False)
             self._send_json(_build_full_state_payload(sym))
             return
 
@@ -353,8 +425,11 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
         if path == "/api/chat":
             msg = str(body.get("message", ""))
             holdings = [v for v in PORTFOLIO_STATE.values() if int(v["qty"]) > 0]
-            res = stocky.process_query(msg, holdings=holdings, queue=TRADE_QUEUE)
-            self._send_json(res)
+            try:
+                res = stocky.process_query(msg, holdings=holdings, queue=TRADE_QUEUE)
+                self._send_json(res)
+            except Exception as exc:
+                self._send_json({"reply": f"❌ Live lookup error: {exc}"})
             return
 
         if path == "/api/config":
@@ -366,13 +441,17 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 max_concurrent_trades=max(1, min(50, int(body.get("max_concurrent_trades", 5)))),
                 execution_password=str(body.get("execution_password", runner.settings.execution_password)),
                 kite_api_key=str(body.get("kite_api_key", runner.settings.kite_api_key)),
+                kite_access_token=str(body.get("kite_access_token", runner.settings.kite_access_token)),
                 gemini_api_key=runner.settings.gemini_api_key,
             )
             runner.settings = new_settings
             self._send_json(
                 {
                     "status": "updated",
-                    "config": new_settings.model_dump(),
+                    "config": {
+                        k: ("***" if ("key" in k or "token" in k or "password" in k) and v else v)
+                        for k, v in new_settings.model_dump().items()
+                    },
                     "health": runner.health_check(),
                 }
             )
@@ -382,8 +461,9 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
 
 
 def run_server(host: str = "0.0.0.0", port: int = 8000) -> None:
+    _initialize_platform_state(force_refresh=True)
     server = HTTPServer((host, port), FinsistantV2HTTPHandler)
-    print(f"Finsistant Version 2 (All-in-One Platform) running at http://{host}:{port}")
+    print(f"Finsistant Version 2 (Live Data Only) running at http://{host}:{port}")
     server.serve_forever()
 
 
