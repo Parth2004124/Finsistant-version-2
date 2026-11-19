@@ -30,7 +30,7 @@ GEMINI_FALLBACK_MODELS = ("gemini-2.5-flash", "gemini-2.0-flash")
 
 def _redact_key(text: str, api_key: str) -> str:
     cleaned = str(text or "")
-    if api_key:
+    if api_key and len(api_key) >= 8:
         cleaned = cleaned.replace(api_key, "***")
     cleaned = re.sub(r"key=[^&\s\"']+", "key=***", cleaned)
     cleaned = re.sub(r"AIza[0-9A-Za-z_-]{10,}", "AIza***", cleaned)
@@ -96,11 +96,12 @@ def _call_gemini_generate(prompt: str, api_key: str, response_mime_type: str = "
                     continue
                 return text, model
         except urllib.error.HTTPError as exc:
-            err_body = _redact_key(exc.read().decode("utf-8", errors="replace"), api_key)
+            raw_err = exc.read().decode("utf-8", errors="replace")
             try:
-                err_msg = json.loads(err_body).get("error", {}).get("message", err_body)
+                err_msg = json.loads(raw_err).get("error", {}).get("message", raw_err)
             except Exception:
-                err_msg = err_body
+                err_msg = raw_err
+            err_msg = _redact_key(" ".join(str(err_msg).split()), api_key)
             last_error = f"HTTP {exc.code} ({model}): {err_msg}"
             # Invalid / revoked key should fail fast rather than retrying another model
             if exc.code in (400, 401, 403) and "not found" not in err_msg.lower():

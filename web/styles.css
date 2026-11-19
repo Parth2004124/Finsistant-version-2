@@ -539,6 +539,22 @@ canvas#unifiedChart {
 }
 
 /* Gemini Critical Trade Analyst Panel */
+.panel {
+  min-width: 0;
+}
+
+.gemini-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.gemini-badges .tag-pill {
+  white-space: nowrap;
+}
+
 .gemini-split-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -559,6 +575,9 @@ canvas#unifiedChart {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .gemini-bull {
@@ -580,10 +599,14 @@ canvas#unifiedChart {
   font-size: 12px;
   color: var(--text-secondary);
   line-height: 1.48;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .gemini-rationale-box {
   border-left: 3px solid var(--accent-cyan);
   font-family: var(--font-sans);
   font-size: 12.5px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
