@@ -27,7 +27,10 @@ from finsistant_v2 import (
     FundamentalAnalyst,
     StockyAssistant,
     TechnicalAnalyst,
+    analyze_trade_with_gemini,
+    ask_gemini_stocky,
     auto_fetch_kite_access_token,
+    critique_suggested_trades,
     exchange_request_token,
     fetch_kite_portfolio,
     get_asset_full_analysis,
@@ -50,6 +53,7 @@ stocky = StockyAssistant()
 PORTFOLIO_STATE: dict[str, dict[str, Any]] = {}
 ANALYSIS_CACHE: dict[str, dict[str, Any]] = {}
 PIPELINE_CACHE: dict[str, dict[str, Any]] = {}
+GEMINI_CRITIQUES: dict[str, dict[str, Any]] = {}
 TRADE_QUEUE: list[dict[str, Any]] = []
 EXECUTED_LOG: list[dict[str, Any]] = []
 AUTO_RULES: list[dict[str, Any]] = [
@@ -79,6 +83,7 @@ def _initialize_platform_state(force_refresh: bool = False, force_token_refresh:
     PORTFOLIO_STATE.clear()
     ANALYSIS_CACHE.clear()
     PIPELINE_CACHE.clear()
+    GEMINI_CRITIQUES.clear()
     TRADE_QUEUE.clear()
 
     kite_data = fetch_kite_portfolio(force_token_refresh=force_token_refresh)
@@ -116,7 +121,7 @@ def _initialize_platform_state(force_refresh: bool = False, force_token_refresh:
 
 
 def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]:
-    """Run TechSight + StockSight V2 + 3-Agent Orchestrator scan on live market data."""
+    """Run TechSight + StockSight V2 + 3-Agent Orchestrator + Gemini Critical Analyst scan."""
     global LAST_SCAN_AT
     TRADE_QUEUE.clear()
     sizing_capital = CASH_BALANCE if CASH_BALANCE > 0 else 100000.0
@@ -180,6 +185,23 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
                 "rationale": f"{run.messages[1].summary} {run.messages[2].summary}",
             }
         )
+
+    gemini_key = os.getenv("GEMINI_API_KEY", "").strip() or runner.settings.gemini_api_key
+    critiques = critique_suggested_trades(
+        assets=ANALYSIS_CACHE,
+        pipelines=PIPELINE_CACHE,
+        trade_queue=TRADE_QUEUE,
+        api_key=gemini_key,
+    )
+    GEMINI_CRITIQUES.clear()
+    GEMINI_CRITIQUES.update(critiques)
+
+    for pick in TRADE_QUEUE:
+        c = GEMINI_CRITIQUES.get(pick["symbol"])
+        if c and c.get("status") == "live" and c.get("rationale"):
+            pick["gemini_stance"] = c.get("stance", "")
+            pick["gemini_risk_rating"] = c.get("risk_rating", "")
+            pick["gemini_rationale"] = c.get("rationale", "")
 
     LAST_SCAN_AT = datetime.now(timezone.utc).isoformat()
     return TRADE_QUEUE
@@ -245,11 +267,32 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         is_secret = any(word in k for word in ("key", "token", "password", "secret", "totp"))
         return "***" if is_secret and v else v
 
+    active_critique = GEMINI_CRITIQUES.get(active_symbol)
+    if not active_critique:
+        active_pick = next((t for t in TRADE_QUEUE if t.get("symbol") == active_symbol), None)
+        active_critique = analyze_trade_with_gemini(
+            active_symbol,
+            active_analysis,
+            pipeline=active_pipeline,
+            trade_pick=active_pick,
+            api_key=os.getenv("GEMINI_API_KEY", "").strip() or runner.settings.gemini_api_key,
+        )
+        GEMINI_CRITIQUES[active_symbol] = active_critique
+
+    live_critiques = [c for c in GEMINI_CRITIQUES.values() if c.get("status") == "live"]
+    first_err = next((c.get("error") for c in GEMINI_CRITIQUES.values() if c.get("error")), None)
+    gemini_status = (
+        f"Gemini Live ({live_critiques[0].get('model', 'gemini-2.5-flash')} · {len(live_critiques)}/{len(GEMINI_CRITIQUES)} trades analyzed)"
+        if live_critiques
+        else f"Gemini Unavailable ({first_err or 'GEMINI_API_KEY not configured'})"
+    )
+
     return {
         "data_mode": "LIVE_ONLY",
         "data_source": "Yahoo Finance Live Market Data + 3-Agent Orchestrator",
         "kite_status": KITE_STATUS,
         "kite_auth": get_kite_auth_status(),
+        "gemini_status": gemini_status,
         "generated_at": LAST_SCAN_AT or datetime.now(timezone.utc).isoformat(),
         "portfolio": {
             "stats": {
@@ -270,9 +313,11 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         },
         "assets": ANALYSIS_CACHE,
         "pipelines": PIPELINE_CACHE,
+        "gemini_critiques": GEMINI_CRITIQUES,
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,
         "active_pipeline": active_pipeline,
+        "active_critique": active_critique,
         "health": runner.health_check(),
         "config": {
             k: _mask_val(k, v)
@@ -474,6 +519,26 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
             holdings = [v for v in PORTFOLIO_STATE.values() if int(v["qty"]) > 0]
             try:
                 res = stocky.process_query(msg, holdings=holdings, queue=TRADE_QUEUE)
+                gemini_key = os.getenv("GEMINI_API_KEY", "").strip() or runner.settings.gemini_api_key
+                is_default_help = "Try asking:" in str(res.get("reply", ""))
+                if gemini_key and (is_default_help or any(k in msg.lower() for k in ("why", "risk", "critic", "should", "rationale", "gemini"))):
+                    ctx_lines = [
+                        f"Kite Status: {KITE_STATUS}",
+                        "Top Live Assets & Critiques:",
+                    ]
+                    for sym, a in list(ANALYSIS_CACHE.items())[:10]:
+                        c = GEMINI_CRITIQUES.get(sym, {})
+                        ctx_lines.append(
+                            f"- {sym}: Spot {a.get('price')}, Fund {a.get('fundamental_score', {}).get('total')}/100, "
+                            f"Porter {a.get('porters_score', {}).get('total')}/100, Matrix {a.get('decision_matrix', {}).get('action')}, "
+                            f"Gemini Stance={c.get('stance', 'N/A')}"
+                        )
+                    try:
+                        gem_reply = ask_gemini_stocky(msg, "\n".join(ctx_lines), api_key=gemini_key)
+                        if gem_reply:
+                            res["reply"] = gem_reply if is_default_help else f"{res['reply']}\n\n🧠 Gemini Critical Note:\n{gem_reply}"
+                    except Exception:
+                        pass
                 self._send_json(res)
             except Exception as exc:
                 self._send_json({"reply": f"❌ Live lookup error: {exc}"})
@@ -556,6 +621,7 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
             kite_pwd = _pick_secret("kite_password", "KITE_PASSWORD", runner.settings.kite_password)
             kite_totp = _pick_secret("kite_totp_secret", "KITE_TOTP_SECRET", runner.settings.kite_totp_secret)
             kite_tok = _pick_secret("kite_access_token", "KITE_ACCESS_TOKEN", runner.settings.kite_access_token)
+            gemini_key = _pick_secret("gemini_api_key", "GEMINI_API_KEY", runner.settings.gemini_api_key)
 
             new_settings = FinsistantSettings(
                 finsistant_api_key=str(body.get("finsistant_api_key", runner.settings.finsistant_api_key)),
@@ -570,7 +636,7 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 kite_password=kite_pwd,
                 kite_totp_secret=kite_totp,
                 kite_access_token=kite_tok,
-                gemini_api_key=runner.settings.gemini_api_key,
+                gemini_api_key=gemini_key,
             )
             runner.settings = new_settings
             _initialize_platform_state(force_refresh=False)

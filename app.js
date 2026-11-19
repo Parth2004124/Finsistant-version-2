@@ -13,11 +13,13 @@ let appState = {
   dataSource: "",
   kiteStatus: "Checking...",
   kiteAuth: null,
+  geminiStatus: "Checking...",
   generatedAt: "",
   activeSymbol: "RELIANCE",
   cashBalance: 0,
   assets: {},       // keyed by symbol -> live analysis payload
   pipelines: {},    // keyed by symbol -> AgentRunner PipelineResult payload
+  geminiCritiques: {}, // keyed by symbol -> Gemini critical trade analysis
   holdingsMap: {},  // keyed by symbol -> { qty, avg_price }
   queue: { buys: [], sells: [], executed: [] },
   rules: [],
@@ -153,10 +155,12 @@ function applyPayload(payload) {
   appState.dataSource = payload.data_source || "Live Market Data";
   appState.kiteStatus = payload.kite_status || "0 holdings";
   appState.kiteAuth = payload.kite_auth || null;
+  appState.geminiStatus = payload.gemini_status || "Unavailable";
   appState.generatedAt = payload.generated_at || new Date().toISOString();
   appState.cashBalance = Number((payload.portfolio && payload.portfolio.stats && payload.portfolio.stats.balance) || 0);
   appState.assets = payload.assets || {};
   appState.pipelines = payload.pipelines || {};
+  appState.geminiCritiques = payload.gemini_critiques || {};
   appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
   appState.rules = payload.rules || [];
   appState.health = payload.health || null;
@@ -372,6 +376,56 @@ function renderAllViews() {
   document.getElementById("agExecBar").style.width = `${Math.min(100, Number(convPct))}%`;
   document.getElementById("agExecDesc").textContent = mExec.summary || "";
 
+  // Gemini Critical Trade Analyst Panel (fills center blank space)
+  const crit = appState.geminiCritiques[active.symbol] || null;
+  const gTitleEl = document.getElementById("geminiPanelTitle");
+  const gSubEl = document.getElementById("geminiPanelSub");
+  const gRiskEl = document.getElementById("geminiRiskBadge");
+  const gStanceEl = document.getElementById("geminiStanceBadge");
+  const gBullEl = document.getElementById("geminiBullText");
+  const gRisksEl = document.getElementById("geminiRisksText");
+  const gStampEl = document.getElementById("geminiModelStamp");
+  const gBodyEl = document.getElementById("geminiRationaleBody");
+
+  if (gTitleEl && crit) {
+    gTitleEl.textContent = `Gemini Critical Trade Analyst — ${active.symbol}`;
+    if (crit.status === "live") {
+      const stance = String(crit.stance || "MONITOR").toUpperCase();
+      const risk = String(crit.risk_rating || "MEDIUM").toUpperCase();
+      gSubEl.textContent = `Adversarial risk & valuation audit across live fundamentals, technicals & Moreshwar R:R`;
+      gRiskEl.textContent = `RISK: ${risk}`;
+      gRiskEl.className = `tag-pill ${risk === "LOW" ? "tag-target" : (risk === "HIGH" || risk === "EXTREME") ? "tag-stop" : "tag-score"}`;
+      gStanceEl.textContent = stance;
+      gStanceEl.className = `tag-pill ${stance.includes("BUY") ? "tag-target" : (stance.includes("AVOID") || stance.includes("EXIT")) ? "tag-stop" : "tag-score"}`;
+      gBullEl.textContent = crit.bull_case || "No material upside catalyst highlighted.";
+      gRisksEl.textContent = crit.critical_risks || "No major risk anomalies flagged.";
+      const cStamp = crit.generated_at ? new Date(crit.generated_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+      gStampEl.textContent = `${crit.model || "gemini-2.5-flash"}${cStamp ? ` · ${cStamp}` : ""}`;
+      gBodyEl.textContent = crit.rationale || "";
+    } else {
+      gSubEl.textContent = appState.geminiStatus || "Gemini live key check required";
+      gRiskEl.textContent = "LIVE KEY NEEDED";
+      gRiskEl.className = "tag-pill tag-stop";
+      gStanceEl.textContent = crit.stance || "GEMINI UNAVAILABLE";
+      gStanceEl.className = "tag-pill tag-score";
+      gBullEl.textContent = `Quantitative setup queued: ${d.action} (${f.total}/100 Fundamental, ${p.total}/100 Porter, Spot ${fmtCurrency(active.price, cur, 2)} → TP ${fmtCurrency(m.target, cur, 2)}).`;
+      gRisksEl.textContent = crit.critical_risks || crit.error || "GEMINI_API_KEY missing or revoked.";
+      gStampEl.textContent = "ZERO SIMULATION POLICY";
+      gBodyEl.textContent = crit.rationale || "Update GEMINI_API_KEY in GitHub Repository Secrets to enable live Gemini critical rationales.";
+    }
+  } else if (gTitleEl) {
+    gTitleEl.textContent = `Gemini Critical Trade Analyst — ${active.symbol}`;
+    gSubEl.textContent = "Awaiting next cloud scan with GEMINI_API_KEY";
+    gRiskEl.textContent = "PENDING";
+    gRiskEl.className = "tag-pill tag-score";
+    gStanceEl.textContent = "AWAITING SCAN";
+    gStanceEl.className = "tag-pill tag-entry";
+    gBullEl.textContent = "Run Live Orchestration Scan to generate live Gemini bull catalysts.";
+    gRisksEl.textContent = "Run Live Orchestration Scan to generate adversarial risk flags.";
+    gStampEl.textContent = "--";
+    gBodyEl.textContent = "Gemini critical analysis is generated per scan and cached in live_scan.json without simulation.";
+  }
+
   // TAB 2: StockSight V2 Deep-Dive & Portfolio Manager
   const r = f.ratios || {};
   document.getElementById("ssDeepDiveTitle").textContent = `StockSight V2 Dual-Scoring Engine — ${active.symbol} (${active.name})`;
@@ -506,6 +560,7 @@ function renderAllViews() {
       data_mode: "LIVE_ONLY (ZERO SIMULATION)",
       kite_status: appState.kiteStatus,
       kite_auth: appState.kiteAuth,
+      gemini_status: appState.geminiStatus,
       generated_at: appState.generatedAt,
       active_symbol: active.symbol,
       live_price: active.price,
@@ -516,7 +571,8 @@ function renderAllViews() {
       moreshwar_stop_loss: m.stop_loss,
       projected_30d_target: active.projected_30d_target,
       regression_curve: active.regression_curve,
-      decision_matrix: d.action
+      decision_matrix: d.action,
+      gemini_stance: crit ? crit.stance : "PENDING"
     }, null, 2);
 
   drawUnifiedChart(active);

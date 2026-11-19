@@ -8,6 +8,7 @@ Merges:
 
 from .agents import AgentMessage, AgentRunner, ExecutionAgent, FundamentalAnalyst, PipelineResult, TechnicalAnalyst
 from .config import FinsistantSettings, load_settings
+from .gemini_critic import analyze_trade_with_gemini, ask_gemini_stocky, critique_suggested_trades
 from .kite_auth import (
     auto_fetch_kite_access_token,
     exchange_request_token,
@@ -33,6 +34,9 @@ __all__ = [
     "ExecutionAgent",
     "FinsistantSettings",
     "load_settings",
+    "analyze_trade_with_gemini",
+    "ask_gemini_stocky",
+    "critique_suggested_trades",
     "auto_fetch_kite_access_token",
     "exchange_request_token",
     "get_kite_auth_status",
