@@ -34,6 +34,7 @@ def _redact_key(text: str, api_key: str) -> str:
         cleaned = cleaned.replace(api_key, "***")
     cleaned = re.sub(r"key=[^&\s\"']+", "key=***", cleaned)
     cleaned = re.sub(r"AIza[0-9A-Za-z_-]{10,}", "AIza***", cleaned)
+    cleaned = re.sub(r"AQ\.[0-9A-Za-z_-]{10,}", "AQ.***", cleaned)
     return cleaned
 
 
@@ -66,12 +67,15 @@ def _call_gemini_generate(prompt: str, api_key: str, response_mime_type: str = "
     for model in GEMINI_FALLBACK_MODELS:
         encoded_key = urllib.parse.quote(api_key, safe="")
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={encoded_key}"
+        gen_cfg: dict[str, Any] = {
+            "temperature": 0.25,
+            "maxOutputTokens": 1800,
+        }
+        if model.startswith("gemini-2.5"):
+            gen_cfg["thinkingConfig"] = {"thinkingBudget": 128}
         payload: dict[str, Any] = {
             "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {
-                "temperature": 0.25,
-                "maxOutputTokens": 650,
-            },
+            "generationConfig": gen_cfg,
         }
         if response_mime_type:
             payload["generationConfig"]["responseMimeType"] = response_mime_type
@@ -354,13 +358,16 @@ def apply_trade_recalibration(
         new_qty = max(1, int(round(raw_qty * size_mult))) if raw_qty > 0 else 0
         new_status = "PENDING"
 
-    summary = str(cal.get("calibration_summary") or "").strip()
-    if not summary:
-        summary = (
-            f"Recalibrated {symbol}: Action {raw_action} -> {recal_action}, "
-            f"Entry {raw_entry} -> {new_entry}, SL {raw_stop} -> {new_stop}, "
-            f"TP {raw_target} -> {new_target}, Qty {raw_qty} -> {new_qty} sh ({size_mult:.2f}x)."
-        )
+    sym_p = _currency_prefix(analysis.get("currency", "INR"))
+    rr_note = f"R:R 1:{raw_rr} -> 1:{new_rr}"
+    conv_note = f"Conviction {raw_conv:.1f}% -> {new_conv:.1f}%"
+    summary = (
+        f"Applied CRO Calibration ({symbol}): {raw_action} -> {recal_action} | "
+        f"Entry {sym_p}{raw_entry} -> {sym_p}{new_entry} | "
+        f"TP {sym_p}{raw_target} -> {sym_p}{new_target} | "
+        f"SL {sym_p}{raw_stop} -> {sym_p}{new_stop} ({rr_note}) | "
+        f"Qty {raw_qty} -> {new_qty} sh ({size_mult:.2f}x) | {conv_note}."
+    )
 
     before = {
         "action": raw_action,
@@ -395,11 +402,59 @@ def apply_trade_recalibration(
     d["rationale"] = f"{raw_d.get('rationale', '')} | Gemini CRO Calibration: {summary}".strip(" |")
     analysis["decision_matrix"] = d
 
-    # Apply to multi-agent pipeline result
+    # Apply to multi-agent pipeline result & ExecBot_1 telemetry
     if pipeline is not None:
+        cur_code = "USD" if str(analysis.get("currency", "INR")).upper() == "USD" else "INR"
+        new_notional = round(new_qty * new_entry, 2)
         pipeline["conviction_score"] = round(new_conv / 100.0, 3)
         pipeline["quantity"] = new_qty
+        pipeline["position_size"] = new_notional
+        pipeline["entry_price"] = new_entry
+        pipeline["stop_loss"] = new_stop
+        pipeline["take_profit"] = new_target
+        pipeline["decision_badge"] = recal_action
         pipeline["recommended_action"] = recal_action
+        if new_status == "DEFERRED":
+            pipeline["final_action"] = "DEFER"
+            exec_sig = "DEFERRED"
+        elif is_holding and recal_action == "EXIT NOW":
+            pipeline["final_action"] = "SELL"
+            exec_sig = "EXIT NOW"
+        elif new_qty > 0:
+            exec_sig = "RECALIBRATED"
+        else:
+            exec_sig = "STANDBY"
+        msgs = pipeline.get("messages")
+        if isinstance(msgs, list) and len(msgs) >= 3 and isinstance(msgs[2], dict):
+            msgs[2]["signal"] = exec_sig
+            msgs[2]["confidence"] = round(new_conv / 100.0, 3)
+            msgs[2]["summary"] = (
+                f"CRO Recalibrated: {recal_action} ({new_conv:.1f}% conviction). "
+                f"Sized {new_qty} shares ({cur_code} {new_notional:,.2f}) | "
+                f"Entry {new_entry:,.2f} · TP {new_target:,.2f} / SL {new_stop:,.2f} (R:R 1:{new_rr})."
+            )
+            if isinstance(msgs[2].get("metrics"), dict):
+                msgs[2]["metrics"].update({
+                    "decision_badge": recal_action,
+                    "status": new_status,
+                    "quantity": new_qty,
+                    "entry_price": new_entry,
+                    "notional": new_notional,
+                    "stop_loss": new_stop,
+                    "take_profit": new_target,
+                    "rr_ratio": f"1 : {new_rr}",
+                })
+        if isinstance(pipeline.get("order_receipt"), dict):
+            pipeline["order_receipt"].update({
+                "decision_badge": recal_action,
+                "status": new_status,
+                "quantity": new_qty,
+                "entry_price": new_entry,
+                "notional": new_notional,
+                "stop_loss": new_stop,
+                "take_profit": new_target,
+                "rr_ratio": f"1 : {new_rr}",
+            })
         pipeline["recalibration"] = {
             "applied": True,
             "before": before,
