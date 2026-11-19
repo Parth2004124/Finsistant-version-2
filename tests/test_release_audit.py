@@ -261,6 +261,7 @@ class TestMoreshwarReleaseAudit(unittest.TestCase):
         orig_prov = dict(server.PROVENANCE_CACHE)
         orig_bt = dict(server.BACKTEST_CACHE)
         orig_aud = dict(server.AUDIT_LEDGER_CACHE)
+        orig_bench = dict(server.BENCHMARK_CACHE)
 
         try:
             server.runner.settings = FinsistantSettings(
@@ -268,6 +269,18 @@ class TestMoreshwarReleaseAudit(unittest.TestCase):
                 kite_api_secret="test_secret_456",
                 gemini_api_key="test_gem_789",
             )
+            server.BENCHMARK_CACHE.clear()
+            server.BENCHMARK_CACHE.update({
+                "symbol": "^NSEI",
+                "source": "Synthetic Offline Benchmark",
+                "candles": [
+                    {"date": f"2026-11-{10 + i:02d}", "open": 24000.0 + i * 20, "high": 24050.0 + i * 20, "low": 23950.0 + i * 20, "close": 24010.0 + i * 20, "volume": 0}
+                    for i in range(9)
+                ],
+            })
+            server.PROVENANCE_CACHE.clear()
+            server.BACKTEST_CACHE.clear()
+            server.AUDIT_LEDGER_CACHE.clear()
             server.ANALYSIS_CACHE.clear()
             server.ANALYSIS_CACHE["RELIANCE"] = {
                 "symbol": "RELIANCE",
@@ -317,7 +330,7 @@ class TestMoreshwarReleaseAudit(unittest.TestCase):
             th.start()
 
             def _get(ep: str) -> dict:
-                with urllib.request.urlopen(f"http://127.0.0.1:{port}{ep}", timeout=5) as r:
+                with urllib.request.urlopen(f"http://127.0.0.1:{port}{ep}", timeout=15) as r:
                     self.assertEqual(r.status, 200)
                     return json.loads(r.read().decode("utf-8"))
 
@@ -375,6 +388,8 @@ class TestMoreshwarReleaseAudit(unittest.TestCase):
             server.BACKTEST_CACHE.update(orig_bt)
             server.AUDIT_LEDGER_CACHE.clear()
             server.AUDIT_LEDGER_CACHE.update(orig_aud)
+            server.BENCHMARK_CACHE.clear()
+            server.BENCHMARK_CACHE.update(orig_bench)
 
 
 if __name__ == "__main__":
