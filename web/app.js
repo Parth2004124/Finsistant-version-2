@@ -22,6 +22,8 @@ let appState = {
   geminiCritiques: {}, // keyed by symbol -> Gemini critical trade analysis
   provenance: null, // Data Integrity Monitor payload
   backtest: null,   // Walk-forward Backtest & Multi-Agent Attribution payload
+  moreshwarV2Research: null, // Shadow Moreshwar 2.0 Phase 5-8 Research Comparison
+  mv2SelectedSymbol: null,
   auditTrail: null, // Permanent Decision Audit Ledger payload
   selectedAuditId: null,
   intelFocus: "all",
@@ -188,6 +190,7 @@ function applyPayload(payload) {
   appState.geminiCritiques = payload.gemini_critiques || {};
   appState.provenance = payload.provenance || null;
   appState.backtest = payload.backtest || null;
+  appState.moreshwarV2Research = payload.moreshwar_v2_research || null;
   appState.auditTrail = payload.audit_trail || null;
   appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
   appState.rules = payload.rules || [];
@@ -1109,6 +1112,234 @@ function renderBacktestAnalytics() {
   `;
 
   drawBacktestEquityChart(bt.equity_curve || []);
+  renderMoreshwarV2ShadowLab();
+}
+
+function renderMoreshwarV2ShadowLab() {
+  const selEl = document.getElementById("mv2SymbolSelect");
+  const gridEl = document.getElementById("mv2ExplainabilityGrid");
+  const reasonEl = document.getElementById("mv2ReasonBox");
+  const modelsBody = document.getElementById("mv2ModelsTableBody");
+  const wfEl = document.getElementById("mv2WalkForwardGrid");
+  const badgeEl = document.getElementById("mv2PromotionBadge");
+  if (!selEl || !gridEl || !reasonEl || !modelsBody || !wfEl) return;
+
+  const syms = Object.keys(appState.assets || {});
+  if (syms.length) {
+    if (!appState.mv2SelectedSymbol || !appState.assets[appState.mv2SelectedSymbol]) {
+      appState.mv2SelectedSymbol = appState.assets[appState.activeSymbol] ? appState.activeSymbol : syms[0];
+    }
+    selEl.innerHTML = syms.map((s) => `<option value="${escHtml(s)}">${escHtml(s)}</option>`).join("");
+    selEl.value = appState.mv2SelectedSymbol;
+  }
+
+  const asset = appState.assets[appState.mv2SelectedSymbol || appState.activeSymbol];
+  const v2 = asset?.moreshwar_v2_preview || null;
+  const v1 = asset?.moreshwar_levels || null;
+  const res = appState.moreshwarV2Research || null;
+
+  if (badgeEl && res) {
+    badgeEl.textContent = res.promoted_to_production
+      ? "MORESHWAR 2.0 PROMOTED"
+      : "SHADOW ONLY · M1 ACTIVE IN PROD";
+  }
+
+  if (!v2) {
+    gridEl.innerHTML = `<div class="mv2-field-card" style="grid-column:1/-1;"><span class="mv2-field-val">Awaiting Moreshwar 2.0 shadow telemetry...</span><span class="mv2-field-sub">Populates on live scan or /api/state refresh.</span></div>`;
+    reasonEl.innerHTML = "";
+  } else {
+    const cur = asset.currency || "INR";
+    const confBd = v2.confidence_breakdown || {};
+    const regDet = v2.regime_details || {};
+    const statusTone = v2.accepted ? "var(--accent-emerald)" : "var(--accent-amber)";
+    const regTone = v2.market_regime === "BULLISH"
+      ? "var(--accent-emerald)"
+      : v2.market_regime === "NEUTRAL"
+        ? "var(--accent-cyan)"
+        : "var(--accent-crimson)";
+
+    gridEl.innerHTML = `
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">1. Fundamental Score</span>
+        <span class="mv2-field-val">${v2.fundamental_score ?? "N/A"} / 100</span>
+        <span class="mv2-field-sub">Porter ${v2.porters_score ?? "--"} · Mode: ${escHtml(v2.fundamental_mode)}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">2. Confidence Adjustment</span>
+        <span class="mv2-field-val">${Number(v2.confidence || 0).toFixed(2)} <span style="font-size:10px;color:var(--text-muted);">(cap 0.85)</span></span>
+        <span class="mv2-field-sub">Base ${confBd.base_quality_conf ?? "--"} − Miss ${confBd.missing_penalty ?? 0} − Tech ${confBd.contradiction_penalty ?? 0} − Reg ${confBd.regime_penalty ?? 0}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">3. ATR(14) Volatility</span>
+        <span class="mv2-field-val">${fmtCurrency(v2.atr_value, cur, 2)} (${v2.atr_pct ?? 0}%)</span>
+        <span class="mv2-field-sub">${v2.vol_throttled ? "High-Vol Throttled" : "Normal Volatility Envelope"}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">4. ATR Multiplier</span>
+        <span class="mv2-field-val">${v2.atr_multiplier ?? 2.0}x ATR(14)</span>
+        <span class="mv2-field-sub">Replaces M1 <code>(100-X)*scale</code></span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">5. Market Regime (Causal)</span>
+        <span class="mv2-field-val" style="color:${regTone};">${escHtml(v2.market_regime || "UNKNOWN")}</span>
+        <span class="mv2-field-sub">Nifty ${regDet.close ? fmtCurrency(regDet.close, "INR", 0) : "--"} · 20D/50D SMA (${regDet.ann_vol_20d_pct ?? "--"}% vol)</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">6. Entry Price</span>
+        <span class="mv2-field-val">${fmtCurrency(v2.entry_price, cur, 2)}</span>
+        <span class="mv2-field-sub">M1 Active Entry: ${v1 ? fmtCurrency(v1.entry_price, cur, 2) : "--"}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">7. Stop-Loss (ATR)</span>
+        <span class="mv2-field-val" style="color:var(--accent-crimson);">${fmtCurrency(v2.stop_loss, cur, 2)} (-${v2.stop_distance_pct ?? 0}%)</span>
+        <span class="mv2-field-sub">M1 Active SL: ${v1 ? fmtCurrency(v1.stop_loss, cur, 2) : "--"}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">8. Target &amp; 9. R:R</span>
+        <span class="mv2-field-val" style="color:var(--accent-emerald);">${fmtCurrency(v2.target, cur, 2)} (+${v2.target_distance_pct ?? 0}%)</span>
+        <span class="mv2-field-sub">R:R <strong>1:${v2.rr_ratio ?? 0}</strong> (M1 R:R 1:${v1?.rr_ratio ?? "--"})</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">10. Position Qty (Int)</span>
+        <span class="mv2-field-val">${v2.position_qty ?? 0} Shares</span>
+        <span class="mv2-field-sub">Risk Budget: ${fmtCurrency(v2.risk_budget_amount || 0, cur, 0)}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">11. Max Capital Exposure</span>
+        <span class="mv2-field-val">${fmtCurrency(v2.max_capital_exposure || 0, cur, 0)} (${v2.exposure_pct ?? 0}%)</span>
+        <span class="mv2-field-sub">Hard single-stock cap 20%</span>
+      </div>
+      <div class="mv2-field-card mv2-span-2">
+        <span class="mv2-field-label">12. Shadow Decision Status &amp; Primary Verdict</span>
+        <span class="mv2-field-val" style="color:${statusTone};">${v2.accepted ? "ACCEPTED (SHADOW CANDIDATE)" : "REJECTED / GATED (SHADOW)"}</span>
+        <span class="mv2-field-sub">${escHtml(v2.reason_summary || "")}</span>
+      </div>
+    `;
+
+    const penList = Array.isArray(confBd.penalties) && confBd.penalties.length
+      ? confBd.penalties.map((p) => escHtml(p)).join(" · ")
+      : "No structural confidence deductions beyond anti-certainty cap.";
+    const reasonsList = v2.accepted
+      ? (v2.accept_reasons || []).map((r) => `✅ ${escHtml(r)}`).join("<br>")
+      : (v2.rejection_reasons || []).map((r) => `🛑 ${escHtml(r)}`).join("<br>");
+
+    reasonEl.innerHTML = `
+      <div><strong style="color:var(--accent-cyan);">Confidence Breakdown (${escHtml(v2.symbol)}):</strong> ${penList}</div>
+      <div style="margin-top:4px;"><strong style="color:${statusTone};">Gate Details:</strong><br>${reasonsList}</div>
+    `;
+  }
+
+  const models = (res && Array.isArray(res.models_comparison)) ? res.models_comparison : [];
+  if (!models.length) {
+    modelsBody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:var(--text-secondary);">Experiment comparison table populates after live scan.</td></tr>`;
+    wfEl.innerHTML = "";
+    return;
+  }
+
+  modelsBody.innerHTML = models.map((m) => {
+    const isHighlight = String(m.model).includes("Model D") || String(m.model).includes("Model E:") || String(m.model).includes("Model A");
+    const retCol = (m.total_return_pct || 0) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)";
+    const intTag = String(m.fundamental_integrity || "").includes("CAUSAL_CLEAN")
+      ? "tag-target"
+      : String(m.fundamental_integrity || "").includes("MARKET_INDEX")
+        ? "tag-entry"
+        : "tag-score";
+    const intShort = String(m.fundamental_integrity || "").includes("CAUSAL_CLEAN")
+      ? "CAUSAL CLEAN"
+      : String(m.fundamental_integrity || "").includes("MARKET_INDEX")
+        ? "INDEX BENCH"
+        : "STATIC FUND WARN";
+    return `
+      <tr style="${String(m.model).includes("Model E:") ? "background:hsla(196,86%,54%,0.07);" : ""}">
+        <td style="font-weight:${isHighlight ? "700" : "500"};">${escHtml(m.model)}</td>
+        <td style="font-family:var(--font-mono);color:${retCol};font-weight:700;">${(m.total_return_pct || 0) >= 0 ? "+" : ""}${m.total_return_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);color:${retCol};">${(m.annualised_return_pct || 0) >= 0 ? "+" : ""}${m.annualised_return_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.win_rate_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.profit_factor != null ? m.profit_factor : "N/A"}</td>
+        <td style="font-family:var(--font-mono);">${m.sharpe_ratio ?? 0}</td>
+        <td style="font-family:var(--font-mono);">${m.max_drawdown_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.total_trades ?? 0}</td>
+        <td style="font-family:var(--font-mono);">${m.stop_loss_freq_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.capital_utilisation_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.rejected_trades ?? 0} / ${m.regime_blocked_trades ?? 0}</td>
+        <td><span class="tag-pill ${intTag}">${intShort}</span></td>
+      </tr>
+    `;
+  }).join("");
+
+  const oos = res.out_of_sample || {};
+  const oosM1 = oos.moreshwar_1_oos || {};
+  const oosM2 = oos.moreshwar_2_oos || {};
+  const oosNifty = oos.nifty50_oos || {};
+  const wfRows = Array.isArray(res.rolling_walk_forward) ? res.rolling_walk_forward : [];
+  const sensRows = Array.isArray(res.sensitivity_sweep) ? res.sensitivity_sweep : [];
+  const bestSens = sensRows.length
+    ? sensRows.filter((r) => r.val_trades > 0).sort((a, b) => (b.val_return_pct - a.val_return_pct))[0] || sensRows[0]
+    : null;
+
+  wfEl.innerHTML = `
+    <div class="dq-card" style="border-top:2px solid var(--accent-emerald);">
+      <div class="dq-card-head">
+        <span class="dq-q-title">OUT-OF-SAMPLE TEST SPLIT</span>
+        <span class="tag-pill tag-target">${escHtml(oos.splits?.out_of_sample?.start || "")} → ${escHtml(oos.splits?.out_of_sample?.end || "")}</span>
+      </div>
+      <div class="dq-headline">Clean Causal Moreshwar 2.0 on unseen tail vs M1 &amp; Nifty 50:</div>
+      <div class="dq-mini-grid">
+        <div class="dq-mini-stat">
+          <div class="dq-mini-lbl">M2 Clean OOS</div>
+          <div class="dq-mini-val" style="color:${(oosM2.total_return_pct || 0) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${(oosM2.total_return_pct || 0) >= 0 ? "+" : ""}${oosM2.total_return_pct ?? "--"}%</div>
+          <div class="dq-mini-sub">DD ${oosM2.max_drawdown_pct ?? "--"}% · Win ${oosM2.win_rate_pct ?? "--"}% (${oosM2.total_trades ?? 0} trd)</div>
+        </div>
+        <div class="dq-mini-stat">
+          <div class="dq-mini-lbl">M1 Baseline OOS</div>
+          <div class="dq-mini-val" style="color:var(--accent-cyan);">${(oosM1.total_return_pct || 0) >= 0 ? "+" : ""}${oosM1.total_return_pct ?? "--"}%</div>
+          <div class="dq-mini-sub">DD ${oosM1.max_drawdown_pct ?? "--"}% · Win ${oosM1.win_rate_pct ?? "--"}% (${oosM1.total_trades ?? 0} trd)</div>
+        </div>
+        <div class="dq-mini-stat" style="grid-column: span 2;">
+          <div class="dq-mini-lbl">Nifty 50 OOS Benchmark</div>
+          <div class="dq-mini-val" style="color:var(--accent-amber);">+${oosNifty.total_return_pct ?? "--"}% (MaxDD ${oosNifty.max_drawdown_pct ?? "--"}%)</div>
+          <div class="dq-mini-sub">Zero look-ahead across ${oos.splits?.out_of_sample?.bars ?? 0} OOS trading bars</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dq-card" style="border-top:2px solid var(--accent-cyan);">
+      <div class="dq-card-head">
+        <span class="dq-q-title">ROLLING WALK-FORWARD FOLDS</span>
+        <span class="tag-pill tag-entry">${wfRows.length} WINDOWS</span>
+      </div>
+      <div class="dq-headline">Fold-by-fold stability (M1 vs Clean Causal M2):</div>
+      <div class="table-scroll">
+        <table class="data-table dq-compact-table">
+          <thead><tr><th>Fold</th><th>Window</th><th>M1 Ret (DD)</th><th>M2 Clean (DD)</th><th>Win%</th></tr></thead>
+          <tbody>
+            ${wfRows.map((w) => `
+              <tr>
+                <td style="font-family:var(--font-mono);font-weight:700;">${escHtml(w.fold)}</td>
+                <td style="font-family:var(--font-mono);">${escHtml(w.start)}→${escHtml(w.end)}</td>
+                <td style="font-family:var(--font-mono);color:${w.m1_return_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${w.m1_return_pct >= 0 ? "+" : ""}${w.m1_return_pct}% (${w.m1_max_dd_pct}%)</td>
+                <td style="font-family:var(--font-mono);color:${w.m2_return_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${w.m2_return_pct >= 0 ? "+" : ""}${w.m2_return_pct}% (${w.m2_max_dd_pct}%)</td>
+                <td style="font-family:var(--font-mono);">${w.m2_win_rate_pct}% (n=${w.m2_trades})</td>
+              </tr>
+            `).join("") || `<tr><td colspan="5">Run scripts/run_moreshwar_v2_experiments.py for WF breakdown.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dq-card" style="border-top:2px solid var(--accent-amber);">
+      <div class="dq-card-head">
+        <span class="dq-q-title">HONEST PROMOTION GATE (PHASE 10)</span>
+        <span class="tag-pill tag-stop">REVIEW REQUIRED</span>
+      </div>
+      <div class="dq-headline">Why Moreshwar 2.0 remains in Shadow Research Mode until reviewed:</div>
+      <div style="font-size:11px;color:var(--text-secondary);line-height:1.45;">
+        • <strong>Proven Win:</strong> ATR(14) + Sizing + Nifty Bear Block swings identical StockSight picks from <strong>-7.76% → +0.58%</strong> (Model D) &amp; slashes MaxDD <strong>14.2% → 7.25%</strong>; OOS M2 wins <strong>+4.92% (0.70% DD)</strong>.<br>
+        • <strong>Honest Caveat:</strong> Stripping static fundamentals cleanly (Model E Clean) yields <strong>${models.find((x) => String(x.model).includes("Model E:"))?.total_return_pct ?? "--"}%</strong> (Sharpe negative vs 6.5% T-bill) because historical quarterly ROE/OPM ratios are unavailable from NSE/Yahoo feeds.<br>
+        ${bestSens ? `• <strong>Sensitivity Plateau:</strong> Val leader ATR=${bestSens.atr_multiplier}x (${escHtml(bestSens.regime_policy)}, ${bestSens.val_return_pct >= 0 ? "+" : ""}${bestSens.val_return_pct}%, n=${bestSens.val_trades}).` : ""}
+      </div>
+    </div>
+  `;
 }
 
 function renderAuditLedger() {
@@ -2057,6 +2288,13 @@ function bootFinsistantApp() {
   const auditStF = document.getElementById("auditStatusFilter");
   if (auditSymF) auditSymF.addEventListener("change", renderAuditLedger);
   if (auditStF) auditStF.addEventListener("change", renderAuditLedger);
+  const mv2Sel = document.getElementById("mv2SymbolSelect");
+  if (mv2Sel) {
+    mv2Sel.addEventListener("change", () => {
+      appState.mv2SelectedSymbol = mv2Sel.value;
+      renderMoreshwarV2ShadowLab();
+    });
+  }
 
   document.getElementById("switchToStockSightBtn").addEventListener("click", () => {
     document.querySelector('[data-tab="stocksight"]').click();

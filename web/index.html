@@ -551,6 +551,50 @@
           <div class="attribution-grid" id="btAgentAttributionGrid"></div>
         </div>
 
+        <div class="panel" id="btMoreshwarV2ShadowPanel" style="background: var(--bg-base); border-color: var(--accent-cyan);">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">Moreshwar 2.0 Shadow Research Lab (ATR-Normalised Risk &amp; Nifty Regime Engine)</div>
+              <div class="panel-subtitle" id="mv2Subtitle">Read-only 12-field explainability &amp; Models A–F ablation · Moreshwar 1.0 remains active in production pending review</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <select id="mv2SymbolSelect" class="select-field" aria-label="Select Symbol for Moreshwar 2.0 Preview"></select>
+              <span class="tag-pill tag-score" id="mv2PromotionBadge">SHADOW ONLY · M1 ACTIVE IN PROD</span>
+            </div>
+          </div>
+
+          <div class="mv2-explain-grid" id="mv2ExplainabilityGrid"></div>
+
+          <div class="mv2-reason-box" id="mv2ReasonBox"></div>
+
+          <div>
+            <div class="panel-title" style="margin-bottom: 6px; font-size: 12px;">Phase 5 &amp; 7 Controlled Experiment Matrix (Real 1Y Data · 0.35% Cost · Strictly Causal Next-Bar Fills)</div>
+            <div class="table-scroll">
+              <table class="data-table dq-compact-table">
+                <thead>
+                  <tr>
+                    <th>Model / Variant</th>
+                    <th>Tot%</th>
+                    <th>Ann%</th>
+                    <th>Win%</th>
+                    <th>PF</th>
+                    <th>Sharpe</th>
+                    <th>MaxDD%</th>
+                    <th>Trades</th>
+                    <th>SL%</th>
+                    <th>Util%</th>
+                    <th>Rej / RegBlk</th>
+                    <th>Fundamental Integrity</th>
+                  </tr>
+                </thead>
+                <tbody id="mv2ModelsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="dq-verdict-grid" id="mv2WalkForwardGrid"></div>
+        </div>
+
         <div class="terminal-box" id="btMethodologyBox"></div>
       </div>
 

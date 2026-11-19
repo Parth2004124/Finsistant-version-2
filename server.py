@@ -25,6 +25,7 @@ from finsistant_v2 import (
     ExecutionAgent,
     FinsistantSettings,
     FundamentalAnalyst,
+    MoreshwarV2Config,
     StockyAssistant,
     TechnicalAnalyst,
     analyze_trade_with_gemini,
@@ -34,6 +35,7 @@ from finsistant_v2 import (
     build_audit_dashboard_view,
     build_data_integrity_report,
     critique_suggested_trades,
+    evaluate_moreshwar_v2,
     exchange_request_token,
     fetch_benchmark_candles,
     fetch_kite_portfolio,
@@ -45,6 +47,7 @@ from finsistant_v2 import (
     record_broker_execution,
     record_scan_decisions,
     run_backtest_and_attribution,
+    run_moreshwar_v2_research_suite,
 )
 from finsistant_v2.audit_ledger import DEFAULT_LEDGER_PATH
 from finsistant_v2.kite_auth import write_daily_token_file
@@ -71,6 +74,7 @@ TRADE_QUEUE: list[dict[str, Any]] = []
 EXECUTED_LOG: list[dict[str, Any]] = []
 KITE_META: dict[str, Any] = {"connected": False, "status": "Not initialized", "holdings": [], "fetched_at": None}
 BACKTEST_CACHE: dict[str, Any] = {}
+MORESHWAR_V2_RESEARCH: dict[str, Any] = {}
 AUDIT_LEDGER_CACHE: dict[str, Any] = {}
 PROVENANCE_CACHE: dict[str, Any] = {}
 AUTO_RULES: list[dict[str, Any]] = [
@@ -96,7 +100,7 @@ def _load_extra_watchlist_symbols() -> list[str]:
 
 def _refresh_analytics_and_audit(force_new_for_symbol: str | None = None, force_benchmark: bool = False) -> None:
     """Recompute backtest attribution, audit ledger persistence, and data provenance."""
-    global BACKTEST_CACHE, AUDIT_LEDGER_CACHE, PROVENANCE_CACHE
+    global BACKTEST_CACHE, MORESHWAR_V2_RESEARCH, AUDIT_LEDGER_CACHE, PROVENANCE_CACHE
     if force_benchmark or not BENCHMARK_CACHE.get("candles"):
         try:
             BENCHMARK_CACHE.clear()
@@ -119,6 +123,60 @@ def _refresh_analytics_and_audit(force_new_for_symbol: str | None = None, force_
         executed_orders=EXECUTED_LOG,
         audit_records=AUDIT_LEDGER_CACHE.get("records"),
     )
+
+    # Read-only Moreshwar 2.0 Shadow Research Evaluation (NEVER alters live Moreshwar 1.0 queue)
+    sizing_cap = CASH_BALANCE if CASH_BALANCE > 0 else 100000.0
+    v2_cfg = MoreshwarV2Config()
+    bench_candles = BENCHMARK_CACHE.get("candles")
+    for sym, snap in ANALYSIS_CACHE.items():
+        hist_item = FULL_HISTORY_CACHE.get(sym) or snap
+        candles_for_v2 = (hist_item.get("candles") or snap.get("candles") or [])[-60:]
+        pipe_msgs = (PIPELINE_CACHE.get(sym) or {}).get("messages") or []
+        t_sig = (pipe_msgs[0].get("signal") if pipe_msgs else "NEUTRAL") or "NEUTRAL"
+        snap["moreshwar_v2_preview"] = evaluate_moreshwar_v2(
+            symbol=sym,
+            candles=candles_for_v2,
+            spot_price=float(snap.get("price") or 0.0),
+            fundamental_score=(snap.get("fundamental_score") or {}).get("total"),
+            porters_score=(snap.get("porters_score") or {}).get("total"),
+            missing_fields=snap.get("missing_fields"),
+            fundamental_mode="point_in_time_live",
+            tech_signal=t_sig,
+            regression_curve=snap.get("regression_curve", "Upward Curve"),
+            sma_20=snap.get("sma_20"),
+            rsi_14=snap.get("rsi_14"),
+            benchmark_candles=bench_candles,
+            decision_date=snap.get("last_candle_date"),
+            capital=sizing_cap,
+            currency=snap.get("currency", "INR"),
+            cfg=v2_cfg,
+        )
+
+    try:
+        v2_live = run_moreshwar_v2_research_suite(
+            universe_history=history_src,
+            benchmark_data=BENCHMARK_CACHE,
+            cfg=v2_cfg,
+            run_sensitivity=False,
+        )
+        v2_live["model_details"] = {
+            k: {key: val for key, val in v.items() if key not in ("trades", "equity_curve")}
+            for k, v in (v2_live.get("model_details") or {}).items()
+        }
+        exp_path = BASE_DIR / "data" / "moreshwar_v2_experiment_report.json"
+        if exp_path.exists():
+            try:
+                cached_exp = json.loads(exp_path.read_text(encoding="utf-8"))
+                v2_live["sensitivity_sweep"] = cached_exp.get("sensitivity_sweep") or []
+                v2_live["out_of_sample"] = cached_exp.get("out_of_sample") or {}
+                v2_live["rolling_walk_forward"] = cached_exp.get("rolling_walk_forward") or []
+                v2_live["experiment_report_generated_at"] = cached_exp.get("generated_at")
+            except Exception:
+                pass
+        MORESHWAR_V2_RESEARCH = v2_live
+    except Exception:
+        pass
+
     PROVENANCE_CACHE = build_data_integrity_report(
         assets=ANALYSIS_CACHE,
         critiques=GEMINI_CRITIQUES,
@@ -470,6 +528,7 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "gemini_critiques": GEMINI_CRITIQUES,
         "provenance": PROVENANCE_CACHE,
         "backtest": BACKTEST_CACHE,
+        "moreshwar_v2_research": MORESHWAR_V2_RESEARCH,
         "audit_trail": build_audit_dashboard_view(AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)),
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,

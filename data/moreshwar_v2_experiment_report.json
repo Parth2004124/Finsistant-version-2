@@ -1,0 +1,1539 @@
+{
+  "generated_at": "2026-11-19T10:54:48.325261+00:00",
+  "promoted_to_production": false,
+  "promotion_status": "SHADOW_RESEARCH_ONLY (Moreshwar 1.0 remains active pending user review)",
+  "date_span": {
+    "start": "2026-01-21",
+    "end": "2026-11-18",
+    "trading_days": 214
+  },
+  "config": {
+    "atr_period": 14,
+    "atr_multiplier": 2.0,
+    "min_stop_pct": 2.5,
+    "max_stop_pct": 10.0,
+    "risk_per_trade_pct": 1.25,
+    "max_single_stock_pct": 20.0,
+    "regime_policy": "defensive_bear_block",
+    "min_rr_ratio": 1.5
+  },
+  "models_comparison": [
+    {
+      "model": "Model A: Original Baseline (Moreshwar 1.0)",
+      "total_return_pct": -7.76,
+      "annualised_return_pct": -9.08,
+      "win_rate_pct": 32.14,
+      "profit_factor": 0.82,
+      "sharpe_ratio": -1.18,
+      "sortino_ratio": -1.58,
+      "max_drawdown_pct": 14.24,
+      "avg_holding_days": 6.4,
+      "avg_winning_trade_pct": 6.06,
+      "avg_losing_trade_pct": -3.26,
+      "avg_mae_pct": -3.12,
+      "avg_mfe_pct": 3.94,
+      "total_trades": 84,
+      "transaction_costs_pct": 6.54,
+      "capital_utilisation_pct": 54.3,
+      "stop_loss_freq_pct": 63.1,
+      "target_hit_freq_pct": 15.5,
+      "horizon_exit_freq_pct": 21.4,
+      "rejected_trades": 31,
+      "regime_blocked_trades": 0,
+      "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+    },
+    {
+      "model": "Model B: ATR Stops Only",
+      "total_return_pct": -8.82,
+      "annualised_return_pct": -10.3,
+      "win_rate_pct": 38.57,
+      "profit_factor": 0.79,
+      "sharpe_ratio": -1.16,
+      "sortino_ratio": -1.59,
+      "max_drawdown_pct": 15.11,
+      "avg_holding_days": 8.5,
+      "avg_winning_trade_pct": 5.86,
+      "avg_losing_trade_pct": -4.37,
+      "avg_mae_pct": -3.81,
+      "avg_mfe_pct": 4.45,
+      "total_trades": 70,
+      "transaction_costs_pct": 5.38,
+      "capital_utilisation_pct": 62.9,
+      "stop_loss_freq_pct": 42.9,
+      "target_hit_freq_pct": 18.6,
+      "horizon_exit_freq_pct": 38.6,
+      "rejected_trades": 43,
+      "regime_blocked_trades": 0,
+      "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+    },
+    {
+      "model": "Model C: ATR Stops + Vol Sizing",
+      "total_return_pct": -4.79,
+      "annualised_return_pct": -5.62,
+      "win_rate_pct": 38.89,
+      "profit_factor": 0.85,
+      "sharpe_ratio": -1.07,
+      "sortino_ratio": -1.48,
+      "max_drawdown_pct": 11.35,
+      "avg_holding_days": 8.6,
+      "avg_winning_trade_pct": 5.89,
+      "avg_losing_trade_pct": -4.34,
+      "avg_mae_pct": -3.8,
+      "avg_mfe_pct": 4.51,
+      "total_trades": 72,
+      "transaction_costs_pct": 4.29,
+      "capital_utilisation_pct": 49.1,
+      "stop_loss_freq_pct": 41.7,
+      "target_hit_freq_pct": 18.1,
+      "horizon_exit_freq_pct": 40.3,
+      "rejected_trades": 11,
+      "regime_blocked_trades": 0,
+      "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+    },
+    {
+      "model": "Model D: ATR + Sizing + Nifty Regime",
+      "total_return_pct": 0.58,
+      "annualised_return_pct": 0.68,
+      "win_rate_pct": 43.48,
+      "profit_factor": 1.03,
+      "sharpe_ratio": -0.58,
+      "sortino_ratio": -0.87,
+      "max_drawdown_pct": 7.25,
+      "avg_holding_days": 10.1,
+      "avg_winning_trade_pct": 5.57,
+      "avg_losing_trade_pct": -4.03,
+      "avg_mae_pct": -3.5,
+      "avg_mfe_pct": 5.18,
+      "total_trades": 46,
+      "transaction_costs_pct": 2.9,
+      "capital_utilisation_pct": 37.1,
+      "stop_loss_freq_pct": 30.4,
+      "target_hit_freq_pct": 15.2,
+      "horizon_exit_freq_pct": 54.3,
+      "rejected_trades": 153,
+      "regime_blocked_trades": 140,
+      "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+    },
+    {
+      "model": "Model E: Complete Moreshwar 2.0 (Clean Causal)",
+      "total_return_pct": -6.14,
+      "annualised_return_pct": -7.19,
+      "win_rate_pct": 31.25,
+      "profit_factor": 0.72,
+      "sharpe_ratio": -1.6,
+      "sortino_ratio": -2.2,
+      "max_drawdown_pct": 11.39,
+      "avg_holding_days": 10.0,
+      "avg_winning_trade_pct": 7.0,
+      "avg_losing_trade_pct": -4.67,
+      "avg_mae_pct": -4.27,
+      "avg_mfe_pct": 4.9,
+      "total_trades": 64,
+      "transaction_costs_pct": 2.63,
+      "capital_utilisation_pct": 34.8,
+      "stop_loss_freq_pct": 46.9,
+      "target_hit_freq_pct": 17.2,
+      "horizon_exit_freq_pct": 35.9,
+      "rejected_trades": 237,
+      "regime_blocked_trades": 172,
+      "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+    },
+    {
+      "model": "Model E-Ref: Moreshwar 2.0 + Static Fund Warning",
+      "total_return_pct": -0.99,
+      "annualised_return_pct": -1.17,
+      "win_rate_pct": 42.31,
+      "profit_factor": 0.95,
+      "sharpe_ratio": -0.85,
+      "sortino_ratio": -1.25,
+      "max_drawdown_pct": 8.65,
+      "avg_holding_days": 9.5,
+      "avg_winning_trade_pct": 5.65,
+      "avg_losing_trade_pct": -3.98,
+      "avg_mae_pct": -3.43,
+      "avg_mfe_pct": 4.95,
+      "total_trades": 52,
+      "transaction_costs_pct": 2.96,
+      "capital_utilisation_pct": 34.7,
+      "stop_loss_freq_pct": 34.6,
+      "target_hit_freq_pct": 19.2,
+      "horizon_exit_freq_pct": 46.2,
+      "rejected_trades": 136,
+      "regime_blocked_trades": 136,
+      "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+    },
+    {
+      "model": "Model F: Fixed 5% / 10% Benchmark",
+      "total_return_pct": -5.07,
+      "annualised_return_pct": -5.94,
+      "win_rate_pct": 44.62,
+      "profit_factor": 0.87,
+      "sharpe_ratio": -0.82,
+      "sortino_ratio": -1.16,
+      "max_drawdown_pct": 13.44,
+      "avg_holding_days": 9.2,
+      "avg_winning_trade_pct": 5.57,
+      "avg_losing_trade_pct": -4.73,
+      "avg_mae_pct": -3.99,
+      "avg_mfe_pct": 4.79,
+      "total_trades": 65,
+      "transaction_costs_pct": 4.97,
+      "capital_utilisation_pct": 63.0,
+      "stop_loss_freq_pct": 41.5,
+      "target_hit_freq_pct": 20.0,
+      "horizon_exit_freq_pct": 38.5,
+      "rejected_trades": 36,
+      "regime_blocked_trades": 0,
+      "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+    },
+    {
+      "model": "Simple SMA-20 + Fixed 1:2 Benchmark",
+      "total_return_pct": -5.36,
+      "annualised_return_pct": -6.28,
+      "win_rate_pct": 35.96,
+      "profit_factor": 0.89,
+      "sharpe_ratio": -0.71,
+      "sortino_ratio": -1.0,
+      "max_drawdown_pct": 15.85,
+      "avg_holding_days": 9.1,
+      "avg_winning_trade_pct": 6.48,
+      "avg_losing_trade_pct": -4.71,
+      "avg_mae_pct": -4.44,
+      "avg_mfe_pct": 4.47,
+      "total_trades": 89,
+      "transaction_costs_pct": 6.18,
+      "capital_utilisation_pct": 75.1,
+      "stop_loss_freq_pct": 47.2,
+      "target_hit_freq_pct": 18.0,
+      "horizon_exit_freq_pct": 34.8,
+      "rejected_trades": 157,
+      "regime_blocked_trades": 0,
+      "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+    },
+    {
+      "model": "Nifty 50 (^NSEI) Buy & Hold",
+      "total_return_pct": 0.28,
+      "annualised_return_pct": 0.35,
+      "win_rate_pct": 100.0,
+      "profit_factor": null,
+      "sharpe_ratio": -0.32,
+      "sortino_ratio": -0.45,
+      "max_drawdown_pct": 14.34,
+      "avg_holding_days": 203.0,
+      "avg_winning_trade_pct": 0.28,
+      "avg_losing_trade_pct": 0.0,
+      "avg_mae_pct": -14.34,
+      "avg_mfe_pct": null,
+      "total_trades": 1,
+      "transaction_costs_pct": 0.0,
+      "capital_utilisation_pct": 100.0,
+      "stop_loss_freq_pct": 0.0,
+      "target_hit_freq_pct": 0.0,
+      "horizon_exit_freq_pct": 0.0,
+      "rejected_trades": 0,
+      "regime_blocked_trades": 0,
+      "fundamental_integrity": "MARKET_INDEX_BENCHMARK"
+    }
+  ],
+  "model_details": {
+    "model_a": {
+      "model": "Model A: Original Baseline (Moreshwar 1.0)",
+      "metrics": {
+        "model": "Model A: Original Baseline (Moreshwar 1.0)",
+        "total_return_pct": -7.76,
+        "annualised_return_pct": -9.08,
+        "win_rate_pct": 32.14,
+        "profit_factor": 0.82,
+        "sharpe_ratio": -1.18,
+        "sortino_ratio": -1.58,
+        "max_drawdown_pct": 14.24,
+        "avg_holding_days": 6.4,
+        "avg_winning_trade_pct": 6.06,
+        "avg_losing_trade_pct": -3.26,
+        "avg_mae_pct": -3.12,
+        "avg_mfe_pct": 3.94,
+        "total_trades": 84,
+        "transaction_costs_pct": 6.54,
+        "capital_utilisation_pct": 54.3,
+        "stop_loss_freq_pct": 63.1,
+        "target_hit_freq_pct": 15.5,
+        "horizon_exit_freq_pct": 21.4,
+        "rejected_trades": 31,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+      },
+      "regimes": {
+        "BULLISH": {
+          "trades": 11,
+          "win_rate_pct": 36.36,
+          "avg_return_pct": -0.18,
+          "total_pnl": -423.26
+        },
+        "NEUTRAL": {
+          "trades": 19,
+          "win_rate_pct": 42.11,
+          "avg_return_pct": -0.06,
+          "total_pnl": -2380.43
+        },
+        "BEARISH": {
+          "trades": 40,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": -0.49,
+          "total_pnl": -5008.16
+        },
+        "HIGH_VOLATILITY": {
+          "trades": 14,
+          "win_rate_pct": 21.43,
+          "avg_return_pct": 0.03,
+          "total_pnl": 48.6
+        }
+      },
+      "by_stock": {
+        "HDFCBANK": {
+          "trades": 12,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -1.62,
+          "total_pnl": -4543.69
+        },
+        "ICICIBANK": {
+          "trades": 17,
+          "win_rate_pct": 35.29,
+          "avg_return_pct": 0.78,
+          "total_pnl": 948.67
+        },
+        "INFY": {
+          "trades": 15,
+          "win_rate_pct": 33.33,
+          "avg_return_pct": -0.09,
+          "total_pnl": -383.38
+        },
+        "NVDA": {
+          "trades": 14,
+          "win_rate_pct": 35.71,
+          "avg_return_pct": -0.66,
+          "total_pnl": -2287.61
+        },
+        "SBIN": {
+          "trades": 15,
+          "win_rate_pct": 33.33,
+          "avg_return_pct": 0.56,
+          "total_pnl": 1827.29
+        },
+        "TCS": {
+          "trades": 11,
+          "win_rate_pct": 27.27,
+          "avg_return_pct": -1.27,
+          "total_pnl": -3324.53
+        }
+      },
+      "by_sector": {
+        "Financial Services": {
+          "trades": 44,
+          "win_rate_pct": 31.82,
+          "avg_return_pct": 0.05,
+          "total_pnl": -1767.73
+        },
+        "Technology": {
+          "trades": 40,
+          "win_rate_pct": 32.5,
+          "avg_return_pct": -0.61,
+          "total_pnl": -5995.52
+        }
+      }
+    },
+    "model_b": {
+      "model": "Model B: ATR Stops Only",
+      "metrics": {
+        "model": "Model B: ATR Stops Only",
+        "total_return_pct": -8.82,
+        "annualised_return_pct": -10.3,
+        "win_rate_pct": 38.57,
+        "profit_factor": 0.79,
+        "sharpe_ratio": -1.16,
+        "sortino_ratio": -1.59,
+        "max_drawdown_pct": 15.11,
+        "avg_holding_days": 8.5,
+        "avg_winning_trade_pct": 5.86,
+        "avg_losing_trade_pct": -4.37,
+        "avg_mae_pct": -3.81,
+        "avg_mfe_pct": 4.45,
+        "total_trades": 70,
+        "transaction_costs_pct": 5.38,
+        "capital_utilisation_pct": 62.9,
+        "stop_loss_freq_pct": 42.9,
+        "target_hit_freq_pct": 18.6,
+        "horizon_exit_freq_pct": 38.6,
+        "rejected_trades": 43,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+      },
+      "regimes": {
+        "BULLISH": {
+          "trades": 7,
+          "win_rate_pct": 42.86,
+          "avg_return_pct": -1.6,
+          "total_pnl": -2499.58
+        },
+        "NEUTRAL": {
+          "trades": 19,
+          "win_rate_pct": 42.11,
+          "avg_return_pct": -0.14,
+          "total_pnl": -2831.25
+        },
+        "BEARISH": {
+          "trades": 34,
+          "win_rate_pct": 38.24,
+          "avg_return_pct": -0.64,
+          "total_pnl": -4706.38
+        },
+        "HIGH_VOLATILITY": {
+          "trades": 10,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": 0.58,
+          "total_pnl": 1217.11
+        }
+      },
+      "by_stock": {
+        "HDFCBANK": {
+          "trades": 10,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": -1.86,
+          "total_pnl": -6396.22
+        },
+        "ICICIBANK": {
+          "trades": 13,
+          "win_rate_pct": 46.15,
+          "avg_return_pct": 0.87,
+          "total_pnl": 2342.26
+        },
+        "INFY": {
+          "trades": 13,
+          "win_rate_pct": 38.46,
+          "avg_return_pct": -0.73,
+          "total_pnl": -1328.94
+        },
+        "NVDA": {
+          "trades": 13,
+          "win_rate_pct": 38.46,
+          "avg_return_pct": -0.19,
+          "total_pnl": -724.16
+        },
+        "SBIN": {
+          "trades": 10,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": 0.26,
+          "total_pnl": 436.02
+        },
+        "TCS": {
+          "trades": 11,
+          "win_rate_pct": 36.36,
+          "avg_return_pct": -1.18,
+          "total_pnl": -3149.06
+        }
+      },
+      "by_sector": {
+        "Financial Services": {
+          "trades": 33,
+          "win_rate_pct": 39.39,
+          "avg_return_pct": -0.14,
+          "total_pnl": -3617.94
+        },
+        "Technology": {
+          "trades": 37,
+          "win_rate_pct": 37.84,
+          "avg_return_pct": -0.68,
+          "total_pnl": -5202.16
+        }
+      }
+    },
+    "model_c": {
+      "model": "Model C: ATR Stops + Vol Sizing",
+      "metrics": {
+        "model": "Model C: ATR Stops + Vol Sizing",
+        "total_return_pct": -4.79,
+        "annualised_return_pct": -5.62,
+        "win_rate_pct": 38.89,
+        "profit_factor": 0.85,
+        "sharpe_ratio": -1.07,
+        "sortino_ratio": -1.48,
+        "max_drawdown_pct": 11.35,
+        "avg_holding_days": 8.6,
+        "avg_winning_trade_pct": 5.89,
+        "avg_losing_trade_pct": -4.34,
+        "avg_mae_pct": -3.8,
+        "avg_mfe_pct": 4.51,
+        "total_trades": 72,
+        "transaction_costs_pct": 4.29,
+        "capital_utilisation_pct": 49.1,
+        "stop_loss_freq_pct": 41.7,
+        "target_hit_freq_pct": 18.1,
+        "horizon_exit_freq_pct": 40.3,
+        "rejected_trades": 11,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+      },
+      "regimes": {
+        "BULLISH": {
+          "trades": 9,
+          "win_rate_pct": 55.56,
+          "avg_return_pct": 0.44,
+          "total_pnl": -114.51
+        },
+        "NEUTRAL": {
+          "trades": 18,
+          "win_rate_pct": 38.89,
+          "avg_return_pct": -0.55,
+          "total_pnl": -2337.48
+        },
+        "BEARISH": {
+          "trades": 35,
+          "win_rate_pct": 37.14,
+          "avg_return_pct": -0.72,
+          "total_pnl": -4256.87
+        },
+        "HIGH_VOLATILITY": {
+          "trades": 10,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": 0.49,
+          "total_pnl": 1916.47
+        }
+      },
+      "by_stock": {
+        "HDFCBANK": {
+          "trades": 10,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": -1.86,
+          "total_pnl": -4355.67
+        },
+        "ICICIBANK": {
+          "trades": 13,
+          "win_rate_pct": 46.15,
+          "avg_return_pct": 0.87,
+          "total_pnl": 2019.7
+        },
+        "INFY": {
+          "trades": 13,
+          "win_rate_pct": 38.46,
+          "avg_return_pct": -1.02,
+          "total_pnl": -1759.16
+        },
+        "NVDA": {
+          "trades": 13,
+          "win_rate_pct": 38.46,
+          "avg_return_pct": -0.19,
+          "total_pnl": -305.74
+        },
+        "SBIN": {
+          "trades": 12,
+          "win_rate_pct": 41.67,
+          "avg_return_pct": 0.82,
+          "total_pnl": 1855.3
+        },
+        "TCS": {
+          "trades": 11,
+          "win_rate_pct": 36.36,
+          "avg_return_pct": -1.18,
+          "total_pnl": -2246.82
+        }
+      },
+      "by_sector": {
+        "Financial Services": {
+          "trades": 35,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": 0.07,
+          "total_pnl": -480.67
+        },
+        "Technology": {
+          "trades": 37,
+          "win_rate_pct": 37.84,
+          "avg_return_pct": -0.78,
+          "total_pnl": -4311.72
+        }
+      }
+    },
+    "model_d": {
+      "model": "Model D: ATR + Sizing + Nifty Regime",
+      "metrics": {
+        "model": "Model D: ATR + Sizing + Nifty Regime",
+        "total_return_pct": 0.58,
+        "annualised_return_pct": 0.68,
+        "win_rate_pct": 43.48,
+        "profit_factor": 1.03,
+        "sharpe_ratio": -0.58,
+        "sortino_ratio": -0.87,
+        "max_drawdown_pct": 7.25,
+        "avg_holding_days": 10.1,
+        "avg_winning_trade_pct": 5.57,
+        "avg_losing_trade_pct": -4.03,
+        "avg_mae_pct": -3.5,
+        "avg_mfe_pct": 5.18,
+        "total_trades": 46,
+        "transaction_costs_pct": 2.9,
+        "capital_utilisation_pct": 37.1,
+        "stop_loss_freq_pct": 30.4,
+        "target_hit_freq_pct": 15.2,
+        "horizon_exit_freq_pct": 54.3,
+        "rejected_trades": 153,
+        "regime_blocked_trades": 140,
+        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+      },
+      "regimes": {
+        "BULLISH": {
+          "trades": 10,
+          "win_rate_pct": 60.0,
+          "avg_return_pct": 0.88,
+          "total_pnl": 594.93
+        },
+        "NEUTRAL": {
+          "trades": 25,
+          "win_rate_pct": 44.0,
+          "avg_return_pct": -0.09,
+          "total_pnl": -1065.76
+        },
+        "BEARISH": {
+          "trades": 0,
+          "win_rate_pct": 0.0,
+          "avg_return_pct": 0.0,
+          "total_pnl": 0.0
+        },
+        "HIGH_VOLATILITY": {
+          "trades": 11,
+          "win_rate_pct": 27.27,
+          "avg_return_pct": 0.01,
+          "total_pnl": 1048.72
+        }
+      },
+      "by_stock": {
+        "HDFCBANK": {
+          "trades": 9,
+          "win_rate_pct": 33.33,
+          "avg_return_pct": -1.44,
+          "total_pnl": -3416.36
+        },
+        "ICICIBANK": {
+          "trades": 9,
+          "win_rate_pct": 44.44,
+          "avg_return_pct": 0.59,
+          "total_pnl": 860.91
+        },
+        "INFY": {
+          "trades": 6,
+          "win_rate_pct": 50.0,
+          "avg_return_pct": 0.83,
+          "total_pnl": 1064.45
+        },
+        "NVDA": {
+          "trades": 10,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": 0.77,
+          "total_pnl": 1729.71
+        },
+        "SBIN": {
+          "trades": 7,
+          "win_rate_pct": 57.14,
+          "avg_return_pct": 1.44,
+          "total_pnl": 1922.06
+        },
+        "TCS": {
+          "trades": 5,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": -1.72,
+          "total_pnl": -1582.88
+        }
+      },
+      "by_sector": {
+        "Financial Services": {
+          "trades": 25,
+          "win_rate_pct": 44.0,
+          "avg_return_pct": 0.1,
+          "total_pnl": -633.39
+        },
+        "Technology": {
+          "trades": 21,
+          "win_rate_pct": 42.86,
+          "avg_return_pct": 0.19,
+          "total_pnl": 1211.28
+        }
+      }
+    },
+    "model_e_causal": {
+      "model": "Model E: Complete Moreshwar 2.0 (Clean Causal)",
+      "metrics": {
+        "model": "Model E: Complete Moreshwar 2.0 (Clean Causal)",
+        "total_return_pct": -6.14,
+        "annualised_return_pct": -7.19,
+        "win_rate_pct": 31.25,
+        "profit_factor": 0.72,
+        "sharpe_ratio": -1.6,
+        "sortino_ratio": -2.2,
+        "max_drawdown_pct": 11.39,
+        "avg_holding_days": 10.0,
+        "avg_winning_trade_pct": 7.0,
+        "avg_losing_trade_pct": -4.67,
+        "avg_mae_pct": -4.27,
+        "avg_mfe_pct": 4.9,
+        "total_trades": 64,
+        "transaction_costs_pct": 2.63,
+        "capital_utilisation_pct": 34.8,
+        "stop_loss_freq_pct": 46.9,
+        "target_hit_freq_pct": 17.2,
+        "horizon_exit_freq_pct": 35.9,
+        "rejected_trades": 237,
+        "regime_blocked_trades": 172,
+        "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+      },
+      "regimes": {
+        "BULLISH": {
+          "trades": 16,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -0.7,
+          "total_pnl": -2265.18
+        },
+        "NEUTRAL": {
+          "trades": 34,
+          "win_rate_pct": 38.24,
+          "avg_return_pct": -1.01,
+          "total_pnl": -698.74
+        },
+        "BEARISH": {
+          "trades": 0,
+          "win_rate_pct": 0.0,
+          "avg_return_pct": 0.0,
+          "total_pnl": 0.0
+        },
+        "HIGH_VOLATILITY": {
+          "trades": 14,
+          "win_rate_pct": 21.43,
+          "avg_return_pct": -1.43,
+          "total_pnl": -3175.54
+        }
+      },
+      "by_stock": {
+        "HDFCBANK": {
+          "trades": 7,
+          "win_rate_pct": 42.86,
+          "avg_return_pct": -0.87,
+          "total_pnl": -848.29
+        },
+        "ICICIBANK": {
+          "trades": 7,
+          "win_rate_pct": 42.86,
+          "avg_return_pct": 1.16,
+          "total_pnl": 1535.4
+        },
+        "INFY": {
+          "trades": 6,
+          "win_rate_pct": 33.33,
+          "avg_return_pct": -0.05,
+          "total_pnl": -765.04
+        },
+        "ITC": {
+          "trades": 4,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -0.08,
+          "total_pnl": -465.73
+        },
+        "NVDA": {
+          "trades": 7,
+          "win_rate_pct": 14.29,
+          "avg_return_pct": -2.39,
+          "total_pnl": 282.0
+        },
+        "RELIANCE": {
+          "trades": 9,
+          "win_rate_pct": 11.11,
+          "avg_return_pct": -3.23,
+          "total_pnl": -4533.64
+        },
+        "SBIN": {
+          "trades": 6,
+          "win_rate_pct": 50.0,
+          "avg_return_pct": 1.08,
+          "total_pnl": 1193.72
+        },
+        "TATAMOTORS": {
+          "trades": 7,
+          "win_rate_pct": 57.14,
+          "avg_return_pct": 0.53,
+          "total_pnl": -705.31
+        },
+        "TCS": {
+          "trades": 4,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -0.23,
+          "total_pnl": -490.34
+        },
+        "ZEEL": {
+          "trades": 7,
+          "win_rate_pct": 14.29,
+          "avg_return_pct": -4.36,
+          "total_pnl": -1342.23
+        }
+      },
+      "by_sector": {
+        "Communication Services": {
+          "trades": 7,
+          "win_rate_pct": 14.29,
+          "avg_return_pct": -4.36,
+          "total_pnl": -1342.23
+        },
+        "Consumer Cyclical": {
+          "trades": 7,
+          "win_rate_pct": 57.14,
+          "avg_return_pct": 0.53,
+          "total_pnl": -705.31
+        },
+        "Consumer Defensive": {
+          "trades": 4,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -0.08,
+          "total_pnl": -465.73
+        },
+        "Energy": {
+          "trades": 9,
+          "win_rate_pct": 11.11,
+          "avg_return_pct": -3.23,
+          "total_pnl": -4533.64
+        },
+        "Financial Services": {
+          "trades": 20,
+          "win_rate_pct": 45.0,
+          "avg_return_pct": 0.42,
+          "total_pnl": 1880.83
+        },
+        "Technology": {
+          "trades": 17,
+          "win_rate_pct": 23.53,
+          "avg_return_pct": -1.06,
+          "total_pnl": -973.38
+        }
+      }
+    },
+    "model_e_static_ref": {
+      "model": "Model E-Ref: Moreshwar 2.0 + Static Fund Warning",
+      "metrics": {
+        "model": "Model E-Ref: Moreshwar 2.0 + Static Fund Warning",
+        "total_return_pct": -0.99,
+        "annualised_return_pct": -1.17,
+        "win_rate_pct": 42.31,
+        "profit_factor": 0.95,
+        "sharpe_ratio": -0.85,
+        "sortino_ratio": -1.25,
+        "max_drawdown_pct": 8.65,
+        "avg_holding_days": 9.5,
+        "avg_winning_trade_pct": 5.65,
+        "avg_losing_trade_pct": -3.98,
+        "avg_mae_pct": -3.43,
+        "avg_mfe_pct": 4.95,
+        "total_trades": 52,
+        "transaction_costs_pct": 2.96,
+        "capital_utilisation_pct": 34.7,
+        "stop_loss_freq_pct": 34.6,
+        "target_hit_freq_pct": 19.2,
+        "horizon_exit_freq_pct": 46.2,
+        "rejected_trades": 136,
+        "regime_blocked_trades": 136,
+        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+      },
+      "regimes": {
+        "BULLISH": {
+          "trades": 13,
+          "win_rate_pct": 46.15,
+          "avg_return_pct": 1.18,
+          "total_pnl": 261.86
+        },
+        "NEUTRAL": {
+          "trades": 25,
+          "win_rate_pct": 44.0,
+          "avg_return_pct": -0.31,
+          "total_pnl": 236.31
+        },
+        "BEARISH": {
+          "trades": 0,
+          "win_rate_pct": 0.0,
+          "avg_return_pct": 0.0,
+          "total_pnl": 0.0
+        },
+        "HIGH_VOLATILITY": {
+          "trades": 14,
+          "win_rate_pct": 35.71,
+          "avg_return_pct": -0.2,
+          "total_pnl": -1489.25
+        }
+      },
+      "by_stock": {
+        "HDFCBANK": {
+          "trades": 9,
+          "win_rate_pct": 33.33,
+          "avg_return_pct": -1.65,
+          "total_pnl": -2623.91
+        },
+        "ICICIBANK": {
+          "trades": 10,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": 0.65,
+          "total_pnl": 1069.75
+        },
+        "INFY": {
+          "trades": 6,
+          "win_rate_pct": 33.33,
+          "avg_return_pct": -0.05,
+          "total_pnl": -719.21
+        },
+        "NVDA": {
+          "trades": 12,
+          "win_rate_pct": 41.67,
+          "avg_return_pct": 0.42,
+          "total_pnl": 432.68
+        },
+        "SBIN": {
+          "trades": 10,
+          "win_rate_pct": 60.0,
+          "avg_return_pct": 1.22,
+          "total_pnl": 2112.15
+        },
+        "TCS": {
+          "trades": 5,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": -0.74,
+          "total_pnl": -1262.54
+        }
+      },
+      "by_sector": {
+        "Financial Services": {
+          "trades": 29,
+          "win_rate_pct": 44.83,
+          "avg_return_pct": 0.13,
+          "total_pnl": 557.99
+        },
+        "Technology": {
+          "trades": 23,
+          "win_rate_pct": 39.13,
+          "avg_return_pct": 0.04,
+          "total_pnl": -1549.07
+        }
+      }
+    },
+    "model_f": {
+      "model": "Model F: Fixed 5% / 10% Benchmark",
+      "metrics": {
+        "model": "Model F: Fixed 5% / 10% Benchmark",
+        "total_return_pct": -5.07,
+        "annualised_return_pct": -5.94,
+        "win_rate_pct": 44.62,
+        "profit_factor": 0.87,
+        "sharpe_ratio": -0.82,
+        "sortino_ratio": -1.16,
+        "max_drawdown_pct": 13.44,
+        "avg_holding_days": 9.2,
+        "avg_winning_trade_pct": 5.57,
+        "avg_losing_trade_pct": -4.73,
+        "avg_mae_pct": -3.99,
+        "avg_mfe_pct": 4.79,
+        "total_trades": 65,
+        "transaction_costs_pct": 4.97,
+        "capital_utilisation_pct": 63.0,
+        "stop_loss_freq_pct": 41.5,
+        "target_hit_freq_pct": 20.0,
+        "horizon_exit_freq_pct": 38.5,
+        "rejected_trades": 36,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+      },
+      "regimes": {
+        "BULLISH": {
+          "trades": 7,
+          "win_rate_pct": 71.43,
+          "avg_return_pct": 2.12,
+          "total_pnl": 1828.6
+        },
+        "NEUTRAL": {
+          "trades": 16,
+          "win_rate_pct": 43.75,
+          "avg_return_pct": -0.83,
+          "total_pnl": -5167.31
+        },
+        "BEARISH": {
+          "trades": 31,
+          "win_rate_pct": 41.94,
+          "avg_return_pct": -0.25,
+          "total_pnl": -2377.32
+        },
+        "HIGH_VOLATILITY": {
+          "trades": 11,
+          "win_rate_pct": 36.36,
+          "avg_return_pct": -0.2,
+          "total_pnl": 647.56
+        }
+      },
+      "by_stock": {
+        "HDFCBANK": {
+          "trades": 10,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": -2.1,
+          "total_pnl": -6681.34
+        },
+        "ICICIBANK": {
+          "trades": 12,
+          "win_rate_pct": 50.0,
+          "avg_return_pct": -0.07,
+          "total_pnl": 678.58
+        },
+        "INFY": {
+          "trades": 9,
+          "win_rate_pct": 44.44,
+          "avg_return_pct": 0.41,
+          "total_pnl": 545.44
+        },
+        "NVDA": {
+          "trades": 15,
+          "win_rate_pct": 46.67,
+          "avg_return_pct": 0.06,
+          "total_pnl": 74.65
+        },
+        "SBIN": {
+          "trades": 9,
+          "win_rate_pct": 55.56,
+          "avg_return_pct": 1.88,
+          "total_pnl": 2406.44
+        },
+        "TCS": {
+          "trades": 10,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": -0.82,
+          "total_pnl": -2092.24
+        }
+      },
+      "by_sector": {
+        "Financial Services": {
+          "trades": 31,
+          "win_rate_pct": 45.16,
+          "avg_return_pct": -0.16,
+          "total_pnl": -3596.32
+        },
+        "Technology": {
+          "trades": 34,
+          "win_rate_pct": 44.12,
+          "avg_return_pct": -0.11,
+          "total_pnl": -1472.15
+        }
+      }
+    },
+    "sma_bench": {
+      "model": "Simple SMA-20 + Fixed 1:2 Benchmark",
+      "metrics": {
+        "model": "Simple SMA-20 + Fixed 1:2 Benchmark",
+        "total_return_pct": -5.36,
+        "annualised_return_pct": -6.28,
+        "win_rate_pct": 35.96,
+        "profit_factor": 0.89,
+        "sharpe_ratio": -0.71,
+        "sortino_ratio": -1.0,
+        "max_drawdown_pct": 15.85,
+        "avg_holding_days": 9.1,
+        "avg_winning_trade_pct": 6.48,
+        "avg_losing_trade_pct": -4.71,
+        "avg_mae_pct": -4.44,
+        "avg_mfe_pct": 4.47,
+        "total_trades": 89,
+        "transaction_costs_pct": 6.18,
+        "capital_utilisation_pct": 75.1,
+        "stop_loss_freq_pct": 47.2,
+        "target_hit_freq_pct": 18.0,
+        "horizon_exit_freq_pct": 34.8,
+        "rejected_trades": 157,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+      },
+      "regimes": {
+        "BULLISH": {
+          "trades": 12,
+          "win_rate_pct": 16.67,
+          "avg_return_pct": -2.95,
+          "total_pnl": -6042.59
+        },
+        "NEUTRAL": {
+          "trades": 20,
+          "win_rate_pct": 35.0,
+          "avg_return_pct": -1.49,
+          "total_pnl": -2405.07
+        },
+        "BEARISH": {
+          "trades": 43,
+          "win_rate_pct": 39.53,
+          "avg_return_pct": 0.07,
+          "total_pnl": 1335.67
+        },
+        "HIGH_VOLATILITY": {
+          "trades": 14,
+          "win_rate_pct": 42.86,
+          "avg_return_pct": 0.05,
+          "total_pnl": 1756.39
+        }
+      },
+      "by_stock": {
+        "HDFCBANK": {
+          "trades": 8,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -2.49,
+          "total_pnl": -3746.04
+        },
+        "ICICIBANK": {
+          "trades": 8,
+          "win_rate_pct": 50.0,
+          "avg_return_pct": 1.04,
+          "total_pnl": 1754.53
+        },
+        "INFY": {
+          "trades": 9,
+          "win_rate_pct": 33.33,
+          "avg_return_pct": -1.96,
+          "total_pnl": -4121.8
+        },
+        "ITC": {
+          "trades": 8,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -2.31,
+          "total_pnl": -2915.99
+        },
+        "NVDA": {
+          "trades": 13,
+          "win_rate_pct": 30.77,
+          "avg_return_pct": -1.37,
+          "total_pnl": -2121.13
+        },
+        "RELIANCE": {
+          "trades": 10,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": -0.71,
+          "total_pnl": -1790.98
+        },
+        "SBIN": {
+          "trades": 6,
+          "win_rate_pct": 66.67,
+          "avg_return_pct": 2.18,
+          "total_pnl": 980.31
+        },
+        "TATAMOTORS": {
+          "trades": 9,
+          "win_rate_pct": 44.44,
+          "avg_return_pct": -0.14,
+          "total_pnl": 4492.92
+        },
+        "TCS": {
+          "trades": 8,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -1.26,
+          "total_pnl": -1308.8
+        },
+        "ZEEL": {
+          "trades": 10,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": 0.96,
+          "total_pnl": 3421.38
+        }
+      },
+      "by_sector": {
+        "Communication Services": {
+          "trades": 10,
+          "win_rate_pct": 40.0,
+          "avg_return_pct": 0.96,
+          "total_pnl": 3421.38
+        },
+        "Consumer Cyclical": {
+          "trades": 9,
+          "win_rate_pct": 44.44,
+          "avg_return_pct": -0.14,
+          "total_pnl": 4492.92
+        },
+        "Consumer Defensive": {
+          "trades": 8,
+          "win_rate_pct": 25.0,
+          "avg_return_pct": -2.31,
+          "total_pnl": -2915.99
+        },
+        "Energy": {
+          "trades": 10,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": -0.71,
+          "total_pnl": -1790.98
+        },
+        "Financial Services": {
+          "trades": 22,
+          "win_rate_pct": 45.45,
+          "avg_return_pct": 0.07,
+          "total_pnl": -1011.2
+        },
+        "Technology": {
+          "trades": 30,
+          "win_rate_pct": 30.0,
+          "avg_return_pct": -1.52,
+          "total_pnl": -7551.73
+        }
+      }
+    },
+    "nifty_bh": {
+      "model": "Nifty 50 (^NSEI) Buy & Hold",
+      "metrics": {
+        "model": "Nifty 50 (^NSEI) Buy & Hold",
+        "total_return_pct": 0.28,
+        "annualised_return_pct": 0.35,
+        "win_rate_pct": 100.0,
+        "profit_factor": null,
+        "sharpe_ratio": -0.32,
+        "sortino_ratio": -0.45,
+        "max_drawdown_pct": 14.34,
+        "avg_holding_days": 203.0,
+        "avg_winning_trade_pct": 0.28,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": -14.34,
+        "avg_mfe_pct": null,
+        "total_trades": 1,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 100.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "MARKET_INDEX_BENCHMARK"
+      }
+    }
+  },
+  "sensitivity_sweep": [
+    {
+      "atr_multiplier": 1.5,
+      "regime_policy": "permissive",
+      "min_confidence": 0.45,
+      "train_return_pct": -10.19,
+      "train_sharpe": -3.49,
+      "train_max_dd_pct": 11.4,
+      "train_trades": 37,
+      "val_return_pct": -3.77,
+      "val_sharpe": -2.3,
+      "val_max_dd_pct": 5.41,
+      "val_trades": 28
+    },
+    {
+      "atr_multiplier": 1.5,
+      "regime_policy": "defensive_bear_block",
+      "min_confidence": 0.45,
+      "train_return_pct": -10.19,
+      "train_sharpe": -3.49,
+      "train_max_dd_pct": 11.4,
+      "train_trades": 37,
+      "val_return_pct": -3.77,
+      "val_sharpe": -2.3,
+      "val_max_dd_pct": 5.41,
+      "val_trades": 28
+    },
+    {
+      "atr_multiplier": 1.5,
+      "regime_policy": "bear_and_highvol_block",
+      "min_confidence": 0.45,
+      "train_return_pct": -6.56,
+      "train_sharpe": -3.84,
+      "train_max_dd_pct": 7.8,
+      "train_trades": 22,
+      "val_return_pct": -3.77,
+      "val_sharpe": -2.3,
+      "val_max_dd_pct": 5.41,
+      "val_trades": 28
+    },
+    {
+      "atr_multiplier": 1.5,
+      "regime_policy": "strict_bull_only",
+      "min_confidence": 0.45,
+      "train_return_pct": -2.48,
+      "train_sharpe": -3.95,
+      "train_max_dd_pct": 2.91,
+      "train_trades": 4,
+      "val_return_pct": -4.48,
+      "val_sharpe": -3.61,
+      "val_max_dd_pct": 4.48,
+      "val_trades": 20
+    },
+    {
+      "atr_multiplier": 2.0,
+      "regime_policy": "permissive",
+      "min_confidence": 0.45,
+      "train_return_pct": -7.11,
+      "train_sharpe": -2.73,
+      "train_max_dd_pct": 8.55,
+      "train_trades": 33,
+      "val_return_pct": -4.33,
+      "val_sharpe": -2.88,
+      "val_max_dd_pct": 5.61,
+      "val_trades": 28
+    },
+    {
+      "atr_multiplier": 2.0,
+      "regime_policy": "defensive_bear_block",
+      "min_confidence": 0.45,
+      "train_return_pct": -7.11,
+      "train_sharpe": -2.73,
+      "train_max_dd_pct": 8.55,
+      "train_trades": 33,
+      "val_return_pct": -4.33,
+      "val_sharpe": -2.88,
+      "val_max_dd_pct": 5.61,
+      "val_trades": 28
+    },
+    {
+      "atr_multiplier": 2.0,
+      "regime_policy": "bear_and_highvol_block",
+      "min_confidence": 0.45,
+      "train_return_pct": -6.35,
+      "train_sharpe": -4.28,
+      "train_max_dd_pct": 7.65,
+      "train_trades": 22,
+      "val_return_pct": -4.33,
+      "val_sharpe": -2.88,
+      "val_max_dd_pct": 5.61,
+      "val_trades": 28
+    },
+    {
+      "atr_multiplier": 2.0,
+      "regime_policy": "strict_bull_only",
+      "min_confidence": 0.45,
+      "train_return_pct": -2.49,
+      "train_sharpe": -4.6,
+      "train_max_dd_pct": 2.49,
+      "train_trades": 4,
+      "val_return_pct": -5.09,
+      "val_sharpe": -3.85,
+      "val_max_dd_pct": 5.09,
+      "val_trades": 20
+    },
+    {
+      "atr_multiplier": 2.5,
+      "regime_policy": "permissive",
+      "min_confidence": 0.45,
+      "train_return_pct": -6.86,
+      "train_sharpe": -3.34,
+      "train_max_dd_pct": 7.98,
+      "train_trades": 29,
+      "val_return_pct": -4.49,
+      "val_sharpe": -3.33,
+      "val_max_dd_pct": 4.89,
+      "val_trades": 27
+    },
+    {
+      "atr_multiplier": 2.5,
+      "regime_policy": "defensive_bear_block",
+      "min_confidence": 0.45,
+      "train_return_pct": -6.86,
+      "train_sharpe": -3.34,
+      "train_max_dd_pct": 7.98,
+      "train_trades": 29,
+      "val_return_pct": -4.49,
+      "val_sharpe": -3.33,
+      "val_max_dd_pct": 4.89,
+      "val_trades": 27
+    },
+    {
+      "atr_multiplier": 2.5,
+      "regime_policy": "bear_and_highvol_block",
+      "min_confidence": 0.45,
+      "train_return_pct": -5.92,
+      "train_sharpe": -4.46,
+      "train_max_dd_pct": 7.05,
+      "train_trades": 19,
+      "val_return_pct": -4.49,
+      "val_sharpe": -3.33,
+      "val_max_dd_pct": 4.89,
+      "val_trades": 27
+    },
+    {
+      "atr_multiplier": 2.5,
+      "regime_policy": "strict_bull_only",
+      "min_confidence": 0.45,
+      "train_return_pct": -2.58,
+      "train_sharpe": -4.7,
+      "train_max_dd_pct": 2.58,
+      "train_trades": 4,
+      "val_return_pct": -2.93,
+      "val_sharpe": -2.62,
+      "val_max_dd_pct": 3.31,
+      "val_trades": 16
+    },
+    {
+      "atr_multiplier": 3.0,
+      "regime_policy": "permissive",
+      "min_confidence": 0.45,
+      "train_return_pct": -2.94,
+      "train_sharpe": -2.48,
+      "train_max_dd_pct": 4.76,
+      "train_trades": 16,
+      "val_return_pct": -2.46,
+      "val_sharpe": -4.68,
+      "val_max_dd_pct": 2.48,
+      "val_trades": 7
+    },
+    {
+      "atr_multiplier": 3.0,
+      "regime_policy": "defensive_bear_block",
+      "min_confidence": 0.45,
+      "train_return_pct": -2.94,
+      "train_sharpe": -2.48,
+      "train_max_dd_pct": 4.76,
+      "train_trades": 16,
+      "val_return_pct": -2.46,
+      "val_sharpe": -4.68,
+      "val_max_dd_pct": 2.48,
+      "val_trades": 7
+    },
+    {
+      "atr_multiplier": 3.0,
+      "regime_policy": "bear_and_highvol_block",
+      "min_confidence": 0.45,
+      "train_return_pct": 0.71,
+      "train_sharpe": -5.62,
+      "train_max_dd_pct": 0.35,
+      "train_trades": 3,
+      "val_return_pct": -2.46,
+      "val_sharpe": -4.68,
+      "val_max_dd_pct": 2.48,
+      "val_trades": 7
+    },
+    {
+      "atr_multiplier": 3.0,
+      "regime_policy": "strict_bull_only",
+      "min_confidence": 0.45,
+      "train_return_pct": 0.0,
+      "train_sharpe": 0.0,
+      "train_max_dd_pct": 0.0,
+      "train_trades": 0,
+      "val_return_pct": -0.3,
+      "val_sharpe": -2.7,
+      "val_max_dd_pct": 0.95,
+      "val_trades": 4
+    }
+  ],
+  "out_of_sample": {
+    "splits": {
+      "train": {
+        "start": "2026-01-21",
+        "end": "2026-06-22",
+        "bars": 107
+      },
+      "validation": {
+        "start": "2026-06-23",
+        "end": "2026-09-03",
+        "bars": 53
+      },
+      "out_of_sample": {
+        "start": "2026-09-04",
+        "end": "2026-11-18",
+        "bars": 54
+      }
+    },
+    "moreshwar_1_oos": {
+      "model": "OOS Moreshwar 1.0 Baseline",
+      "total_return_pct": 4.4,
+      "annualised_return_pct": 22.26,
+      "win_rate_pct": 48.0,
+      "profit_factor": 1.39,
+      "sharpe_ratio": 1.13,
+      "sortino_ratio": 1.9,
+      "max_drawdown_pct": 3.4,
+      "avg_holding_days": 5.7,
+      "avg_winning_trade_pct": 5.94,
+      "avg_losing_trade_pct": -3.5,
+      "avg_mae_pct": -2.74,
+      "avg_mfe_pct": 4.46,
+      "total_trades": 25,
+      "transaction_costs_pct": 2.03,
+      "capital_utilisation_pct": 53.1,
+      "stop_loss_freq_pct": 48.0,
+      "target_hit_freq_pct": 28.0,
+      "horizon_exit_freq_pct": 24.0,
+      "rejected_trades": 0,
+      "regime_blocked_trades": 0,
+      "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+    },
+    "moreshwar_2_oos": {
+      "model": "OOS Complete Moreshwar 2.0 (Clean Causal)",
+      "total_return_pct": 4.92,
+      "annualised_return_pct": 25.1,
+      "win_rate_pct": 70.0,
+      "profit_factor": 7.48,
+      "sharpe_ratio": 2.56,
+      "sortino_ratio": 7.54,
+      "max_drawdown_pct": 0.7,
+      "avg_holding_days": 6.9,
+      "avg_winning_trade_pct": 5.17,
+      "avg_losing_trade_pct": -3.36,
+      "avg_mae_pct": -1.92,
+      "avg_mfe_pct": 6.58,
+      "total_trades": 10,
+      "transaction_costs_pct": 0.46,
+      "capital_utilisation_pct": 14.1,
+      "stop_loss_freq_pct": 0.0,
+      "target_hit_freq_pct": 40.0,
+      "horizon_exit_freq_pct": 60.0,
+      "rejected_trades": 82,
+      "regime_blocked_trades": 81,
+      "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+    },
+    "nifty50_oos": {
+      "model": "Nifty 50 (^NSEI) Buy & Hold",
+      "total_return_pct": 5.57,
+      "annualised_return_pct": 31.39,
+      "win_rate_pct": 100.0,
+      "profit_factor": null,
+      "sharpe_ratio": 1.49,
+      "sortino_ratio": 2.44,
+      "max_drawdown_pct": 6.97,
+      "avg_holding_days": 50.0,
+      "avg_winning_trade_pct": 5.57,
+      "avg_losing_trade_pct": 0.0,
+      "avg_mae_pct": -6.97,
+      "avg_mfe_pct": null,
+      "total_trades": 1,
+      "transaction_costs_pct": 0.0,
+      "capital_utilisation_pct": 100.0,
+      "stop_loss_freq_pct": 0.0,
+      "target_hit_freq_pct": 0.0,
+      "horizon_exit_freq_pct": 0.0,
+      "rejected_trades": 0,
+      "regime_blocked_trades": 0,
+      "fundamental_integrity": "MARKET_INDEX_BENCHMARK"
+    }
+  },
+  "rolling_walk_forward": [
+    {
+      "fold": "WF-1",
+      "start": "2026-01-21",
+      "end": "2026-05-01",
+      "m1_return_pct": -8.14,
+      "m1_max_dd_pct": 8.86,
+      "m2_return_pct": -4.15,
+      "m2_max_dd_pct": 5.14,
+      "m2_win_rate_pct": 25.0,
+      "m2_trades": 16
+    },
+    {
+      "fold": "WF-2",
+      "start": "2026-05-04",
+      "end": "2026-08-10",
+      "m1_return_pct": 0.32,
+      "m1_max_dd_pct": 5.7,
+      "m2_return_pct": -3.61,
+      "m2_max_dd_pct": 6.61,
+      "m2_win_rate_pct": 33.33,
+      "m2_trades": 36
+    },
+    {
+      "fold": "WF-3",
+      "start": "2026-08-11",
+      "end": "2026-11-18",
+      "m1_return_pct": -1.03,
+      "m1_max_dd_pct": 7.8,
+      "m2_return_pct": 1.5,
+      "m2_max_dd_pct": 3.19,
+      "m2_win_rate_pct": 47.06,
+      "m2_trades": 17
+    }
+  ]
+}

@@ -22,6 +22,8 @@ let appState = {
   geminiCritiques: {}, // keyed by symbol -> Gemini critical trade analysis
   provenance: null, // Data Integrity Monitor payload
   backtest: null,   // Walk-forward Backtest & Multi-Agent Attribution payload
+  moreshwarV2Research: null, // Shadow Moreshwar 2.0 Phase 5-8 Research Comparison
+  mv2SelectedSymbol: null,
   auditTrail: null, // Permanent Decision Audit Ledger payload
   selectedAuditId: null,
   intelFocus: "all",
@@ -188,6 +190,7 @@ function applyPayload(payload) {
   appState.geminiCritiques = payload.gemini_critiques || {};
   appState.provenance = payload.provenance || null;
   appState.backtest = payload.backtest || null;
+  appState.moreshwarV2Research = payload.moreshwar_v2_research || null;
   appState.auditTrail = payload.audit_trail || null;
   appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
   appState.rules = payload.rules || [];
@@ -385,7 +388,7 @@ function renderAllViews() {
       pSpotEl.textContent = `${srcName} · ${fresh}${assetProv.discrepancies?.length ? " · DISCREPANCY!" : ""}`;
       pSpotEl.className = `tag-pill ${assetProv.discrepancies?.length ? "tag-stop" : srcTone}`;
       const brokerFill = assetProv.metrics?.broker_execution?.price_classification === "BROKER_CONFIRMED";
-      pTypeEl.textContent = brokerFill ? "BROKER FILL + MODEL LEVELS" : "LEVELS: ANALYTICAL ESTIMATE";
+      pTypeEl.textContent = brokerFill ? "BROKER FILL + MODEL LEVELS" : "LEVELS: ANALYTICAL ESTIMATE (NOT EXECUTED)";
       pTypeEl.className = `tag-pill ${brokerFill ? "tag-target" : "tag-entry"}`;
       pTsEl.textContent = `Market TS (${assetProv.market_timestamp_kind === "exchange_quote" ? "Quote" : "EOD"}): ${fmtTsShort(assetProv.market_timestamp)} · Retrieval TS: ${fmtTsShort(assetProv.retrieval_timestamp)}`;
     } else {
@@ -678,28 +681,6 @@ function renderAllViews() {
       gemini_stance: crit ? crit.stance : "PENDING"
     }, null, 2);
 
-  const tickerStrip = document.getElementById("mobileTickerStrip");
-  if (tickerStrip) {
-    tickerStrip.innerHTML = "";
-    assetsList.forEach((a) => {
-      const pill = document.createElement("button");
-      pill.type = "button";
-      pill.className = `mob-ticker-pill ${a.symbol === active.symbol ? "active" : ""}`;
-      const sign = a.change_pct >= 0 ? "+" : "";
-      pill.textContent = `${a.symbol} ${sign}${a.change_pct}%`;
-      pill.addEventListener("click", () => {
-        appState.activeSymbol = a.symbol;
-        renderAllViews();
-      });
-      tickerStrip.appendChild(pill);
-    });
-  }
-
-  const jumpBtn = document.getElementById("mobileOpenChartBtn");
-  if (jumpBtn) {
-    jumpBtn.textContent = `Inspect ${active.symbol} Chart & Gemini CRO →`;
-  }
-
   drawUnifiedChart(active);
   renderIntelligenceViews();
 }
@@ -710,17 +691,17 @@ function drawBacktestEquityChart(curve) {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
-  const w = Math.max(260, rect.width || 330);
-  const h = Math.max(170, rect.height || 210);
+  const w = Math.max(280, rect.width || 460);
+  const h = Math.max(180, rect.height || 220);
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, w, h);
 
   if (!Array.isArray(curve) || curve.length < 2) {
-    ctx.font = "11px 'JetBrains Mono', monospace";
+    ctx.font = "12px 'JetBrains Mono', monospace";
     ctx.fillStyle = "hsl(215, 15%, 65%)";
-    ctx.fillText("Backtest equity curve populates on live scan.", 12, h / 2);
+    ctx.fillText("Backtest equity curve will populate after next live scan.", 16, h / 2);
     return;
   }
 
@@ -732,7 +713,7 @@ function drawBacktestEquityChart(curve) {
   });
   const minV = Math.min(...vals) * 0.99;
   const maxV = Math.max(...vals) * 1.01;
-  const padT = 14, padB = 22, padL = 10, padR = 46;
+  const padT = 16, padB = 22, padL = 12, padR = 52;
   const plotW = w - padL - padR;
   const plotH = h - padT - padB;
   const yFor = (v) => padT + plotH - ((v - minV) / Math.max(1e-6, maxV - minV)) * plotH;
@@ -740,7 +721,7 @@ function drawBacktestEquityChart(curve) {
 
   ctx.strokeStyle = "hsla(222, 15%, 24%, 0.45)";
   ctx.lineWidth = 1;
-  ctx.font = "9.5px 'JetBrains Mono', monospace";
+  ctx.font = "10px 'JetBrains Mono', monospace";
   ctx.fillStyle = "hsl(215, 15%, 65%)";
   for (let i = 0; i <= 4; i++) {
     const v = minV + ((maxV - minV) * i) / 4;
@@ -749,10 +730,10 @@ function drawBacktestEquityChart(curve) {
     ctx.moveTo(padL, y);
     ctx.lineTo(w - padR, y);
     ctx.stroke();
-    ctx.fillText(v.toFixed(1), w - padR + 5, y + 3);
+    ctx.fillText(v.toFixed(1), w - padR + 6, y + 3);
   }
   ctx.fillText(curve[0].date || "", padL, h - 5);
-  ctx.fillText(curve[curve.length - 1].date || "", w - padR - 60, h - 5);
+  ctx.fillText(curve[curve.length - 1].date || "", w - padR - 66, h - 5);
 
   const plotLine = (key, color, dashed = false) => {
     ctx.save();
@@ -835,7 +816,7 @@ function renderProvenanceMonitor() {
       </div>
     `).join("");
   } else {
-    discEl.innerHTML = `<div class="terminal-box" style="color:var(--accent-emerald);">✅ Zero unresolved cross-source price discrepancies above thresholds (Spot vs EOD &lt; 1.5%, Primary Feed vs Yahoo/Broker &lt; 0.75%).</div>`;
+    discEl.innerHTML = `<div class="terminal-box" style="color:var(--accent-emerald);">✅ Zero unresolved cross-source price discrepancies above divergence thresholds (Feed Spot vs EOD Bar &lt; 1.5%, Primary Feed vs Yahoo/Broker LTP &lt; 0.75%).</div>`;
   }
 
   const assetsMap = prov.assets || {};
@@ -942,8 +923,8 @@ function renderBacktestAnalytics() {
         <strong style="color:var(--accent-cyan);">Quality Selectivity Gate:</strong>
         Filtered <strong>${selM.noise_reduction_pct ?? 0}%</strong> noisy candidates (${selM.noisy_candidates_filtered ?? 0} of ${selM.unfiltered_candidate_windows ?? 0} rejected pre-CRO · ${selM.quality_gated_signals ?? 0} strict setups → ${selM.recalibrated_active_signals ?? 0} post-CRO active)
       </div>
-      <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-secondary);">
-        Live Ledger: <strong>${sampleCtx.settled_records ?? 0}/${sampleCtx.min_recommended_settled ?? 30}</strong> settled (${sampleCtx.open_records ?? 0} awaiting T+1..T+14)
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">
+        Live Forward Ledger: <strong>${sampleCtx.settled_records ?? 0}/${sampleCtx.min_recommended_settled ?? 30}</strong> settled (${sampleCtx.open_records ?? 0} awaiting T+1..T+14)
       </div>
     `;
   }
@@ -953,8 +934,8 @@ function renderBacktestAnalytics() {
     const sCount = sampleCtx.settled_records ?? 0;
     const minReq = sampleCtx.min_recommended_settled ?? 30;
     livePillEl.textContent = sampleCtx.sufficient_live_sample
-      ? `LIVE LEDGER: ${sCount} SETTLED`
-      : `LIVE: ${sCount}/${minReq} SETTLED · 1Y WALK-FWD`;
+      ? `LIVE LEDGER: ${sCount} SETTLED (STATISTICALLY ACTIVE)`
+      : `LIVE LEDGER: ${sCount} / ${minReq} SETTLED · 1Y WALK-FORWARD ACTIVE`;
     livePillEl.className = `tag-pill ${sampleCtx.sufficient_live_sample ? "tag-target" : "tag-score"}`;
   }
 
@@ -1131,6 +1112,234 @@ function renderBacktestAnalytics() {
   `;
 
   drawBacktestEquityChart(bt.equity_curve || []);
+  renderMoreshwarV2ShadowLab();
+}
+
+function renderMoreshwarV2ShadowLab() {
+  const selEl = document.getElementById("mv2SymbolSelect");
+  const gridEl = document.getElementById("mv2ExplainabilityGrid");
+  const reasonEl = document.getElementById("mv2ReasonBox");
+  const modelsBody = document.getElementById("mv2ModelsTableBody");
+  const wfEl = document.getElementById("mv2WalkForwardGrid");
+  const badgeEl = document.getElementById("mv2PromotionBadge");
+  if (!selEl || !gridEl || !reasonEl || !modelsBody || !wfEl) return;
+
+  const syms = Object.keys(appState.assets || {});
+  if (syms.length) {
+    if (!appState.mv2SelectedSymbol || !appState.assets[appState.mv2SelectedSymbol]) {
+      appState.mv2SelectedSymbol = appState.assets[appState.activeSymbol] ? appState.activeSymbol : syms[0];
+    }
+    selEl.innerHTML = syms.map((s) => `<option value="${escHtml(s)}">${escHtml(s)}</option>`).join("");
+    selEl.value = appState.mv2SelectedSymbol;
+  }
+
+  const asset = appState.assets[appState.mv2SelectedSymbol || appState.activeSymbol];
+  const v2 = asset?.moreshwar_v2_preview || null;
+  const v1 = asset?.moreshwar_levels || null;
+  const res = appState.moreshwarV2Research || null;
+
+  if (badgeEl && res) {
+    badgeEl.textContent = res.promoted_to_production
+      ? "MORESHWAR 2.0 PROMOTED"
+      : "SHADOW ONLY · M1 ACTIVE IN PROD";
+  }
+
+  if (!v2) {
+    gridEl.innerHTML = `<div class="mv2-field-card" style="grid-column:1/-1;"><span class="mv2-field-val">Awaiting Moreshwar 2.0 shadow telemetry...</span><span class="mv2-field-sub">Populates on live scan or /api/state refresh.</span></div>`;
+    reasonEl.innerHTML = "";
+  } else {
+    const cur = asset.currency || "INR";
+    const confBd = v2.confidence_breakdown || {};
+    const regDet = v2.regime_details || {};
+    const statusTone = v2.accepted ? "var(--accent-emerald)" : "var(--accent-amber)";
+    const regTone = v2.market_regime === "BULLISH"
+      ? "var(--accent-emerald)"
+      : v2.market_regime === "NEUTRAL"
+        ? "var(--accent-cyan)"
+        : "var(--accent-crimson)";
+
+    gridEl.innerHTML = `
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">1. Fundamental Score</span>
+        <span class="mv2-field-val">${v2.fundamental_score ?? "N/A"} / 100</span>
+        <span class="mv2-field-sub">Porter ${v2.porters_score ?? "--"} · Mode: ${escHtml(v2.fundamental_mode)}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">2. Confidence Adjustment</span>
+        <span class="mv2-field-val">${Number(v2.confidence || 0).toFixed(2)} <span style="font-size:10px;color:var(--text-muted);">(cap 0.85)</span></span>
+        <span class="mv2-field-sub">Base ${confBd.base_quality_conf ?? "--"} − Miss ${confBd.missing_penalty ?? 0} − Tech ${confBd.contradiction_penalty ?? 0} − Reg ${confBd.regime_penalty ?? 0}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">3. ATR(14) Volatility</span>
+        <span class="mv2-field-val">${fmtCurrency(v2.atr_value, cur, 2)} (${v2.atr_pct ?? 0}%)</span>
+        <span class="mv2-field-sub">${v2.vol_throttled ? "High-Vol Throttled" : "Normal Volatility Envelope"}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">4. ATR Multiplier</span>
+        <span class="mv2-field-val">${v2.atr_multiplier ?? 2.0}x ATR(14)</span>
+        <span class="mv2-field-sub">Replaces M1 <code>(100-X)*scale</code></span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">5. Market Regime (Causal)</span>
+        <span class="mv2-field-val" style="color:${regTone};">${escHtml(v2.market_regime || "UNKNOWN")}</span>
+        <span class="mv2-field-sub">Nifty ${regDet.close ? fmtCurrency(regDet.close, "INR", 0) : "--"} · 20D/50D SMA (${regDet.ann_vol_20d_pct ?? "--"}% vol)</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">6. Entry Price</span>
+        <span class="mv2-field-val">${fmtCurrency(v2.entry_price, cur, 2)}</span>
+        <span class="mv2-field-sub">M1 Active Entry: ${v1 ? fmtCurrency(v1.entry_price, cur, 2) : "--"}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">7. Stop-Loss (ATR)</span>
+        <span class="mv2-field-val" style="color:var(--accent-crimson);">${fmtCurrency(v2.stop_loss, cur, 2)} (-${v2.stop_distance_pct ?? 0}%)</span>
+        <span class="mv2-field-sub">M1 Active SL: ${v1 ? fmtCurrency(v1.stop_loss, cur, 2) : "--"}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">8. Target &amp; 9. R:R</span>
+        <span class="mv2-field-val" style="color:var(--accent-emerald);">${fmtCurrency(v2.target, cur, 2)} (+${v2.target_distance_pct ?? 0}%)</span>
+        <span class="mv2-field-sub">R:R <strong>1:${v2.rr_ratio ?? 0}</strong> (M1 R:R 1:${v1?.rr_ratio ?? "--"})</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">10. Position Qty (Int)</span>
+        <span class="mv2-field-val">${v2.position_qty ?? 0} Shares</span>
+        <span class="mv2-field-sub">Risk Budget: ${fmtCurrency(v2.risk_budget_amount || 0, cur, 0)}</span>
+      </div>
+      <div class="mv2-field-card">
+        <span class="mv2-field-label">11. Max Capital Exposure</span>
+        <span class="mv2-field-val">${fmtCurrency(v2.max_capital_exposure || 0, cur, 0)} (${v2.exposure_pct ?? 0}%)</span>
+        <span class="mv2-field-sub">Hard single-stock cap 20%</span>
+      </div>
+      <div class="mv2-field-card mv2-span-2">
+        <span class="mv2-field-label">12. Shadow Decision Status &amp; Primary Verdict</span>
+        <span class="mv2-field-val" style="color:${statusTone};">${v2.accepted ? "ACCEPTED (SHADOW CANDIDATE)" : "REJECTED / GATED (SHADOW)"}</span>
+        <span class="mv2-field-sub">${escHtml(v2.reason_summary || "")}</span>
+      </div>
+    `;
+
+    const penList = Array.isArray(confBd.penalties) && confBd.penalties.length
+      ? confBd.penalties.map((p) => escHtml(p)).join(" · ")
+      : "No structural confidence deductions beyond anti-certainty cap.";
+    const reasonsList = v2.accepted
+      ? (v2.accept_reasons || []).map((r) => `✅ ${escHtml(r)}`).join("<br>")
+      : (v2.rejection_reasons || []).map((r) => `🛑 ${escHtml(r)}`).join("<br>");
+
+    reasonEl.innerHTML = `
+      <div><strong style="color:var(--accent-cyan);">Confidence Breakdown (${escHtml(v2.symbol)}):</strong> ${penList}</div>
+      <div style="margin-top:4px;"><strong style="color:${statusTone};">Gate Details:</strong><br>${reasonsList}</div>
+    `;
+  }
+
+  const models = (res && Array.isArray(res.models_comparison)) ? res.models_comparison : [];
+  if (!models.length) {
+    modelsBody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:var(--text-secondary);">Experiment comparison table populates after live scan.</td></tr>`;
+    wfEl.innerHTML = "";
+    return;
+  }
+
+  modelsBody.innerHTML = models.map((m) => {
+    const isHighlight = String(m.model).includes("Model D") || String(m.model).includes("Model E:") || String(m.model).includes("Model A");
+    const retCol = (m.total_return_pct || 0) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)";
+    const intTag = String(m.fundamental_integrity || "").includes("CAUSAL_CLEAN")
+      ? "tag-target"
+      : String(m.fundamental_integrity || "").includes("MARKET_INDEX")
+        ? "tag-entry"
+        : "tag-score";
+    const intShort = String(m.fundamental_integrity || "").includes("CAUSAL_CLEAN")
+      ? "CAUSAL CLEAN"
+      : String(m.fundamental_integrity || "").includes("MARKET_INDEX")
+        ? "INDEX BENCH"
+        : "STATIC FUND WARN";
+    return `
+      <tr style="${String(m.model).includes("Model E:") ? "background:hsla(196,86%,54%,0.07);" : ""}">
+        <td style="font-weight:${isHighlight ? "700" : "500"};">${escHtml(m.model)}</td>
+        <td style="font-family:var(--font-mono);color:${retCol};font-weight:700;">${(m.total_return_pct || 0) >= 0 ? "+" : ""}${m.total_return_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);color:${retCol};">${(m.annualised_return_pct || 0) >= 0 ? "+" : ""}${m.annualised_return_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.win_rate_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.profit_factor != null ? m.profit_factor : "N/A"}</td>
+        <td style="font-family:var(--font-mono);">${m.sharpe_ratio ?? 0}</td>
+        <td style="font-family:var(--font-mono);">${m.max_drawdown_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.total_trades ?? 0}</td>
+        <td style="font-family:var(--font-mono);">${m.stop_loss_freq_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.capital_utilisation_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.rejected_trades ?? 0} / ${m.regime_blocked_trades ?? 0}</td>
+        <td><span class="tag-pill ${intTag}">${intShort}</span></td>
+      </tr>
+    `;
+  }).join("");
+
+  const oos = res.out_of_sample || {};
+  const oosM1 = oos.moreshwar_1_oos || {};
+  const oosM2 = oos.moreshwar_2_oos || {};
+  const oosNifty = oos.nifty50_oos || {};
+  const wfRows = Array.isArray(res.rolling_walk_forward) ? res.rolling_walk_forward : [];
+  const sensRows = Array.isArray(res.sensitivity_sweep) ? res.sensitivity_sweep : [];
+  const bestSens = sensRows.length
+    ? sensRows.filter((r) => r.val_trades > 0).sort((a, b) => (b.val_return_pct - a.val_return_pct))[0] || sensRows[0]
+    : null;
+
+  wfEl.innerHTML = `
+    <div class="dq-card" style="border-top:2px solid var(--accent-emerald);">
+      <div class="dq-card-head">
+        <span class="dq-q-title">OUT-OF-SAMPLE TEST SPLIT</span>
+        <span class="tag-pill tag-target">${escHtml(oos.splits?.out_of_sample?.start || "")} → ${escHtml(oos.splits?.out_of_sample?.end || "")}</span>
+      </div>
+      <div class="dq-headline">Clean Causal Moreshwar 2.0 on unseen tail vs M1 &amp; Nifty 50:</div>
+      <div class="dq-mini-grid">
+        <div class="dq-mini-stat">
+          <div class="dq-mini-lbl">M2 Clean OOS</div>
+          <div class="dq-mini-val" style="color:${(oosM2.total_return_pct || 0) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${(oosM2.total_return_pct || 0) >= 0 ? "+" : ""}${oosM2.total_return_pct ?? "--"}%</div>
+          <div class="dq-mini-sub">DD ${oosM2.max_drawdown_pct ?? "--"}% · Win ${oosM2.win_rate_pct ?? "--"}% (${oosM2.total_trades ?? 0} trd)</div>
+        </div>
+        <div class="dq-mini-stat">
+          <div class="dq-mini-lbl">M1 Baseline OOS</div>
+          <div class="dq-mini-val" style="color:var(--accent-cyan);">${(oosM1.total_return_pct || 0) >= 0 ? "+" : ""}${oosM1.total_return_pct ?? "--"}%</div>
+          <div class="dq-mini-sub">DD ${oosM1.max_drawdown_pct ?? "--"}% · Win ${oosM1.win_rate_pct ?? "--"}% (${oosM1.total_trades ?? 0} trd)</div>
+        </div>
+        <div class="dq-mini-stat" style="grid-column: span 2;">
+          <div class="dq-mini-lbl">Nifty 50 OOS Benchmark</div>
+          <div class="dq-mini-val" style="color:var(--accent-amber);">+${oosNifty.total_return_pct ?? "--"}% (MaxDD ${oosNifty.max_drawdown_pct ?? "--"}%)</div>
+          <div class="dq-mini-sub">Zero look-ahead across ${oos.splits?.out_of_sample?.bars ?? 0} OOS trading bars</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dq-card" style="border-top:2px solid var(--accent-cyan);">
+      <div class="dq-card-head">
+        <span class="dq-q-title">ROLLING WALK-FORWARD FOLDS</span>
+        <span class="tag-pill tag-entry">${wfRows.length} WINDOWS</span>
+      </div>
+      <div class="dq-headline">Fold-by-fold stability (M1 vs Clean Causal M2):</div>
+      <div class="table-scroll">
+        <table class="data-table dq-compact-table">
+          <thead><tr><th>Fold</th><th>Window</th><th>M1 Ret (DD)</th><th>M2 Clean (DD)</th><th>Win%</th></tr></thead>
+          <tbody>
+            ${wfRows.map((w) => `
+              <tr>
+                <td style="font-family:var(--font-mono);font-weight:700;">${escHtml(w.fold)}</td>
+                <td style="font-family:var(--font-mono);">${escHtml(w.start)}→${escHtml(w.end)}</td>
+                <td style="font-family:var(--font-mono);color:${w.m1_return_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${w.m1_return_pct >= 0 ? "+" : ""}${w.m1_return_pct}% (${w.m1_max_dd_pct}%)</td>
+                <td style="font-family:var(--font-mono);color:${w.m2_return_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${w.m2_return_pct >= 0 ? "+" : ""}${w.m2_return_pct}% (${w.m2_max_dd_pct}%)</td>
+                <td style="font-family:var(--font-mono);">${w.m2_win_rate_pct}% (n=${w.m2_trades})</td>
+              </tr>
+            `).join("") || `<tr><td colspan="5">Run scripts/run_moreshwar_v2_experiments.py for WF breakdown.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dq-card" style="border-top:2px solid var(--accent-amber);">
+      <div class="dq-card-head">
+        <span class="dq-q-title">HONEST PROMOTION GATE (PHASE 10)</span>
+        <span class="tag-pill tag-stop">REVIEW REQUIRED</span>
+      </div>
+      <div class="dq-headline">Why Moreshwar 2.0 remains in Shadow Research Mode until reviewed:</div>
+      <div style="font-size:11px;color:var(--text-secondary);line-height:1.45;">
+        • <strong>Proven Win:</strong> ATR(14) + Sizing + Nifty Bear Block swings identical StockSight picks from <strong>-7.76% → +0.58%</strong> (Model D) &amp; slashes MaxDD <strong>14.2% → 7.25%</strong>; OOS M2 wins <strong>+4.92% (0.70% DD)</strong>.<br>
+        • <strong>Honest Caveat:</strong> Stripping static fundamentals cleanly (Model E Clean) yields <strong>${models.find((x) => String(x.model).includes("Model E:"))?.total_return_pct ?? "--"}%</strong> (Sharpe negative vs 6.5% T-bill) because historical quarterly ROE/OPM ratios are unavailable from NSE/Yahoo feeds.<br>
+        ${bestSens ? `• <strong>Sensitivity Plateau:</strong> Val leader ATR=${bestSens.atr_multiplier}x (${escHtml(bestSens.regime_policy)}, ${bestSens.val_return_pct >= 0 ? "+" : ""}${bestSens.val_return_pct}%, n=${bestSens.val_trades}).` : ""}
+      </div>
+    </div>
+  `;
 }
 
 function renderAuditLedger() {
@@ -1145,9 +1354,10 @@ function renderAuditLedger() {
   const records = (trail && Array.isArray(trail.records)) ? trail.records : [];
   const acc = trail?.accumulation_summary || {};
   if (subEl) {
-    subEl.textContent = `${records.length} Permanent Decisions · ${acc.settled_count ?? 0}/${acc.min_recommended_settled ?? 30} Settled (${acc.open_count ?? records.length} open) · Updated ${fmtTsShort(trail?.updated_at)}`;
+    subEl.textContent = `${records.length} Permanent Decisions · ${acc.settled_count ?? 0}/${acc.min_recommended_settled ?? 30} Settled (${acc.open_count ?? records.length} open monitoring) · Updated ${fmtTsShort(trail?.updated_at)}`;
   }
 
+  // Sync symbol filter options without losing selection
   const curSymFilter = symSel.value || "ALL";
   const syms = Array.from(new Set(records.map((r) => r.symbol).filter(Boolean))).sort();
   symSel.innerHTML = `<option value="ALL">All Symbols (${syms.length})</option>` + syms.map((s) => `<option value="${escHtml(s)}">${escHtml(s)}</option>`).join("");
@@ -1164,7 +1374,7 @@ function renderAuditLedger() {
   if (selected) appState.selectedAuditId = selected.audit_id;
 
   if (!selected) {
-    flowEl.innerHTML = `<div class="audit-stage-card">No matching decision records in current filter.</div>`;
+    flowEl.innerHTML = `<div class="audit-stage-card" style="grid-column: 1 / -1;">No matching decision records in current filter.</div>`;
     bodyEl.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-secondary);padding:16px;">No audit records match selected filters.</td></tr>`;
     return;
   }
@@ -1282,7 +1492,7 @@ function renderAuditLedger() {
         <td style="font-family:var(--font-mono);font-weight:700;">${escHtml(r.symbol)}</td>
         <td style="font-family:var(--font-mono);font-size:11px;">${rSc.fundamental_total}/${rSc.porters_total}/${rSc.technical_score}%</td>
         <td style="font-family:var(--font-mono);font-size:11px;">${escHtml(rOrig.action)} → <strong>${escHtml(rFin.action)}</strong><br>${fmtCurrency(rOrig.entry, rCur, 2)} → ${fmtCurrency(rFin.entry, rCur, 2)}</td>
-        <td style="font-size:11px;color:var(--text-secondary);min-width:170px;">${escHtml((r.critical_review?.objections_raised || "").slice(0, 90))}${(r.critical_review?.objections_raised || "").length > 90 ? "…" : ""}</td>
+        <td style="font-size:11px;color:var(--text-secondary);max-width:260px;">${escHtml((r.critical_review?.objections_raised || "").slice(0, 95))}${(r.critical_review?.objections_raised || "").length > 95 ? "…" : ""}</td>
         <td><span class="tag-pill ${oTone}">${escHtml(rOut.status || "OPEN")}</span><div style="font-family:var(--font-mono);font-size:11px;margin-top:3px;">${escHtml(oRet)}</div></td>
         <td style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);">${escHtml(rV.scoring_model || "")}<br>${escHtml(rV.critic_model || "none")}</td>
       </tr>
@@ -1327,7 +1537,7 @@ function drawReportEquityCanvas(curve) {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
   const w = Math.max(260, rect.width || 440);
-  const h = Math.max(170, rect.height || 205);
+  const h = Math.max(170, rect.height || 210);
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   ctx.scale(dpr, dpr);
@@ -1403,7 +1613,7 @@ function drawReportAgentCanvas(ranking) {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
   const w = Math.max(260, rect.width || 440);
-  const h = Math.max(170, rect.height || 205);
+  const h = Math.max(170, rect.height || 210);
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   ctx.scale(dpr, dpr);
@@ -1428,6 +1638,7 @@ function drawReportAgentCanvas(ranking) {
   const scalePos = (chartW * 0.55) / maxAbs;
   const scaleNeg = (chartW * 0.45) / maxAbs;
 
+  // Zero vertical line
   ctx.strokeStyle = "hsla(215, 20%, 50%, 0.45)";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -1448,6 +1659,7 @@ function drawReportAgentCanvas(ranking) {
       const bw = Math.max(2, Math.abs(xEnd - zeroX));
       ctx.fillStyle = val >= 0 ? posCol : negCol;
       ctx.fillRect(bx, cy + yOff, bw, 9);
+      ctx.fillStyle = val >= 0 ? posCol : negCol;
       const txt = `${val >= 0 ? "+" : ""}${val.toFixed(1)}%`;
       const tx = val >= 0 ? bx + bw + 4 : Math.max(labelW - 2, bx - 44);
       ctx.fillText(txt, Math.min(w - 44, tx), cy + yOff + 8);
@@ -1464,7 +1676,7 @@ function drawReportCroDonutCanvas(croAudit) {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
   const w = Math.max(260, rect.width || 440);
-  const h = Math.max(170, rect.height || 205);
+  const h = Math.max(170, rect.height || 210);
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   ctx.scale(dpr, dpr);
@@ -1483,13 +1695,13 @@ function drawReportCroDonutCanvas(croAudit) {
     return;
   }
 
-  const cx = Math.min(w * 0.30, 96);
+  const cx = Math.min(w * 0.34, 118);
   const cy = h / 2;
-  const radius = Math.min(cx - 14, cy - 16, 62);
+  const radius = Math.min(cx - 18, cy - 18, 66);
   const slices = [
-    { val: prev, color: "hsl(160, 84%, 44%)" },
-    { val: miss, color: "hsl(350, 84%, 60%)" },
-    { val: pres, color: "hsl(196, 86%, 54%)" },
+    { val: prev, color: "hsl(160, 84%, 44%)", label: "Prevented Bad" },
+    { val: miss, color: "hsl(350, 84%, 60%)", label: "Unnecessary Block/Down" },
+    { val: pres, color: "hsl(196, 86%, 54%)", label: "Preserved Winners" },
   ];
 
   let startA = -Math.PI / 2;
@@ -1499,36 +1711,37 @@ function drawReportCroDonutCanvas(croAudit) {
     ctx.beginPath();
     ctx.arc(cx, cy, radius, startA, startA + sweep);
     ctx.strokeStyle = s.color;
-    ctx.lineWidth = 20;
+    ctx.lineWidth = 22;
     ctx.stroke();
     startA += sweep;
   });
 
   ctx.textAlign = "center";
   ctx.fillStyle = "hsl(210, 25%, 94%)";
-  ctx.font = "bold 16px 'JetBrains Mono', monospace";
+  ctx.font = "bold 18px 'JetBrains Mono', monospace";
   ctx.fillText(`${comb.prevention_rate_pct ?? 0}%`, cx, cy + 4);
-  ctx.font = "9px 'Inter', sans-serif";
+  ctx.font = "9.5px 'Inter', sans-serif";
   ctx.fillStyle = "hsl(215, 15%, 68%)";
-  ctx.fillText("PREVENTED", cx, cy + 17);
+  ctx.fillText("PREVENTED", cx, cy + 18);
 
+  // Clean right-side breakdown labels
   ctx.textAlign = "left";
-  const lx = cx + radius + 22;
+  const lx = cx + radius + 28;
   const items = [
-    [`${prev}/${total} Bad Prevented`, `Avg save -${croAudit?.blocks?.avg_loss_avoided_pct ?? 0}%`, "hsl(160, 84%, 44%)"],
-    [`${miss}/${total} Unnecessary`, `Missed +${croAudit?.blocks?.avg_upside_missed_pct ?? 0}%`, "hsl(350, 84%, 60%)"],
-    [`${pres}/${total} Preserved`, `Net ${(comb.net_intervention_value_pct || 0) >= 0 ? "+" : ""}${comb.net_intervention_value_pct ?? 0}%`, "hsl(196, 86%, 54%)"],
+    [`${prev} / ${total} Bad Prevented`, `Avg block save -${croAudit?.blocks?.avg_loss_avoided_pct ?? 0}%`, "hsl(160, 84%, 44%)"],
+    [`${miss} / ${total} Unnecessary`, `Missed avg +${croAudit?.blocks?.avg_upside_missed_pct ?? 0}%`, "hsl(350, 84%, 60%)"],
+    [`${pres} / ${total} Preserved Wins`, `Net CRO value ${(comb.net_intervention_value_pct || 0) >= 0 ? "+" : ""}${comb.net_intervention_value_pct ?? 0}%`, "hsl(196, 86%, 54%)"],
   ];
   items.forEach(([t1, t2, col], idx) => {
-    const iy = 38 + idx * 48;
+    const iy = 38 + idx * 50;
     ctx.fillStyle = col;
     ctx.fillRect(lx, iy - 9, 8, 8);
     ctx.fillStyle = "hsl(210, 25%, 92%)";
-    ctx.font = "bold 10.5px 'JetBrains Mono', monospace";
-    ctx.fillText(t1, lx + 13, iy - 1);
+    ctx.font = "bold 11px 'JetBrains Mono', monospace";
+    ctx.fillText(t1, lx + 14, iy - 1);
     ctx.fillStyle = "hsl(215, 15%, 68%)";
     ctx.font = "10px 'Inter', sans-serif";
-    ctx.fillText(t2, lx + 13, iy + 13);
+    ctx.fillText(t2, lx + 14, iy + 14);
   });
 }
 
@@ -1539,7 +1752,7 @@ function drawReportBenchmarkCanvas(rows) {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
   const w = Math.max(260, rect.width || 440);
-  const h = Math.max(170, rect.height || 205);
+  const h = Math.max(170, rect.height || 210);
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   ctx.scale(dpr, dpr);
@@ -1552,10 +1765,10 @@ function drawReportBenchmarkCanvas(rows) {
     return;
   }
 
-  const labelW = w < 380 ? 92 : 145;
+  const labelW = w < 380 ? 92 : 148;
   const negValPad = 42;
   const padR = 46;
-  const plotW = Math.max(70, w - labelW - negValPad - padR);
+  const plotW = Math.max(80, w - labelW - negValPad - padR);
   const maxAbs = Math.max(5, ...rows.map((r) => Math.abs(Number(r.cumulative_return_pct || 0)))) * 1.15;
   const zeroX = labelW + negValPad + plotW * 0.72;
   const scaleNeg = (plotW * 0.72) / maxAbs;
@@ -1581,7 +1794,7 @@ function drawReportBenchmarkCanvas(rows) {
       .replace("Matrix Entries + Fixed 1:2 Exits", "Matrix + 1:2");
 
     ctx.fillStyle = "hsl(210, 25%, 90%)";
-    ctx.fillText(shortName.slice(0, w < 380 ? 14 : 18), 6, cy + 12);
+    ctx.fillText(shortName.slice(0, w < 380 ? 14 : 20), 6, cy + 12);
 
     const val = Number(r.cumulative_return_pct || 0);
     const isBench = String(r.strategy).includes("Nifty") || String(r.strategy).includes("Equal-Weight");
@@ -1625,7 +1838,7 @@ function renderReportsView() {
   if (isoBadge) {
     isoBadge.textContent = actStatus === "BROKER_VERIFIED"
       ? "REAL BROKER FILLS VERIFIED SEPARATELY"
-      : "0 REAL BROKER FILLS · SIMULATIONS ISOLATED";
+      : "0 REAL BROKER FILLS · SIMULATIONS STRICTLY ISOLATED";
   }
 
   const buySyms = buys.map((b) => b.symbol).join(", ") || "None";
@@ -1654,7 +1867,7 @@ function renderReportsView() {
     <div class="kpi-tile">
       <span class="kpi-tile-label">Best Profit Agent</span>
       <span class="kpi-tile-val" style="color:var(--accent-cyan);">${escHtml(topAgent)}</span>
-      <span class="kpi-tile-sub">${topLift >= 0 ? "+" : ""}${topLift}% lift · ${topDd}% DD saved</span>
+      <span class="kpi-tile-sub">${topLift >= 0 ? "+" : ""}${topLift}% return lift · ${topDd}% DD saved</span>
     </div>
     <div class="kpi-tile">
       <span class="kpi-tile-label">Gemini CRO Accuracy</span>
@@ -1669,7 +1882,7 @@ function renderReportsView() {
     <div class="kpi-tile">
       <span class="kpi-tile-label">Live Ledger Progress</span>
       <span class="kpi-tile-val">${settledLive} / ${minLive} Settled</span>
-      <span class="kpi-tile-sub">${openLive} monitoring forward bars</span>
+      <span class="kpi-tile-sub">${openLive} monitoring forward bars · ${discCount} feed alerts</span>
     </div>
   `;
 
@@ -1698,28 +1911,28 @@ function renderReportsView() {
   storyEl.innerHTML = `
     <div class="rpt-story-card" style="border-top:2px solid var(--accent-emerald);">
       <div class="rpt-story-head">
-        <span class="rpt-story-title">Picks Tab · Execution Queue</span>
+        <span class="rpt-story-title">Tab 1 · Execution Queue &amp; Selectivity</span>
         <span class="tag-pill tag-target">${buys.length} ACTIVE PICK${buys.length === 1 ? "" : "S"}</span>
       </div>
       <div class="rpt-story-text">Instead of flooding the queue, strict gates only surface aligned setups with R:R ≥ 1:1.5. Active ideas today: <strong>${escHtml(buySyms)}</strong>. Over 1 year, this filtering removed ${selM.noise_reduction_pct ?? 0}% of weak signals before execution.</div>
     </div>
     <div class="rpt-story-card" style="border-top:2px solid var(--accent-cyan);">
       <div class="rpt-story-head">
-        <span class="rpt-story-title">Moat Tab · Watchlist &amp; Portfolio</span>
+        <span class="rpt-story-title">Tab 2 · Watchlist Moat &amp; Portfolio</span>
         <span class="tag-pill tag-entry">${heldCount} HELD · ${assetsList.length} WATCHED</span>
       </div>
       <div class="rpt-story-text">Across your universe: <strong>${strongBuys}</strong> stocks rate BUY NOW/ADD, <strong>${holdSips}</strong> sit in HOLD/SIP ONLY, and <strong>${cautions}</strong> are flagged CAUTION/AVOID. Live Zerodha holdings remain safely isolated from all backtests.</div>
     </div>
     <div class="rpt-story-card" style="border-top:2px solid var(--accent-amber);">
       <div class="rpt-story-head">
-        <span class="rpt-story-title">Setup/CRO · Agents &amp; Critique</span>
+        <span class="rpt-story-title">Tab 3 · Multi-Agent &amp; Gemini CRO</span>
         <span class="tag-pill tag-score">${escHtml(appState.geminiStatus || "CRO READY")}</span>
       </div>
       <div class="rpt-story-text"><strong>${escHtml(topAgent)}</strong> leads on profit lift, while Gemini's adversarial review shields against chasing overbought rallies and downward regression curves — adding <strong>+${q2Comb.net_intervention_value_pct ?? 0}%</strong> net value across backtested interventions.</div>
     </div>
     <div class="rpt-story-card" style="border-top:2px solid var(--accent-crimson);">
       <div class="rpt-story-head">
-        <span class="rpt-story-title">Audit Tab · Data &amp; Live Progress</span>
+        <span class="rpt-story-title">Tab 4 · Data Health &amp; Audit Accumulation</span>
         <span class="tag-pill ${discCount > 0 ? "tag-stop" : "tag-target"}">${discCount} DISCREPANC${discCount === 1 ? "Y" : "IES"}</span>
       </div>
       <div class="rpt-story-text">Market feeds combine Official NSE MCP + Yahoo Finance with zero simulated prices. The permanent audit ledger currently monitors <strong>${openLive}</strong> open decisions toward our <strong>${minLive}-trade</strong> live statistical milestone.</div>
@@ -1883,15 +2096,13 @@ function updateCloudRunnerStatusUI(customMsg = null) {
     : "Automated 15m Mon–Fri GitHub Cloud Scans active · Save optional browser PAT below for 1-click on-demand scans";
 }
 
-const MOBILE_SCAN_CACHE_KEY = "finsistant_mobile_last_live_scan";
-
 async function fetchLatestCloudSnapshot(preferRaw = false) {
-  const pagesUrl = `https://parth2004124.github.io/${GH_REPO}/live_scan.json?ts=${Date.now()}`;
-  const rawUrl = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/live_scan.json?ts=${Date.now()}`;
-  const localUrl = `live_scan.json?ts=${Date.now()}`;
   const candidates = preferRaw
-    ? [rawUrl, pagesUrl, localUrl]
-    : [pagesUrl, rawUrl, localUrl];
+    ? [
+        `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/live_scan.json?ts=${Date.now()}`,
+        `live_scan.json?ts=${Date.now()}`
+      ]
+    : [`live_scan.json?ts=${Date.now()}`];
 
   for (const url of candidates) {
     try {
@@ -1899,26 +2110,12 @@ async function fetchLatestCloudSnapshot(preferRaw = false) {
       if (!res.ok) continue;
       const payload = await res.json();
       if (payload && payload.assets && Object.keys(payload.assets).length > 0) {
-        try {
-          window.localStorage.setItem(MOBILE_SCAN_CACHE_KEY, JSON.stringify(payload));
-        } catch (_) {}
         return payload;
       }
     } catch (_) {
       continue;
     }
   }
-
-  try {
-    const cached = window.localStorage.getItem(MOBILE_SCAN_CACHE_KEY);
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (parsed && parsed.assets && Object.keys(parsed.assets).length > 0) {
-        parsed.data_source = `${parsed.data_source || "Cloud Scan"} (Offline Cache)`;
-        return parsed;
-      }
-    }
-  } catch (_) {}
   throw new Error("live_scan.json unavailable");
 }
 
@@ -2010,7 +2207,7 @@ async function runLiveScan(isAuto = false) {
   if (metaEl) metaEl.textContent = isAuto ? "Running auto-scan on live market feed..." : "Refreshing live orchestration scan...";
 
   // 1. Try live Python backend first when not hosted on static GitHub Pages
-  const isStaticPages = window.location.hostname.endsWith("github.io") || window.location.hostname.endsWith("androidplatform.net") || window.location.protocol === "file:";
+  const isStaticPages = window.location.hostname.endsWith("github.io") || window.location.protocol === "file:";
   if (!isStaticPages) {
     try {
       const endpoint = isAuto ? "/api/state" : "/api/scan";
@@ -2076,76 +2273,34 @@ function bootFinsistantApp() {
     });
   });
 
-  let activeMobileTab = "picks";
-  function switchMobileTab(mobTab) {
-    activeMobileTab = mobTab || "picks";
-    document.querySelectorAll(".mob-nav-btn").forEach((b) => {
-      b.classList.toggle("active", b.dataset.mobTab === activeMobileTab);
-    });
-    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
-
-    if (activeMobileTab === "stocksight" || activeMobileTab === "agents" || activeMobileTab === "intelligence" || activeMobileTab === "reports") {
-      const targetPanel = document.getElementById(`panel-${activeMobileTab}`);
-      if (targetPanel) targetPanel.classList.add("active");
-      if (activeMobileTab === "intelligence") {
-        requestAnimationFrame(() => drawBacktestEquityChart((appState.backtest || {}).equity_curve || []));
-      } else if (activeMobileTab === "reports") {
-        requestAnimationFrame(() => drawReportsCharts());
-      }
-    } else {
-      const missionPanel = document.getElementById("panel-mission");
-      if (missionPanel) missionPanel.classList.add("active");
-      document.querySelectorAll(".mobile-pane").forEach((pane) => {
-        pane.classList.toggle("active-mobile-pane", pane.dataset.mobileView === activeMobileTab);
+  document.querySelectorAll("#intelJumpRow [data-intel-focus]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      appState.intelFocus = btn.dataset.intelFocus || "all";
+      document.querySelectorAll("#intelJumpRow [data-intel-focus]").forEach((b) => {
+        b.classList.toggle("active-subfilter", b === btn);
       });
-      if (activeMobileTab === "chart") {
-        requestAnimationFrame(() => drawUnifiedChart(appState.assets[appState.activeSymbol]));
-      }
-    }
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }
-
-  window.switchMobileTab = switchMobileTab;
-  window.getActiveMobileTab = () => activeMobileTab;
-  window.refreshFinsistantMobileScan = () => runLiveScan(false);
-
-  document.querySelectorAll(".mob-nav-btn").forEach((btn) => {
-    btn.addEventListener("click", () => switchMobileTab(btn.dataset.mobTab));
+      renderIntelligenceViews();
+      requestAnimationFrame(() => drawBacktestEquityChart((appState.backtest || {}).equity_curve || []));
+    });
   });
 
-  const intelJumpRow = document.getElementById("intelJumpRow");
-  if (intelJumpRow) {
-    intelJumpRow.querySelectorAll("[data-intel-focus]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        appState.intelFocus = btn.dataset.intelFocus || "all";
-        intelJumpRow.querySelectorAll("[data-intel-focus]").forEach((b) => {
-          b.classList.toggle("active-subfilter", b === btn);
-        });
-        renderIntelligenceViews();
-        requestAnimationFrame(() => drawBacktestEquityChart((appState.backtest || {}).equity_curve || []));
-      });
+  const auditSymF = document.getElementById("auditSymbolFilter");
+  const auditStF = document.getElementById("auditStatusFilter");
+  if (auditSymF) auditSymF.addEventListener("change", renderAuditLedger);
+  if (auditStF) auditStF.addEventListener("change", renderAuditLedger);
+  const mv2Sel = document.getElementById("mv2SymbolSelect");
+  if (mv2Sel) {
+    mv2Sel.addEventListener("change", () => {
+      appState.mv2SelectedSymbol = mv2Sel.value;
+      renderMoreshwarV2ShadowLab();
     });
-  }
-
-  const symAuditSel = document.getElementById("auditSymbolFilter");
-  if (symAuditSel) {
-    symAuditSel.addEventListener("change", () => renderAuditLedger());
-  }
-  const statusAuditSel = document.getElementById("auditStatusFilter");
-  if (statusAuditSel) {
-    statusAuditSel.addEventListener("change", () => renderAuditLedger());
-  }
-
-  const mobJump = document.getElementById("mobileOpenChartBtn");
-  if (mobJump) {
-    mobJump.addEventListener("click", () => switchMobileTab("chart"));
   }
 
   document.getElementById("switchToStockSightBtn").addEventListener("click", () => {
-    switchMobileTab("stocksight");
+    document.querySelector('[data-tab="stocksight"]').click();
   });
   document.getElementById("manageHoldingsBtn").addEventListener("click", () => {
-    switchMobileTab("stocksight");
+    document.querySelector('[data-tab="stocksight"]').click();
   });
 
   document.getElementById("executeSelectedBtn").addEventListener("click", () => {

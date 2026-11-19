@@ -15,6 +15,7 @@ from .audit_ledger import (
     record_scan_decisions,
 )
 from .backtest_engine import run_backtest_and_attribution
+from .backtest_engine_v2 import run_moreshwar_v2_research_suite
 from .config import FinsistantSettings, load_settings
 from .gemini_critic import analyze_trade_with_gemini, apply_trade_recalibration, ask_gemini_stocky, critique_suggested_trades
 from .kite_auth import (
@@ -24,6 +25,13 @@ from .kite_auth import (
     resolve_kite_session,
 )
 from .live_data import DEFAULT_SYMBOL_CONFIG, fetch_benchmark_candles, fetch_kite_portfolio, fetch_live_market_snapshot
+from .moreshwar_v2 import (
+    MoreshwarV2Config,
+    classify_market_regime,
+    compute_atr,
+    compute_confidence_adjustment,
+    evaluate_moreshwar_v2,
+)
 from .nse_mcp import (
     fetch_nse_corporate_actions,
     fetch_nse_index_1y,
@@ -53,8 +61,14 @@ __all__ = [
     "record_broker_execution",
     "record_scan_decisions",
     "run_backtest_and_attribution",
+    "run_moreshwar_v2_research_suite",
     "build_asset_provenance",
     "build_data_integrity_report",
+    "MoreshwarV2Config",
+    "classify_market_regime",
+    "compute_atr",
+    "compute_confidence_adjustment",
+    "evaluate_moreshwar_v2",
     "fetch_benchmark_candles",
     "fetch_nse_corporate_actions",
     "fetch_nse_index_1y",
