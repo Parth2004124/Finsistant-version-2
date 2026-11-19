@@ -1,0 +1,59 @@
+{
+  "capital_utilisation_pct": 45.0,
+  "idle_cash_pct": 55.0,
+  "avg_raw_opportunities_per_rebal": 131.5,
+  "bottlenecks": {
+    "SIGNAL_CONFLICTS_MERGED": 684,
+    "SECTOR_CAP_BLOCKED": 114,
+    "CORRELATION_CAP_BLOCKED": 14,
+    "MAX_POSITIONS_BLOCKED": 58,
+    "TURNOVER_THROTTLE_BLOCKED": 25,
+    "CASH_SETTLEMENT_BLOCKED": 0,
+    "DRAWDOWN_GOVERNOR_ACTIVE_DAYS": 30,
+    "VOL_TARGET_SCALED_DAYS": 1,
+    "LIQUIDITY_PARTIAL_FILLS": 0,
+    "DRIFT_SKIPPED_REBALANCES": 4
+  },
+  "strategy_contributions": {
+    "STRAT_A_CS_MOMENTUM": {
+      "trades": 86,
+      "wins": 36,
+      "total_pnl_inr": 10632.04,
+      "consensus_trades": 59,
+      "win_rate_pct": 41.9,
+      "return_contribution_pct": 10.63
+    },
+    "STRAT_D_SECTOR_ROTATION": {
+      "trades": 17,
+      "wins": 7,
+      "total_pnl_inr": -96.55,
+      "consensus_trades": 15,
+      "win_rate_pct": 41.2,
+      "return_contribution_pct": -0.1
+    },
+    "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+      "trades": 111,
+      "wins": 54,
+      "total_pnl_inr": 2415.78,
+      "consensus_trades": 36,
+      "win_rate_pct": 48.6,
+      "return_contribution_pct": 2.42
+    },
+    "STRAT_B_VCP_BREAKOUT": {
+      "trades": 23,
+      "wins": 10,
+      "total_pnl_inr": -5508.38,
+      "consensus_trades": 15,
+      "win_rate_pct": 43.5,
+      "return_contribution_pct": -5.51
+    },
+    "STRAT_C_TREND_PULLBACK": {
+      "trades": 1,
+      "wins": 0,
+      "total_pnl_inr": -8.52,
+      "consensus_trades": 1,
+      "win_rate_pct": 0.0,
+      "return_contribution_pct": -0.01
+    }
+  }
+}

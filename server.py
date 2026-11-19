@@ -76,6 +76,8 @@ KITE_META: dict[str, Any] = {"connected": False, "status": "Not initialized", "h
 BACKTEST_CACHE: dict[str, Any] = {}
 MORESHWAR_V2_RESEARCH: dict[str, Any] = {}
 MORESHWAR_V2_1_RESEARCH: dict[str, Any] = {}
+MORESHWAR_V2_2_RESEARCH: dict[str, Any] = {}
+MORESHWAR_V3_RESEARCH: dict[str, Any] = {}
 AUDIT_LEDGER_CACHE: dict[str, Any] = {}
 PROVENANCE_CACHE: dict[str, Any] = {}
 AUTO_RULES: list[dict[str, Any]] = [
@@ -185,6 +187,23 @@ def _refresh_analytics_and_audit(force_new_for_symbol: str | None = None, force_
             MORESHWAR_V2_1_RESEARCH = json.loads(v21_path.read_text(encoding="utf-8"))
         except Exception:
             pass
+
+    global MORESHWAR_V2_2_RESEARCH
+    v22_path = BASE_DIR / "reports" / "moreshwar_2_2" / "integrated_final_report.json"
+    if v22_path.exists():
+        try:
+            MORESHWAR_V2_2_RESEARCH = json.loads(v22_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
+    global MORESHWAR_V3_RESEARCH
+    v3_path = BASE_DIR / "reports" / "moreshwar_3_0" / "moreshwar_v3_release_candidate.json"
+    if v3_path.exists():
+        try:
+            MORESHWAR_V3_RESEARCH = json.loads(v3_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
 
     PROVENANCE_CACHE = build_data_integrity_report(
         assets=ANALYSIS_CACHE,
@@ -448,10 +467,25 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         active_symbol = next(iter(PORTFOLIO_STATE.keys()))
 
     is_held = PORTFOLIO_STATE.get(active_symbol, {}).get("qty", 0) > 0
-    active_analysis = ANALYSIS_CACHE.get(active_symbol) or get_asset_full_analysis(active_symbol, is_holding=is_held)
+    active_analysis = ANALYSIS_CACHE.get(active_symbol)
+    if not active_analysis:
+        try:
+            active_analysis = get_asset_full_analysis(active_symbol, is_holding=is_held)
+        except Exception:
+            ls_fallback_path = BASE_DIR / "live_scan.json"
+            if ls_fallback_path.exists():
+                try:
+                    ls_payload = json.loads(ls_fallback_path.read_text(encoding="utf-8"))
+                    ANALYSIS_CACHE.update(ls_payload.get("assets") or {})
+                    PIPELINE_CACHE.update(ls_payload.get("pipelines") or {})
+                    GEMINI_CRITIQUES.update(ls_payload.get("gemini_critiques") or {})
+                except Exception:
+                    pass
+            active_analysis = ANALYSIS_CACHE.get(active_symbol) or next(iter(ANALYSIS_CACHE.values()), {})
     ANALYSIS_CACHE[active_symbol] = active_analysis
 
     active_pipeline = PIPELINE_CACHE.get(active_symbol)
+
     if not active_pipeline:
         active_pipeline = runner.run_pipeline(
             symbol=active_symbol,
@@ -539,6 +573,8 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "backtest": BACKTEST_CACHE,
         "moreshwar_v2_research": MORESHWAR_V2_RESEARCH,
         "moreshwar_v2_1_research": MORESHWAR_V2_1_RESEARCH,
+        "moreshwar_v2_2_research": MORESHWAR_V2_2_RESEARCH,
+        "moreshwar_v3_research": MORESHWAR_V3_RESEARCH,
         "audit_trail": build_audit_dashboard_view(AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)),
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,
@@ -610,6 +646,24 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(MORESHWAR_V2_1_RESEARCH or {"status": "unavailable"})
+            return
+        if path == "/api/research/v2_2":
+            v22_path = BASE_DIR / "reports" / "moreshwar_2_2" / "integrated_final_report.json"
+            if not MORESHWAR_V2_2_RESEARCH and v22_path.exists():
+                try:
+                    MORESHWAR_V2_2_RESEARCH.update(json.loads(v22_path.read_text(encoding="utf-8")))
+                except Exception:
+                    pass
+            self._send_json(MORESHWAR_V2_2_RESEARCH or {"status": "unavailable"})
+            return
+        if path == "/api/research/v3":
+            v3_path = BASE_DIR / "reports" / "moreshwar_3_0" / "moreshwar_v3_release_candidate.json"
+            if not MORESHWAR_V3_RESEARCH and v3_path.exists():
+                try:
+                    MORESHWAR_V3_RESEARCH.update(json.loads(v3_path.read_text(encoding="utf-8")))
+                except Exception:
+                    pass
+            self._send_json(MORESHWAR_V3_RESEARCH or {"status": "unavailable"})
             return
         if path == "/api/audit":
             ledger = AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)

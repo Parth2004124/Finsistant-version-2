@@ -1,0 +1,38 @@
+[
+  {
+    "id": "LIM-01",
+    "area": "Historical Index Membership",
+    "limitation": "NSE provides current constituent snapshots (ind_nifty50list.csv, ind_nifty500list.csv, ind_niftytotalmarket_list.csv) as of retrieval date, not free point-in-time constituent change ledgers back to 2021.",
+    "mitigation": "Static index CSVs are explicitly isolated in `index_snapshots (is_static_snapshot = 1)` and NEVER used for PIT eligibility. PIT selection instead uses actual daily NSE trading appearance, listing_date <= t, delisting_date > t, and strictly trailing 20D/60D ADV & trading frequency."
+  },
+  {
+    "id": "LIM-02",
+    "area": "Official Daily Market Capitalisation Pre-July 2024",
+    "limitation": "NSE began embedding `MCAP{ddmmyyyy}.csv` inside daily `PR.zip` with UDiFF migration in mid-2024. Sessions prior to that lack official NSE daily market-cap files inside `PR.zip`.",
+    "mitigation": "Pre-UDiFF sessions store `mcap_inr = NULL` (`mcap_source = UNAVAILABLE_PRE_2024_UDIFF`) rather than fabricating backfilled market cap from today's share count."
+  },
+  {
+    "id": "LIM-03",
+    "area": "Pre-2021 Delisted Companies",
+    "limitation": "The dataset spans `2021-01-01` to `2026-11-19`. Companies delisted prior to 2021-01-01 (e.g., DHFL suspended/delisted earlier) remain in `security_master` (`delisted.csv`) but have 0 active trading sessions inside the 2021\u20132026 Bhavcopy window.",
+    "mitigation": "Companies delisted/merged during 2021\u20132026 (e.g., HDFC, MINDTREE, INFRATEL, etc.) are fully retained with their real daily prices up to their exact final session."
+  },
+  {
+    "id": "LIM-04",
+    "area": "Rights Issues & Demerger Price Adjustments",
+    "limitation": "Splits and Bonuses compute exact deterministic adjustment factors (`old_fv/new_fv`, `(A+B)/B`). Rights issues (`RIGHTS`) and Demergers (`DEMERGER_RESTRUCTURE`, e.g., TATAMOTORS -> TMPV/TMCV or JIOFIN spin-off) depend on ex-date fair-value ratios not fixed strictly by ratio alone.",
+    "mitigation": "Rights & Demergers are cataloged in `corporate_actions` (`adj_factor = 1.0`) and automatically exempt post-event bars from false `UNEXPLAINED_JUMP_SHOCK` alerts while remaining flagged for strategy-level corporate-event handling."
+  },
+  {
+    "id": "LIM-05",
+    "area": "Bid-Ask Spread Proxy",
+    "limitation": "EOD Exchange Bhavcopy does not contain intraday Level-1 best bid/ask quotes.",
+    "mitigation": "Liquidity engine provides trailing 20D median `(High - Low) / Close * 100` (`hl_spread_proxy_pct`) alongside exact NSE `DELIV_QTY`, `DELIV_PER`, `NO_OF_TRADES`, and `TURNOVER_INR`."
+  },
+  {
+    "id": "LIM-06",
+    "area": "Point-in-Time Fundamentals Not In Bhavcopy",
+    "limitation": "Quarterly balance sheet / P&L / shareholding filings are separate XBRL corporate filings outside daily Bhavcopy archives.",
+    "mitigation": "Moreshwar 3.0 Prompt 1 establishes the price, volume, delivery, market cap, corporate action, and PIT universe backbone; fundamental PIT ingestion should be added separately with filing-date lags if used."
+  }
+]

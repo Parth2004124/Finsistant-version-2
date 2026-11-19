@@ -1,0 +1,15 @@
+[
+  {
+    "version_id": "m3_20261119T191710Z",
+    "snapshot_tag": "NSE_PIT_2021-01-01_TO_2026-11-19",
+    "created_at": "2026-11-19T19:17:10.968991+00:00",
+    "date_start": "2021-01-01",
+    "date_end": "2026-11-19",
+    "parent_version_id": null,
+    "is_incremental": 0,
+    "source_manifest_json": "{\"equity_l\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv\", \"rows\": 2632, \"sha256\": \"e52bd40676b0f6a0f0319ff0f9f8c16f13de20d646ad7ea6d2cf822fd4b08bee\"}, \"delisted\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/delisted.csv\", \"rows\": 328, \"sha256\": \"3ea822d7289b4ebe684ba82e24449a14cc32fbce3300e9bba4b58445fa3bc85f\"}, \"symbolchange\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/symbolchange.csv\", \"rows\": 1081, \"sha256\": \"4b836d0aa614d62da7e3ee5cab679e5029efadf8c5108ad8f60e2f55b1726224\"}, \"namechange\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/namechange.csv\", \"rows\": 2345, \"sha256\": \"7fb128321b6f955da73a45eeaa1296ec21152989843bbe945069666a5f63c94b\"}, \"etf_list\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/eq_etfseclist.csv\", \"rows\": 361, \"sha256\": \"2cc92bca88240fb32e78c890667f38427460132e2ff1fce1a40ead9710da85f5\"}, \"idx_NIFTY_50\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_nifty50list.csv\", \"rows\": 50, \"sha256\": \"f5ba4027d935ae72879d5c24bbebf0e8439ec8ed504ffdf4175fde69206244b3\"}, \"idx_NIFTY_NEXT_50\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftynext50list.csv\", \"rows\": 50, \"sha256\": \"b05337532e755953b588677216012f9b59e69ff39f3dfbbab61e96fc2d724e47\"}, \"idx_NIFTY_MIDCAP_150\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftymidcap150list.csv\", \"rows\": 150, \"sha256\": \"c99b7ef386cd421c5816c0d3e7517c69ce29f8f27a204deff55a7e0a99c909ee\"}, \"idx_NIFTY_SMALLCAP_250\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftysmallcap250list.csv\", \"rows\": 251, \"sha256\": \"389658dd57517f8a72b86c0b0e595471457617dffdd38d26802a9ad461a7dcbd\"}, \"idx_NIFTY_500\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_nifty500list.csv\", \"rows\": 501, \"sha256\": \"31b764a95cc03ad1d7ddb6c42340de9125ed2c78b3d436bf0dbc8440e4e38c5e\"}, \"idx_NIFTY_TOTAL_MARKET\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftytotalmarket_list.csv\", \"rows\": 752, \"sha256\": \"3a1bc40095103cd46900e3b40b6279898682799ec469500ec34e06de93b2c98e\"}}",
+    "row_counts_json": "{\"trading_calendar\": 1454, \"security_master\": 4416, \"symbol_history\": 5173, \"name_history\": 2345, \"daily_bars\": 3498739, \"daily_bars_valid\": 3498739, \"corporate_actions\": 13074, \"daily_liquidity\": 3498739, \"daily_index_bars\": 152165, \"data_quality_events\": 2134, \"non_equity_bhav_rows_filtered\": 256006}",
+    "checksum_sha256": "46acf0f923549319ce3835a7b025322c87f6d80a4c8ac208f63791892920cb2d",
+    "notes": "Authoritative NSE Bhavcopy + PR Archives + Security Master + ETF Master + CA API + Yahoo Finance verification."
+  }
+]

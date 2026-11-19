@@ -25,6 +25,7 @@ let appState = {
   moreshwarV2Research: null, // Shadow Moreshwar 2.0 Phase 5-8 Research Comparison
   mv2SelectedSymbol: null,
   moreshwarV21Research: null, // Moreshwar 2.1 5Y Statistical Validation Workbench
+  moreshwarV22Research: null, // Moreshwar 2.2 Integrated Optimization & Validation (Research Only)
   mv21Filters: { model: "Moreshwar 2.1", instrument: "ALL", sector: "ALL", regime: "ALL" },
   auditTrail: null, // Permanent Decision Audit Ledger payload
   selectedAuditId: null,
@@ -194,6 +195,8 @@ function applyPayload(payload) {
   appState.backtest = payload.backtest || null;
   appState.moreshwarV2Research = payload.moreshwar_v2_research || null;
   appState.moreshwarV21Research = payload.moreshwar_v2_1_research || null;
+  appState.moreshwarV22Research = payload.moreshwar_v2_2_research || null;
+  appState.moreshwarV3Research = payload.moreshwar_v3_research || null;
   appState.auditTrail = payload.audit_trail || null;
   appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
   appState.rules = payload.rules || [];
@@ -1566,6 +1569,107 @@ function drawMv21MonteCarloChart(mc) {
   ctx.textAlign = "left";
 }
 
+function renderMoreshwarV22Dashboard() {
+  const bannerEl = document.getElementById("mv22DecisionBanner");
+  const kpiEl = document.getElementById("mv22HeaderKpis");
+  const scBody = document.getElementById("mv22ScorecardBody");
+  const stBody = document.getElementById("mv22StressBody");
+  const bsEl = document.getElementById("mv22BootstrapSummary");
+  const badgeEl = document.getElementById("mv22DecisionBadge");
+  if (!bannerEl || !kpiEl || !scBody || !stBody) return;
+
+  const r22 = appState.moreshwarV22Research;
+  if (!r22 || !r22.scorecard || !r22.scorecard.integrated_m22) {
+    bannerEl.className = "mv21-verdict-banner";
+    bannerEl.innerHTML = `<strong>Moreshwar 2.2 Integrated Report Unavailable:</strong> Run <code>python3 -m finsistant_v2.backtest_engine_v2_2_integrated</code> to generate <code>reports/moreshwar_2_2/integrated_final_report.json</code>.`;
+    kpiEl.innerHTML = "";
+    scBody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-secondary);">No Moreshwar 2.2 integrated research report loaded.</td></tr>`;
+    stBody.innerHTML = "";
+    if (bsEl) bsEl.innerHTML = "";
+    if (badgeEl) badgeEl.textContent = "REPORT PENDING · M1.0 ACTIVE IN PROD";
+    return;
+  }
+
+  const sc = r22.scorecard;
+  const im = sc.integrated_m22;
+  const dec = String(r22.decision || "NO-GO");
+  const promoted = Boolean(r22.promoted_to_production);
+  if (badgeEl) {
+    badgeEl.textContent = `${dec} · ${promoted ? "RESEARCH PROMOTED" : "RESEARCH ONLY (M1.0 IN PROD)"}`;
+  }
+
+  const fmtPct = (v) => (v == null || Number.isNaN(Number(v)) ? "—" : `${Number(v) >= 0 ? "+" : ""}${Number(v).toFixed(2)}%`);
+  bannerEl.className = `mv21-verdict-banner ${dec.startsWith("GO") ? "" : "no-go"}`;
+  bannerEl.innerHTML = `
+    <strong>Final Decision: ${escHtml(dec)}</strong> (Selected IS Config: <code>${escHtml(r22.selected_config_id || "OPT_REG_DD_N8")}</code> · <code>promoted_to_production = ${promoted}</code>)<br/>
+    <span style="color:var(--text-secondary);">Full 5Y improved from M2.1 (${fmtPct(sc.m21_frozen?.total_return_pct)}) to <strong>${fmtPct(im.total_return_pct)}</strong> (MaxDD ${Number(im.max_drawdown_pct || 0).toFixed(2)}%, NetPF ${Number(im.net_profit_factor || 0).toFixed(2)}), but Prior OOS (<code>${fmtPct(im.oos_return_pct)}</code>) &amp; Terminal Holdout 2026-05+ (<code>${fmtPct(im.holdout_return_pct)}</code>) remain negative.</span>
+  `;
+
+  const kpis = [
+    { lbl: "5Y Net (INR)", val: fmtPct(im.total_return_pct), cls: Number(im.total_return_pct) >= 0 ? "pos" : "neg" },
+    { lbl: "CAGR / Vol", val: `${Number(im.cagr_pct || 0).toFixed(2)}% / ${Number(im.annualised_vol_pct || 0).toFixed(2)}%`, cls: "" },
+    { lbl: "Max Drawdown", val: `-${Number(im.max_drawdown_pct || 0).toFixed(2)}%`, cls: "" },
+    { lbl: "Net PF / Sharpe", val: `${Number(im.net_profit_factor || 0).toFixed(2)} / ${Number(im.sharpe_ratio || 0).toFixed(2)}`, cls: Number(im.net_profit_factor) >= 1.3 ? "pos" : "" },
+    { lbl: "Prior OOS (25-09+)", val: fmtPct(im.oos_return_pct), cls: Number(im.oos_return_pct) >= 0 ? "pos" : "neg" },
+    { lbl: "Holdout (26-05+)", val: fmtPct(im.holdout_return_pct), cls: Number(im.holdout_return_pct) >= 0 ? "pos" : "neg" },
+    { lbl: "1.5x Stress 5Y", val: fmtPct(sc.integrated_m22_stress_15x?.full_5y_pct), cls: Number(sc.integrated_m22_stress_15x?.full_5y_pct) >= 0 ? "pos" : "neg" },
+    { lbl: "Ex-Top5 Trades", val: fmtPct(r22.concentration_stress?.ex_top5_winning_trades?.return_pct), cls: "" },
+  ];
+  kpiEl.innerHTML = kpis.map((k) => `
+    <div class="kpi-tile">
+      <div class="kpi-label">${escHtml(k.lbl)}</div>
+      <div class="kpi-value ${k.cls}">${escHtml(k.val)}</div>
+    </div>
+  `).join("");
+
+  const rows = [
+    { name: "M2.1 Frozen (Mixed)", m: sc.m21_frozen },
+    { name: "M2.1 Frozen (INR)", m: sc.m21_frozen_inr },
+    { name: "M2.2 P1 (EXP_45D)", m: sc.prompt1_best },
+    { name: "M2.2 P2 (PULL_CONT)", m: sc.prompt2_best },
+    { name: "M2.2 Integrated (IS Opt)", m: sc.integrated_m22 },
+    { name: "US Sleeve (NVDA Isolated)", m: sc.us_sleeve_isolated },
+  ].filter((r) => r.m);
+
+  scBody.innerHTML = rows.map(({ name, m }) => `
+    <tr>
+      <td><strong>${escHtml(name)}</strong></td>
+      <td class="${Number(m.total_return_pct) >= 0 ? "text-green" : "text-red"}">${fmtPct(m.total_return_pct)}</td>
+      <td>${m.cagr_pct != null ? `${Number(m.cagr_pct).toFixed(2)}%` : "—"}</td>
+      <td>-${Number(m.max_drawdown_pct || 0).toFixed(2)}%</td>
+      <td>${m.net_profit_factor != null ? Number(m.net_profit_factor).toFixed(2) : "—"}</td>
+      <td>${Number(m.sharpe_ratio || 0).toFixed(2)}</td>
+      <td>${m.total_trades ?? "—"}</td>
+      <td>${Number(m.cost_drag_pct || 0).toFixed(2)}%</td>
+    </tr>
+  `).join("");
+
+  const stressList = Array.isArray(r22.stress_tests) ? r22.stress_tests : [];
+  stBody.innerHTML = stressList.map((s) => `
+    <tr>
+      <td>${escHtml(s.label || s.scenario_id)}</td>
+      <td class="${Number(s.full_5y_pct) >= 0 ? "text-green" : "text-red"}">${fmtPct(s.full_5y_pct)}</td>
+      <td class="${Number(s.oos_pct) >= 0 ? "text-green" : "text-red"}">${fmtPct(s.oos_pct)}</td>
+      <td>-${Number(s.max_dd_pct || 0).toFixed(2)}%</td>
+      <td>${Number(s.net_pf || 0).toFixed(2)}</td>
+      <td>₹${Number(s.total_cost || 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}</td>
+    </tr>
+  `).join("");
+
+  if (bsEl && r22.statistical_confidence) {
+    const b10 = r22.statistical_confidence.block_bootstrap_10d || {};
+    const b20 = r22.statistical_confidence.block_bootstrap_20d || {};
+    const trb = r22.statistical_confidence.trade_bootstrap || {};
+    bsEl.innerHTML = `
+      <strong>1,200x Bootstraps:</strong>
+      Trade Ret P05/P50/P95: <code>[${(trb.return_p05_p50_p95 || []).join("%, ")}%]</code> ·
+      10D Block P05/P50/P95: <code>[${(b10.return_p05_p50_p95 || []).join("%, ")}%]</code> (Beat Cash: <code>${b10.prob_beat_cash_65_pct ?? "—"}%</code>) ·
+      20D Block Sharpe: <code>[${(b20.sharpe_p05_p50_p95 || []).join(", ")}]</code>.<br/>
+      <span style="color:var(--text-muted);">${escHtml(r22.statistical_confidence.multiple_testing_disclosure || "")}</span>
+    `;
+  }
+}
+
 function renderMoreshwarV21Dashboard() {
   const bannerEl = document.getElementById("mv21DecisionBanner");
   const kpiEl = document.getElementById("mv21HeaderKpis");
@@ -2103,16 +2207,22 @@ function renderIntelligenceViews() {
   const secProv = document.getElementById("intelSectionProvenance");
   const secBt = document.getElementById("intelSectionBacktest");
   const secV21 = document.getElementById("intelSectionV21");
+  const secV22 = document.getElementById("intelSectionV22");
+  const secV30 = document.getElementById("intelSectionV30");
   const secAud = document.getElementById("intelSectionAudit");
   const focus = appState.intelFocus || "all";
   if (secProv) secProv.style.display = (focus === "all" || focus === "provenance") ? "flex" : "none";
   if (secBt) secBt.style.display = (focus === "all" || focus === "backtest") ? "flex" : "none";
   if (secV21) secV21.style.display = (focus === "all" || focus === "v21") ? "flex" : "none";
+  if (secV22) secV22.style.display = (focus === "all" || focus === "v21") ? "flex" : "none";
+  if (secV30) secV30.style.display = (focus === "all" || focus === "v30") ? "flex" : "none";
   if (secAud) secAud.style.display = (focus === "all" || focus === "audit") ? "flex" : "none";
 
   renderProvenanceMonitor();
   renderBacktestAnalytics();
   renderMoreshwarV21Dashboard();
+  renderMoreshwarV22Dashboard();
+  renderMoreshwarV30Dashboard();
   renderAuditLedger();
   renderReportsView();
 }

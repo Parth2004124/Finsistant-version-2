@@ -1,0 +1,85 @@
+{
+  "final_verdict": {
+    "deployment_decision": "NO-GO",
+    "approved_for_live_capital": false,
+    "approved_for_paper_research_monitoring": true,
+    "verdict_code": "NO_GO_INSUFFICIENT_NET_RISK_ADJUSTED_EDGE_OVER_PASSIVE_BENCHMARKS",
+    "primary_reasons_for_no_go": [
+      "1. Negative Active Risk Premium vs Risk-Free Cash & Passive Benchmarks: Over 5.38 years (2021-07 -> 2026-11), active equity selection returned +7.43% uninvested (+29.76% with 6.5% idle cash sweep), underperforming 6.5% risk-free cash (+39.50%), the utilisation-matched 45% Nifty 50 TRI + 55% Cash benchmark (+56.82%, 6.32% DD), and Nifty 50 TRI (+73.82%).",
+      "2. Statistical Insignificance After Multiple-Testing Correction: Trade expectancy t-stat is +0.478 (p = 0.3165), and Deflated Sharpe Ratio probability across 185 total research trials is 0.0018 (failing the >= 0.95 institutional gate).",
+      "3. Outlier Concentration Fragility: Removing the top 5 winning trades out of 238 trades turns net uninvested return from +7.43% to -9.32%.",
+      "4. Walk-Forward Inconsistency & Holdout Contamination: Only 4 of 6 walk-forward sub-windows produced positive uninvested net returns, and the 2025-04 -> 2026-11 OOS period was repeatedly inspected across Prompts 2-7."
+    ]
+  },
+  "reproducibility": {
+    "dataset_version_registry": [
+      {
+        "version_id": "m3_20261119T191710Z",
+        "snapshot_tag": "NSE_PIT_2021-01-01_TO_2026-11-19",
+        "created_at": "2026-11-19T19:17:10.968991+00:00",
+        "date_start": "2021-01-01",
+        "date_end": "2026-11-19",
+        "parent_version_id": null,
+        "is_incremental": 0,
+        "source_manifest_json": "{\"equity_l\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv\", \"rows\": 2632, \"sha256\": \"e52bd40676b0f6a0f0319ff0f9f8c16f13de20d646ad7ea6d2cf822fd4b08bee\"}, \"delisted\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/delisted.csv\", \"rows\": 328, \"sha256\": \"3ea822d7289b4ebe684ba82e24449a14cc32fbce3300e9bba4b58445fa3bc85f\"}, \"symbolchange\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/symbolchange.csv\", \"rows\": 1081, \"sha256\": \"4b836d0aa614d62da7e3ee5cab679e5029efadf8c5108ad8f60e2f55b1726224\"}, \"namechange\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/namechange.csv\", \"rows\": 2345, \"sha256\": \"7fb128321b6f955da73a45eeaa1296ec21152989843bbe945069666a5f63c94b\"}, \"etf_list\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/eq_etfseclist.csv\", \"rows\": 361, \"sha256\": \"2cc92bca88240fb32e78c890667f38427460132e2ff1fce1a40ead9710da85f5\"}, \"idx_NIFTY_50\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_nifty50list.csv\", \"rows\": 50, \"sha256\": \"f5ba4027d935ae72879d5c24bbebf0e8439ec8ed504ffdf4175fde69206244b3\"}, \"idx_NIFTY_NEXT_50\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftynext50list.csv\", \"rows\": 50, \"sha256\": \"b05337532e755953b588677216012f9b59e69ff39f3dfbbab61e96fc2d724e47\"}, \"idx_NIFTY_MIDCAP_150\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftymidcap150list.csv\", \"rows\": 150, \"sha256\": \"c99b7ef386cd421c5816c0d3e7517c69ce29f8f27a204deff55a7e0a99c909ee\"}, \"idx_NIFTY_SMALLCAP_250\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftysmallcap250list.csv\", \"rows\": 251, \"sha256\": \"389658dd57517f8a72b86c0b0e595471457617dffdd38d26802a9ad461a7dcbd\"}, \"idx_NIFTY_500\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_nifty500list.csv\", \"rows\": 501, \"sha256\": \"31b764a95cc03ad1d7ddb6c42340de9125ed2c78b3d436bf0dbc8440e4e38c5e\"}, \"idx_NIFTY_TOTAL_MARKET\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftytotalmarket_list.csv\", \"rows\": 752, \"sha256\": \"3a1bc40095103cd46900e3b40b6279898682799ec469500ec34e06de93b2c98e\"}}",
+        "row_counts_json": "{\"trading_calendar\": 1454, \"security_master\": 4416, \"symbol_history\": 5173, \"name_history\": 2345, \"daily_bars\": 3498739, \"daily_bars_valid\": 3498739, \"corporate_actions\": 13074, \"daily_liquidity\": 3498739, \"daily_index_bars\": 152165, \"data_quality_events\": 2134, \"non_equity_bhav_rows_filtered\": 256006}",
+        "checksum_sha256": "46acf0f923549319ce3835a7b025322c87f6d80a4c8ac208f63791892920cb2d",
+        "notes": "Authoritative NSE Bhavcopy + PR Archives + Security Master + ETF Master + CA API + Yahoo Finance verification."
+      }
+    ],
+    "initial_capital_inr": 100000.0,
+    "final_nav_inr": 107434.41,
+    "net_nav_gain_inr": 7434.41,
+    "sum_closed_trade_net_pnl_inr": 7434.37,
+    "trade_to_nav_ledger_discrepancy_inr": 0.04,
+    "cash_to_position_daily_discrepancy_inr": 0.0,
+    "min_daily_settled_cash_inr": 8397.07,
+    "max_observed_gross_exposure_pct": 92.79,
+    "zero_leverage_verified": true,
+    "zero_cash_overdraft_verified": true,
+    "exact_reconciliation_passed": true,
+    "idle_cash_accounting_finding": "Uninvested cash net return is +7.43% (CAGR +1.37%), whereas sweeping the 55.0% average idle cash into 6.5% overnight liquid yield produces +29.76%. Thus +22.33 pp comes from passive risk-free yield on idle cash rather than active equity alpha."
+  },
+  "forensic_bias_and_failure_registry": [
+    {
+      "category": "1. Survivorship Bias",
+      "status": "PASSED_ELIMINATED",
+      "evidence": "Prompt 1 database retains 4,416 NSE securities including 240+ delisted/merged/suspended equities (e.g. HDFC, MINDTREE, PEL, IDFC, TATACOFFEE) up to their actual delisting date."
+    },
+    {
+      "category": "2. Look-Ahead Bias",
+      "status": "PASSED_ELIMINATED",
+      "evidence": "Verified programmatically across all 31 factors, 5 strategy families, 5 regime detectors, and pair discovery via future-price corruption invariance tests (t close -> t+1 open execution)."
+    },
+    {
+      "category": "3. Data Leakage (Static Sector & Pre-2024 MCAP)",
+      "status": "DISCLOSED_MINOR_RESIDUAL",
+      "evidence": "Pre-2024 official NSE MCAP is properly left NULL (never backfilled), but sector labels in security_master come from current NSE classification snapshots (`known_limitations.json`)."
+    },
+    {
+      "category": "4. Multiple-Testing & Researcher Selection Bias (OOS Holdout Exposure)",
+      "status": "FAILED_CONTAMINATED",
+      "evidence": "185+ factor, strategy, sizing, and orchestrator configurations were evaluated across Prompts 2-7 with repeated inspection of the 2025-04 -> 2026-11 OOS window. Deflated Sharpe Ratio probability is well below 0.95."
+    },
+    {
+      "category": "5. Benchmark & Risk-Free Rate Hurdle",
+      "status": "FAILED_ECONOMIC_HURDLE",
+      "evidence": "Active equity trading returned +7.43% uninvested (+29.76% with 6.5% idle cash sweep), trailing the 6.5% risk-free cash benchmark (+39.50%), the utilisation-matched 45/55 passive Nifty TRI + Cash benchmark (+56.82%), and Nifty 50 TRI (+73.82%)."
+    },
+    {
+      "category": "6. Outlier Concentration & Cost Fragility",
+      "status": "FAILED_FRAGILITY_GATE",
+      "evidence": "Removing the Top-5 winning trades drops uninvested return from +7.43% to -9.32%. Under 2.0x transaction costs, uninvested return drops to +2.50%."
+    },
+    {
+      "category": "7. Accounting & Four-Ledger Reconciliation",
+      "status": "PASSED_EXACT",
+      "evidence": "Trade-to-NAV discrepancy = INR +0.04; daily cash-to-position discrepancy = INR +0.00; T+1 cash settlement enforced with 0 overdrafts."
+    },
+    {
+      "category": "8. Execution & Broker Isolation Realism",
+      "status": "PASSED_PAPER_ISOLATED",
+      "evidence": "Prompt 8 historical pre/post-Oct-2024 Zerodha/NSE/SEBI tariffs, DP charges (Rs 15.93), square-root market impact, volume participation caps (1%), and paper-only broker safety gates verified."
+    }
+  ]
+}

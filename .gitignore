@@ -12,6 +12,11 @@ token.txt
 .DS_Store
 *.log
 data/*_cache.json*
+data/m3_universe/raw_cache
+data/m3_universe/raw_cache/
+*.npz
 tmp/
 .pytest_cache/
+
+
 
