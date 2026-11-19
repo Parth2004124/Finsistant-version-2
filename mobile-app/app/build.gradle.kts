@@ -11,8 +11,8 @@ android {
         applicationId = "com.finsistant.v2"
         minSdk = 24
         targetSdk = 34
-        versionCode = 5
-        versionName = "2.6.0"
+        versionCode = 6
+        versionName = "2.7.0"
     }
 
     buildTypes {

@@ -16,8 +16,10 @@ from .audit_ledger import (
 )
 from .backtest_engine import run_backtest_and_attribution
 from .backtest_engine_v2 import run_moreshwar_v2_research_suite
+from .backtest_engine_v2_1 import run_moreshwar_v2_1_research_suite
 from .config import FinsistantSettings, load_settings
 from .gemini_critic import analyze_trade_with_gemini, apply_trade_recalibration, ask_gemini_stocky, critique_suggested_trades
+from .historical_data import EXPANDED_RESEARCH_UNIVERSE, load_or_build_expanded_dataset
 from .kite_auth import (
     auto_fetch_kite_access_token,
     exchange_request_token,
@@ -31,6 +33,12 @@ from .moreshwar_v2 import (
     compute_atr,
     compute_confidence_adjustment,
     evaluate_moreshwar_v2,
+)
+from .moreshwar_v2_1 import (
+    MoreshwarV21Config,
+    classify_market_regime_6,
+    compute_indian_delivery_costs,
+    evaluate_moreshwar_v2_1,
 )
 from .nse_mcp import (
     fetch_nse_corporate_actions,
@@ -62,6 +70,9 @@ __all__ = [
     "record_scan_decisions",
     "run_backtest_and_attribution",
     "run_moreshwar_v2_research_suite",
+    "run_moreshwar_v2_1_research_suite",
+    "EXPANDED_RESEARCH_UNIVERSE",
+    "load_or_build_expanded_dataset",
     "build_asset_provenance",
     "build_data_integrity_report",
     "MoreshwarV2Config",
@@ -69,6 +80,10 @@ __all__ = [
     "compute_atr",
     "compute_confidence_adjustment",
     "evaluate_moreshwar_v2",
+    "MoreshwarV21Config",
+    "classify_market_regime_6",
+    "compute_indian_delivery_costs",
+    "evaluate_moreshwar_v2_1",
     "fetch_benchmark_candles",
     "fetch_nse_corporate_actions",
     "fetch_nse_index_1y",

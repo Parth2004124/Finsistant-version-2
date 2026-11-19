@@ -441,9 +441,10 @@
           <span style="font-size: 12px; color: var(--text-secondary);" id="intelGlobalStatus">Empirical Telemetry &amp; Immutable Audit Layer Active</span>
         </div>
         <div class="chip-row" id="intelJumpRow">
-          <button type="button" class="prompt-chip active-subfilter" data-intel-focus="all">All 3 Modules</button>
+          <button type="button" class="prompt-chip active-subfilter" data-intel-focus="all">All Modules</button>
           <button type="button" class="prompt-chip" data-intel-focus="provenance">1. Data Integrity Monitor</button>
           <button type="button" class="prompt-chip" data-intel-focus="backtest">2. Quantitative Performance</button>
+          <button type="button" class="prompt-chip" data-intel-focus="v21">2.1 Validation Lab</button>
           <button type="button" class="prompt-chip" data-intel-focus="audit">3. Decision Audit Trail</button>
         </div>
       </div>
@@ -596,6 +597,225 @@
         </div>
 
         <div class="terminal-box" id="btMethodologyBox"></div>
+      </div>
+
+      <!-- SECTION 2.1: MORESHWAR 2.1 STATISTICAL VALIDATION & INTELLIGENCE LAB -->
+      <div class="panel intel-section" id="intelSectionV21" style="border-color: hsla(196, 86%, 54%, 0.45);">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">2.1 Moreshwar 2.1 — 5Y Statistical Validation, Regime &amp; Robustness Workbench</div>
+            <div class="panel-subtitle" id="mv21Subtitle">5-Year Multi-Regime Indian Delivery Simulation (40 Instruments · 1,200 Monte Carlo Sims · Walk-Forward &amp; OOS)</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;" id="mv21SeparationBadges">
+            <span class="tag-pill tag-stop">SIMULATED BACKTEST (NOT BROKER EXECUTION)</span>
+            <span class="tag-pill tag-score" id="mv21PromoBadge">RESEARCH ONLY · M1.0 ACTIVE IN PROD</span>
+          </div>
+        </div>
+
+        <div class="mv21-verdict-banner" id="mv21DecisionBanner"></div>
+
+        <div class="mv21-filter-bar">
+          <div class="mv21-filter-item">
+            <label for="mv21FilterModel">Model Version</label>
+            <select id="mv21FilterModel" class="select-field"></select>
+          </div>
+          <div class="mv21-filter-item">
+            <label for="mv21FilterInstrument">Instrument</label>
+            <select id="mv21FilterInstrument" class="select-field"></select>
+          </div>
+          <div class="mv21-filter-item">
+            <label for="mv21FilterSector">Sector</label>
+            <select id="mv21FilterSector" class="select-field"></select>
+          </div>
+          <div class="mv21-filter-item">
+            <label for="mv21FilterRegime">6-State Regime</label>
+            <select id="mv21FilterRegime" class="select-field"></select>
+          </div>
+          <div class="mv21-filter-item" style="justify-content:flex-end;">
+            <label>&nbsp;</label>
+            <button type="button" class="btn-secondary" id="mv21ResetFiltersBtn">Reset Filters</button>
+          </div>
+        </div>
+
+        <div class="kpi-strip-grid" id="mv21HeaderKpis"></div>
+
+        <div class="two-col-grid">
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">5Y Normalized Equity Curve (Indian Delivery Costs)</div>
+                <div class="panel-subtitle">M1.0 vs M2.0 vs M2.1 vs Nifty 50 (^NSEI) · Base = 100</div>
+              </div>
+            </div>
+            <div class="chart-box" style="height: 230px;">
+              <canvas id="mv21EquityChart"></canvas>
+            </div>
+            <div class="chart-legend">
+              <span><i class="legend-dot" style="background: var(--accent-crimson);"></i>Moreshwar 1.0</span>
+              <span><i class="legend-dot" style="background: hsl(265, 80%, 66%);"></i>Moreshwar 2.0</span>
+              <span><i class="legend-dot" style="background: var(--accent-cyan);"></i>Moreshwar 2.1</span>
+              <span><i class="legend-dot" style="background: var(--accent-amber);"></i>Nifty 50 (^NSEI)</span>
+            </div>
+          </div>
+
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Monte Carlo Outcome Distribution (1,200 Simulations)</div>
+                <div class="panel-subtitle">Trade Bootstrap vs 10-Day Block Bootstrap (P5 / Median / P95 Return &amp; MaxDD)</div>
+              </div>
+              <span class="tag-pill tag-score">RESAMPLED SIM</span>
+            </div>
+            <div class="chart-box mv21-mc-box">
+              <canvas id="mv21MonteCarloChart"></canvas>
+            </div>
+            <div id="mv21MonteCarloStats" style="font-size:11px;color:var(--text-secondary);line-height:1.45;"></div>
+          </div>
+        </div>
+
+        <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Controlled Benchmark &amp; Ablation Matrix (5-Year Indian Equity Delivery Costs + Gap/Liquidity Sim)</div>
+              <div class="panel-subtitle">Identical data window, next-bar open execution, 0.10% STT + NSE/SEBI/Stamp/GST + ₹15.93 DP + 7.5–20 bps slippage</div>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table dq-compact-table">
+              <thead>
+                <tr>
+                  <th>Model / Benchmark</th>
+                  <th>Tot%</th>
+                  <th>CAGR%</th>
+                  <th>Win% (95% CI)</th>
+                  <th>PF</th>
+                  <th>Sharpe</th>
+                  <th>Sortino</th>
+                  <th>MaxDD%</th>
+                  <th>Recov</th>
+                  <th>Exp% (p-val)</th>
+                  <th>Trades</th>
+                  <th>Hold(D)</th>
+                  <th>Util%</th>
+                  <th>Cost%</th>
+                </tr>
+              </thead>
+              <tbody id="mv21BenchmarkTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="two-col-grid">
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">4-Fold Rolling Walk-Forward &amp; Untouched OOS Split</div>
+                <div class="panel-subtitle" id="mv21WfSubtitle">Zero tuning on final test epoch · Checking performance degradation over time</div>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table dq-compact-table">
+                <thead>
+                  <tr>
+                    <th>Fold / Window</th>
+                    <th>Nifty%</th>
+                    <th>M1 Ret (DD)</th>
+                    <th>M2 Ret (DD)</th>
+                    <th>M2.1 Ret (DD)</th>
+                    <th>Win% (n)</th>
+                  </tr>
+                </thead>
+                <tbody id="mv21WalkForwardBody"></tbody>
+              </table>
+            </div>
+            <div id="mv21OosSummary" style="font-size:11px;color:var(--text-secondary);line-height:1.45;"></div>
+          </div>
+
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">6-State Market Regime Decomposition (Causal Benchmark)</div>
+                <div class="panel-subtitle" id="mv21RegimeSub">Performance conditioned strictly on causal Nifty 50 state at signal close</div>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table dq-compact-table">
+                <thead>
+                  <tr>
+                    <th>Regime State</th>
+                    <th>Days</th>
+                    <th>Trades</th>
+                    <th>Win%</th>
+                    <th>Exp%</th>
+                    <th>PF</th>
+                    <th>Sharpe</th>
+                    <th>MaxDD%</th>
+                  </tr>
+                </thead>
+                <tbody id="mv21RegimeTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="two-col-grid">
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Portfolio-Level Risk &amp; Execution Friction Metrics</div>
+                <div class="panel-subtitle" id="mv21PortRiskSub">Simultaneous slots, sector concentration, pairwise correlation, tail shocks &amp; costs</div>
+              </div>
+            </div>
+            <div class="dq-mini-grid" id="mv21PortfolioRiskGrid"></div>
+          </div>
+
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Strategy Investigation, Look-Ahead &amp; Counterfactual Audit</div>
+                <div class="panel-subtitle">Component-level cause &amp; effect · E-Ref leakage correlation · Rejected 14D outcomes</div>
+              </div>
+            </div>
+            <div id="mv21InvestigationContainer" style="display:flex;flex-direction:column;gap:8px;font-size:11.5px;"></div>
+          </div>
+        </div>
+
+        <div class="two-col-grid">
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">5Y Data Quality &amp; Survivorship Limitation Report</div>
+                <div class="panel-subtitle" id="mv21DataQualitySub">36 complete 5Y equities · 3 insolvency/distressed · 1 partial demerger · 5 delisted 404 probes</div>
+              </div>
+            </div>
+            <div id="mv21DataQualityBody" style="font-size:11.5px;color:var(--text-secondary);line-height:1.5;"></div>
+          </div>
+
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Filtered Sample Trade Execution Log</div>
+                <div class="panel-subtitle" id="mv21TradeLogSub">Theoretical close vs next-bar gap/slippage-adjusted open fill &amp; Indian delivery exit</div>
+              </div>
+            </div>
+            <div class="table-scroll" style="max-height:240px;">
+              <table class="data-table dq-compact-table">
+                <thead>
+                  <tr>
+                    <th>Symbol</th>
+                    <th>Entry→Exit</th>
+                    <th>Regime</th>
+                    <th>Entry→Exit Px</th>
+                    <th>Net%</th>
+                    <th>Cost ₹</th>
+                    <th>Reason</th>
+                  </tr>
+                </thead>
+                <tbody id="mv21TradesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- SECTION 3: AI DECISION AUDIT & HISTORY -->

@@ -347,16 +347,21 @@ body {
 /* Chart Area */
 .chart-box {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 295px;
   background-color: var(--bg-base);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 8px;
   position: relative;
+  overflow: hidden;
 }
 
+.chart-box canvas,
 canvas#unifiedChart {
   width: 100%;
+  max-width: 100%;
   height: 100%;
   display: block;
 }
@@ -1193,5 +1198,71 @@ canvas#backtestEquityChart {
   line-height: 1.5;
   color: var(--text-secondary);
   overflow-wrap: anywhere;
+}
+
+.mv21-verdict-banner {
+  background: linear-gradient(135deg, hsla(350, 74%, 45%, 0.14), hsla(222, 22%, 14%, 0.92));
+  border: 1px solid hsla(350, 84%, 60%, 0.45);
+  border-left: 4px solid var(--accent-crimson);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.mv21-verdict-banner.verdict-positive {
+  background: linear-gradient(135deg, hsla(158, 74%, 44%, 0.12), hsla(222, 22%, 14%, 0.92));
+  border-color: hsla(158, 74%, 44%, 0.45);
+  border-left-color: var(--accent-emerald);
+}
+
+.mv21-filter-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+
+@media (max-width: 920px) {
+  .mv21-filter-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .mv21-filter-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mv21-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mv21-filter-item label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+#intelSectionV21,
+#intelSectionV21 > div,
+#intelSectionV21 .panel,
+#intelSectionV21 .two-col-grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mv21-mc-box {
+  height: 215px !important;
 }
 

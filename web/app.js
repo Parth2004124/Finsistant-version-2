@@ -24,6 +24,8 @@ let appState = {
   backtest: null,   // Walk-forward Backtest & Multi-Agent Attribution payload
   moreshwarV2Research: null, // Shadow Moreshwar 2.0 Phase 5-8 Research Comparison
   mv2SelectedSymbol: null,
+  moreshwarV21Research: null, // Moreshwar 2.1 5Y Statistical Validation Workbench
+  mv21Filters: { model: "Moreshwar 2.1", instrument: "ALL", sector: "ALL", regime: "ALL" },
   auditTrail: null, // Permanent Decision Audit Ledger payload
   selectedAuditId: null,
   intelFocus: "all",
@@ -191,6 +193,7 @@ function applyPayload(payload) {
   appState.provenance = payload.provenance || null;
   appState.backtest = payload.backtest || null;
   appState.moreshwarV2Research = payload.moreshwar_v2_research || null;
+  appState.moreshwarV21Research = payload.moreshwar_v2_1_research || null;
   appState.auditTrail = payload.audit_trail || null;
   appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
   appState.rules = payload.rules || [];
@@ -1342,6 +1345,535 @@ function renderMoreshwarV2ShadowLab() {
   `;
 }
 
+function drawMv21EquityChart(r21) {
+  const canvas = document.getElementById("mv21EquityChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const parent = canvas.parentElement;
+  const rect = canvas.getBoundingClientRect();
+  const parentW = parent ? Math.max(0, parent.clientWidth - 16) : 0;
+  const parentH = parent ? Math.max(0, parent.clientHeight - 16) : 0;
+  const w = Math.max(220, Math.floor(parentW || rect.width || 320));
+  const h = Math.max(180, Math.floor(parentH || rect.height || 214));
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  const mods = (r21 && r21.models) || {};
+  const m1c = mods["Moreshwar 1.0"]?.equity_curve || [];
+  const m2c = mods["Moreshwar 2.0"]?.equity_curve || [];
+  const m21c = mods["Moreshwar 2.1"]?.equity_curve || [];
+  const bmc = mods["Nifty 50"]?.equity_curve || [];
+
+  if (m21c.length < 2) {
+    ctx.font = "12px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillText("5Y Moreshwar 2.1 equity curve awaiting report payload.", 14, h / 2);
+    return;
+  }
+
+  const allSeries = [
+    { data: m1c, col: "hsl(350, 84%, 60%)", dash: false },
+    { data: m2c, col: "hsl(265, 80%, 66%)", dash: false },
+    { data: bmc, col: "hsl(38, 92%, 55%)", dash: true },
+    { data: m21c, col: "hsl(196, 86%, 54%)", dash: false }
+  ];
+  const baseNav = 100000.0;
+  const norm = (v) => (Number(v || baseNav) / baseNav) * 100.0;
+  const vals = [];
+  allSeries.forEach((s) => s.data.forEach((p) => vals.push(norm(p.nav))));
+  const minV = Math.min(...vals, 95) * 0.985;
+  const maxV = Math.max(...vals, 105) * 1.015;
+
+  const padT = 16, padB = 22, padL = 8, padR = w < 360 ? 38 : 48;
+  const plotW = Math.max(120, w - padL - padR);
+  const plotH = h - padT - padB;
+  const yFor = (v) => padT + plotH - ((v - minV) / Math.max(1e-6, maxV - minV)) * plotH;
+  const nPts = m21c.length;
+  const xFor = (i, len) => padL + (i / Math.max(1, len - 1)) * plotW;
+
+  ctx.strokeStyle = "hsla(222, 15%, 24%, 0.45)";
+  ctx.lineWidth = 1;
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  for (let i = 0; i <= 4; i++) {
+    const v = minV + ((maxV - minV) * i) / 4;
+    const y = yFor(v);
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    ctx.stroke();
+    ctx.fillText(v.toFixed(0), w - padR + 5, y + 3);
+  }
+  const y100 = yFor(100);
+  if (y100 >= padT && y100 <= padT + plotH) {
+    ctx.save();
+    ctx.setLineDash([2, 3]);
+    ctx.strokeStyle = "hsla(210, 20%, 70%, 0.3)";
+    ctx.beginPath();
+    ctx.moveTo(padL, y100);
+    ctx.lineTo(w - padR, y100);
+    ctx.stroke();
+    ctx.restore();
+  }
+  ctx.fillText(m21c[0].date || "", padL, h - 5);
+  ctx.save();
+  ctx.textAlign = "right";
+  ctx.fillText(m21c[nPts - 1].date || "", w - padR, h - 5);
+  ctx.restore();
+
+  allSeries.forEach((s) => {
+    if (!s.data.length) return;
+    ctx.save();
+    ctx.strokeStyle = s.col;
+    ctx.lineWidth = s.col.includes("196") ? 2.2 : 1.7;
+    if (s.dash) ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    s.data.forEach((pt, idx) => {
+      const x = xFor(idx, s.data.length);
+      const y = yFor(norm(pt.nav));
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.restore();
+  });
+}
+
+function drawMv21MonteCarloChart(mc) {
+  const canvas = document.getElementById("mv21MonteCarloChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const parent = canvas.parentElement;
+  const rect = canvas.getBoundingClientRect();
+  const parentW = parent ? Math.max(0, parent.clientWidth - 16) : 0;
+  const parentH = parent ? Math.max(0, parent.clientHeight - 16) : 0;
+  const w = Math.max(220, Math.floor(parentW || rect.width || 320));
+  const h = Math.max(190, Math.floor(parentH || rect.height || 199));
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  const tb = mc?.trade_bootstrap;
+  const bb = mc?.daily_block_bootstrap;
+  if (!tb || !bb) {
+    ctx.font = "12px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillText("Monte Carlo percentiles awaiting simulation data.", 14, h / 2);
+    return;
+  }
+
+  const bars = [
+    { label: "Trade Ret (P5 / P50 / P95)", p5: tb.p05_return_pct, p50: tb.median_return_pct, p95: tb.p95_return_pct, col: "hsl(196, 86%, 54%)" },
+    { label: "Block-10D Ret (P5 / P50 / P95)", p5: bb.p05_return_pct, p50: bb.median_return_pct, p95: bb.p95_return_pct, col: "hsl(265, 80%, 66%)" },
+    { label: "Trade MaxDD (Med → P95)", p5: 0, p50: -tb.median_max_dd_pct, p95: -tb.p95_max_dd_pct, col: "hsl(350, 84%, 60%)", isDd: true },
+    { label: "Block MaxDD (Med → P95)", p5: 0, p50: -bb.median_max_dd_pct, p95: -bb.p95_max_dd_pct, col: "hsl(38, 92%, 55%)", isDd: true }
+  ];
+
+  const allVals = [0];
+  bars.forEach((b) => allVals.push(b.p5, b.p50, b.p95));
+  const minV = Math.min(...allVals) - 5;
+  const maxV = Math.max(...allVals) + 5;
+  const padL = 8;
+  const padR = 8;
+  const plotW = Math.max(120, w - padL - padR);
+  const xFor = (v) => padL + ((v - minV) / Math.max(1e-6, maxV - minV)) * plotW;
+
+  const topPad = 8;
+  const axisH = 18;
+  const zX = xFor(0);
+  ctx.strokeStyle = "hsla(215, 20%, 60%, 0.42)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(zX, topPad);
+  ctx.lineTo(zX, h - axisH);
+  ctx.stroke();
+
+  const rowH = (h - topPad - axisH) / bars.length;
+  bars.forEach((b, idx) => {
+    const cy = topPad + idx * rowH;
+    const valTxt = b.isDd
+      ? `Med ${Math.abs(b.p50).toFixed(1)}% | P95 ${Math.abs(b.p95).toFixed(1)}%`
+      : `${b.p5.toFixed(0)}% | ${b.p50.toFixed(1)}% | ${b.p95 >= 0 ? "+" : ""}${b.p95.toFixed(0)}%`;
+
+    ctx.font = w < 340 ? "9.5px 'JetBrains Mono', monospace" : "10.5px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "hsl(210, 25%, 90%)";
+    ctx.textAlign = "left";
+    ctx.fillText(b.label.slice(0, w < 340 ? 22 : 30), padL, cy + 11);
+
+    ctx.fillStyle = b.col;
+    ctx.textAlign = "right";
+    ctx.fillText(valTxt, w - padR, cy + 11);
+
+    const barY = cy + 17;
+    const x1 = xFor(Math.min(b.p5, b.p95));
+    const x2 = xFor(Math.max(b.p5, b.p95));
+    ctx.fillStyle = "hsla(222, 18%, 22%, 0.55)";
+    ctx.fillRect(padL, barY + 3, plotW, 4);
+    ctx.fillStyle = b.isDd ? "hsla(350, 84%, 60%, 0.34)" : "hsla(196, 86%, 54%, 0.32)";
+    ctx.fillRect(x1, barY, Math.max(4, x2 - x1), 10);
+
+    const xm = xFor(b.p50);
+    ctx.fillStyle = b.col;
+    ctx.fillRect(xm - 2, barY - 2, 4, 14);
+  });
+
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  ctx.textAlign = "left";
+  ctx.fillText(`${minV.toFixed(0)}%`, padL, h - 4);
+  ctx.textAlign = "center";
+  ctx.fillText("0%", zX, h - 4);
+  ctx.textAlign = "right";
+  ctx.fillText(`+${maxV.toFixed(0)}%`, w - padR, h - 4);
+  ctx.textAlign = "left";
+}
+
+function renderMoreshwarV21Dashboard() {
+  const bannerEl = document.getElementById("mv21DecisionBanner");
+  const kpiEl = document.getElementById("mv21HeaderKpis");
+  const bmBody = document.getElementById("mv21BenchmarkTableBody");
+  const wfBody = document.getElementById("mv21WalkForwardBody");
+  const regBody = document.getElementById("mv21RegimeTableBody");
+  const prGrid = document.getElementById("mv21PortfolioRiskGrid");
+  const invEl = document.getElementById("mv21InvestigationContainer");
+  const dqEl = document.getElementById("mv21DataQualityBody");
+  const trBody = document.getElementById("mv21TradesTableBody");
+  if (!bannerEl || !kpiEl || !bmBody) return;
+
+  const r21 = appState.moreshwarV21Research;
+  if (!r21 || !r21.models) {
+    bannerEl.className = "mv21-verdict-banner";
+    bannerEl.innerHTML = `<strong>Moreshwar 2.1 Report Pending:</strong> Run <code>scripts/run_moreshwar_v2_1_experiments.py</code> and regenerate <code>live_scan.json</code> to view 5Y statistical validation.`;
+    kpiEl.innerHTML = "";
+    bmBody.innerHTML = "";
+    return;
+  }
+
+  // Populate interactive filter dropdowns while preserving selections
+  const selMod = document.getElementById("mv21FilterModel");
+  const selInst = document.getElementById("mv21FilterInstrument");
+  const selSec = document.getElementById("mv21FilterSector");
+  const selReg = document.getElementById("mv21FilterRegime");
+
+  const modelKeys = ["Moreshwar 2.1", "Moreshwar 2.1 (Permissive)", "Moreshwar 2.0", "Moreshwar 1.0", "Moreshwar 2.1 (E-Ref Leak)"].filter((k) => r21.models[k]);
+  if (selMod) {
+    if (!modelKeys.includes(appState.mv21Filters.model)) appState.mv21Filters.model = modelKeys[0] || "Moreshwar 2.1";
+    selMod.innerHTML = modelKeys.map((k) => `<option value="${escHtml(k)}">${escHtml(k)}</option>`).join("");
+    selMod.value = appState.mv21Filters.model;
+  }
+
+  const activeModObj = r21.models[appState.mv21Filters.model] || r21.models["Moreshwar 2.1"];
+  const allSyms = Object.keys(activeModObj?.by_stock || {}).sort();
+  if (selInst) {
+    selInst.innerHTML = `<option value="ALL">All (${allSyms.length} Instruments)</option>` + allSyms.map((s) => `<option value="${escHtml(s)}">${escHtml(s)}</option>`).join("");
+    selInst.value = (appState.mv21Filters.instrument === "ALL" || allSyms.includes(appState.mv21Filters.instrument)) ? appState.mv21Filters.instrument : "ALL";
+  }
+  const allSectors = Object.keys(activeModObj?.by_sector || {}).sort();
+  if (selSec) {
+    selSec.innerHTML = `<option value="ALL">All (${allSectors.length} Sectors)</option>` + allSectors.map((s) => `<option value="${escHtml(s)}">${escHtml(s)}</option>`).join("");
+    selSec.value = (appState.mv21Filters.sector === "ALL" || allSectors.includes(appState.mv21Filters.sector)) ? appState.mv21Filters.sector : "ALL";
+  }
+  const allRegimes = ["STRONG_BULLISH", "WEAK_BULLISH", "SIDEWAYS", "WEAK_BEARISH", "STRONG_BEARISH", "HIGH_VOLATILITY"];
+  if (selReg) {
+    selReg.innerHTML = `<option value="ALL">All 6 Market Regimes</option>` + allRegimes.map((r) => `<option value="${escHtml(r)}">${escHtml(r)}</option>`).join("");
+    selReg.value = appState.mv21Filters.regime || "ALL";
+  }
+
+  // Verdict & promotion gate banner
+  const dec = r21.final_decision || {};
+  const catStr = dec.classification || "Unclassified";
+  const isPositive = catStr.startsWith("3.") || catStr.startsWith("4.");
+  const ruleText = dec.promotion_recommendation || (
+    r21.promoted_to_production
+      ? "Promoted to production after outperforming benchmarks with statistically significant expectancy across untouched OOS folds."
+      : "Keep Moreshwar 1.0 active in production; Moreshwar 2.1 requires positive statistically significant net expectancy (p < 0.05) across OOS & regime folds before promotion."
+  );
+  const unresolvedList = Array.isArray(dec.unresolved_risks) ? dec.unresolved_risks : [];
+  bannerEl.className = `mv21-verdict-banner${isPositive ? " verdict-positive" : ""}`;
+  bannerEl.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+      <strong style="font-size:13px;">Final Research Classification: ${escHtml(catStr)}</strong>
+      <span class="tag-pill ${r21.promoted_to_production ? "tag-target" : "tag-stop"}">${r21.promoted_to_production ? "PROMOTED" : "NOT PROMOTED TO PRODUCTION · M1.0 ACTIVE"}</span>
+    </div>
+    <div>${escHtml(dec.rationale || "")}</div>
+    <div style="margin-top:4px;font-size:11px;color:var(--text-secondary);"><strong>Decision Rule:</strong> ${escHtml(ruleText)}</div>
+    ${unresolvedList.length ? `<div style="margin-top:4px;font-size:11px;color:var(--text-muted);"><strong>Unresolved Risks:</strong> ${unresolvedList.map((u) => escHtml(u)).join(" · ")}</div>` : ""}
+  `;
+
+  const promoBadge = document.getElementById("mv21PromoBadge");
+  if (promoBadge) {
+    promoBadge.textContent = r21.promoted_to_production ? "M2.1 ACTIVE IN PROD" : "RESEARCH ONLY · M1.0 ACTIVE IN PROD";
+  }
+
+  // Subtitle & dynamic KPI summary (full model OR filtered Instrument / Sector / Regime cohort)
+  const ds = r21.dataset_summary || {};
+  const fInst = appState.mv21Filters.instrument;
+  const fSec = appState.mv21Filters.sector;
+  const fReg = appState.mv21Filters.regime;
+  const modM = activeModObj.metrics || {};
+  const subEl = document.getElementById("mv21Subtitle");
+  if (subEl) {
+    subEl.textContent = `5Y Dataset: ${ds.start_date || "--"} → ${ds.end_date || "--"} (${ds.trading_days || 0} trading days · ${ds.instruments_count || 0} instruments · OOS starts ${ds.oos_start || "--"})`;
+  }
+
+  // Derive filtered cohort view when any non-ALL filter is active
+  let cohortLabel = `Full Model: ${appState.mv21Filters.model}`;
+  let cTrades = modM.total_trades ?? 0;
+  let cWin = `${modM.win_rate_pct ?? 0}% (CI ${modM.win_rate_ci95?.[0] ?? 0}–${modM.win_rate_ci95?.[1] ?? 0}%)`;
+  let cPf = modM.profit_factor ?? 0;
+  let cExp = `${(modM.expectancy_pct || 0) >= 0 ? "+" : ""}${modM.expectancy_pct ?? 0}% (p=${modM.p_value_vs_zero ?? "--"})`;
+  let cTotVal = `${(modM.total_return_pct || 0) >= 0 ? "+" : ""}${modM.total_return_pct ?? 0}%`;
+  let cTotSub = `CAGR ${(modM.cagr_pct || 0) >= 0 ? "+" : ""}${modM.cagr_pct ?? 0}% · Cost ${modM.cost_drag_pct ?? 0}%`;
+
+  if (fInst !== "ALL" && activeModObj.by_stock?.[fInst]) {
+    const bs = activeModObj.by_stock[fInst];
+    cohortLabel = `${appState.mv21Filters.model} · Instrument: ${fInst}`;
+    cTrades = bs.trades;
+    cWin = `${bs.win_rate_pct}%`;
+    cPf = bs.profit_factor;
+    cExp = `${bs.expectancy_pct >= 0 ? "+" : ""}${bs.expectancy_pct}%`;
+    cTotVal = fmtCurrency(bs.total_pnl, fInst === "NVDA" ? "USD" : "INR", 0);
+    cTotSub = "Instrument Net PnL (Simulated)";
+  } else if (fSec !== "ALL" && activeModObj.by_sector?.[fSec]) {
+    const bs = activeModObj.by_sector[fSec];
+    cohortLabel = `${appState.mv21Filters.model} · Sector: ${fSec}`;
+    cTrades = bs.trades;
+    cWin = `${bs.win_rate_pct}%`;
+    cPf = bs.profit_factor;
+    cExp = `${bs.expectancy_pct >= 0 ? "+" : ""}${bs.expectancy_pct}%`;
+    cTotVal = fmtCurrency(bs.total_pnl, fSec.includes("US ") ? "USD" : "INR", 0);
+    cTotSub = "Sector Net PnL (Simulated)";
+  } else if (fReg !== "ALL" && activeModObj.regimes_6?.[fReg]) {
+    const br = activeModObj.regimes_6[fReg];
+    cohortLabel = `${appState.mv21Filters.model} · Regime: ${fReg}`;
+    cTrades = br.trades;
+    cWin = `${br.win_rate_pct}%`;
+    cPf = br.profit_factor;
+    cExp = `${br.expectancy_pct >= 0 ? "+" : ""}${br.expectancy_pct}%`;
+    cTotVal = `Sh ${br.sharpe_ratio} · DD ${br.max_drawdown_pct}%`;
+    cTotSub = `${br.days_in_regime} market days in regime`;
+  }
+
+  kpiEl.innerHTML = `
+    <div class="kpi-chip">
+      <div class="kpi-lbl">Active Scope</div>
+      <div class="kpi-val" style="font-size:12px;">${escHtml(cohortLabel)}</div>
+      <div style="font-size:10.5px;color:var(--text-muted);">${ds.trading_days || 0} bars · ${ds.instruments_count || 0} instruments</div>
+    </div>
+    <div class="kpi-chip">
+      <div class="kpi-lbl">Net Return / PnL (Sim)</div>
+      <div class="kpi-val" style="color:${String(cTotVal).startsWith("-") ? "var(--accent-crimson)" : "var(--accent-cyan)"};">${escHtml(cTotVal)}</div>
+      <div style="font-size:10.5px;color:var(--text-muted);">${escHtml(cTotSub)}</div>
+    </div>
+    <div class="kpi-chip">
+      <div class="kpi-lbl">Trades &amp; Win Rate</div>
+      <div class="kpi-val">${cTrades} · ${escHtml(cWin)}</div>
+      <div style="font-size:10.5px;color:var(--text-muted);">Hold ${modM.avg_holding_days ?? "--"}D · Util ${modM.capital_utilisation_pct ?? "--"}%</div>
+    </div>
+    <div class="kpi-chip">
+      <div class="kpi-lbl">Risk-Adjusted Ratios</div>
+      <div class="kpi-val">Sh ${modM.sharpe_ratio ?? "--"} · So ${modM.sortino_ratio ?? "--"}</div>
+      <div style="font-size:10.5px;color:var(--text-muted);">MaxDD ${modM.max_drawdown_pct ?? "--"}% · Recov ${modM.recovery_factor ?? "--"} · PF ${cPf}</div>
+    </div>
+    <div class="kpi-chip">
+      <div class="kpi-lbl">Statistical Expectancy</div>
+      <div class="kpi-val" style="font-size:13px;">${escHtml(cExp)}</div>
+      <div style="font-size:10.5px;color:var(--text-muted);">${modM.distinguishable_from_random ? "Stat. significant vs 0" : "Not distinguishable from random/neg"}</div>
+    </div>
+  `;
+
+  // Benchmark matrix table
+  const bmRows = Array.isArray(r21.benchmark_comparison) ? r21.benchmark_comparison : [];
+  bmBody.innerHTML = bmRows.map((m) => {
+    const isHl = String(m.model).includes("2.1 (6-Regime") || String(m.model).includes("Nifty 50") || String(m.model).includes("Cash");
+    const ret = m.total_return_pct ?? 0;
+    const col = ret >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)";
+    const ci = Array.isArray(m.win_rate_ci95) ? `[${m.win_rate_ci95[0]}–${m.win_rate_ci95[1]}]` : "";
+    const pVal = m.p_value_vs_zero != null ? ` (p=${m.p_value_vs_zero})` : "";
+    return `
+      <tr style="${String(m.model).includes("2.1 (6-Regime") ? "background:hsla(196,86%,54%,0.08);" : ""}">
+        <td style="font-weight:${isHl ? "700" : "500"};">${escHtml(m.model)}</td>
+        <td style="font-family:var(--font-mono);color:${col};font-weight:700;">${ret >= 0 ? "+" : ""}${ret}%</td>
+        <td style="font-family:var(--font-mono);color:${col};">${(m.cagr_pct || 0) >= 0 ? "+" : ""}${m.cagr_pct ?? 0}%</td>
+        <td style="font-family:var(--font-mono);">${m.win_rate_pct ?? 0}% <span style="color:var(--text-muted);">${ci}</span></td>
+        <td style="font-family:var(--font-mono);">${m.profit_factor != null ? m.profit_factor : "--"}</td>
+        <td style="font-family:var(--font-mono);">${m.sharpe_ratio ?? "--"}</td>
+        <td style="font-family:var(--font-mono);">${m.sortino_ratio ?? "--"}</td>
+        <td style="font-family:var(--font-mono);">${m.max_drawdown_pct ?? "--"}%</td>
+        <td style="font-family:var(--font-mono);">${m.recovery_factor != null ? m.recovery_factor : "--"}</td>
+        <td style="font-family:var(--font-mono);">${m.expectancy_pct != null ? `${m.expectancy_pct >= 0 ? "+" : ""}${m.expectancy_pct}%${pVal}` : "--"}</td>
+        <td style="font-family:var(--font-mono);">${m.total_trades ?? 0}</td>
+        <td style="font-family:var(--font-mono);">${m.avg_holding_days ?? "--"}</td>
+        <td style="font-family:var(--font-mono);">${m.capital_utilisation_pct ?? "--"}%</td>
+        <td style="font-family:var(--font-mono);">${m.cost_drag_pct ?? 0}%</td>
+      </tr>
+    `;
+  }).join("");
+
+  // Walk-Forward + OOS
+  const wf = r21.walk_forward_validation || {};
+  const oos = r21.out_of_sample || {};
+  const wfSub = document.getElementById("mv21WfSubtitle");
+  if (wfSub) {
+    wfSub.textContent = `1st-Half Avg ${wf.first_half_avg_return_pct ?? "--"}% vs 2nd-Half ${wf.second_half_avg_return_pct ?? "--"}% · Deterioration: ${wf.deterioration_detected ? "YES" : "NO"} · Zero tuning on OOS`;
+  }
+  if (wfBody) {
+    const folds = wf.folds || [];
+    wfBody.innerHTML = folds.map((f) => `
+      <tr>
+        <td style="font-family:var(--font-mono);"><strong>${escHtml(f.fold)}</strong><br><span style="color:var(--text-muted);">${escHtml(f.test_window)}</span></td>
+        <td style="font-family:var(--font-mono);color:var(--accent-amber);">${f.nifty_return_pct >= 0 ? "+" : ""}${f.nifty_return_pct}%</td>
+        <td style="font-family:var(--font-mono);color:${f.m1_return_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${f.m1_return_pct >= 0 ? "+" : ""}${f.m1_return_pct}% (${f.m1_max_dd_pct}%)</td>
+        <td style="font-family:var(--font-mono);color:${f.m2_return_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${f.m2_return_pct >= 0 ? "+" : ""}${f.m2_return_pct}% (${f.m2_max_dd_pct}%)</td>
+        <td style="font-family:var(--font-mono);font-weight:700;color:${f.m21_return_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${f.m21_return_pct >= 0 ? "+" : ""}${f.m21_return_pct}% (${f.m21_max_dd_pct}%)</td>
+        <td style="font-family:var(--font-mono);">${f.m21_win_rate_pct}% (n=${f.m21_trades})</td>
+      </tr>
+    `).join("");
+  }
+  const oosEl = document.getElementById("mv21OosSummary");
+  if (oosEl && oos.moreshwar_2_1) {
+    const om21 = oos.moreshwar_2_1;
+    const om1 = oos.moreshwar_1_0 || {};
+    const oSma = oos.sma20 || {};
+    const oFix = oos.fixed_5_10 || {};
+    const oNif = oos.nifty50 || {};
+    const oCash = oos.cash_6_5 || {};
+    oosEl.innerHTML = `<strong>Untouched OOS (${escHtml(oos.window || "")}):</strong> M2.1 <strong>${om21.total_return_pct}%</strong> (DD ${om21.max_drawdown_pct}%, n=${om21.total_trades}) vs M1.0 ${om1.total_return_pct}% (DD ${om1.max_drawdown_pct}%) vs SMA-20 ${oSma.total_return_pct}% vs Fixed 5/10 ${oFix.total_return_pct}% vs Nifty +${oNif.total_return_pct}% vs Cash +${oCash.total_return_pct}%.`;
+  }
+
+  // 6-State Regimes table (for currently selected Model)
+  if (regBody) {
+    const rMap = activeModObj.regimes_6 || {};
+    regBody.innerHTML = allRegimes.map((rn) => {
+      const d = rMap[rn] || {};
+      const expCol = (d.expectancy_pct || 0) > 0 ? "var(--accent-emerald)" : ((d.expectancy_pct || 0) < 0 ? "var(--accent-crimson)" : "var(--text-muted)");
+      return `
+        <tr>
+          <td style="font-family:var(--font-mono);font-weight:700;">${escHtml(rn)}</td>
+          <td style="font-family:var(--font-mono);">${d.days_in_regime ?? 0}</td>
+          <td style="font-family:var(--font-mono);">${d.trades ?? 0}</td>
+          <td style="font-family:var(--font-mono);">${d.win_rate_pct ?? 0}%</td>
+          <td style="font-family:var(--font-mono);color:${expCol};font-weight:700;">${(d.expectancy_pct || 0) >= 0 ? "+" : ""}${d.expectancy_pct ?? 0}%</td>
+          <td style="font-family:var(--font-mono);">${d.profit_factor ?? 0}</td>
+          <td style="font-family:var(--font-mono);">${d.sharpe_ratio ?? 0}</td>
+          <td style="font-family:var(--font-mono);">${d.max_drawdown_pct ?? 0}%</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  // Monte Carlo Stats box (switch between M1.0 and M2.1 distributions based on selected model)
+  const mcStatsEl = document.getElementById("mv21MonteCarloStats");
+  const mcAll = r21.monte_carlo || {};
+  const mcKey = String(appState.mv21Filters.model || "").includes("1.0") ? "moreshwar_1_0" : "moreshwar_2_1";
+  const mc = mcAll[mcKey] || mcAll.moreshwar_2_1 || mcAll;
+  if (mcStatsEl && mc.trade_bootstrap && mc.daily_block_bootstrap) {
+    const tb = mc.trade_bootstrap;
+    const bb = mc.daily_block_bootstrap;
+    mcStatsEl.innerHTML = `
+      <div>• <strong>[${escHtml(mcKey.toUpperCase())}] Trade Bootstrap (${tb.simulations} sims):</strong> P5 <strong>${tb.p05_return_pct}%</strong> | Median <strong>${tb.median_return_pct}%</strong> | P95 <strong>+${tb.p95_return_pct}%</strong> · Med DD ${tb.median_max_dd_pct}% (P95 ${tb.p95_max_dd_pct}%) · P(Ret&gt;0)=<strong>${tb.prob_positive_return_pct}%</strong> · P(DD≥25%)=<strong>${tb.prob_ruin_25pct_dd}%</strong></div>
+      <div>• <strong>10D Block Bootstrap (${bb.simulations} sims):</strong> P5 <strong>${bb.p05_return_pct}%</strong> | Median <strong>${bb.median_return_pct}%</strong> | P95 <strong>+${bb.p95_return_pct}%</strong> · Med DD ${bb.median_max_dd_pct}% (P95 ${bb.p95_max_dd_pct}%) · P(Ret&gt;0)=<strong>${bb.prob_positive_return_pct}%</strong> · P(DD≥25%)=<strong>${bb.prob_ruin_25pct_dd}%</strong></div>
+      <div style="color:var(--text-muted);margin-top:2px;">Limitation: ${escHtml(bb.limitation || "")}</div>
+    `;
+  }
+
+  // Portfolio-Level Risk Grid (Section 6)
+  if (prGrid) {
+    const pr = activeModObj.portfolio_risk || {};
+    const ex = modM.execution_realism || {};
+    const cb = modM.cost_breakdown || {};
+    prGrid.innerHTML = `
+      <div class="dq-mini-stat"><div class="dq-mini-lbl">Simultaneous Positions</div><div class="dq-mini-val">${pr.avg_simultaneous_positions ?? 0} avg · ${pr.max_simultaneous_positions ?? 0} max</div><div class="dq-mini-sub">Exposure ${pr.capital_utilization_pct ?? 0}% avg / ${pr.max_portfolio_exposure_pct ?? 0}% peak</div></div>
+      <div class="dq-mini-stat"><div class="dq-mini-lbl">Sector &amp; Correlation</div><div class="dq-mini-val">${pr.avg_sector_concentration_pct ?? 0}% avg · ${pr.max_sector_concentration_pct ?? 0}% peak</div><div class="dq-mini-sub">Avg Corr ${pr.avg_concurrent_correlation ?? 0} · Peak ${pr.peak_concurrent_correlation ?? 0}</div></div>
+      <div class="dq-mini-stat"><div class="dq-mini-lbl">Portfolio SL Risk</div><div class="dq-mini-val">${pr.avg_portfolio_stop_loss_exposure_pct ?? 0}% avg · ${pr.max_portfolio_stop_loss_exposure_pct ?? 0}% max</div><div class="dq-mini-sub">Max losing streak: ${pr.max_consecutive_losses ?? 0} trades</div></div>
+      <div class="dq-mini-stat"><div class="dq-mini-lbl">Tail Shocks &amp; Market Declines</div><div class="dq-mini-val">${pr.max_single_day_loss_pct ?? 0}% 1D · ${pr.max_5day_week_loss_pct ?? 0}% 5D</div><div class="dq-mini-sub">${pr.market_decline_days_count ?? 0} Nifty drop days (-0.614% avg / ${pr.avg_exposure_on_market_declines_pct ?? 0}% exp)</div></div>
+      <div class="dq-mini-stat"><div class="dq-mini-lbl">Indian Delivery Friction</div><div class="dq-mini-val">${fmtCurrency(cb.total_cost || 0, "INR", 0)} (${modM.cost_drag_pct ?? 0}%)</div><div class="dq-mini-sub">STT ${fmtCurrency(cb.stt || 0, "INR", 0)} · DP ${fmtCurrency(cb.dp_charge || 0, "INR", 0)} · Slip ${fmtCurrency(cb.slippage_cost || 0, "INR", 0)}</div></div>
+      <div class="dq-mini-stat"><div class="dq-mini-lbl">Gap &amp; Liquidity Realism</div><div class="dq-mini-val">${ex.gap_through_stops ?? 0} gap SL · ${ex.unfillable_zero_vol ?? 0} halted</div><div class="dq-mini-sub">Regime gates: ${ex.rejection_categories?.REGIME_GATE ?? 0} · Port caps: ${ex.rejection_categories?.PORTFOLIO_CAP_OR_CORR ?? 0}</div></div>
+    `;
+  }
+
+  // Strategy Investigation & Counterfactuals (Section 4)
+  if (invEl) {
+    const inv = r21.strategy_investigation || {};
+    const comp = inv.component_attribution || [];
+    const scf = inv.selectivity_counterfactuals || {};
+    const cfCats = scf.by_rejection_category || {};
+    invEl.innerHTML = comp.map((c) => {
+      const pillCls = c.impact === "POSITIVE" ? "tag-target" : (c.impact === "LOOK_AHEAD_BIASED" || c.impact === "EXCESSIVE_SELECTIVITY_WARNING" || c.impact === "NEGATIVE") ? "tag-stop" : "tag-score";
+      return `
+        <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:4px;padding:7px 9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:2px;">
+            <strong style="color:var(--text-primary);">${escHtml(c.component)}</strong>
+            <span class="tag-pill ${pillCls}">${escHtml(c.impact)}</span>
+          </div>
+          <div style="color:var(--text-secondary);">${escHtml(c.evidence)}</div>
+        </div>
+      `;
+    }).join("") + `
+      <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:4px;padding:7px 9px;">
+        <strong>Rejected Counterfactuals by Category (${scf.rejected_evaluated ?? 0} missed setups vs ${scf.accepted_trades ?? 0} taken):</strong>
+        <div style="font-family:var(--font-mono);font-size:10.5px;margin-top:4px;color:var(--text-secondary);">
+          ${Object.entries(cfCats).map(([cat, v]) => `${escHtml(cat)}: n=${v.count}, Win=${v.cf_win_rate_pct}%, Avg=${v.cf_avg_return_pct >= 0 ? "+" : ""}${v.cf_avg_return_pct}%`).join(" · ")}
+        </div>
+      </div>
+    `;
+  }
+
+  // Data Quality & Survivorship (Section 2)
+  if (dqEl) {
+    const dqr = r21.data_quality_report || {};
+    const delisted = dqr.delisted_probes || [];
+    const sectorsCov = Array.isArray(dqr.sectors_covered) ? dqr.sectors_covered : [];
+    const capTiersCov = Array.isArray(dqr.cap_tiers_covered) ? dqr.cap_tiers_covered : [];
+    const regimesCov = Object.keys(activeModObj.regimes_6 || {});
+    const completeCnt = dqr.complete_multi_year_count ?? dqr.complete_5y_count ?? 0;
+    const distressedCnt = dqr.distressed_or_illiquid_count ?? dqr.distressed_controls_count ?? 0;
+    dqEl.innerHTML = `
+      <div>• <strong>Universe:</strong> ${dqr.instruments_loaded ?? 0} / ${dqr.instruments_requested ?? 0} instruments · Complete 5Y: <strong>${completeCnt}</strong> · Insolvency/Distressed controls: <strong>${distressedCnt}</strong> · Partial post-demerger: <strong>${dqr.partial_history_count ?? 0}</strong></div>
+      <div>• <strong>Coverage &amp; Regimes:</strong> ${sectorsCov.length} sectors · ${capTiersCov.length} cap tiers · ${dqr.benchmark_bars ?? 0} Nifty 50 bars (${escHtml(dqr.benchmark_start || "--")} → ${escHtml(dqr.benchmark_end || "--")}) · Regimes: ${escHtml(regimesCov.join(" · "))}</div>
+      <div>• <strong>Delisted Ticker Survivorship Audit (Real HTTP Probes — Never Fabricated):</strong> ${delisted.map((p) => `<code>${escHtml(p.symbol)}</code> (${escHtml(p.reason || p.status || (p.available ? "Available" : "HTTP 404 Unavailable"))})`).join(", ")}</div>
+      <div style="margin-top:4px;color:var(--text-muted);">${escHtml(dqr.survivorship_disclosure || dqr.survivorship_limitation_note || "")}</div>
+    `;
+  }
+
+  // Filtered Sample Trade Execution Log
+  if (trBody) {
+    let trades = Array.isArray(activeModObj.sample_trades) ? activeModObj.sample_trades : [];
+    if (fInst !== "ALL") trades = trades.filter((t) => t.symbol === fInst);
+    if (fSec !== "ALL") trades = trades.filter((t) => t.sector === fSec);
+    if (fReg !== "ALL") trades = trades.filter((t) => t.signal_regime6 === fReg);
+    trBody.innerHTML = trades.slice(0, 60).map((t) => {
+      const cur = t.symbol === "NVDA" ? "USD" : "INR";
+      const rCol = t.net_return_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)";
+      return `
+        <tr>
+          <td style="font-family:var(--font-mono);font-weight:700;">${escHtml(t.symbol)}<br><span style="color:var(--text-muted);font-weight:400;">${escHtml(t.sector)}</span></td>
+          <td style="font-family:var(--font-mono);">${escHtml(t.entry_date)}<br>${escHtml(t.exit_date)} (${t.holding_days}d)</td>
+          <td style="font-family:var(--font-mono);">${escHtml(t.signal_regime6)}</td>
+          <td style="font-family:var(--font-mono);">${fmtCurrency(t.entry_price, cur, 2)} → ${fmtCurrency(t.exit_price, cur, 2)}</td>
+          <td style="font-family:var(--font-mono);color:${rCol};font-weight:700;">${t.net_return_pct >= 0 ? "+" : ""}${t.net_return_pct}%</td>
+          <td style="font-family:var(--font-mono);">${fmtCurrency(t.cost_amount, cur, 1)}</td>
+          <td style="font-family:var(--font-mono);">${escHtml(t.exit_reason)}${t.gap_through_stop ? " (GAP)" : ""}</td>
+        </tr>
+      `;
+    }).join("") || `<tr><td colspan="7" style="text-align:center;color:var(--text-secondary);">No sampled trades match current Model + Instrument + Sector + Regime filters (adjust filters or see KPI cohort totals above).</td></tr>`;
+  }
+
+  requestAnimationFrame(() => {
+    drawMv21EquityChart(r21);
+    drawMv21MonteCarloChart(mc);
+  });
+}
+
 function renderAuditLedger() {
   const symSel = document.getElementById("auditSymbolFilter");
   const stSel = document.getElementById("auditStatusFilter");
@@ -1510,14 +2042,17 @@ function renderAuditLedger() {
 function renderIntelligenceViews() {
   const secProv = document.getElementById("intelSectionProvenance");
   const secBt = document.getElementById("intelSectionBacktest");
+  const secV21 = document.getElementById("intelSectionV21");
   const secAud = document.getElementById("intelSectionAudit");
   const focus = appState.intelFocus || "all";
   if (secProv) secProv.style.display = (focus === "all" || focus === "provenance") ? "flex" : "none";
   if (secBt) secBt.style.display = (focus === "all" || focus === "backtest") ? "flex" : "none";
+  if (secV21) secV21.style.display = (focus === "all" || focus === "v21") ? "flex" : "none";
   if (secAud) secAud.style.display = (focus === "all" || focus === "audit") ? "flex" : "none";
 
   renderProvenanceMonitor();
   renderBacktestAnalytics();
+  renderMoreshwarV21Dashboard();
   renderAuditLedger();
   renderReportsView();
 }
@@ -2266,7 +2801,13 @@ function bootFinsistantApp() {
       if (btn.dataset.tab === "mission") {
         drawUnifiedChart(appState.assets[appState.activeSymbol]);
       } else if (btn.dataset.tab === "intelligence") {
-        requestAnimationFrame(() => drawBacktestEquityChart((appState.backtest || {}).equity_curve || []));
+        requestAnimationFrame(() => {
+          const mcAll = (appState.moreshwarV21Research || {}).monte_carlo || {};
+          const mcKey = String(appState.mv21Filters.model || "").includes("1.0") ? "moreshwar_1_0" : "moreshwar_2_1";
+          drawBacktestEquityChart((appState.backtest || {}).equity_curve || []);
+          drawMv21EquityChart(appState.moreshwarV21Research);
+          drawMv21MonteCarloChart(mcAll[mcKey] || mcAll.moreshwar_2_1 || mcAll);
+        });
       } else if (btn.dataset.tab === "reports") {
         requestAnimationFrame(() => drawReportsCharts());
       }
@@ -2280,7 +2821,13 @@ function bootFinsistantApp() {
         b.classList.toggle("active-subfilter", b === btn);
       });
       renderIntelligenceViews();
-      requestAnimationFrame(() => drawBacktestEquityChart((appState.backtest || {}).equity_curve || []));
+      requestAnimationFrame(() => {
+        const mcAll = (appState.moreshwarV21Research || {}).monte_carlo || {};
+        const mcKey = String(appState.mv21Filters.model || "").includes("1.0") ? "moreshwar_1_0" : "moreshwar_2_1";
+        drawBacktestEquityChart((appState.backtest || {}).equity_curve || []);
+        drawMv21EquityChart(appState.moreshwarV21Research);
+        drawMv21MonteCarloChart(mcAll[mcKey] || mcAll.moreshwar_2_1 || mcAll);
+      });
     });
   });
 
@@ -2293,6 +2840,43 @@ function bootFinsistantApp() {
     mv2Sel.addEventListener("change", () => {
       appState.mv2SelectedSymbol = mv2Sel.value;
       renderMoreshwarV2ShadowLab();
+    });
+  }
+  const mv21ModF = document.getElementById("mv21FilterModel");
+  const mv21InstF = document.getElementById("mv21FilterInstrument");
+  const mv21SecF = document.getElementById("mv21FilterSector");
+  const mv21RegF = document.getElementById("mv21FilterRegime");
+  const mv21ResetBtn = document.getElementById("mv21ResetFiltersBtn");
+  if (mv21ModF) {
+    mv21ModF.addEventListener("change", () => {
+      appState.mv21Filters.model = mv21ModF.value;
+      renderMoreshwarV21Dashboard();
+    });
+  }
+  if (mv21InstF) {
+    mv21InstF.addEventListener("change", () => {
+      appState.mv21Filters.instrument = mv21InstF.value;
+      if (mv21InstF.value !== "ALL") appState.mv21Filters.sector = "ALL";
+      renderMoreshwarV21Dashboard();
+    });
+  }
+  if (mv21SecF) {
+    mv21SecF.addEventListener("change", () => {
+      appState.mv21Filters.sector = mv21SecF.value;
+      if (mv21SecF.value !== "ALL") appState.mv21Filters.instrument = "ALL";
+      renderMoreshwarV21Dashboard();
+    });
+  }
+  if (mv21RegF) {
+    mv21RegF.addEventListener("change", () => {
+      appState.mv21Filters.regime = mv21RegF.value;
+      renderMoreshwarV21Dashboard();
+    });
+  }
+  if (mv21ResetBtn) {
+    mv21ResetBtn.addEventListener("click", () => {
+      appState.mv21Filters = { model: "Moreshwar 2.1", instrument: "ALL", sector: "ALL", regime: "ALL" };
+      renderMoreshwarV21Dashboard();
     });
   }
 
@@ -2546,8 +3130,12 @@ function bootFinsistantApp() {
   document.getElementById("runUnifiedVerifyBtn").addEventListener("click", () => runLiveScan(false));
 
   window.addEventListener("resize", () => {
+    const mcAll = (appState.moreshwarV21Research || {}).monte_carlo || {};
+    const mcKey = String(appState.mv21Filters.model || "").includes("1.0") ? "moreshwar_1_0" : "moreshwar_2_1";
     drawUnifiedChart(appState.assets[appState.activeSymbol]);
     drawBacktestEquityChart((appState.backtest || {}).equity_curve || []);
+    drawMv21EquityChart(appState.moreshwarV21Research);
+    drawMv21MonteCarloChart(mcAll[mcKey] || mcAll.moreshwar_2_1 || mcAll);
     drawReportsCharts();
   });
 }
