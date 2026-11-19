@@ -148,6 +148,9 @@ function drawUnifiedChart(asset) {
 
   drawLevelLine(m.target, "hsl(158, 74%, 44%)", `TP ${symPrefix}${m.target}`);
   drawLevelLine(asset.price, "hsl(196, 86%, 54%)", `CP ${symPrefix}${asset.price}`);
+  if (m.recalibrated && typeof m.entry_price === "number" && Math.abs(m.entry_price - asset.price) > asset.price * 0.002) {
+    drawLevelLine(m.entry_price, "hsl(38, 92%, 62%)", `LIM ${symPrefix}${m.entry_price}`);
+  }
   drawLevelLine(m.stop_loss, "hsl(350, 84%, 60%)", `SL ${symPrefix}${m.stop_loss}`);
 }
 
@@ -229,21 +232,26 @@ function renderAllViews() {
   document.getElementById("hdrBalance").textContent = fmtCurrency(appState.cashBalance, "INR");
   document.getElementById("hdrHealth").textContent = healthScore;
 
-  // Top Picks Queue (strictly from live orchestrator queue.buys)
+  // Top Picks Queue (strictly from live orchestrator queue.buys + deferred critic audits)
   const picksContainer = document.getElementById("picksQueueContainer");
   picksContainer.innerHTML = "";
   const buysQueue = appState.queue.buys || [];
-  if (buysQueue.length === 0) {
+  const deferredQueue = appState.queue.deferred || [];
+  const combinedQueue = [...buysQueue, ...deferredQueue];
+  if (combinedQueue.length === 0) {
     picksContainer.innerHTML = `<div class="terminal-box" style="color: var(--text-secondary);">No active orchestrator picks loaded.</div>`;
   } else {
-    buysQueue.forEach((p) => {
+    combinedQueue.forEach((p) => {
       const cur = p.currency || appState.assets[p.symbol]?.currency || "INR";
+      const isDeferred = p.status === "DEFERRED";
+      const recalTag = p.recalibrated ? (isDeferred ? " · CRO DEFERRED" : " · RECALIBRATED") : "";
       const row = document.createElement("div");
       row.className = `pick-row ${p.symbol === appState.activeSymbol ? "selected" : ""}`;
+      if (isDeferred) row.style.opacity = "0.68";
       row.innerHTML = `
         <div>
           <span class="pick-sym">${p.symbol}</span>
-          <span class="pick-sub">${p.setup_type} · ${p.decision_badge}</span>
+          <span class="pick-sub">${p.setup_type} · ${p.decision_badge}${recalTag}</span>
         </div>
         <span class="tag-pill tag-entry">${fmtCurrency(p.entry, cur, p.entry < 500 ? 2 : 0)}</span>
         <span class="tag-pill tag-target">${fmtCurrency(p.target, cur, p.target < 500 ? 2 : 0)}</span>
@@ -336,17 +344,23 @@ function renderAllViews() {
   decBadge.className = `tag-pill ${f.total >= 65 ? "tag-target" : f.total <= 45 ? "tag-stop" : "tag-score"}`;
 
   document.getElementById("legTarget").textContent = fmtCurrency(m.target, cur, 2);
-  document.getElementById("legEntry").textContent = fmtCurrency(active.price, cur, 2);
+  document.getElementById("legEntry").textContent = m.recalibrated
+    ? `${fmtCurrency(active.price, cur, 2)} (Lim ${fmtCurrency(m.entry_price, cur, 2)})`
+    : fmtCurrency(active.price, cur, 2);
   document.getElementById("legStop").textContent = fmtCurrency(m.stop_loss, cur, 2);
   document.getElementById("legReg").textContent = fmtCurrency(active.projected_30d_target, cur, 2);
 
   const execQty = pipe.quantity || 0;
   const convPct = ((pipe.conviction_score || 0) * 100).toFixed(1);
+  const crit = appState.geminiCritiques[active.symbol] || null;
+  const recal = (crit && crit.recalibration) || null;
+  const recalTag = recal && recal.applied ? ` <span style="color:var(--accent-amber);font-size:10.5px;">[RECALIBRATED BY GEMINI CRO]</span>` : "";
+
   document.getElementById("analysisTerminalBox").innerHTML = `
-    <div style="color: var(--accent-cyan); font-weight: 600;">${active.symbol} Live Orchestrator Verdict</div>
+    <div style="color: var(--accent-cyan); font-weight: 600;">${active.symbol} Live Orchestrator Verdict${recalTag}</div>
     <div>• StockSight V2 Score: <strong>${f.total}/100</strong> | Porter Moat: <strong>${p.total}/100</strong></div>
     <div>• Moreshwar Levels: Entry <strong>${fmtCurrency(m.entry_price, cur, 2)}</strong> · Target <strong>${fmtCurrency(m.target, cur, 2)}</strong> · SL <strong>${fmtCurrency(m.stop_loss, cur, 2)}</strong> (R:R 1:${m.rr_ratio})</div>
-    <div>• Auto-Risk Sized Qty: <strong>${execQty} Shares</strong> (${fmtCurrency(execQty * active.price, cur, 2)})</div>
+    <div>• Auto-Risk Sized Qty: <strong>${execQty} Shares</strong> (${fmtCurrency(execQty * m.entry_price, cur, 2)})</div>
     <div>• Multi-Agent Verdict: <strong style="color: var(--accent-emerald);">${d.action}</strong> (${convPct}% Conviction)</div>
   `;
 
@@ -377,7 +391,6 @@ function renderAllViews() {
   document.getElementById("agExecDesc").textContent = mExec.summary || "";
 
   // Gemini Critical Trade Analyst Panel (fills center blank space)
-  const crit = appState.geminiCritiques[active.symbol] || null;
   const gTitleEl = document.getElementById("geminiPanelTitle");
   const gSubEl = document.getElementById("geminiPanelSub");
   const gRiskEl = document.getElementById("geminiRiskBadge");
@@ -386,6 +399,12 @@ function renderAllViews() {
   const gRisksEl = document.getElementById("geminiRisksText");
   const gStampEl = document.getElementById("geminiModelStamp");
   const gBodyEl = document.getElementById("geminiRationaleBody");
+  const gRecalBadgeEl = document.getElementById("geminiRecalStatusBadge");
+  const rActEl = document.getElementById("recalActionVal");
+  const rEntEl = document.getElementById("recalEntryVal");
+  const rTpSlEl = document.getElementById("recalTpSlVal");
+  const rQtyEl = document.getElementById("recalQtyVal");
+  const gRecalSumEl = document.getElementById("geminiRecalSummary");
 
   if (gTitleEl && crit) {
     gTitleEl.textContent = `Gemini Critical Trade Analyst — ${active.symbol}`;
@@ -402,6 +421,20 @@ function renderAllViews() {
       const cStamp = crit.generated_at ? new Date(crit.generated_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
       gStampEl.textContent = `${crit.model || "gemini-2.5-flash"}${cStamp ? ` · ${cStamp}` : ""}`;
       gBodyEl.textContent = crit.rationale || "";
+
+      if (gRecalBadgeEl && recal && recal.applied && recal.before && recal.after) {
+        const b = recal.before;
+        const a = recal.after;
+        gRecalBadgeEl.textContent = a.status === "DEFERRED" ? "DEFERRED BY CRO" : "RECALIBRATED LIVE";
+        gRecalBadgeEl.className = `tag-pill ${a.status === "DEFERRED" ? "tag-stop" : "tag-target"}`;
+        rActEl.textContent = b.action === a.action ? a.action : `${b.action} → ${a.action}`;
+        rEntEl.textContent = b.entry === a.entry
+          ? fmtCurrency(a.entry, cur, 2)
+          : `${fmtCurrency(b.entry, cur, 2)} → ${fmtCurrency(a.entry, cur, 2)}`;
+        rTpSlEl.textContent = `${fmtCurrency(a.target, cur, 2)} / ${fmtCurrency(a.stop_loss, cur, 2)} (1:${a.rr_ratio})`;
+        rQtyEl.textContent = `${a.qty} sh (${a.conviction}%)`;
+        gRecalSumEl.textContent = recal.summary || "";
+      }
     } else {
       gSubEl.textContent = appState.geminiStatus || "Gemini live key check required";
       gRiskEl.textContent = "LIVE KEY NEEDED";
@@ -412,6 +445,15 @@ function renderAllViews() {
       gRisksEl.textContent = crit.critical_risks || crit.error || "GEMINI_API_KEY missing or revoked.";
       gStampEl.textContent = "ZERO SIMULATION POLICY";
       gBodyEl.textContent = crit.rationale || "Update GEMINI_API_KEY in GitHub Repository Secrets to enable live Gemini critical rationales.";
+      if (gRecalBadgeEl) {
+        gRecalBadgeEl.textContent = "STANDBY (RAW QUANT)";
+        gRecalBadgeEl.className = "tag-pill tag-score";
+        rActEl.textContent = d.action;
+        rEntEl.textContent = fmtCurrency(m.entry_price, cur, 2);
+        rTpSlEl.textContent = `${fmtCurrency(m.target, cur, 2)} / ${fmtCurrency(m.stop_loss, cur, 2)}`;
+        rQtyEl.textContent = `${execQty} sh (${convPct}%)`;
+        gRecalSumEl.textContent = "Raw quant parameters preserved (no simulated recalibration applied while GEMINI_API_KEY is invalid/unconfigured).";
+      }
     }
   } else if (gTitleEl) {
     gTitleEl.textContent = `Gemini Critical Trade Analyst — ${active.symbol}`;
@@ -424,6 +466,14 @@ function renderAllViews() {
     gRisksEl.textContent = "Run Live Orchestration Scan to generate adversarial risk flags.";
     gStampEl.textContent = "--";
     gBodyEl.textContent = "Gemini critical analysis is generated per scan and cached in live_scan.json without simulation.";
+    if (gRecalBadgeEl) {
+      gRecalBadgeEl.textContent = "PENDING";
+      gRecalBadgeEl.className = "tag-pill tag-score";
+      rActEl.textContent = d.action;
+      rEntEl.textContent = fmtCurrency(m.entry_price, cur, 2);
+      rTpSlEl.textContent = `${fmtCurrency(m.target, cur, 2)} / ${fmtCurrency(m.stop_loss, cur, 2)}`;
+      rQtyEl.textContent = `${execQty} sh (${convPct}%)`;
+    }
   }
 
   // TAB 2: StockSight V2 Deep-Dive & Portfolio Manager

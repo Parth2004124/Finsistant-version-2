@@ -28,6 +28,7 @@ from finsistant_v2 import (
     StockyAssistant,
     TechnicalAnalyst,
     analyze_trade_with_gemini,
+    apply_trade_recalibration,
     ask_gemini_stocky,
     auto_fetch_kite_access_token,
     critique_suggested_trades,
@@ -196,6 +197,60 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
     GEMINI_CRITIQUES.clear()
     GEMINI_CRITIQUES.update(critiques)
 
+    pick_by_sym = {t["symbol"]: t for t in TRADE_QUEUE}
+    for sym, snap in ANALYSIS_CACHE.items():
+        crit = GEMINI_CRITIQUES.get(sym)
+        p_item = PORTFOLIO_STATE.get(sym, {})
+        is_held = int(p_item.get("qty", 0)) > 0
+        pick = pick_by_sym.get(sym)
+        pipe = PIPELINE_CACHE.get(sym)
+
+        recal = apply_trade_recalibration(
+            symbol=sym,
+            analysis=snap,
+            pipeline=pipe,
+            trade_pick=pick,
+            critique=crit,
+            is_holding=is_held,
+        )
+        if recal.get("applied") and p_item:
+            p_item["decision"] = snap["decision_matrix"]["action"]
+            p_item["moreshwar"] = snap["moreshwar_levels"]
+
+        # If holding is flagged EXIT WARNING by Gemini critic and not yet queued as SELL, escalate it
+        if (
+            recal.get("applied")
+            and is_held
+            and not pick
+            and (crit or {}).get("stance") == "EXIT WARNING"
+        ):
+            m = snap["moreshwar_levels"]
+            TRADE_QUEUE.append(
+                {
+                    "id": f"pick-{sym.lower()}-exit-{int(time.time()) % 10000}",
+                    "symbol": sym,
+                    "name": snap["name"],
+                    "currency": snap.get("currency", "INR"),
+                    "setup_type": snap["setup_type"],
+                    "transaction_type": "SELL",
+                    "status": "PENDING",
+                    "technical_score": int(round((pipe or {}).get("messages", [{}])[0].get("confidence", 0.5) * 100)),
+                    "fundamental_score": snap["fundamental_score"]["total"],
+                    "porters_score": snap["porters_score"]["total"],
+                    "confidence": recal["after"]["conviction"],
+                    "decision_badge": "EXIT NOW",
+                    "entry": recal["after"]["entry"],
+                    "target": recal["after"]["target"],
+                    "stop_loss": recal["after"]["stop_loss"],
+                    "rr_ratio": recal["after"]["rr_ratio"],
+                    "qty": int(p_item.get("qty", 1)),
+                    "horizon_days": "5D",
+                    "rationale": crit.get("rationale", ""),
+                    "recalibrated": True,
+                    "recalibration_summary": recal.get("summary", ""),
+                }
+            )
+
     for pick in TRADE_QUEUE:
         c = GEMINI_CRITIQUES.get(pick["symbol"])
         if c and c.get("status") == "live" and c.get("rationale"):
@@ -277,12 +332,21 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
             trade_pick=active_pick,
             api_key=os.getenv("GEMINI_API_KEY", "").strip() or runner.settings.gemini_api_key,
         )
+        apply_trade_recalibration(
+            symbol=active_symbol,
+            analysis=active_analysis,
+            pipeline=active_pipeline,
+            trade_pick=active_pick,
+            critique=active_critique,
+            is_holding=is_held,
+        )
         GEMINI_CRITIQUES[active_symbol] = active_critique
 
     live_critiques = [c for c in GEMINI_CRITIQUES.values() if c.get("status") == "live"]
+    recal_count = len([c for c in live_critiques if (c.get("recalibration") or {}).get("applied")])
     first_err = next((c.get("error") for c in GEMINI_CRITIQUES.values() if c.get("error")), None)
     gemini_status = (
-        f"Gemini Live ({live_critiques[0].get('model', 'gemini-2.5-flash')} · {len(live_critiques)}/{len(GEMINI_CRITIQUES)} trades analyzed)"
+        f"Gemini Live ({live_critiques[0].get('model', 'gemini-2.5-flash')} · {len(live_critiques)}/{len(GEMINI_CRITIQUES)} analyzed · {recal_count} recalibrated)"
         if live_critiques
         else f"Gemini Unavailable ({first_err or 'GEMINI_API_KEY not configured'})"
     )
@@ -309,6 +373,7 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "queue": {
             "buys": [t for t in TRADE_QUEUE if t["status"] == "PENDING" and t["transaction_type"] == "BUY"],
             "sells": [t for t in TRADE_QUEUE if t["status"] == "PENDING" and t["transaction_type"] == "SELL"],
+            "deferred": [t for t in TRADE_QUEUE if t["status"] == "DEFERRED"],
             "executed": EXECUTED_LOG[:15],
         },
         "assets": ANALYSIS_CACHE,
@@ -426,6 +491,40 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 else:
                     _scan_and_populate_queue(force_refresh=True)
                 sym = str(body.get("symbol", "RELIANCE")).upper()
+                self._send_json(_build_full_state_payload(sym))
+            except Exception as exc:
+                self._send_json({"error": str(exc)}, status=502)
+            return
+
+        if path == "/api/recalibrate":
+            sym = str(body.get("symbol", "RELIANCE")).upper().strip()
+            focus_note = str(body.get("focus_note", "")).strip()
+            try:
+                if not PORTFOLIO_STATE:
+                    _initialize_platform_state(force_refresh=False)
+                snap = ANALYSIS_CACHE.get(sym)
+                if not snap:
+                    self._send_json({"error": f"Unknown symbol: {sym}"}, status=404)
+                    return
+                pipe = PIPELINE_CACHE.get(sym)
+                pick = next((t for t in TRADE_QUEUE if t.get("symbol") == sym), None)
+                p_item = PORTFOLIO_STATE.get(sym, {})
+                is_held = int(p_item.get("qty", 0)) > 0
+                gemini_key = os.getenv("GEMINI_API_KEY", "").strip() or runner.settings.gemini_api_key
+                crit = analyze_trade_with_gemini(
+                    sym, snap, pipeline=pipe, trade_pick=pick, api_key=gemini_key, focus_note=focus_note
+                )
+                GEMINI_CRITIQUES[sym] = crit
+                recal = apply_trade_recalibration(
+                    symbol=sym, analysis=snap, pipeline=pipe, trade_pick=pick, critique=crit, is_holding=is_held
+                )
+                if recal.get("applied") and p_item:
+                    p_item["decision"] = snap["decision_matrix"]["action"]
+                    p_item["moreshwar"] = snap["moreshwar_levels"]
+                if pick and crit.get("status") == "live":
+                    pick["gemini_stance"] = crit.get("stance", "")
+                    pick["gemini_risk_rating"] = crit.get("risk_rating", "")
+                    pick["gemini_rationale"] = crit.get("rationale", "")
                 self._send_json(_build_full_state_payload(sym))
             except Exception as exc:
                 self._send_json({"error": str(exc)}, status=502)

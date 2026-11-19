@@ -184,6 +184,20 @@
               </div>
               <div id="geminiRationaleBody" style="color: var(--text-primary); line-height: 1.55;">Waiting for live Gemini analysis...</div>
             </div>
+
+            <div class="recalibration-strip" id="geminiCalibrationStrip">
+              <div class="recal-head">
+                <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--accent-amber);">IMPLEMENTED PLATFORM RECALIBRATION</span>
+                <span class="tag-pill tag-score" id="geminiRecalStatusBadge">ARMED</span>
+              </div>
+              <div class="recal-grid" id="geminiRecalGrid">
+                <div class="recal-cell"><span class="recal-k">ACTION</span><strong id="recalActionVal">--</strong></div>
+                <div class="recal-cell"><span class="recal-k">LIMIT ENTRY</span><strong id="recalEntryVal">--</strong></div>
+                <div class="recal-cell"><span class="recal-k">TARGET / SL</span><strong id="recalTpSlVal">--</strong></div>
+                <div class="recal-cell"><span class="recal-k">QTY / CONV</span><strong id="recalQtyVal">--</strong></div>
+              </div>
+              <div class="gemini-text" id="geminiRecalSummary">Auto-recalibration adjusts Entry, Target, Stop-Loss, Sizing, and Conviction from live Gemini CRO criticism.</div>
+            </div>
           </div>
         </div>
 
