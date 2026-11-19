@@ -66,8 +66,9 @@ def _call_gemini_generate(prompt: str, api_key: str, response_mime_type: str = "
     last_error = "Unknown Gemini API failure"
     attempts: list[tuple[str, float]] = [
         ("gemini-2.5-flash", 0.0),
-        ("gemini-2.5-flash", 1.5),
-        ("gemini-2.5-flash-lite", 0.5),
+        ("gemini-2.5-flash", 2.0),
+        ("gemini-2.5-flash-lite", 1.0),
+        ("gemini-2.5-flash-lite", 3.0),
     ]
     for model, wait_s in attempts:
         if wait_s > 0:
@@ -79,7 +80,7 @@ def _call_gemini_generate(prompt: str, api_key: str, response_mime_type: str = "
             "maxOutputTokens": 1800,
         }
         if model.startswith("gemini-2.5"):
-            gen_cfg["thinkingConfig"] = {"thinkingBudget": 128}
+            gen_cfg["thinkingConfig"] = {"thinkingBudget": 0}
         payload: dict[str, Any] = {
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": gen_cfg,
@@ -121,7 +122,7 @@ def _call_gemini_generate(prompt: str, api_key: str, response_mime_type: str = "
             if exc.code in (400, 401, 403) and "not found" not in err_msg.lower():
                 raise RuntimeError(_redact_key(last_error, api_key)) from exc
             if exc.code == 429:
-                time.sleep(1.5)
+                time.sleep(2.5)
         except Exception as exc:
             last_error = f"{type(exc).__name__} ({model}): {_redact_key(str(exc), api_key)}"
 
