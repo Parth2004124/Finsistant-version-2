@@ -31,17 +31,27 @@ from finsistant_v2 import (
     apply_trade_recalibration,
     ask_gemini_stocky,
     auto_fetch_kite_access_token,
+    build_audit_dashboard_view,
+    build_data_integrity_report,
     critique_suggested_trades,
     exchange_request_token,
+    fetch_benchmark_candles,
     fetch_kite_portfolio,
+    fetch_live_market_snapshot,
     get_asset_full_analysis,
     get_kite_auth_status,
+    load_audit_ledger,
     load_settings,
+    record_broker_execution,
+    record_scan_decisions,
+    run_backtest_and_attribution,
 )
+from finsistant_v2.audit_ledger import DEFAULT_LEDGER_PATH
 from finsistant_v2.kite_auth import write_daily_token_file
 
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = BASE_DIR / "web"
+LEDGER_PATH: Path = DEFAULT_LEDGER_PATH
 
 current_settings: FinsistantSettings = load_settings(BASE_DIR / ".env")
 tech_agent = TechnicalAnalyst(name="TechBot_1")
@@ -53,10 +63,16 @@ stocky = StockyAssistant()
 # Unified Live State (0 simulated holdings; live Kite holdings when connected)
 PORTFOLIO_STATE: dict[str, dict[str, Any]] = {}
 ANALYSIS_CACHE: dict[str, dict[str, Any]] = {}
+FULL_HISTORY_CACHE: dict[str, dict[str, Any]] = {}
+BENCHMARK_CACHE: dict[str, Any] = {}
 PIPELINE_CACHE: dict[str, dict[str, Any]] = {}
 GEMINI_CRITIQUES: dict[str, dict[str, Any]] = {}
 TRADE_QUEUE: list[dict[str, Any]] = []
 EXECUTED_LOG: list[dict[str, Any]] = []
+KITE_META: dict[str, Any] = {"connected": False, "status": "Not initialized", "holdings": [], "fetched_at": None}
+BACKTEST_CACHE: dict[str, Any] = {}
+AUDIT_LEDGER_CACHE: dict[str, Any] = {}
+PROVENANCE_CACHE: dict[str, Any] = {}
 AUTO_RULES: list[dict[str, Any]] = [
     {"rule_id": "rule-1", "name": "Strict Breakout Rules (Score > 80 & R:R > 1.8)", "min_score": 80, "active": True},
     {"rule_id": "rule-2", "name": "Moat Compounders (Fundamental >= 75 & Porter >= 75)", "min_score": 75, "active": True},
@@ -78,16 +94,55 @@ def _load_extra_watchlist_symbols() -> list[str]:
         return []
 
 
+def _refresh_analytics_and_audit(force_new_for_symbol: str | None = None, force_benchmark: bool = False) -> None:
+    """Recompute backtest attribution, audit ledger persistence, and data provenance."""
+    global BACKTEST_CACHE, AUDIT_LEDGER_CACHE, PROVENANCE_CACHE
+    if force_benchmark or not BENCHMARK_CACHE.get("candles"):
+        try:
+            BENCHMARK_CACHE.clear()
+            BENCHMARK_CACHE.update(fetch_benchmark_candles("^NSEI", force_refresh=force_benchmark))
+        except Exception:
+            pass
+
+    AUDIT_LEDGER_CACHE = record_scan_decisions(
+        assets=ANALYSIS_CACHE,
+        pipelines=PIPELINE_CACHE,
+        trade_queue=TRADE_QUEUE,
+        critiques=GEMINI_CRITIQUES,
+        ledger_path=LEDGER_PATH,
+        force_new_for_symbol=force_new_for_symbol,
+    )
+    history_src = FULL_HISTORY_CACHE if FULL_HISTORY_CACHE else ANALYSIS_CACHE
+    BACKTEST_CACHE = run_backtest_and_attribution(
+        universe_history=history_src,
+        benchmark_data=BENCHMARK_CACHE,
+        executed_orders=EXECUTED_LOG,
+        audit_records=AUDIT_LEDGER_CACHE.get("records"),
+    )
+    PROVENANCE_CACHE = build_data_integrity_report(
+        assets=ANALYSIS_CACHE,
+        critiques=GEMINI_CRITIQUES,
+        kite_holdings=KITE_META.get("holdings"),
+        kite_status_meta=KITE_META,
+        executed_orders=EXECUTED_LOG,
+        benchmark_meta=BENCHMARK_CACHE,
+        ledger_meta=AUDIT_LEDGER_CACHE,
+    )
+
+
 def _initialize_platform_state(force_refresh: bool = False, force_token_refresh: bool = False) -> None:
     """Seed watchlist from live Yahoo Finance and load real Zerodha Kite holdings (0 if none)."""
     global CASH_BALANCE, KITE_STATUS
     PORTFOLIO_STATE.clear()
     ANALYSIS_CACHE.clear()
+    FULL_HISTORY_CACHE.clear()
     PIPELINE_CACHE.clear()
     GEMINI_CRITIQUES.clear()
     TRADE_QUEUE.clear()
 
     kite_data = fetch_kite_portfolio(force_token_refresh=force_token_refresh)
+    KITE_META.clear()
+    KITE_META.update(kite_data)
     KITE_STATUS = kite_data["status"]
     CASH_BALANCE = float(kite_data.get("cash_balance", 0.0))
     kite_holdings_map = {h["symbol"]: h for h in kite_data.get("holdings", [])}
@@ -100,6 +155,15 @@ def _initialize_platform_state(force_refresh: bool = False, force_token_refresh:
         avg = float(kh["avg_price"]) if kh else 0.0
         snap = get_asset_full_analysis(sym, is_holding=(qty > 0), force_refresh=force_refresh)
         ANALYSIS_CACHE[sym] = snap
+        try:
+            raw_hist = fetch_live_market_snapshot(sym, force_refresh=False)
+            FULL_HISTORY_CACHE[sym] = {
+                **raw_hist,
+                "fundamental_score": snap["fundamental_score"],
+                "porters_score": snap["porters_score"],
+            }
+        except Exception:
+            FULL_HISTORY_CACHE[sym] = snap
         PORTFOLIO_STATE[sym] = {
             "symbol": sym,
             "yahoo_symbol": snap.get("yahoo_symbol", sym),
@@ -132,6 +196,15 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
         is_held = int(p_item.get("qty", 0)) > 0
         snap = get_asset_full_analysis(sym, is_holding=is_held, force_refresh=force_refresh)
         ANALYSIS_CACHE[sym] = snap
+        try:
+            raw_hist = fetch_live_market_snapshot(sym, force_refresh=False)
+            FULL_HISTORY_CACHE[sym] = {
+                **raw_hist,
+                "fundamental_score": snap["fundamental_score"],
+                "porters_score": snap["porters_score"],
+            }
+        except Exception:
+            FULL_HISTORY_CACHE[sym] = snap
 
         p_item["ltp"] = snap["price"]
         p_item["change_pct"] = snap["change_pct"]
@@ -259,6 +332,7 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
             pick["gemini_rationale"] = c.get("rationale", "")
 
     LAST_SCAN_AT = datetime.now(timezone.utc).isoformat()
+    _refresh_analytics_and_audit(force_benchmark=force_refresh)
     return TRADE_QUEUE
 
 
@@ -351,6 +425,9 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         else f"Gemini Unavailable ({first_err or 'GEMINI_API_KEY not configured'})"
     )
 
+    if not PROVENANCE_CACHE or not BACKTEST_CACHE or not AUDIT_LEDGER_CACHE:
+        _refresh_analytics_and_audit()
+
     return {
         "data_mode": "LIVE_ONLY",
         "data_source": "Yahoo Finance Live Market Data + 3-Agent Orchestrator",
@@ -379,6 +456,9 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "assets": ANALYSIS_CACHE,
         "pipelines": PIPELINE_CACHE,
         "gemini_critiques": GEMINI_CRITIQUES,
+        "provenance": PROVENANCE_CACHE,
+        "backtest": BACKTEST_CACHE,
+        "audit_trail": build_audit_dashboard_view(AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)),
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,
         "active_pipeline": active_pipeline,
@@ -426,6 +506,24 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 self._send_json(_build_full_state_payload("RELIANCE"))
             except Exception as exc:
                 self._send_json({"error": str(exc), "data_mode": "LIVE_ONLY"}, status=502)
+            return
+        if path == "/api/provenance":
+            if not PORTFOLIO_STATE:
+                _initialize_platform_state(force_refresh=False)
+            if not PROVENANCE_CACHE:
+                _refresh_analytics_and_audit()
+            self._send_json(PROVENANCE_CACHE)
+            return
+        if path == "/api/backtest":
+            if not PORTFOLIO_STATE:
+                _initialize_platform_state(force_refresh=False)
+            if not BACKTEST_CACHE:
+                _refresh_analytics_and_audit()
+            self._send_json(BACKTEST_CACHE)
+            return
+        if path == "/api/audit":
+            ledger = AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)
+            self._send_json(build_audit_dashboard_view(ledger))
             return
         if path == "/api/kite/status":
             self._send_json({"kite_status": KITE_STATUS, "kite_auth": get_kite_auth_status()})
@@ -525,6 +623,7 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                     pick["gemini_stance"] = crit.get("stance", "")
                     pick["gemini_risk_rating"] = crit.get("risk_rating", "")
                     pick["gemini_rationale"] = crit.get("rationale", "")
+                _refresh_analytics_and_audit(force_new_for_symbol=sym)
                 self._send_json(_build_full_state_payload(sym))
             except Exception as exc:
                 self._send_json({"error": str(exc)}, status=502)
@@ -532,12 +631,14 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
 
         if path == "/api/approve":
             trade_ids = set(body.get("trade_ids", []))
+            executed_any = False
             for t in TRADE_QUEUE:
                 if t["id"] in trade_ids and t["status"] == "PENDING":
                     t["status"] = "EXECUTED"
                     sym = t["symbol"]
                     qty = int(t["qty"])
                     price = float(t["entry"])
+                    order_id = f"kite-{int(time.time()*1000)%1000000:06d}"
                     if t["transaction_type"] == "BUY":
                         cost = qty * price
                         CASH_BALANCE = max(0.0, CASH_BALANCE - cost)
@@ -556,7 +657,7 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                     EXECUTED_LOG.insert(
                         0,
                         {
-                            "order_id": f"kite-{int(time.time()*1000)%1000000:06d}",
+                            "order_id": order_id,
                             "symbol": sym,
                             "side": t["transaction_type"],
                             "qty": qty,
@@ -564,6 +665,10 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                             "timestamp": time.strftime("%H:%M:%S"),
                         },
                     )
+                    record_broker_execution(sym, t["transaction_type"], qty, price, order_id, ledger_path=LEDGER_PATH)
+                    executed_any = True
+            if executed_any:
+                _refresh_analytics_and_audit()
             self._send_json(_build_full_state_payload(str(body.get("active_symbol", "RELIANCE"))))
             return
 

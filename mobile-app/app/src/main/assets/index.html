@@ -47,6 +47,7 @@
         <button type="button" class="nav-tab active" data-tab="mission">1. Execution Mission Control</button>
         <button type="button" class="nav-tab" data-tab="stocksight">2. StockSight V2 &amp; Portfolio</button>
         <button type="button" class="nav-tab" data-tab="agents">3. Multi-Agent &amp; .env Setup</button>
+        <button type="button" class="nav-tab" data-tab="intelligence">4. Provenance, Backtest &amp; Audit</button>
       </nav>
     </div>
   </header>
@@ -60,7 +61,7 @@
           <div class="panel-header" style="flex-wrap: wrap;">
             <div>
               <div class="panel-title">Top Picks Queue (Live Orchestrator Scan)</div>
-              <div class="panel-subtitle">Real market feed · Click any setup to inspect</div>
+              <div class="panel-subtitle">Analytical pre-trade queue · Click any setup to inspect</div>
             </div>
             <button type="button" class="btn-secondary" id="scanNowBtn">Scan Now</button>
           </div>
@@ -99,6 +100,12 @@
                 <span id="centerSpotChg" style="font-family: var(--font-mono); font-size: 12px;">--</span>
                 <span class="tag-pill tag-target" id="centerDecisionBadge">--</span>
               </div>
+            </div>
+
+            <div class="provenance-strip" id="missionProvenanceStrip">
+              <span class="tag-pill tag-entry" id="provSpotBadge">SOURCE: CHECKING</span>
+              <span class="tag-pill tag-score" id="provPriceTypeBadge">LEVELS: ANALYTICAL ESTIMATE</span>
+              <span class="prov-meta-text" id="provTimestampsText">Market TS: -- · Retrieval TS: --</span>
             </div>
 
             <div class="chart-box">
@@ -427,6 +434,159 @@
         </div>
       </div>
     </section>
+
+    <!-- TAB 4 / MOBILE AUDIT: DATA INTEGRITY, QUANTITATIVE BACKTEST & DECISION AUDIT TRAIL -->
+    <section class="tab-panel" id="panel-intelligence">
+      <div class="intel-subnav-bar">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span class="tag-pill tag-entry">INTELLIGENCE · VALIDATION · AUDIT</span>
+          <span style="font-size: 12px; color: var(--text-secondary);" id="intelGlobalStatus">Empirical Telemetry &amp; Immutable Audit Layer Active</span>
+        </div>
+        <div class="chip-row" id="intelJumpRow">
+          <button type="button" class="prompt-chip active-subfilter" data-intel-focus="all">All 3 Modules</button>
+          <button type="button" class="prompt-chip" data-intel-focus="provenance">1. Data Integrity</button>
+          <button type="button" class="prompt-chip" data-intel-focus="backtest">2. Quant Backtest</button>
+          <button type="button" class="prompt-chip" data-intel-focus="audit">3. Audit Trail</button>
+        </div>
+      </div>
+
+      <!-- SECTION 1: DATA INTEGRITY MONITOR -->
+      <div class="panel intel-section" id="intelSectionProvenance">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">1. Data Integrity Monitor &amp; Source Provenance</div>
+            <div class="panel-subtitle" id="provMonitorSub">Market TS vs Retrieval TS · Analytical Model Prices vs Broker Confirmed Fills</div>
+          </div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="provSummaryBadges"></div>
+        </div>
+
+        <div class="taxonomy-grid" id="provTaxonomyCards"></div>
+
+        <div id="provDiscrepancyBanner"></div>
+
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Overall Status</th>
+                <th>Spot Source / Class</th>
+                <th>Market TS</th>
+                <th>Retrieval TS</th>
+                <th>Spot (Feed) vs Entry (Model) vs Broker</th>
+                <th>Warnings / Proxy Flags</th>
+              </tr>
+            </thead>
+            <tbody id="provAssetTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 2: QUANTITATIVE PERFORMANCE ANALYTICS -->
+      <div class="panel intel-section" id="intelSectionBacktest">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">2. Quantitative Performance Analytics &amp; Multi-Agent Attribution</div>
+            <div class="panel-subtitle" id="btMonitorSub">Causal 1Y Walk-Forward Backtest (0.35% round-trip friction) vs Nifty 50 (^NSEI)</div>
+          </div>
+          <span class="tag-pill tag-stop" id="btSeparationBadge">SIMULATED BACKTEST ISOLATED FROM BROKER FILLS</span>
+        </div>
+
+        <div class="kpi-strip-grid" id="btBenchmarkKpis"></div>
+
+        <div class="two-col-grid">
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header" style="flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">3-Track Separation: Original vs Recalibrated vs Actual Broker Fills</div>
+                <div class="panel-subtitle">Simulated strategies never masquerade as live broker execution</div>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Original AI (Sim)</th>
+                    <th>Recalibrated (Sim)</th>
+                    <th>Actual Broker (Real)</th>
+                  </tr>
+                </thead>
+                <tbody id="btTrackComparisonBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header" style="flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">Normalized Equity Curve vs Nifty 50 (^NSEI)</div>
+                <div class="panel-subtitle">Base = 100.0 at evaluation start · Strictly causal next-bar fills</div>
+              </div>
+            </div>
+            <div class="chart-box" style="height: 225px;">
+              <canvas id="backtestEquityChart"></canvas>
+            </div>
+            <div class="chart-legend">
+              <span><i class="legend-dot" style="background: var(--accent-cyan);"></i>Original AI</span>
+              <span><i class="legend-dot" style="background: var(--accent-emerald);"></i>Recalibrated AI</span>
+              <span><i class="legend-dot" style="background: var(--accent-amber);"></i>Nifty 50 (^NSEI)</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel-title" style="margin-bottom: 8px;">Multi-Agent Performance Attribution (TechBot · FundBot · ExecBot · Gemini CRO)</div>
+          <div class="attribution-grid" id="btAgentAttributionGrid"></div>
+        </div>
+
+        <div class="terminal-box" id="btMethodologyBox"></div>
+      </div>
+
+      <!-- SECTION 3: AI DECISION AUDIT & HISTORY -->
+      <div class="panel intel-section" id="intelSectionAudit">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">3. AI Decision Audit &amp; Permanent History Ledger</div>
+            <div class="panel-subtitle" id="auditLedgerSub">Immutable Git-Backed Record: ORIGINAL DECISION → CRITICAL REVIEW → FINAL DECISION → ACTUAL OUTCOME</div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <select id="auditSymbolFilter" class="select-field" aria-label="Filter Audit by Symbol">
+              <option value="ALL">All Symbols</option>
+            </select>
+            <select id="auditStatusFilter" class="select-field" aria-label="Filter Audit by Outcome">
+              <option value="ALL">All Outcomes</option>
+              <option value="OPEN">OPEN</option>
+              <option value="DEFERRED_MONITORED">DEFERRED_MONITORED</option>
+              <option value="DEFERRED_COUNTERFACTUAL">DEFERRED_COUNTERFACTUAL</option>
+              <option value="TARGET_HIT">TARGET_HIT</option>
+              <option value="STOP_HIT">STOP_HIT</option>
+              <option value="HORIZON_CLOSED">HORIZON_CLOSED</option>
+              <option value="BROKER_EXECUTED">BROKER_EXECUTED</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="audit-flow-grid" id="auditInspectorFlow"></div>
+
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Market Date / Audit ID</th>
+                <th>Symbol</th>
+                <th>Scores (F/P/T)</th>
+                <th>Original → Final</th>
+                <th>CRO Objection / Delta</th>
+                <th>Actual Outcome</th>
+                <th>Versions</th>
+              </tr>
+            </thead>
+            <tbody id="auditLedgerTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </main>
 
 
@@ -437,15 +597,19 @@
     </button>
     <button type="button" class="mob-nav-btn" data-mob-tab="chart">
       <span class="mob-ico" aria-hidden="true">📈</span>
-      <span class="mob-lbl">Chart &amp; CRO</span>
+      <span class="mob-lbl">Chart</span>
     </button>
     <button type="button" class="mob-nav-btn" data-mob-tab="stocksight">
       <span class="mob-ico" aria-hidden="true">🧠</span>
-      <span class="mob-lbl">StockSight</span>
+      <span class="mob-lbl">Moat</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-mob-tab="intelligence">
+      <span class="mob-ico" aria-hidden="true">🛡️</span>
+      <span class="mob-lbl">Audit</span>
     </button>
     <button type="button" class="mob-nav-btn" data-mob-tab="ai">
       <span class="mob-ico" aria-hidden="true">🤖</span>
-      <span class="mob-lbl">Holdings &amp; AI</span>
+      <span class="mob-lbl">AI</span>
     </button>
     <button type="button" class="mob-nav-btn" data-mob-tab="agents">
       <span class="mob-ico" aria-hidden="true">⚙️</span>

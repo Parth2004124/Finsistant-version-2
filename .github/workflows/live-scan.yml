@@ -65,13 +65,13 @@ jobs:
           FORCE_KITE_REFRESH: ${{ github.event.inputs.refresh_kite || 'false' }}
         run: python3 scripts/generate_live_scan.py
 
-      - name: Commit updated live_scan.json if changed
+      - name: Commit updated live_scan.json and audit ledger if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add live_scan.json watchlist_config.json
+          git add live_scan.json watchlist_config.json data/decision_audit_ledger.json
           if git diff --staged --quiet; then
-            echo "No live_scan.json changes."
+            echo "No live_scan.json or audit ledger changes."
           else
             git commit -m "chore: update live orchestration scan snapshot"
             git push

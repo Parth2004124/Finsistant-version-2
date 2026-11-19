@@ -1,0 +1,1212 @@
+{
+  "version": 1,
+  "updated_at": "2026-11-19T09:04:11.680220+00:00",
+  "records": [
+    {
+      "audit_id": "fnv2-aud-20261119-SBIN-821c6001",
+      "signature": "821c60014264f6bf",
+      "symbol": "SBIN",
+      "name": "State Bank of India",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606958+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606958+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:26.709810+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 90,
+        "business": 25,
+        "moat": 15,
+        "management": 20,
+        "risk": 20,
+        "porters_total": 70,
+        "technical_score": 94.0,
+        "composite_score": 80.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.0,
+          "summary": "Spot 1,146.25 vs 20D SMA 1,021.81 (Upward Curve, 30D Reg Target 1,339.94). RSI(14)=86.18, MACD=+42.05 vs Sig=+27.16."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 80.0,
+          "summary": "Fundamental 90/100 (Bus 25/40, Moat 15/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 70/100 [BANKING]. Attractive valuation at P/E 11.7x with value margin of safety."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 71.3,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (71.3% conviction). Sized 10 shares (INR 11,175.90) | Entry 1,117.59 \u00b7 TP 1,200.39 / SL 1,099.19 (R:R 1:4.5)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1146.25,
+        "change_pct": 0.99,
+        "rsi_14": 86.18,
+        "sma_20": 1021.81,
+        "projected_30d_target": 1339.94,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1146.25,
+        "target": 1238.25,
+        "stop_loss": 1123.25,
+        "rr_ratio": 4.0,
+        "qty": 19,
+        "conviction": 86.3
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "WAIT FOR PULLBACK",
+        "risk_rating": "HIGH",
+        "bull_case": "SBIN exhibits strong fundamental scores (90/100), robust profit growth (20.4%), and a low P/E of 11.7x, suggesting deep value and strong underlying business health.",
+        "objections_raised": "The RSI(14) at 86.18 indicates extreme overbought conditions, significantly above the 20D SMA, signaling technical overextension and high probability of a near-term pullback. The suggested R:R of 1:4.0 is based on an aggressive entry that ignores current overbought signals.",
+        "rationale": "Despite strong fundamentals and a positive regression curve, the asset is technically overextended with an RSI of 86.18. A 'BUY NOW' at current levels is high risk. We must recalibrate to wait for a pullback to a more favorable entry, tightening the stop-loss and trimming the target to reflect increased volatility and potential mean reversion.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-19T07:50:50.023711+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 1117.59,
+        "target": 1200.39,
+        "stop_loss": 1099.19,
+        "rr_ratio": 4.5,
+        "qty": 10,
+        "conviction": 71.3,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.5,
+        "target_delta_pct": -3.06,
+        "stop_delta_pct": -2.14,
+        "qty_delta": -9,
+        "conviction_delta": -15.0,
+        "reasons": [
+          "Applied 2.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 20.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The RSI(14) at 86.18 indicates extreme overbought conditions, significantly above the 20D SMA, signaling technical overextension and high probability of a near-term pullback. The suggested R:R of 1:4.0 is based on an aggressive entry that ignores current overbought signals."
+        ],
+        "summary": "Applied CRO Calibration (SBIN): BUY NOW -> LIMIT PULLBACK | Entry \u20b91146.25 -> \u20b91117.59 | TP \u20b91238.25 -> \u20b91200.39 | SL \u20b91123.25 -> \u20b91099.19 (R:R 1:4.0 -> 1:4.5) | Qty 19 -> 10 sh (0.50x) | Conviction 86.3% -> 71.3%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1146.25,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606958+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261119-ITC-3cdab568",
+      "signature": "3cdab56823036c87",
+      "symbol": "ITC",
+      "name": "ITC Limited",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606928+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606928+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:26.383300+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 62,
+        "business": 17,
+        "moat": 15,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 70,
+        "technical_score": 94.0,
+        "composite_score": 66.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.0,
+          "summary": "Spot 299.70 vs 20D SMA 276.36 (Upward Curve, 30D Reg Target 338.66). RSI(14)=83.89, MACD=+8.73 vs Sig=+6.31."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "NEUTRAL",
+          "confidence_pct": 66.0,
+          "summary": "Fundamental 62/100 (Bus 17/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 70/100 [FMCG]. Balanced valuation at P/E 19.9x. High capital efficiency (ROE 26.8%, ROCE 23.3%) underscores durable moat."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 63.6,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (63.6% conviction). Sized 22 shares (INR 5,801.84) | Entry 263.72 \u00b7 TP 338.61 / SL 254.20 (R:R 1:7.87)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 299.7,
+        "change_pct": 1.05,
+        "rsi_14": 83.89,
+        "sma_20": 276.36,
+        "projected_30d_target": 338.66,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "WAIT",
+        "entry": 277.6,
+        "target": 365.7,
+        "stop_loss": 265.7,
+        "rr_ratio": 1.94,
+        "qty": 44,
+        "conviction": 78.6
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "WAIT FOR PULLBACK",
+        "risk_rating": "MEDIUM",
+        "bull_case": "ITC exhibits strong profitability (ROE 26.79%, ROCE 23.33%) and robust risk/stability (20/20), with a positive 30D Quant Target of \u20b9338.66, suggesting potential for continued upside after consolidation.",
+        "objections_raised": "The asset is technically overextended with an RSI(14) at 83.89 and trading significantly above its 20D SMA, indicating an overbought condition. Furthermore, the fundamental profit growth is a concerning -18.8%, and the 'Substitutes' and 'Rivalry' components of Porter's 5 Forces Moat are weak at 5/20 each.",
+        "rationale": "Given the highly overbought technicals (RSI 83.89) and negative profit growth, initiating a 'WATCH' or 'WAIT' stance is appropriate. We will recalibrate to a 'LIMIT PULLBACK' strategy, reducing position size and seeking a lower entry point to mitigate immediate downside risk, while tightening the stop-loss and trimming the target to reflect fundamental weaknesses.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-19T07:50:49.456223+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 263.72,
+        "target": 338.61,
+        "stop_loss": 254.2,
+        "rr_ratio": 7.87,
+        "qty": 22,
+        "conviction": 63.6,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -12.01
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -5.0,
+        "target_delta_pct": -7.41,
+        "stop_delta_pct": -4.33,
+        "qty_delta": -22,
+        "conviction_delta": -15.0,
+        "reasons": [
+          "Applied 5.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 20.0% to constrain downside MAE.",
+          "Trimmed target upside by 15.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The asset is technically overextended with an RSI(14) at 83.89 and trading significantly above its 20D SMA, indicating an overbought condition. Furthermore, the fundamental profit growth is a concerning -18.8%, and the 'Substitutes' and 'Rivalry' components of Porter's 5 Forces Moat are weak at 5/20 each."
+        ],
+        "summary": "Applied CRO Calibration (ITC): WAIT -> LIMIT PULLBACK | Entry \u20b9277.6 -> \u20b9263.72 | TP \u20b9365.7 -> \u20b9338.61 | SL \u20b9265.7 -> \u20b9254.2 (R:R 1:1.94 -> 1:7.87) | Qty 44 -> 22 sh (0.50x) | Conviction 78.6% -> 63.6%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 299.7,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606928+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261119-ZEEL-95823ee4",
+      "signature": "95823ee47fa7f9f2",
+      "symbol": "ZEEL",
+      "name": "Zee Entertainment Enterprises Limited",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606899+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606899+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:25.914412+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 38,
+        "business": 10,
+        "moat": 3,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 40,
+        "technical_score": 79.0,
+        "composite_score": 39.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 79.0,
+          "summary": "Spot 71.13 vs 20D SMA 68.12 (Upward Curve, 30D Reg Target 77.13). RSI(14)=50.98, MACD=-0.02 vs Sig=-0.78."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BEARISH",
+          "confidence_pct": 39.0,
+          "summary": "Fundamental 38/100 (Bus 10/40, Moat 3/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 40/100 [IT]. Balanced valuation at P/E 38.9x."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "DEFERRED",
+          "confidence_pct": 22.0,
+          "summary": "CRO Recalibrated: DEFER / AVOID (22.0% conviction). Sized 0 shares (INR 0.00) | Entry 64.02 \u00b7 TP 110.13 / SL 60.46 (R:R 1:12.95)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 71.13,
+        "change_pct": 0.51,
+        "rsi_14": 50.98,
+        "sma_20": 68.12,
+        "projected_30d_target": 77.13,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "AVOID",
+        "entry": 64.02,
+        "target": 110.13,
+        "stop_loss": 60.46,
+        "rr_ratio": 3.66,
+        "qty": 140,
+        "conviction": 57.0
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "HIGH RISK / AVOID",
+        "risk_rating": "EXTREME",
+        "bull_case": "The 30-day Quant Target of \u20b977.13 and the upward Degree-2 Polynomial Regression curve suggest potential short-term upside, with the current spot price above the 20-day SMA.",
+        "objections_raised": "The fundamental score of 38/100, particularly the abysmal Moat (3/20) and Management/Valuation (5/20) scores, combined with negative profit growth (-36.7%) and OPM (-0.56%), indicate severe fundamental weaknesses. The Matrix Verdict of AVOID and Risk Breakdown Warning are critical red flags, despite the seemingly attractive R:R.",
+        "rationale": "Despite a favorable R:R on paper, the overwhelming fundamental weaknesses, negative profitability, and the 'AVOID' matrix verdict make this an extremely high-risk proposition. The suggested entry is too close to the current spot price for a fundamentally weak stock. We must defer this trade due to the significant risk of capital erosion, prioritizing capital preservation over speculative gains.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-19T07:50:47.494395+00:00"
+      },
+      "final_decision": {
+        "action": "DEFER / AVOID",
+        "entry": 64.02,
+        "target": 110.13,
+        "stop_loss": 60.46,
+        "rr_ratio": 12.95,
+        "qty": 0,
+        "conviction": 22.0,
+        "status": "DEFERRED",
+        "spot_vs_entry_pct": -10.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": 0.0,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": -140,
+        "conviction_delta": -35.0,
+        "reasons": [
+          "Zero-sized (DEFERRED) due to CRO critical objections / unfavorable risk.",
+          "Objection: The fundamental score of 38/100, particularly the abysmal Moat (3/20) and Management/Valuation (5/20) scores, combined with negative profit growth (-36.7%) and OPM (-0.56%), indicate severe fundamental weaknesses. The Matrix Verdict of AVOID and Risk Breakdown Warning are critical red flags, despite the seemingly attractive R:R."
+        ],
+        "summary": "Applied CRO Calibration (ZEEL): AVOID -> DEFER / AVOID | Entry \u20b964.02 -> \u20b964.02 | TP \u20b9110.13 -> \u20b9110.13 | SL \u20b960.46 -> \u20b960.46 (R:R 1:3.66 -> 1:12.95) | Qty 140 -> 0 sh (0.00x) | Conviction 57.0% -> 22.0%."
+      },
+      "outcome": {
+        "status": "DEFERRED_MONITORED",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 71.13,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": 0.0,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606899+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261118-NVDA-6920b4a1",
+      "signature": "6920b4a119220bb4",
+      "symbol": "NVDA",
+      "name": "NVIDIA Corporation",
+      "currency": "USD",
+      "created_at": "2026-11-19T09:04:11.606868+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606868+00:00",
+      "market_date": "2026-11-18",
+      "market_timestamp": "2026-11-18T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:25.494185+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 40,
+        "moat": 20,
+        "management": 10,
+        "risk": 10,
+        "porters_total": 99,
+        "technical_score": 18.0,
+        "composite_score": 89.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BEARISH",
+          "confidence_pct": 18.0,
+          "summary": "Spot 150.96 vs 20D SMA 189.04 (Downward Curve, 30D Reg Target 70.48). RSI(14)=15.82, MACD=-17.00 vs Sig=-13.20."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 89.5,
+          "summary": "Fundamental 80/100 (Bus 40/40, Moat 20/20, Mgmt 10/20, Risk 10/20) \u00b7 Porter's 5 Forces 99/100 [IT]. Attractive valuation at P/E 16.2x with value margin of safety. High capital efficiency (ROE 117.2%, ROCE 98.1%) underscores durable moat. Strong top-line expansion (105.9% YoY) & profit growth (127.8% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "DEFERRED",
+          "confidence_pct": 22.3,
+          "summary": "CRO Recalibrated: DEFER / AVOID (22.3% conviction). Sized 0 shares (USD 0.00) | Entry 150.96 \u00b7 TP 240.46 / SL 140.46 (R:R 1:8.52)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 150.96,
+        "change_pct": -2.89,
+        "rsi_14": 15.82,
+        "sma_20": 189.04,
+        "projected_30d_target": 70.48,
+        "regression_curve": "Downward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "SIP ONLY",
+        "entry": 150.96,
+        "target": 240.46,
+        "stop_loss": 140.46,
+        "rr_ratio": 8.52,
+        "qty": 142,
+        "conviction": 57.3
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "HIGH RISK / AVOID",
+        "risk_rating": "EXTREME",
+        "bull_case": "The fundamental analysis shows exceptional business strength with a Total Fundamental Score of 80/100, including perfect scores for Business (40/40) and Moat (20/20), alongside impressive growth metrics like 105.9% Sales Growth and 127.8% Profit Growth.",
+        "objections_raised": "Despite strong fundamentals, the technical telemetry is overwhelmingly bearish, with a Signal Confidence of only 18%, an extremely oversold RSI(14) at 15.82, and a significant downward curve indicated by the 20D SMA ($189.04) versus spot ($150.96), conflicting severely with the suggested BUY. The Degree-2 Polynomial Regression's 30D Quant Target of $70.48 suggests a potential further 50% downside, making the proposed R:R of 1:8.52 highly suspect given the immediate technical outlook.",
+        "rationale": "The suggested BUY is fundamentally flawed due to a severe divergence between strong fundamentals and extremely weak technicals. The asset is in a clear downward trend, with an oversold RSI indicating potential for a bounce, but the strong downward regression curve and low technical conviction (18%) suggest this is a falling knife. Entering a long position with a 30D Quant Target of $70.48 is an unacceptable risk, despite the attractive Moreshwar levels, as the technical environment points to significant further downside. This trade should be deferred.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-19T07:50:44.359161+00:00"
+      },
+      "final_decision": {
+        "action": "DEFER / AVOID",
+        "entry": 150.96,
+        "target": 240.46,
+        "stop_loss": 140.46,
+        "rr_ratio": 8.52,
+        "qty": 0,
+        "conviction": 22.3,
+        "status": "DEFERRED",
+        "spot_vs_entry_pct": 0.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": 0.0,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": -142,
+        "conviction_delta": -35.0,
+        "reasons": [
+          "Zero-sized (DEFERRED) due to CRO critical objections / unfavorable risk.",
+          "Objection: Despite strong fundamentals, the technical telemetry is overwhelmingly bearish, with a Signal Confidence of only 18%, an extremely oversold RSI(14) at 15.82, and a significant downward curve indicated by the 20D SMA ($189.04) versus spot ($150.96), conflicting severely with the suggested BUY. The Degree-2 Polynomial Regression's 30D Quant Target of $70.48 suggests a potential further 50% downside, making the proposed R:R of 1:8.52 highly suspect given the immediate technical outlook."
+        ],
+        "summary": "Applied CRO Calibration (NVDA): SIP ONLY -> DEFER / AVOID | Entry $150.96 -> $150.96 | TP $240.46 -> $240.46 | SL $140.46 -> $140.46 (R:R 1:8.52 -> 1:8.52) | Qty 142 -> 0 sh (0.00x) | Conviction 57.3% -> 22.3%."
+      },
+      "outcome": {
+        "status": "DEFERRED_MONITORED",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 150.96,
+        "mark_date": "2026-11-18",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": 0.0,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606868+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261119-TATAMOTORS-56b759ea",
+      "signature": "56b759eac06af4a1",
+      "symbol": "TATAMOTORS",
+      "name": "Tata Motors Limited",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606843+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606843+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:25.191085+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 49,
+        "business": 19,
+        "moat": 5,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 45,
+        "technical_score": 96.0,
+        "composite_score": 47.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 446.00 vs 20D SMA 419.31 (Upward Curve, 30D Reg Target 498.47). RSI(14)=69.45, MACD=+7.44 vs Sig=+3.75."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "NEUTRAL",
+          "confidence_pct": 47.0,
+          "summary": "Fundamental 49/100 (Bus 19/40, Moat 5/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 45/100 [FMCG]. Balanced valuation at P/E 26.0x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 59.1,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (59.1% conviction). Sized 14 shares (INR 6,119.12) | Entry 437.08 \u00b7 TP 479.38 / SL 392.03 (R:R 1:0.94)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 446.0,
+        "change_pct": 0.5,
+        "rsi_14": 69.45,
+        "sma_20": 419.31,
+        "projected_30d_target": 498.47,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "SIP ONLY",
+        "entry": 446.0,
+        "target": 493.0,
+        "stop_loss": 393.0,
+        "rr_ratio": 0.89,
+        "qty": 28,
+        "conviction": 69.1
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "WAIT FOR PULLBACK",
+        "risk_rating": "HIGH",
+        "bull_case": "The asset exhibits strong upward momentum with a 96% bullish technical signal and a 30D Quant Target of \u20b9498.47, exceeding the Moreshwar Target of \u20b9493.0.",
+        "objections_raised": "The RSI(14) at 69.45 is approaching overbought territory, the fundamental score is weak at 49/100 with 0.0% ROE/ROCE, and the Risk:Reward ratio of 1:0.89 is unfavorable.",
+        "rationale": "Given the elevated RSI and the unfavorable R:R, a direct buy is ill-advised. The trade should be initiated on a pullback to capture better value and improve the risk-reward profile, with a reduced position size to mitigate risk.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-19T07:50:39.518906+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 437.08,
+        "target": 479.38,
+        "stop_loss": 392.03,
+        "rr_ratio": 0.94,
+        "qty": 14,
+        "conviction": 59.1,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.76,
+        "stop_delta_pct": -0.25,
+        "qty_delta": -14,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The RSI(14) at 69.45 is approaching overbought territory, the fundamental score is weak at 49/100 with 0.0% ROE/ROCE, and the Risk:Reward ratio of 1:0.89 is unfavorable."
+        ],
+        "summary": "Applied CRO Calibration (TATAMOTORS): SIP ONLY -> LIMIT PULLBACK | Entry \u20b9446.0 -> \u20b9437.08 | TP \u20b9493.0 -> \u20b9479.38 | SL \u20b9393.0 -> \u20b9392.03 (R:R 1:0.89 -> 1:0.94) | Qty 28 -> 14 sh (0.50x) | Conviction 69.1% -> 59.1%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 446.0,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606843+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261119-INFY-d8fa3dd3",
+      "signature": "d8fa3dd3c0f0cd48",
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606812+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606812+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:24.847719+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 72,
+        "business": 17,
+        "moat": 15,
+        "management": 20,
+        "risk": 20,
+        "porters_total": 65,
+        "technical_score": 52.0,
+        "composite_score": 68.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "NEUTRAL",
+          "confidence_pct": 52.0,
+          "summary": "Spot 1,074.30 vs 20D SMA 1,146.84 (Downward Curve, 30D Reg Target 1,180.31). RSI(14)=36.36, MACD=+5.57 vs Sig=+17.07."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 68.5,
+          "summary": "Fundamental 72/100 (Bus 17/40, Moat 15/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 65/100 [IT]. Attractive valuation at P/E 14.3x with value margin of safety. High capital efficiency (ROE 29.9%, ROCE 25.8%) underscores durable moat."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 51.1,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (51.1% conviction). Sized 1 shares (INR 1,052.81) | Entry 1,052.81 \u00b7 TP 1,118.78 / SL 1,024.16 (R:R 1:2.3)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1074.3,
+        "change_pct": -3.11,
+        "rsi_14": 36.36,
+        "sma_20": 1146.84,
+        "projected_30d_target": 1180.31,
+        "regression_curve": "Downward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "WAIT",
+        "entry": 1074.3,
+        "target": 1147.6,
+        "stop_loss": 1040.6,
+        "rr_ratio": 2.18,
+        "qty": 1,
+        "conviction": 61.1
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "WAIT FOR PULLBACK",
+        "risk_rating": "HIGH",
+        "bull_case": "Infosys exhibits a strong core moat (65/100) and high profitability ratios (ROE 29.95%, ROCE 25.81%), with a low beta of 0.02 suggesting stability.",
+        "objections_raised": "The trade setup conflicts with a downward-sloping Degree-2 Polynomial Regression curve and a neutral TechBot signal (52% conviction), while the current spot price is significantly below the 20D SMA, indicating technical weakness and potential overextension against immediate support.",
+        "rationale": "The suggested BUY is overridden due to technical weakness and conflicting regression trends. A pullback entry is preferred to align with potential support levels and mitigate the risk of buying into a downtrend. The position size will be reduced, and the target will be trimmed to reflect the prevailing bearish technical indicators and a more conservative outlook.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-19T07:50:34.399916+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 1052.81,
+        "target": 1118.78,
+        "stop_loss": 1024.16,
+        "rr_ratio": 2.3,
+        "qty": 1,
+        "conviction": 51.1,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.51,
+        "stop_delta_pct": -1.58,
+        "qty_delta": 0,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The trade setup conflicts with a downward-sloping Degree-2 Polynomial Regression curve and a neutral TechBot signal (52% conviction), while the current spot price is significantly below the 20D SMA, indicating technical weakness and potential overextension against immediate support."
+        ],
+        "summary": "Applied CRO Calibration (INFY): WAIT -> LIMIT PULLBACK | Entry \u20b91074.3 -> \u20b91052.81 | TP \u20b91147.6 -> \u20b91118.78 | SL \u20b91040.6 -> \u20b91024.16 (R:R 1:2.18 -> 1:2.3) | Qty 1 -> 1 sh (0.50x) | Conviction 61.1% -> 51.1%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1074.3,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606812+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261119-ICICIBANK-c44c4106",
+      "signature": "c44c4106ea0ebd9f",
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank Limited",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606726+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606726+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:24.523084+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 85,
+        "business": 40,
+        "moat": 15,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 85,
+        "technical_score": 94.0,
+        "composite_score": 85.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.0,
+          "summary": "Spot 1,596.60 vs 20D SMA 1,488.39 (Upward Curve, 30D Reg Target 1,923.17). RSI(14)=86.33, MACD=+62.76 vs Sig=+52.99."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 85.0,
+          "summary": "Fundamental 85/100 (Bus 40/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [BANKING]. Balanced valuation at P/E 19.6x. High capital efficiency (ROE 16.5%, ROCE 12.2%) underscores durable moat. Strong top-line expansion (15.8% YoY) & profit growth (22.1% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 74.1,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (74.1% conviction). Sized 6 shares (INR 9,340.08) | Entry 1,556.68 \u00b7 TP 1,685.88 / SL 1,537.48 (R:R 1:6.73)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1596.6,
+        "change_pct": -0.29,
+        "rsi_14": 86.33,
+        "sma_20": 1488.39,
+        "projected_30d_target": 1923.17,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1596.6,
+        "target": 1732.6,
+        "stop_loss": 1572.6,
+        "rr_ratio": 5.67,
+        "qty": 13,
+        "conviction": 89.1
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "WAIT FOR PULLBACK",
+        "risk_rating": "MEDIUM",
+        "bull_case": "ICICIBANK exhibits strong fundamentals with a Total Fundamental Score of 85/100, robust profit growth of 22.1%, and an impressive Porter's 5 Forces Moat score of 85/100, indicating a durable competitive advantage.",
+        "objections_raised": "The RSI(14) at 86.33 indicates severe overbought conditions, suggesting an imminent technical correction. The current spot price is significantly above the 20D SMA (\u20b91596.6 vs \u20b91488.39), further supporting the likelihood of a pullback, despite the upward polynomial regression curve.",
+        "rationale": "While the fundamental strength and long-term regression curve are positive, the extreme overbought RSI and significant premium to the 20D SMA necessitate a more cautious approach. We will recalibrate to await a pullback, aiming for a lower entry point to improve the risk-reward profile and mitigate the risk of an immediate technical correction. The trade size will be reduced, and the stop-loss tightened to reflect increased short-term volatility.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-19T07:50:31.734749+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 1556.68,
+        "target": 1685.88,
+        "stop_loss": 1537.48,
+        "rr_ratio": 6.73,
+        "qty": 6,
+        "conviction": 74.1,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.5,
+        "target_delta_pct": -2.7,
+        "stop_delta_pct": -2.23,
+        "qty_delta": -7,
+        "conviction_delta": -15.0,
+        "reasons": [
+          "Applied 2.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 20.0% to constrain downside MAE.",
+          "Trimmed target upside by 5.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The RSI(14) at 86.33 indicates severe overbought conditions, suggesting an imminent technical correction. The current spot price is significantly above the 20D SMA (\u20b91596.6 vs \u20b91488.39), further supporting the likelihood of a pullback, despite the upward polynomial regression curve."
+        ],
+        "summary": "Applied CRO Calibration (ICICIBANK): BUY NOW -> LIMIT PULLBACK | Entry \u20b91596.6 -> \u20b91556.68 | TP \u20b91732.6 -> \u20b91685.88 | SL \u20b91572.6 -> \u20b91537.48 (R:R 1:5.67 -> 1:6.73) | Qty 13 -> 6 sh (0.50x) | Conviction 89.1% -> 74.1%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1596.6,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606726+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261119-HDFCBANK-b06f5aa4",
+      "signature": "b06f5aa4a1104201",
+      "symbol": "HDFCBANK",
+      "name": "HDFC Bank Limited",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606694+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606694+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:24.199310+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 70,
+        "business": 35,
+        "moat": 5,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 94.0,
+        "composite_score": 72.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.0,
+          "summary": "Spot 815.00 vs 20D SMA 750.13 (Upward Curve, 30D Reg Target 982.94). RSI(14)=89.91, MACD=+28.59 vs Sig=+21.35."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 72.5,
+          "summary": "Fundamental 70/100 (Bus 35/40, Moat 5/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [BANKING]. Attractive valuation at P/E 17.8x with value margin of safety. Strong top-line expansion (80.8% YoY) & profit growth (21.3% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 77.2,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (77.2% conviction). Sized 20 shares (INR 15,974.00) | Entry 798.70 \u00b7 TP 863.95 / SL 775.33 (R:R 1:2.79)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 815.0,
+        "change_pct": 0.85,
+        "rsi_14": 89.91,
+        "sma_20": 750.13,
+        "projected_30d_target": 982.94,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 815.0,
+        "target": 887.5,
+        "stop_loss": 787.5,
+        "rr_ratio": 2.64,
+        "qty": 26,
+        "conviction": 82.2
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "HDFCBANK exhibits strong technical momentum with an RSI of 89.91 and a MACD crossover, supported by a robust fundamental score of 70/100 and a low Beta of 0.39.",
+        "objections_raised": "The current RSI of 89.91 indicates significant technical overextension, potentially leading to a short-term reversion, and the Degree-2 Polynomial Regression's 30D Quant Target of \u20b9982.94 appears overly optimistic given the current R:R.",
+        "rationale": "While the setup shows bullish signals, the extreme RSI necessitates a more conservative approach. The trade will be initiated on a slight pullback to capture better value, with a tightened stop-loss and a moderated target to reflect the overbought conditions and improve risk management.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-19T07:50:29.387642+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 798.7,
+        "target": 863.95,
+        "stop_loss": 775.33,
+        "rr_ratio": 2.79,
+        "qty": 20,
+        "conviction": 77.2,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.65,
+        "stop_delta_pct": -1.55,
+        "qty_delta": -6,
+        "conviction_delta": -5.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The current RSI of 89.91 indicates significant technical overextension, potentially leading to a short-term reversion, and the Degree-2 Polynomial Regression's 30D Quant Target of \u20b9982.94 appears overly optimistic given the current R:R."
+        ],
+        "summary": "Applied CRO Calibration (HDFCBANK): BUY NOW -> LIMIT PULLBACK | Entry \u20b9815.0 -> \u20b9798.7 | TP \u20b9887.5 -> \u20b9863.95 | SL \u20b9787.5 -> \u20b9775.33 (R:R 1:2.64 -> 1:2.79) | Qty 26 -> 20 sh (0.75x) | Conviction 82.2% -> 77.2%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 815.0,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606694+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261119-TCS-3fc647e0",
+      "signature": "3fc647e0b4d43b9d",
+      "symbol": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606661+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606661+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:23.882032+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 30,
+        "moat": 20,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 85,
+        "technical_score": 52.0,
+        "composite_score": 82.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "NEUTRAL",
+          "confidence_pct": 52.0,
+          "summary": "Spot 2,328.40 vs 20D SMA 2,462.87 (Downward Curve, 30D Reg Target 2,481.65). RSI(14)=27.13, MACD=+17.31 vs Sig=+43.91."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 82.5,
+          "summary": "Fundamental 80/100 (Bus 30/40, Moat 20/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [IT]. Attractive valuation at P/E 16.3x with value margin of safety. High capital efficiency (ROE 45.6%, ROCE 39.0%) underscores durable moat."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 58.8,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (58.8% conviction). Sized 7 shares (INR 16,054.29) | Entry 2,293.47 \u00b7 TP 2,466.47 / SL 2,256.77 (R:R 1:4.71)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 2328.4,
+        "change_pct": -2.15,
+        "rsi_14": 27.13,
+        "sma_20": 2462.87,
+        "projected_30d_target": 2481.65,
+        "regression_curve": "Downward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "SIP ONLY",
+        "entry": 2328.4,
+        "target": 2520.62,
+        "stop_loss": 2287.62,
+        "rr_ratio": 4.71,
+        "qty": 9,
+        "conviction": 68.8
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "TCS exhibits a strong fundamental score of 80/100 with an exceptional Moat of 85/100 and robust ROE of 45.57%, suggesting long-term value despite current price weakness. The RSI of 27.13 indicates oversold conditions, potentially signaling a near-term bounce.",
+        "objections_raised": "The Degree-2 Polynomial Regression shows a downward curve, conflicting with the bullish target and suggesting potential for further downside. While RSI is oversold, the MACD is significantly below its signal line, indicating continued bearish momentum, and the spot price is well below the 20D SMA.",
+        "rationale": "Given the strong fundamental moat and oversold RSI, a cautious accumulation strategy is warranted, but the downward regression curve and bearish MACD necessitate a more conservative entry and tighter risk management. We will aim for a deeper entry discount to align with potential support and tighten the stop-loss to protect capital, while also trimming the target to reflect the downward curve.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-19T07:50:29.387199+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 2293.47,
+        "target": 2466.47,
+        "stop_loss": 2256.77,
+        "rr_ratio": 4.71,
+        "qty": 7,
+        "conviction": 58.8,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -1.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -1.5,
+        "target_delta_pct": -2.15,
+        "stop_delta_pct": -1.35,
+        "qty_delta": -2,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 1.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The Degree-2 Polynomial Regression shows a downward curve, conflicting with the bullish target and suggesting potential for further downside. While RSI is oversold, the MACD is significantly below its signal line, indicating continued bearish momentum, and the spot price is well below the 20D SMA."
+        ],
+        "summary": "Applied CRO Calibration (TCS): SIP ONLY -> CAUTIOUS ACCUMULATE | Entry \u20b92328.4 -> \u20b92293.47 | TP \u20b92520.62 -> \u20b92466.47 | SL \u20b92287.62 -> \u20b92256.77 (R:R 1:4.71 -> 1:4.71) | Qty 9 -> 7 sh (0.75x) | Conviction 68.8% -> 58.8%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 2328.4,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606661+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261119-RELIANCE-728e223c",
+      "signature": "728e223c046a0e3c",
+      "symbol": "RELIANCE",
+      "name": "Reliance Industries Limited",
+      "currency": "INR",
+      "created_at": "2026-11-19T09:04:11.606486+00:00",
+      "last_seen_at": "2026-11-19T09:04:11.606486+00:00",
+      "market_date": "2026-11-19",
+      "market_timestamp": "2026-11-19T10:00:00+00:00",
+      "retrieval_timestamp": "2026-11-19T07:50:23.553891+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 72,
+        "business": 32,
+        "moat": 10,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 65,
+        "technical_score": 94.0,
+        "composite_score": 68.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.0,
+          "summary": "Spot 1,365.00 vs 20D SMA 1,279.70 (Upward Curve, 30D Reg Target 1,653.53). RSI(14)=95.0, MACD=+41.45 vs Sig=+33.20."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 68.5,
+          "summary": "Fundamental 72/100 (Bus 32/40, Moat 10/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 65/100 [POWER]. Balanced valuation at P/E 22.5x. Strong top-line expansion (29.8% YoY) & profit growth (40.7% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 70.0,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (70.0% conviction). Sized 8 shares (INR 10,701.60) | Entry 1,337.70 \u00b7 TP 1,421.54 / SL 1,301.29 (R:R 1:2.3)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1365.0,
+        "change_pct": 0.15,
+        "rsi_14": 95.0,
+        "sma_20": 1279.7,
+        "projected_30d_target": 1653.53,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live (yfinance)"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1365.0,
+        "target": 1458.16,
+        "stop_loss": 1322.16,
+        "rr_ratio": 2.17,
+        "qty": 16,
+        "conviction": 80.0
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "HIGH",
+        "bull_case": "Reliance shows strong profit growth of 40.7% and sales growth of 29.8%, with a low Beta of 0.18, indicating fundamental strength and stability.",
+        "objections_raised": "The RSI(14) at 95.0 indicates extreme overbought conditions, suggesting a high probability of a near-term pullback. The Moreshwar R:R of 1:2.17 is acceptable, but the current spot price is significantly above the 20D SMA, increasing entry risk.",
+        "rationale": "Given the extremely overbought RSI and the significant premium to the 20D SMA, a direct 'BUY NOW' is too aggressive. We will recalibrate to 'CAUTIOUS ACCUMULATE' by applying a discount to the entry, tightening the stop-loss, and reducing the target to mitigate the risk of a technical correction while still participating in the underlying bullish trend.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-19T07:50:26.727949+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 1337.7,
+        "target": 1421.54,
+        "stop_loss": 1301.29,
+        "rr_ratio": 2.3,
+        "qty": 8,
+        "conviction": 70.0,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.51,
+        "stop_delta_pct": -1.58,
+        "qty_delta": -8,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The RSI(14) at 95.0 indicates extreme overbought conditions, suggesting a high probability of a near-term pullback. The Moreshwar R:R of 1:2.17 is acceptable, but the current spot price is significantly above the 20D SMA, increasing entry risk."
+        ],
+        "summary": "Applied CRO Calibration (RELIANCE): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b91365.0 -> \u20b91337.7 | TP \u20b91458.16 -> \u20b91421.54 | SL \u20b91322.16 -> \u20b91301.29 (R:R 1:2.17 -> 1:2.3) | Qty 16 -> 8 sh (0.50x) | Conviction 80.0% -> 70.0%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1365.0,
+        "mark_date": "2026-11-19",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-19T09:04:11.606486+00:00"
+      }
+    }
+  ],
+  "last_scan_new_records": 10,
+  "total_records": 10
+}

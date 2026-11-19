@@ -7,6 +7,14 @@ Merges:
 """
 
 from .agents import AgentMessage, AgentRunner, ExecutionAgent, FundamentalAnalyst, PipelineResult, TechnicalAnalyst
+from .audit_ledger import (
+    ENGINE_VERSIONS,
+    build_audit_dashboard_view,
+    load_audit_ledger,
+    record_broker_execution,
+    record_scan_decisions,
+)
+from .backtest_engine import run_backtest_and_attribution
 from .config import FinsistantSettings, load_settings
 from .gemini_critic import analyze_trade_with_gemini, apply_trade_recalibration, ask_gemini_stocky, critique_suggested_trades
 from .kite_auth import (
@@ -15,7 +23,14 @@ from .kite_auth import (
     get_kite_auth_status,
     resolve_kite_session,
 )
-from .live_data import DEFAULT_SYMBOL_CONFIG, fetch_kite_portfolio, fetch_live_market_snapshot
+from .live_data import DEFAULT_SYMBOL_CONFIG, fetch_benchmark_candles, fetch_kite_portfolio, fetch_live_market_snapshot
+from .nse_mcp import (
+    fetch_nse_corporate_actions,
+    fetch_nse_index_1y,
+    fetch_nse_stock_history_1y,
+    fetch_nse_stock_quote,
+)
+from .provenance import build_asset_provenance, build_data_integrity_report
 from .quant_engine import ASSET_UNIVERSE, get_asset_full_analysis
 from .scoring_engine import (
     calculate_decision_matrix,
@@ -32,6 +47,19 @@ __all__ = [
     "TechnicalAnalyst",
     "FundamentalAnalyst",
     "ExecutionAgent",
+    "ENGINE_VERSIONS",
+    "build_audit_dashboard_view",
+    "load_audit_ledger",
+    "record_broker_execution",
+    "record_scan_decisions",
+    "run_backtest_and_attribution",
+    "build_asset_provenance",
+    "build_data_integrity_report",
+    "fetch_benchmark_candles",
+    "fetch_nse_corporate_actions",
+    "fetch_nse_index_1y",
+    "fetch_nse_stock_history_1y",
+    "fetch_nse_stock_quote",
     "FinsistantSettings",
     "load_settings",
     "analyze_trade_with_gemini",

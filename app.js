@@ -20,6 +20,11 @@ let appState = {
   assets: {},       // keyed by symbol -> live analysis payload
   pipelines: {},    // keyed by symbol -> AgentRunner PipelineResult payload
   geminiCritiques: {}, // keyed by symbol -> Gemini critical trade analysis
+  provenance: null, // Data Integrity Monitor payload
+  backtest: null,   // Walk-forward Backtest & Multi-Agent Attribution payload
+  auditTrail: null, // Permanent Decision Audit Ledger payload
+  selectedAuditId: null,
+  intelFocus: "all",
   holdingsMap: {},  // keyed by symbol -> { qty, avg_price }
   queue: { buys: [], sells: [], executed: [] },
   rules: [],
@@ -27,6 +32,23 @@ let appState = {
   config: null,
   errorMsg: null,
   chatHistory: []
+};
+
+const escHtml = (val) => String(val ?? "")
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;");
+
+const fmtTsShort = (iso) => {
+  if (!iso) return "--";
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return String(iso).slice(0, 19);
+    return d.toLocaleString([], { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  } catch (_) {
+    return String(iso).slice(0, 19);
+  }
 };
 
 const fmtCurrency = (n, currency = "INR", d = 0) => {
@@ -164,6 +186,9 @@ function applyPayload(payload) {
   appState.assets = payload.assets || {};
   appState.pipelines = payload.pipelines || {};
   appState.geminiCritiques = payload.gemini_critiques || {};
+  appState.provenance = payload.provenance || null;
+  appState.backtest = payload.backtest || null;
+  appState.auditTrail = payload.audit_trail || null;
   appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
   appState.rules = payload.rules || [];
   appState.health = payload.health || null;
@@ -342,6 +367,34 @@ function renderAllViews() {
   const decBadge = document.getElementById("centerDecisionBadge");
   decBadge.textContent = d.action;
   decBadge.className = `tag-pill ${f.total >= 65 ? "tag-target" : f.total <= 45 ? "tag-stop" : "tag-score"}`;
+
+  const assetProv = (appState.provenance && appState.provenance.assets && appState.provenance.assets[active.symbol]) || null;
+  const pSpotEl = document.getElementById("provSpotBadge");
+  const pTypeEl = document.getElementById("provPriceTypeBadge");
+  const pTsEl = document.getElementById("provTimestampsText");
+  if (pSpotEl && pTypeEl && pTsEl) {
+    if (assetProv) {
+      const fresh = assetProv.freshness || "LIVE";
+      const srcTone = assetProv.is_stale ? "tag-stop" : (assetProv.is_delayed ? "tag-score" : "tag-target");
+      const spotCat = assetProv.metrics?.spot_price?.source_category;
+      const srcName = assetProv.cache_hit
+        ? "CACHED DB"
+        : spotCat === "NSE_OFFICIAL_MCP"
+          ? "NSE OFFICIAL MCP"
+          : "YAHOO FEED";
+      pSpotEl.textContent = `${srcName} · ${fresh}${assetProv.discrepancies?.length ? " · DISCREPANCY!" : ""}`;
+      pSpotEl.className = `tag-pill ${assetProv.discrepancies?.length ? "tag-stop" : srcTone}`;
+      const brokerFill = assetProv.metrics?.broker_execution?.price_classification === "BROKER_CONFIRMED";
+      pTypeEl.textContent = brokerFill ? "BROKER FILL + MODEL LEVELS" : "LEVELS: ANALYTICAL ESTIMATE (NOT EXECUTED)";
+      pTypeEl.className = `tag-pill ${brokerFill ? "tag-target" : "tag-entry"}`;
+      pTsEl.textContent = `Market TS (${assetProv.market_timestamp_kind === "exchange_quote" ? "Quote" : "EOD"}): ${fmtTsShort(assetProv.market_timestamp)} · Retrieval TS: ${fmtTsShort(assetProv.retrieval_timestamp)}`;
+    } else {
+      pSpotEl.textContent = active.data_source || "YAHOO FEED";
+      pSpotEl.className = "tag-pill tag-entry";
+      pTypeEl.textContent = "LEVELS: ANALYTICAL ESTIMATE";
+      pTsEl.textContent = `Retrieval TS: ${fmtTsShort(active.fetched_at || appState.generatedAt)}`;
+    }
+  }
 
   document.getElementById("legTarget").textContent = fmtCurrency(m.target, cur, 2);
   document.getElementById("legEntry").textContent = m.recalibrated
@@ -626,6 +679,488 @@ function renderAllViews() {
     }, null, 2);
 
   drawUnifiedChart(active);
+  renderIntelligenceViews();
+}
+
+function drawBacktestEquityChart(curve) {
+  const canvas = document.getElementById("backtestEquityChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(280, rect.width || 460);
+  const h = Math.max(180, rect.height || 220);
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  if (!Array.isArray(curve) || curve.length < 2) {
+    ctx.font = "12px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillText("Backtest equity curve will populate after next live scan.", 16, h / 2);
+    return;
+  }
+
+  const vals = [];
+  curve.forEach((pt) => {
+    if (typeof pt.original_nav === "number") vals.push(pt.original_nav);
+    if (typeof pt.recalibrated_nav === "number") vals.push(pt.recalibrated_nav);
+    if (typeof pt.benchmark_nav === "number") vals.push(pt.benchmark_nav);
+  });
+  const minV = Math.min(...vals) * 0.99;
+  const maxV = Math.max(...vals) * 1.01;
+  const padT = 16, padB = 22, padL = 12, padR = 52;
+  const plotW = w - padL - padR;
+  const plotH = h - padT - padB;
+  const yFor = (v) => padT + plotH - ((v - minV) / Math.max(1e-6, maxV - minV)) * plotH;
+  const xFor = (i) => padL + (i / Math.max(1, curve.length - 1)) * plotW;
+
+  ctx.strokeStyle = "hsla(222, 15%, 24%, 0.45)";
+  ctx.lineWidth = 1;
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  for (let i = 0; i <= 4; i++) {
+    const v = minV + ((maxV - minV) * i) / 4;
+    const y = yFor(v);
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    ctx.stroke();
+    ctx.fillText(v.toFixed(1), w - padR + 6, y + 3);
+  }
+  ctx.fillText(curve[0].date || "", padL, h - 5);
+  ctx.fillText(curve[curve.length - 1].date || "", w - padR - 66, h - 5);
+
+  const plotLine = (key, color, dashed = false) => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    if (dashed) ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    let started = false;
+    curve.forEach((pt, i) => {
+      const v = pt[key];
+      if (typeof v !== "number" || Number.isNaN(v)) return;
+      const x = xFor(i);
+      const y = yFor(v);
+      if (!started) { ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.restore();
+  };
+
+  plotLine("benchmark_nav", "hsl(38, 92%, 55%)", true);
+  plotLine("original_nav", "hsl(196, 86%, 54%)", false);
+  plotLine("recalibrated_nav", "hsl(158, 74%, 44%)", false);
+}
+
+function renderProvenanceMonitor() {
+  const sumEl = document.getElementById("provSummaryBadges");
+  const taxEl = document.getElementById("provTaxonomyCards");
+  const discEl = document.getElementById("provDiscrepancyBanner");
+  const bodyEl = document.getElementById("provAssetTableBody");
+  if (!sumEl || !taxEl || !discEl || !bodyEl) return;
+
+  const prov = appState.provenance;
+  if (!prov) {
+    sumEl.innerHTML = `<span class="tag-pill tag-score">AWAITING PROVENANCE TELEMETRY</span>`;
+    taxEl.innerHTML = `<div class="taxonomy-card">Run live backend or next cloud scan to populate the 6-category source provenance matrix.</div>`;
+    discEl.innerHTML = "";
+    bodyEl.innerHTML = "";
+    return;
+  }
+
+  const s = prov.summary || {};
+  sumEl.innerHTML = `
+    <span class="tag-pill tag-entry">${s.total_assets || 0} ASSETS</span>
+    <span class="tag-pill ${(s.nse_mcp_count || 0) > 0 ? "tag-target" : "tag-score"}">${s.nse_mcp_count || 0} NSE MCP</span>
+    <span class="tag-pill ${(s.stale_count || 0) > 0 ? "tag-stop" : "tag-target"}">${s.stale_count || 0} STALE</span>
+    <span class="tag-pill ${(s.partial_fundamentals_count || 0) > 0 ? "tag-score" : "tag-target"}">${s.partial_fundamentals_count || 0} PARTIAL RATIOS</span>
+    <span class="tag-pill ${(s.discrepancy_count || 0) > 0 ? "tag-stop" : "tag-target"}">${s.discrepancy_count || 0} DISCREPANCIES</span>
+    <span class="tag-pill ${s.broker_connected ? "tag-target" : "tag-score"}">BROKER: ${s.broker_connected ? "CONNECTED" : "IDLE / READ-ONLY"}</span>
+  `;
+
+  taxEl.innerHTML = (prov.feeds || []).map((f) => {
+    const st = String(f.status || "");
+    const tone = (st.includes("STALE") || st.includes("UNAVAILABLE") || st.includes("DEGRADED"))
+      ? "tag-stop"
+      : (st.includes("DELAYED") || st.includes("IDLE"))
+        ? "tag-score"
+        : "tag-target";
+    return `
+      <div class="taxonomy-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+          <strong style="font-size:12px;">${escHtml(f.category)}</strong>
+          <span class="tag-pill ${tone}">${escHtml(st)}</span>
+        </div>
+        <div class="taxonomy-meta">Market TS: ${escHtml(fmtTsShort(f.market_timestamp))}</div>
+        <div class="taxonomy-meta">Retrieval TS: ${escHtml(fmtTsShort(f.retrieval_timestamp))}</div>
+        <div style="font-size:11.5px;color:var(--text-secondary);">${escHtml(f.detail)}</div>
+      </div>
+    `;
+  }).join("");
+
+  const discList = prov.discrepancies || [];
+  if (discList.length > 0) {
+    discEl.innerHTML = discList.map((d) => `
+      <div class="sell-warning-box" style="margin-bottom:6px; border-color: ${d.severity === "CRITICAL" ? "var(--accent-crimson)" : "var(--accent-amber)"}; background: ${d.severity === "CRITICAL" ? "var(--accent-crimson-dim)" : "var(--accent-amber-dim)"};">
+        <div>
+          <strong style="font-family:var(--font-mono);color:${d.severity === "CRITICAL" ? "var(--accent-crimson)" : "var(--accent-amber)"};">⚠ ${escHtml(d.symbol)} · ${escHtml(d.type)} (${d.delta_pct >= 0 ? "+" : ""}${d.delta_pct}%)</strong>
+          <div style="font-size:11.5px;color:var(--text-secondary);">${escHtml(d.source_a)} vs ${escHtml(d.source_b)} — ${escHtml(d.message)}</div>
+        </div>
+      </div>
+    `).join("");
+  } else {
+    discEl.innerHTML = `<div class="terminal-box" style="color:var(--accent-emerald);">✅ Zero unresolved cross-source price discrepancies above divergence thresholds (Feed Spot vs EOD Bar &lt; 1.5%, Primary Feed vs Yahoo/Broker LTP &lt; 0.75%).</div>`;
+  }
+
+  const assetsMap = prov.assets || {};
+  bodyEl.innerHTML = Object.values(assetsMap).map((a) => {
+    const assetObj = appState.assets[a.symbol] || {};
+    const cur = assetObj.currency || "INR";
+    const mSpot = a.metrics?.spot_price || {};
+    const mModel = a.metrics?.stocksight_and_moreshwar || {};
+    const mBroker = a.metrics?.broker_execution || {};
+    const st = a.overall_status || "UNKNOWN";
+    const stTone = st === "STALE" || st === "DISCREPANCY" ? "tag-stop" : st === "VERIFIED LIVE" ? "tag-target" : "tag-score";
+    const flags = [
+      ...(a.missing_fields || []).map((mf) => `Missing: ${mf}`),
+      ...Object.entries(a.proxy_fields || {}).map(([k, v]) => `Proxy ${k}: ${v}`)
+    ];
+    const brokerTxt = mBroker.price_classification === "BROKER_CONFIRMED"
+      ? `Broker ${fmtCurrency(mBroker.value, cur, 2)}`
+      : "No Broker Fill";
+    const modelEntry = assetObj.moreshwar_levels?.entry_price;
+    return `
+      <tr>
+        <td style="font-family:var(--font-mono);font-weight:700;">${escHtml(a.symbol)}</td>
+        <td><span class="tag-pill ${stTone}">${escHtml(st)}</span></td>
+        <td style="font-size:11.5px;">${escHtml(mSpot.source_label || "Yahoo Feed")}<br><span style="color:var(--text-muted);">${escHtml(a.freshness)}</span></td>
+        <td style="font-family:var(--font-mono);font-size:11px;">${escHtml(fmtTsShort(a.market_timestamp))}<br><span style="color:var(--text-muted);">${escHtml(a.market_timestamp_kind)}</span></td>
+        <td style="font-family:var(--font-mono);font-size:11px;">${escHtml(fmtTsShort(a.retrieval_timestamp))}</td>
+        <td style="font-family:var(--font-mono);font-size:11px;">
+          Feed: <strong>${fmtCurrency(mSpot.value, cur, 2)}</strong><br>
+          Model (${escHtml(mModel.price_classification || "ANALYTICAL")}): ${modelEntry ? fmtCurrency(modelEntry, cur, 2) : "--"}<br>
+          <span style="color:${mBroker.price_classification === "BROKER_CONFIRMED" ? "var(--accent-emerald)" : "var(--text-muted)"};">${escHtml(brokerTxt)}</span>
+        </td>
+        <td style="font-size:11px;color:var(--text-secondary);">${flags.length ? escHtml(flags.join(" · ")) : "All primary metrics present"}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function renderBacktestAnalytics() {
+  const kpiEl = document.getElementById("btBenchmarkKpis");
+  const trackEl = document.getElementById("btTrackComparisonBody");
+  const attrEl = document.getElementById("btAgentAttributionGrid");
+  const methEl = document.getElementById("btMethodologyBox");
+  const sepEl = document.getElementById("btSeparationBadge");
+  if (!kpiEl || !trackEl || !attrEl || !methEl) return;
+
+  const bt = appState.backtest;
+  if (!bt || !bt.tracks) {
+    kpiEl.innerHTML = `<div class="kpi-tile"><span class="kpi-tile-label">Status</span><span class="kpi-tile-val">Awaiting Backtest</span></div>`;
+    trackEl.innerHTML = "";
+    attrEl.innerHTML = "";
+    methEl.innerHTML = "Run live backend or cloud scan to compute 1Y causal walk-forward backtest & Nifty 50 attribution.";
+    drawBacktestEquityChart([]);
+    return;
+  }
+
+  const trOrig = bt.tracks.original_ai_signals?.metrics || {};
+  const trRecal = bt.tracks.recalibrated_ai_signals?.metrics || {};
+  const trAct = bt.tracks.actual_executed_trades?.metrics || {};
+  const actStatus = bt.tracks.actual_executed_trades?.status || "NO_LIVE_BROKER_FILLS";
+  const bench = bt.benchmark || {};
+  const attr = bt.agent_attribution || {};
+
+  if (sepEl) {
+    sepEl.textContent = actStatus === "BROKER_VERIFIED"
+      ? "BROKER FILLS VERIFIED SEPARATELY FROM BACKTEST"
+      : "SIMULATED BACKTEST ISOLATED · 0 REAL BROKER FILLS";
+  }
+
+  kpiEl.innerHTML = `
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Nifty 50 (^NSEI) Return</span>
+      <span class="kpi-tile-val" style="color:var(--accent-amber);">${bench.benchmark_return_pct >= 0 ? "+" : ""}${bench.benchmark_return_pct ?? 0}%</span>
+      <span class="kpi-tile-sub">${escHtml(bench.start_date || "")} → ${escHtml(bench.end_date || "")}</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Recalibrated Alpha vs Nifty</span>
+      <span class="kpi-tile-val" style="color:${(bench.alpha_recalibrated_pct || 0) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${(bench.alpha_recalibrated_pct || 0) >= 0 ? "+" : ""}${bench.alpha_recalibrated_pct ?? 0}%</span>
+      <span class="kpi-tile-sub">Orig Alpha: ${(bench.alpha_original_pct || 0) >= 0 ? "+" : ""}${bench.alpha_original_pct ?? 0}%</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Sharpe / Sortino (Recal)</span>
+      <span class="kpi-tile-val" style="color:var(--accent-cyan);">${trRecal.sharpe_ratio ?? 0} / ${trRecal.sortino_ratio ?? 0}</span>
+      <span class="kpi-tile-sub">Beta vs Nifty: ${bench.beta ?? "N/A"}</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Max Drawdown Reduction</span>
+      <span class="kpi-tile-val" style="color:var(--accent-emerald);">${trRecal.max_drawdown_pct ?? 0}%</span>
+      <span class="kpi-tile-sub">Orig DD: ${trOrig.max_drawdown_pct ?? 0}% (Saved ${attr.Gemini_CRO?.drawdown_reduction_pct ?? 0}%)</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Actual Broker Track</span>
+      <span class="kpi-tile-val">${trAct.total_signals || 0} Fills</span>
+      <span class="kpi-tile-sub">${escHtml(actStatus)}</span>
+    </div>
+  `;
+
+  const rows = [
+    ["Total Signals", trOrig.total_signals, trRecal.total_signals, trAct.total_signals],
+    ["Winners / Losers", `${trOrig.winners || 0} / ${trOrig.losers || 0}`, `${trRecal.winners || 0} / ${trRecal.losers || 0}`, `${trAct.winners || 0} / ${trAct.losers || 0}`],
+    ["Win Rate %", `${trOrig.win_rate_pct ?? 0}%`, `${trRecal.win_rate_pct ?? 0}%`, actStatus === "BROKER_VERIFIED" ? `${trAct.win_rate_pct}%` : "N/A (0 fills)"],
+    ["Avg Return / Signal", `${trOrig.avg_return_pct ?? 0}%`, `${trRecal.avg_return_pct ?? 0}%`, actStatus === "BROKER_VERIFIED" ? `${trAct.avg_return_pct}%` : "N/A"],
+    ["Avg MFE / Avg MAE", `+${trOrig.avg_mfe_pct ?? 0}% / ${trOrig.avg_mae_pct ?? 0}%`, `+${trRecal.avg_mfe_pct ?? 0}% / ${trRecal.avg_mae_pct ?? 0}%`, actStatus === "BROKER_VERIFIED" ? `+${trAct.avg_mfe_pct}% / ${trAct.avg_mae_pct}%` : "N/A"],
+    ["Avg Holding Days", `${trOrig.avg_holding_days ?? 0}d`, `${trRecal.avg_holding_days ?? 0}d`, actStatus === "BROKER_VERIFIED" ? `${trAct.avg_holding_days}d` : "N/A"],
+    ["Cumulative Return %", `${trOrig.cumulative_return_pct ?? 0}%`, `${trRecal.cumulative_return_pct ?? 0}%`, actStatus === "BROKER_VERIFIED" ? `${trAct.cumulative_return_pct}%` : "0% (Isolated)"],
+    ["Sharpe / Sortino", `${trOrig.sharpe_ratio ?? 0} / ${trOrig.sortino_ratio ?? 0}`, `${trRecal.sharpe_ratio ?? 0} / ${trRecal.sortino_ratio ?? 0}`, actStatus === "BROKER_VERIFIED" ? `${trAct.sharpe_ratio} / ${trAct.sortino_ratio}` : "N/A"],
+    ["Max Drawdown %", `${trOrig.max_drawdown_pct ?? 0}%`, `${trRecal.max_drawdown_pct ?? 0}%`, actStatus === "BROKER_VERIFIED" ? `${trAct.max_drawdown_pct}%` : "0%"],
+    ["Profit Factor / R:R", `${trOrig.profit_factor ?? 0} / 1:${trOrig.realized_rr_ratio ?? 0}`, `${trRecal.profit_factor ?? 0} / 1:${trRecal.realized_rr_ratio ?? 0}`, actStatus === "BROKER_VERIFIED" ? `${trAct.profit_factor} / 1:${trAct.realized_rr_ratio}` : "N/A"],
+  ];
+  trackEl.innerHTML = rows.map(([lbl, a, b, c]) => `
+    <tr>
+      <td>${escHtml(lbl)}</td>
+      <td style="font-family:var(--font-mono);color:var(--accent-cyan);">${escHtml(a)}</td>
+      <td style="font-family:var(--font-mono);color:var(--accent-emerald);font-weight:600;">${escHtml(b)}</td>
+      <td style="font-family:var(--font-mono);color:var(--text-secondary);">${escHtml(c)}</td>
+    </tr>
+  `).join("");
+
+  const tech = attr.TechBot_1 || {};
+  const fund = attr.FundBot_1 || {};
+  const exec = attr.ExecBot_1 || {};
+  const cro = attr.Gemini_CRO || {};
+  attrEl.innerHTML = `
+    <div class="attribution-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-family:var(--font-mono);">TechBot_1</strong>
+        <span class="tag-pill tag-entry">${tech.bull_win_rate_pct ?? 0}% WIN</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);">${escHtml(tech.role || "Technical Timing")}</div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">Bull 14D Avg: <strong>${tech.bull_avg_14d_return_pct ?? 0}%</strong> (${tech.bull_signals ?? 0} sig)</div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">Timing Spread vs Bear: <strong>${tech.timing_spread_pct ?? 0}%</strong></div>
+    </div>
+    <div class="attribution-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-family:var(--font-mono);">FundBot_1</strong>
+        <span class="tag-pill tag-target">SPREAD ${fund.quality_alpha_spread_pct ?? 0}%</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);">${escHtml(fund.role || "StockSight V2")}</div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">Score ≥65 14D Avg: <strong>${fund.high_quality_avg_14d_pct ?? 0}%</strong></div>
+      <div style="font-size:10.5px;color:var(--text-muted);">${escHtml(fund.caveat || "")}</div>
+    </div>
+    <div class="attribution-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-family:var(--font-mono);">ExecBot_1</strong>
+        <span class="tag-pill tag-entry">PF ${exec.profit_factor ?? 0}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);">${escHtml(exec.role || "Moreshwar Execution")}</div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">Target Hits: <strong>${exec.target_hits ?? 0}</strong> · Stops: <strong>${exec.stop_losses_triggered ?? 0}</strong></div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">Realized R:R: <strong>1:${exec.realized_rr_ratio ?? 0}</strong></div>
+    </div>
+    <div class="attribution-card cro-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-family:var(--font-mono);">Gemini CRO</strong>
+        <span class="tag-pill tag-score">DD -${cro.drawdown_reduction_pct ?? 0}%</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);">${escHtml(cro.role || "Recalibration Impact")}</div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">Deferred: <strong>${cro.deferred_or_blocked_signals ?? 0}</strong> (Avoided Loss: ${cro.avoided_losing_trades ?? 0})</div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">Win Δ: <strong>${cro.win_rate_delta_pct >= 0 ? "+" : ""}${cro.win_rate_delta_pct ?? 0}%</strong> · Sharpe Δ: <strong>${cro.sharpe_delta >= 0 ? "+" : ""}${cro.sharpe_delta ?? 0}</strong></div>
+    </div>
+  `;
+
+  const disc = bt.methodology_disclosure || {};
+  methEl.innerHTML = `
+    <div style="color:var(--accent-cyan);font-weight:700;">Anti-Bias &amp; Cost Disclosure (${(bt.symbols_evaluated || []).length} Assets Evaluated)</div>
+    <div>• <strong>Look-Ahead Prevention:</strong> ${escHtml(disc.look_ahead_bias_prevention || "")}</div>
+    <div>• <strong>Survivorship Control:</strong> ${escHtml(disc.survivorship_bias_control || "")}</div>
+    <div>• <strong>Transaction Costs:</strong> ${escHtml(disc.transaction_costs || "")}</div>
+    <div>• <strong>Track Isolation:</strong> ${escHtml(disc.separation_guarantee || "")}</div>
+  `;
+
+  drawBacktestEquityChart(bt.equity_curve || []);
+}
+
+function renderAuditLedger() {
+  const symSel = document.getElementById("auditSymbolFilter");
+  const stSel = document.getElementById("auditStatusFilter");
+  const flowEl = document.getElementById("auditInspectorFlow");
+  const bodyEl = document.getElementById("auditLedgerTableBody");
+  const subEl = document.getElementById("auditLedgerSub");
+  if (!symSel || !stSel || !flowEl || !bodyEl) return;
+
+  const trail = appState.auditTrail;
+  const records = (trail && Array.isArray(trail.records)) ? trail.records : [];
+  if (subEl) {
+    subEl.textContent = `${records.length} Permanent Decisions Recorded · Updated ${fmtTsShort(trail?.updated_at)} · Click any row for 4-stage inspection`;
+  }
+
+  // Sync symbol filter options without losing selection
+  const curSymFilter = symSel.value || "ALL";
+  const syms = Array.from(new Set(records.map((r) => r.symbol).filter(Boolean))).sort();
+  symSel.innerHTML = `<option value="ALL">All Symbols (${syms.length})</option>` + syms.map((s) => `<option value="${escHtml(s)}">${escHtml(s)}</option>`).join("");
+  symSel.value = syms.includes(curSymFilter) ? curSymFilter : "ALL";
+
+  const symVal = symSel.value;
+  const stVal = stSel.value || "ALL";
+  const filtered = records.filter((r) => (symVal === "ALL" || r.symbol === symVal) && (stVal === "ALL" || (r.outcome?.status || "OPEN") === stVal));
+
+  let selected = filtered.find((r) => r.audit_id === appState.selectedAuditId)
+    || filtered.find((r) => r.symbol === appState.activeSymbol)
+    || filtered[0]
+    || null;
+  if (selected) appState.selectedAuditId = selected.audit_id;
+
+  if (!selected) {
+    flowEl.innerHTML = `<div class="audit-stage-card" style="grid-column: 1 / -1;">No matching decision records in current filter.</div>`;
+    bodyEl.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-secondary);padding:16px;">No audit records match selected filters.</td></tr>`;
+    return;
+  }
+
+  const cur = selected.currency || "INR";
+  const orig = selected.original_decision || {};
+  const crit = selected.critical_review || {};
+  const fin = selected.final_decision || {};
+  const deltas = selected.recalibration_deltas || {};
+  const out = selected.outcome || {};
+  const sc = selected.scores || {};
+  const vers = selected.versions || {};
+  const ag = selected.agent_assessments || {};
+  const mkt = selected.market_snapshot || {};
+
+  const outTone = (out.status === "TARGET_HIT" || out.status === "BROKER_EXECUTED")
+    ? "tag-target"
+    : (out.status === "STOP_HIT" || String(out.status).includes("DEFERRED"))
+      ? "tag-stop"
+      : "tag-entry";
+  const retShow = out.realized_return_pct != null
+    ? `${out.realized_return_pct >= 0 ? "+" : ""}${out.realized_return_pct}% (Realized)`
+    : out.counterfactual_return_pct != null
+      ? `${out.counterfactual_return_pct >= 0 ? "+" : ""}${out.counterfactual_return_pct}% (Counterfactual)`
+      : `${(out.unrealized_return_pct || 0) >= 0 ? "+" : ""}${out.unrealized_return_pct || 0}% (Unrealized)`;
+
+  flowEl.innerHTML = `
+    <div class="audit-stage-card" style="border-top:2px solid var(--accent-cyan);">
+      <div class="audit-stage-head">
+        <span class="audit-stage-title" style="color:var(--accent-cyan);">1. ORIGINAL DECISION</span>
+        <span class="tag-pill tag-entry">${escHtml(orig.action || "--")}</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">
+        ${escHtml(selected.symbol)} · Spot ${fmtCurrency(mkt.spot_price, cur, 2)} · <strong>${escHtml(selected.market_date)}</strong>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">
+        Entry ${fmtCurrency(orig.entry, cur, 2)} · TP ${fmtCurrency(orig.target, cur, 2)} · SL ${fmtCurrency(orig.stop_loss, cur, 2)}<br>
+        R:R 1:${orig.rr_ratio ?? "--"} · Qty ${orig.qty ?? 0} · Conv ${orig.conviction ?? 0}%
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);">
+        Scores: Fund <strong>${sc.fundamental_total}/100</strong> · Porter <strong>${sc.porters_total}/100</strong> · Tech <strong>${sc.technical_score}%</strong>
+      </div>
+      <div style="font-size:10.5px;color:var(--text-muted);">
+        Agents: Tech=${escHtml(ag.TechBot_1?.signal || "N/A")}, Fund=${escHtml(ag.FundBot_1?.signal || "N/A")}, Exec=${escHtml(ag.ExecBot_1?.signal || "N/A")}
+      </div>
+    </div>
+
+    <div class="audit-stage-card" style="border-top:2px solid var(--accent-crimson);">
+      <div class="audit-stage-head">
+        <span class="audit-stage-title" style="color:var(--accent-crimson);">2. CRITICAL REVIEW (CRO)</span>
+        <span class="tag-pill tag-stop">${escHtml(crit.stance || "--")}</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11px;">Risk Rating: <strong>${escHtml(crit.risk_rating || "--")}</strong> · Model: ${escHtml(crit.model || "none")}</div>
+      <div style="font-size:11.5px;color:var(--text-secondary);"><strong>Objections:</strong> ${escHtml(crit.objections_raised || "None logged")}</div>
+      <div style="font-size:11px;color:var(--text-muted);">${escHtml(crit.rationale || "")}</div>
+    </div>
+
+    <div class="audit-stage-card" style="border-top:2px solid var(--accent-amber);">
+      <div class="audit-stage-head">
+        <span class="audit-stage-title" style="color:var(--accent-amber);">3. FINAL DECISION &amp; DELTAS</span>
+        <span class="tag-pill tag-score">${escHtml(fin.action || "--")}</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11px;">
+        Entry ${fmtCurrency(fin.entry, cur, 2)} (${deltas.entry_delta_pct >= 0 ? "+" : ""}${deltas.entry_delta_pct || 0}%)<br>
+        TP ${fmtCurrency(fin.target, cur, 2)} (${deltas.target_delta_pct >= 0 ? "+" : ""}${deltas.target_delta_pct || 0}%) · SL ${fmtCurrency(fin.stop_loss, cur, 2)}<br>
+        Qty ${fin.qty ?? 0} (${deltas.qty_delta >= 0 ? "+" : ""}${deltas.qty_delta || 0}) · Conv ${fin.conviction ?? 0}% (${deltas.conviction_delta >= 0 ? "+" : ""}${deltas.conviction_delta || 0}%)
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);">
+        ${(deltas.reasons || []).slice(0, 3).map((rs) => `• ${escHtml(rs)}`).join("<br>")}
+      </div>
+    </div>
+
+    <div class="audit-stage-card" style="border-top:2px solid var(--accent-emerald);">
+      <div class="audit-stage-head">
+        <span class="audit-stage-title" style="color:var(--accent-emerald);">4. ACTUAL OUTCOME</span>
+        <span class="tag-pill ${outTone}">${escHtml(out.status || "OPEN")}</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;">
+        Return: <strong>${escHtml(retShow)}</strong><br>
+        Mark: ${fmtCurrency(out.latest_mark_price, cur, 2)} (${escHtml(out.mark_date || "--")})
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">
+        MFE: +${out.mfe_pct ?? 0}% · MAE: ${out.mae_pct ?? 0}% · Hold: ${out.holding_days ?? 0}d<br>
+        Broker: ${out.broker_executed ? `Fill ${fmtCurrency(out.broker_fill_price, cur, 2)} (${escHtml(out.order_id)})` : "Not Executed (Analytical Audit)"}
+      </div>
+      <div style="font-size:10.5px;color:var(--text-muted);">
+        Mkt TS: ${escHtml(fmtTsShort(selected.market_timestamp))} · ${escHtml(vers.platform_version || "")} / ${escHtml(vers.scoring_model || "")}
+      </div>
+    </div>
+  `;
+
+  bodyEl.innerHTML = filtered.slice(0, 40).map((r) => {
+    const rCur = r.currency || "INR";
+    const rOrig = r.original_decision || {};
+    const rFin = r.final_decision || {};
+    const rOut = r.outcome || {};
+    const rSc = r.scores || {};
+    const rV = r.versions || {};
+    const isSel = r.audit_id === selected.audit_id;
+    const oTone = (rOut.status === "TARGET_HIT" || rOut.status === "BROKER_EXECUTED")
+      ? "tag-target"
+      : (rOut.status === "STOP_HIT" || String(rOut.status).includes("DEFERRED"))
+        ? "tag-stop"
+        : "tag-entry";
+    const oRet = rOut.realized_return_pct != null
+      ? `${rOut.realized_return_pct >= 0 ? "+" : ""}${rOut.realized_return_pct}%`
+      : rOut.counterfactual_return_pct != null
+        ? `CF ${rOut.counterfactual_return_pct >= 0 ? "+" : ""}${rOut.counterfactual_return_pct}%`
+        : `${(rOut.unrealized_return_pct || 0) >= 0 ? "+" : ""}${rOut.unrealized_return_pct || 0}%`;
+
+    return `
+      <tr class="${isSel ? "audit-row-selected" : ""}" data-audit-id="${escHtml(r.audit_id)}" style="cursor:pointer;">
+        <td style="font-family:var(--font-mono);font-size:11px;">${escHtml(r.market_date)}<br><span style="color:var(--text-muted);">${escHtml(r.audit_id.slice(-14))}</span></td>
+        <td style="font-family:var(--font-mono);font-weight:700;">${escHtml(r.symbol)}</td>
+        <td style="font-family:var(--font-mono);font-size:11px;">${rSc.fundamental_total}/${rSc.porters_total}/${rSc.technical_score}%</td>
+        <td style="font-family:var(--font-mono);font-size:11px;">${escHtml(rOrig.action)} → <strong>${escHtml(rFin.action)}</strong><br>${fmtCurrency(rOrig.entry, rCur, 2)} → ${fmtCurrency(rFin.entry, rCur, 2)}</td>
+        <td style="font-size:11px;color:var(--text-secondary);max-width:260px;">${escHtml((r.critical_review?.objections_raised || "").slice(0, 95))}${(r.critical_review?.objections_raised || "").length > 95 ? "…" : ""}</td>
+        <td><span class="tag-pill ${oTone}">${escHtml(rOut.status || "OPEN")}</span><div style="font-family:var(--font-mono);font-size:11px;margin-top:3px;">${escHtml(oRet)}</div></td>
+        <td style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);">${escHtml(rV.scoring_model || "")}<br>${escHtml(rV.critic_model || "none")}</td>
+      </tr>
+    `;
+  }).join("");
+
+  bodyEl.querySelectorAll("tr[data-audit-id]").forEach((tr) => {
+    tr.addEventListener("click", () => {
+      appState.selectedAuditId = tr.dataset.auditId;
+      renderAuditLedger();
+    });
+  });
+}
+
+function renderIntelligenceViews() {
+  const secProv = document.getElementById("intelSectionProvenance");
+  const secBt = document.getElementById("intelSectionBacktest");
+  const secAud = document.getElementById("intelSectionAudit");
+  const focus = appState.intelFocus || "all";
+  if (secProv) secProv.style.display = (focus === "all" || focus === "provenance") ? "flex" : "none";
+  if (secBt) secBt.style.display = (focus === "all" || focus === "backtest") ? "flex" : "none";
+  if (secAud) secAud.style.display = (focus === "all" || focus === "audit") ? "flex" : "none";
+
+  renderProvenanceMonitor();
+  renderBacktestAnalytics();
+  renderAuditLedger();
 }
 
 function renderChat() {
@@ -640,8 +1175,8 @@ function renderChat() {
   box.scrollTop = box.scrollHeight;
 }
 
-async function handleStockyQuery(rawText) {
-  const q = rawText.trim();
+async function handleStockyQuery(rawText = "") {
+  const q = String(rawText || "").trim();
   if (!q) return;
   appState.chatHistory.push({ role: "user", text: q });
   renderChat();
@@ -951,9 +1486,27 @@ function bootFinsistantApp() {
       document.getElementById(`panel-${btn.dataset.tab}`).classList.add("active");
       if (btn.dataset.tab === "mission") {
         drawUnifiedChart(appState.assets[appState.activeSymbol]);
+      } else if (btn.dataset.tab === "intelligence") {
+        requestAnimationFrame(() => drawBacktestEquityChart((appState.backtest || {}).equity_curve || []));
       }
     });
   });
+
+  document.querySelectorAll("#intelJumpRow [data-intel-focus]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      appState.intelFocus = btn.dataset.intelFocus || "all";
+      document.querySelectorAll("#intelJumpRow [data-intel-focus]").forEach((b) => {
+        b.classList.toggle("active-subfilter", b === btn);
+      });
+      renderIntelligenceViews();
+      requestAnimationFrame(() => drawBacktestEquityChart((appState.backtest || {}).equity_curve || []));
+    });
+  });
+
+  const auditSymF = document.getElementById("auditSymbolFilter");
+  const auditStF = document.getElementById("auditStatusFilter");
+  if (auditSymF) auditSymF.addEventListener("change", renderAuditLedger);
+  if (auditStF) auditStF.addEventListener("change", renderAuditLedger);
 
   document.getElementById("switchToStockSightBtn").addEventListener("click", () => {
     document.querySelector('[data-tab="stocksight"]').click();
@@ -1024,7 +1577,7 @@ function bootFinsistantApp() {
     }
   });
 
-  document.querySelectorAll(".prompt-chip").forEach((chip) => {
+  document.querySelectorAll(".prompt-chip[data-prompt]").forEach((chip) => {
     chip.addEventListener("click", () => handleStockyQuery(chip.dataset.prompt));
   });
 
@@ -1206,6 +1759,7 @@ function bootFinsistantApp() {
 
   window.addEventListener("resize", () => {
     drawUnifiedChart(appState.assets[appState.activeSymbol]);
+    drawBacktestEquityChart((appState.backtest || {}).equity_curve || []);
   });
 }
 
