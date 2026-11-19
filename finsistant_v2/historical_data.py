@@ -128,12 +128,10 @@ def _fetch_yahoo_chart_range(yahoo_sym: str, range_str: str = "5y") -> dict[str,
             invalid_bars += 1
             continue
 
-        # Scale O/H/L proportionally if adjusted close diverges cleanly from unadjusted close (splits/dividends)
+        # Scale O/H/L proportionally using continuous adjclose/close factor (splits + dividends, zero step cliff)
         c_f = float(c)
         adj_f = float(adj_list[i]) if i < len(adj_list) and adj_list[i] is not None and float(adj_list[i]) > 0 else c_f
-        adj_factor = adj_f / c_f if c_f > 0 else 1.0
-        # Only apply large split/bonus adjustment factors (> 2%) to preserve raw intraday stop realism
-        scale = adj_factor if abs(adj_factor - 1.0) > 0.02 else 1.0
+        scale = (adj_f / c_f) if c_f > 0 else 1.0
 
         vol_i = int(v or 0)
         if vol_i <= 0:
@@ -336,8 +334,8 @@ def load_or_build_expanded_dataset(
             "benchmark_end": bench_candles[-1]["date"] if bench_candles else None,
             "benchmark_bars": len(bench_candles),
             "survivorship_disclosure": (
-                "Includes 3 active distressed/insolvency-risk NSE listings (YESBANK, JETAIRWAYS, RCOM, ZEEL) "
-                "across the full 5-year history. Five purged/merged tickers (DHFL, RELCAPITAL, HDFC, MINDTREE, SINTEX) "
+                "Includes 3 distressed/delisted-risk controls (YESBANK, JETAIRWAYS, RCOM) plus 1 active distressed "
+                "asset (ZEEL) across the 5-year history. Five purged/merged tickers (DHFL, RELCAPITAL, HDFC, MINDTREE, SINTEX) "
                 "returned HTTP 404 from public Yahoo feeds and are explicitly flagged as unavailable rather than fabricated; "
                 "partial survivorship bias therefore remains for purged corporate entities."
             ),

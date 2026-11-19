@@ -11,3 +11,7 @@ token.txt
 *.db
 .DS_Store
 *.log
+data/*_cache.json*
+tmp/
+.pytest_cache/
+

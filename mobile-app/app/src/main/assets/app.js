@@ -320,6 +320,35 @@ function renderAllViews() {
     `;
   }
 
+  // Strictly enforce disabled execution & broker controls whenever local server.py is offline
+  const isOnline = Boolean(appState.backendConnected);
+  const offlineTitle = "Disabled: local laptop server (server.py) is offline. Cloud/static mode is read-only.";
+  const execSelBtn = document.getElementById("executeSelectedBtn");
+  const execAllBtn = document.getElementById("executeAllBtn");
+  const sellBtn = document.getElementById("sellWarnBtn");
+  const saveCfgBtn = document.getElementById("saveUnifiedConfigBtn");
+  const kiteExchBtn = document.getElementById("kiteExchangeTokenBtn");
+  if (execSelBtn) {
+    execSelBtn.disabled = !isOnline || buysQueue.length === 0;
+    execSelBtn.title = !isOnline ? offlineTitle : "Execute selected order on local server.py";
+  }
+  if (execAllBtn) {
+    execAllBtn.disabled = !isOnline || buysQueue.length === 0;
+    execAllBtn.title = !isOnline ? offlineTitle : "Execute all queued BUY orders on local server.py";
+  }
+  if (sellBtn) {
+    sellBtn.disabled = !isOnline;
+    sellBtn.title = !isOnline ? offlineTitle : "Execute sell exit on local server.py";
+  }
+  if (saveCfgBtn) {
+    saveCfgBtn.disabled = !isOnline;
+    saveCfgBtn.title = !isOnline ? offlineTitle : "Save runtime settings to local server.py";
+  }
+  if (kiteExchBtn) {
+    kiteExchBtn.disabled = !isOnline;
+    kiteExchBtn.title = !isOnline ? offlineTitle : "Exchange Zerodha request_token on local server.py";
+  }
+
   // Right Column Live Kite Holdings
   const miniBody = document.getElementById("miniHoldingsTableBody");
   miniBody.innerHTML = "";
@@ -1552,9 +1581,25 @@ function renderMoreshwarV21Dashboard() {
   const r21 = appState.moreshwarV21Research;
   if (!r21 || !r21.models) {
     bannerEl.className = "mv21-verdict-banner";
-    bannerEl.innerHTML = `<strong>Moreshwar 2.1 Report Pending:</strong> Run <code>scripts/run_moreshwar_v2_1_experiments.py</code> and regenerate <code>live_scan.json</code> to view 5Y statistical validation.`;
+    bannerEl.innerHTML = `<strong>Moreshwar 2.1 Report Pending / Unavailable:</strong> Run <code>scripts/run_moreshwar_v2_1_experiments.py</code> and regenerate <code>live_scan.json</code> to view 5Y statistical validation.`;
     kpiEl.innerHTML = "";
-    bmBody.innerHTML = "";
+    bmBody.innerHTML = `<tr><td colspan="14" style="text-align:center;color:var(--text-secondary);">No Moreshwar 2.1 benchmark report loaded.</td></tr>`;
+    if (wfBody) wfBody.innerHTML = "";
+    if (regBody) regBody.innerHTML = "";
+    if (prGrid) prGrid.innerHTML = "";
+    if (invEl) invEl.innerHTML = "";
+    if (dqEl) dqEl.innerHTML = "";
+    if (trBody) trBody.innerHTML = "";
+    const oosElEmpty = document.getElementById("mv21OosSummary");
+    if (oosElEmpty) oosElEmpty.innerHTML = "";
+    const mcStatsEmpty = document.getElementById("mv21MonteCarloStats");
+    if (mcStatsEmpty) mcStatsEmpty.innerHTML = "";
+    const promoEmpty = document.getElementById("mv21PromoBadge");
+    if (promoEmpty) promoEmpty.textContent = "REPORT UNAVAILABLE · M1.0 ACTIVE IN PROD";
+    requestAnimationFrame(() => {
+      drawMv21EquityChart(null);
+      drawMv21MonteCarloChart(null);
+    });
     return;
   }
 
@@ -1588,7 +1633,17 @@ function renderMoreshwarV21Dashboard() {
     selReg.value = appState.mv21Filters.regime || "ALL";
   }
 
-  // Verdict & promotion gate banner
+  // Verdict, promotion gate & staleness check
+  const ds = r21.dataset_summary || {};
+  const genMs = r21.generated_at ? Date.parse(r21.generated_at) : NaN;
+  const endMs = ds.end_date ? Date.parse(ds.end_date) : NaN;
+  const reportAgeDays = Number.isFinite(genMs) ? (Date.now() - genMs) / 86400000 : Infinity;
+  const dataAgeDays = Number.isFinite(endMs) ? (Date.now() - endMs) / 86400000 : Infinity;
+  const isStaleReport = Boolean(r21.is_stale) || reportAgeDays > 7 || dataAgeDays > 7;
+  const staleNote = isStaleReport
+    ? `⚠️ STALE REPORT WARNING: Report/dataset last updated ${Number.isFinite(reportAgeDays) ? `${Math.max(0, Math.floor(reportAgeDays))}d` : "unknown"} ago (${escHtml(r21.generated_at || ds.end_date || "unknown timestamp")}). Refresh via scripts/run_moreshwar_v2_1_experiments.py.`
+    : "";
+
   const dec = r21.final_decision || {};
   const catStr = dec.classification || "Unclassified";
   const isPositive = catStr.startsWith("3.") || catStr.startsWith("4.");
@@ -1602,8 +1657,12 @@ function renderMoreshwarV21Dashboard() {
   bannerEl.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
       <strong style="font-size:13px;">Final Research Classification: ${escHtml(catStr)}</strong>
-      <span class="tag-pill ${r21.promoted_to_production ? "tag-target" : "tag-stop"}">${r21.promoted_to_production ? "PROMOTED" : "NOT PROMOTED TO PRODUCTION · M1.0 ACTIVE"}</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        ${isStaleReport ? `<span class="tag-pill tag-score">STALE REPORT</span>` : ""}
+        <span class="tag-pill ${r21.promoted_to_production ? "tag-target" : "tag-stop"}">${r21.promoted_to_production ? "PROMOTED" : "NOT PROMOTED TO PRODUCTION · M1.0 ACTIVE"}</span>
+      </div>
     </div>
+    ${isStaleReport ? `<div style="margin-bottom:4px;color:var(--accent-amber);font-family:var(--font-mono);font-size:11px;">${staleNote}</div>` : ""}
     <div>${escHtml(dec.rationale || "")}</div>
     <div style="margin-top:4px;font-size:11px;color:var(--text-secondary);"><strong>Decision Rule:</strong> ${escHtml(ruleText)}</div>
     ${unresolvedList.length ? `<div style="margin-top:4px;font-size:11px;color:var(--text-muted);"><strong>Unresolved Risks:</strong> ${unresolvedList.map((u) => escHtml(u)).join(" · ")}</div>` : ""}
@@ -1611,11 +1670,12 @@ function renderMoreshwarV21Dashboard() {
 
   const promoBadge = document.getElementById("mv21PromoBadge");
   if (promoBadge) {
-    promoBadge.textContent = r21.promoted_to_production ? "M2.1 ACTIVE IN PROD" : "RESEARCH ONLY · M1.0 ACTIVE IN PROD";
+    promoBadge.textContent = r21.promoted_to_production
+      ? "M2.1 ACTIVE IN PROD"
+      : (isStaleReport ? "STALE RESEARCH · M1.0 ACTIVE" : "RESEARCH ONLY · M1.0 ACTIVE IN PROD");
   }
 
   // Subtitle & dynamic KPI summary (full model OR filtered Instrument / Sector / Regime cohort)
-  const ds = r21.dataset_summary || {};
   const fInst = appState.mv21Filters.instrument;
   const fSec = appState.mv21Filters.sector;
   const fReg = appState.mv21Filters.regime;
