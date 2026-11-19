@@ -179,7 +179,21 @@ def resolve_yahoo_symbol(symbol: str) -> tuple[str, str]:
     if "." in sym:
         ex = "NSE" if sym.endswith(".NS") else ("BSE" if sym.endswith(".BO") else "GLOBAL")
         return sym, ex
-    # Try NSE first, then raw symbol (e.g., US tickers like AAPL, MSFT)
+
+    try:
+        import yfinance as yf  # type: ignore
+
+        for candidate, ex in ((f"{sym}.NS", "NSE"), (sym, "GLOBAL")):
+            try:
+                hist = yf.Ticker(candidate).history(period="5d", interval="1d", auto_adjust=False)
+                if hist is not None and not hist.empty:
+                    return candidate, ex
+            except Exception:
+                continue
+    except ImportError:
+        pass
+
+    # Stdlib fallback: Try NSE first, then raw symbol (e.g., US tickers like AAPL, MSFT)
     for candidate, ex in ((f"{sym}.NS", "NSE"), (sym, "GLOBAL")):
         try:
             url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(candidate)}?range=5d&interval=1d"

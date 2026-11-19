@@ -650,6 +650,138 @@ async function executeQueueTrades(tradeIds) {
   }
 }
 
+const GH_OWNER = "Parth2004124";
+const GH_REPO = "Finsistant-version-2";
+const GH_WORKFLOW = "live-scan.yml";
+const GH_PAT_KEY = "finsistant_gh_pat";
+
+function getStoredGhPat() {
+  try {
+    return (window.localStorage.getItem(GH_PAT_KEY) || "").trim();
+  } catch (_) {
+    return "";
+  }
+}
+
+function updateCloudRunnerStatusUI(customMsg = null) {
+  const el = document.getElementById("ghCloudStatusText");
+  if (!el) return;
+  if (customMsg) {
+    el.textContent = customMsg;
+    return;
+  }
+  const hasPat = Boolean(getStoredGhPat());
+  el.textContent = hasPat
+    ? "GitHub Cloud Control Ready (Browser PAT active) · Scan Now & Add Asset run directly on GitHub Actions"
+    : "Automated 15m Mon–Fri GitHub Cloud Scans active · Save optional browser PAT below for 1-click on-demand scans";
+}
+
+async function fetchLatestCloudSnapshot(preferRaw = false) {
+  const candidates = preferRaw
+    ? [
+        `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/live_scan.json?ts=${Date.now()}`,
+        `live_scan.json?ts=${Date.now()}`
+      ]
+    : [`live_scan.json?ts=${Date.now()}`];
+
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) continue;
+      const payload = await res.json();
+      if (payload && payload.assets && Object.keys(payload.assets).length > 0) {
+        return payload;
+      }
+    } catch (_) {
+      continue;
+    }
+  }
+  throw new Error("live_scan.json unavailable");
+}
+
+async function triggerGitHubCloudWorkflow(inputs = {}, targetSymbol = null) {
+  const pat = getStoredGhPat();
+  if (!pat) return { dispatched: false, reason: "no_pat" };
+
+  const metaEl = document.getElementById("pipelineMetaText");
+  const prevGeneratedAt = appState.generatedAt;
+  const setStatus = (msg) => {
+    if (metaEl) metaEl.textContent = msg;
+    updateCloudRunnerStatusUI(msg);
+  };
+
+  setStatus("Dispatching Live Orchestration Scan on GitHub Cloud...");
+  const dispatchAt = Date.now();
+  const headers = {
+    Accept: "application/vnd.github+json",
+    Authorization: `Bearer ${pat}`,
+    "Content-Type": "application/json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+
+  const dispatchRes = await fetch(
+    `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}/dispatches`,
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ ref: "main", inputs })
+    }
+  );
+  if (!dispatchRes.ok) {
+    const errBody = await dispatchRes.json().catch(() => ({}));
+    throw new Error(errBody.message || `GitHub dispatch HTTP ${dispatchRes.status}`);
+  }
+
+  // Poll GitHub Actions run status for up to ~75 seconds
+  let runId = null;
+  for (let attempt = 0; attempt < 20; attempt++) {
+    await new Promise((r) => setTimeout(r, 3500));
+    const runsRes = await fetch(
+      `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}/runs?per_page=3`,
+      { headers, cache: "no-store" }
+    );
+    if (!runsRes.ok) continue;
+    const runsJson = await runsRes.json();
+    const recent = (runsJson.workflow_runs || []).find(
+      (r) => new Date(r.created_at).getTime() >= dispatchAt - 15000
+    ) || (runsJson.workflow_runs || [])[0];
+    if (!recent) continue;
+    runId = recent.id;
+
+    if (recent.status !== "completed") {
+      setStatus(`GitHub Cloud Scan #${runId}: ${recent.status.replace("_", " ")}...`);
+      continue;
+    }
+    if (recent.conclusion !== "success") {
+      throw new Error(`GitHub Cloud Scan #${runId} finished with status: ${recent.conclusion}`);
+    }
+
+    setStatus(`GitHub Cloud Scan #${runId} succeeded — loading fresh live data...`);
+    for (let p = 0; p < 4; p++) {
+      const fresh = await fetchLatestCloudSnapshot(true);
+      if (fresh.generated_at !== prevGeneratedAt || !targetSymbol || fresh.assets[targetSymbol]) {
+        appState.backendConnected = false;
+        applyPayload(fresh);
+        if (targetSymbol && fresh.assets[targetSymbol]) {
+          appState.activeSymbol = targetSymbol;
+        }
+        renderAllViews();
+        renderChat();
+        updateCloudRunnerStatusUI(`GitHub Cloud Scan #${runId} completed (${new Date(fresh.generated_at).toLocaleTimeString()})`);
+        return { dispatched: true, runId };
+      }
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+    break;
+  }
+
+  // Reload whatever latest snapshot is available
+  const latest = await fetchLatestCloudSnapshot(true);
+  applyPayload(latest);
+  renderAllViews();
+  return { dispatched: true, runId };
+}
+
 async function runLiveScan(isAuto = false) {
   const metaEl = document.getElementById("pipelineMetaText");
   if (metaEl) metaEl.textContent = isAuto ? "Running auto-scan on live market feed..." : "Refreshing live orchestration scan...";
@@ -677,14 +809,19 @@ async function runLiveScan(isAuto = false) {
     }
   }
 
-  // 2. Load cloud-generated live_scan.json (GitHub Actions + Yahoo Finance + 3-Agent Orchestrator)
-  try {
-    const res = await fetch(`live_scan.json?ts=${Date.now()}`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const payload = await res.json();
-    if (!payload.assets || Object.keys(payload.assets).length === 0) {
-      throw new Error("live_scan.json contained 0 live assets");
+  // 2. If user clicked Scan Now manually and has a browser GitHub PAT, trigger live cloud scan on GitHub Actions
+  if (!isAuto && getStoredGhPat()) {
+    try {
+      const res = await triggerGitHubCloudWorkflow({}, appState.activeSymbol);
+      if (res.dispatched) return;
+    } catch (err) {
+      updateCloudRunnerStatusUI(`Cloud dispatch error: ${err.message}`);
     }
+  }
+
+  // 3. Load cloud-generated live_scan.json (GitHub Actions + Yahoo Finance + Zerodha Kite + 3-Agent Orchestrator)
+  try {
+    const payload = await fetchLatestCloudSnapshot(!isAuto);
     appState.backendConnected = false;
     applyPayload(payload);
     renderAllViews();
@@ -697,6 +834,7 @@ async function runLiveScan(isAuto = false) {
 }
 
 function bootFinsistantApp() {
+  updateCloudRunnerStatusUI();
   runLiveScan(true);
 
   document.querySelectorAll(".nav-tab").forEach((btn) => {
@@ -755,8 +893,28 @@ function bootFinsistantApp() {
       appState.activeSymbol = sym;
       inp.value = "";
       renderAllViews();
+    } else if (getStoredGhPat()) {
+      try {
+        inp.disabled = true;
+        await triggerGitHubCloudWorkflow({ add_symbol: sym }, sym);
+        inp.value = "";
+      } catch (err) {
+        alert(`GitHub Cloud ticker scan failed for ${sym}: ${err.message}`);
+      } finally {
+        inp.disabled = false;
+      }
     } else {
-      alert(`'${sym}' is not in the latest cloud live_scan.json snapshot. Connect server.py for ad-hoc live ticker queries (simulated data is disabled).`);
+      const openActions = confirm(
+        `'${sym}' is not in the current cloud snapshot.\n\n` +
+        `Click OK to open GitHub Actions and run Live Orchestration Scan with add_symbol=${sym} (or save a fine-grained GitHub Actions PAT in Tab 3 for 1-click in-app scanning).`
+      );
+      if (openActions) {
+        window.open(
+          `https://github.com/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      }
     }
   });
 
@@ -806,8 +964,17 @@ function bootFinsistantApp() {
     autoLoginBtn.addEventListener("click", async () => {
       const statusEl = document.getElementById("kiteEngineStatusText");
       if (!appState.backendConnected) {
+        if (getStoredGhPat()) {
+          if (statusEl) statusEl.textContent = "Triggering GitHub Cloud Kite TOTP refresh...";
+          try {
+            await triggerGitHubCloudWorkflow({ refresh_kite: "true" }, appState.activeSymbol);
+          } catch (err) {
+            if (statusEl) statusEl.textContent = `Cloud Kite refresh failed: ${err.message}`;
+          }
+          return;
+        }
         if (statusEl) {
-          statusEl.textContent = "Cloud Mode: Add KITE_API_KEY, KITE_API_SECRET, KITE_USER_ID, KITE_PASSWORD, KITE_TOTP_SECRET to GitHub Repository Secrets for automated daily cloud login.";
+          statusEl.textContent = "GitHub Cloud TOTP is active on scheduled runs. Save a browser PAT below or open Actions to force an immediate refresh.";
         }
         return;
       }
@@ -853,7 +1020,7 @@ function bootFinsistantApp() {
         return;
       }
       if (!appState.backendConnected) {
-        if (statusEl) statusEl.textContent = "Connect Python backend (server.py) or configure GitHub Secrets for automated TOTP token exchange.";
+        if (statusEl) statusEl.textContent = "GitHub Cloud runs use automatic TOTP login (no manual request_token needed).";
         return;
       }
       const res = await fetch("/api/kite/exchange-token", {
@@ -873,6 +1040,58 @@ function bootFinsistantApp() {
         renderAllViews();
       } else if (statusEl) {
         statusEl.textContent = `Token exchange failed: ${data.error || res.status}`;
+      }
+    });
+  }
+
+  const savePatBtn = document.getElementById("saveGhPatBtn");
+  if (savePatBtn) {
+    savePatBtn.addEventListener("click", () => {
+      const val = (document.getElementById("ghCloudPatInput")?.value || "").trim();
+      if (!val) {
+        updateCloudRunnerStatusUI("Enter a GitHub fine-grained PAT (Actions: Read & Write) first.");
+        return;
+      }
+      try {
+        window.localStorage.setItem(GH_PAT_KEY, val);
+        document.getElementById("ghCloudPatInput").value = "";
+        updateCloudRunnerStatusUI("Browser GitHub PAT saved locally · 1-click cloud scans & Add Asset enabled");
+      } catch (err) {
+        updateCloudRunnerStatusUI(`Could not save PAT in localStorage: ${err.message}`);
+      }
+    });
+  }
+
+  const clearPatBtn = document.getElementById("clearGhPatBtn");
+  if (clearPatBtn) {
+    clearPatBtn.addEventListener("click", () => {
+      try {
+        window.localStorage.removeItem(GH_PAT_KEY);
+      } catch (_) {}
+      updateCloudRunnerStatusUI();
+    });
+  }
+
+  const triggerCloudBtn = document.getElementById("triggerCloudScanBtn");
+  if (triggerCloudBtn) {
+    triggerCloudBtn.addEventListener("click", async () => {
+      if (appState.backendConnected) {
+        runLiveScan(false);
+        return;
+      }
+      if (!getStoredGhPat()) {
+        window.open(
+          `https://github.com/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+        updateCloudRunnerStatusUI("Opened GitHub Actions workflow page (save a browser PAT above to run silently in-app).");
+        return;
+      }
+      try {
+        await triggerGitHubCloudWorkflow({}, appState.activeSymbol);
+      } catch (err) {
+        updateCloudRunnerStatusUI(`Cloud scan error: ${err.message}`);
       }
     });
   }

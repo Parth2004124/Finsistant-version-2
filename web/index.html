@@ -340,6 +340,24 @@
             </div>
           </div>
 
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">GitHub Serverless Cloud Runner (Zero Laptop / Zero 3rd-Party)</div>
+                <div class="panel-subtitle" id="ghCloudStatusText">Automated 15m Mon–Fri scans active · Optional browser-only PAT enables 1-click on-demand scans</div>
+              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn-primary" id="triggerCloudScanBtn">Trigger Cloud Scan</button>
+                <a href="https://github.com/Parth2004124/Finsistant-version-2/actions/workflows/live-scan.yml" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center;">Open Actions</a>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <input type="password" id="ghCloudPatInput" class="input-field" placeholder="Optional fine-grained PAT (Actions: write on Finsistant-version-2, stored in browser only)" style="flex: 1; min-width: 220px;" />
+              <button type="button" class="btn-secondary" id="saveGhPatBtn">Save Browser Token</button>
+              <button type="button" class="btn-secondary" id="clearGhPatBtn">Clear</button>
+            </div>
+          </div>
+
           <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
             <div class="panel-title" style="margin-bottom: 8px;">Finsistant Auto-Execution Rule Sets</div>
             <div id="autoRulesList" style="display: flex; flex-direction: column; gap: 6px;"></div>

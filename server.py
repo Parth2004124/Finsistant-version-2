@@ -62,7 +62,18 @@ KITE_STATUS: str = "0 holdings (Kite access token not configured)"
 LAST_SCAN_AT: str = ""
 
 
-def _initialize_platform_state(force_refresh: bool = False) -> None:
+def _load_extra_watchlist_symbols() -> list[str]:
+    cfg_path = BASE_DIR / "watchlist_config.json"
+    if not cfg_path.exists():
+        return []
+    try:
+        data = json.loads(cfg_path.read_text(encoding="utf-8"))
+        return [str(s).upper().strip() for s in (data.get("extra_symbols") or []) if str(s).strip()]
+    except Exception:
+        return []
+
+
+def _initialize_platform_state(force_refresh: bool = False, force_token_refresh: bool = False) -> None:
     """Seed watchlist from live Yahoo Finance and load real Zerodha Kite holdings (0 if none)."""
     global CASH_BALANCE, KITE_STATUS
     PORTFOLIO_STATE.clear()
@@ -70,12 +81,13 @@ def _initialize_platform_state(force_refresh: bool = False) -> None:
     PIPELINE_CACHE.clear()
     TRADE_QUEUE.clear()
 
-    kite_data = fetch_kite_portfolio()
+    kite_data = fetch_kite_portfolio(force_token_refresh=force_token_refresh)
     KITE_STATUS = kite_data["status"]
     CASH_BALANCE = float(kite_data.get("cash_balance", 0.0))
     kite_holdings_map = {h["symbol"]: h for h in kite_data.get("holdings", [])}
 
-    symbols = list(dict.fromkeys(list(ASSET_UNIVERSE.keys()) + list(kite_holdings_map.keys())))
+    extra_symbols = _load_extra_watchlist_symbols()
+    symbols = list(dict.fromkeys(list(ASSET_UNIVERSE.keys()) + extra_symbols + list(kite_holdings_map.keys())))
     for sym in symbols:
         kh = kite_holdings_map.get(sym)
         qty = int(kh["qty"]) if kh else 0
