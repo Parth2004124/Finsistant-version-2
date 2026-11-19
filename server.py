@@ -229,9 +229,21 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
         m = snap["moreshwar_levels"]
         dec = snap["decision_matrix"]
 
+        sip_qualified = (
+            dec["action"] == "SIP ONLY"
+            and f_tot >= 70
+            and p_tot >= 70
+            and float(snap.get("price") or 0.0) >= float(snap.get("sma_20") or 0.0)
+            and snap.get("regression_curve") == "Upward Curve"
+        )
         if dec["action"] in ("EXIT", "REDUCE") and is_held:
             tx_type = "SELL"
-        elif dec["action"] in ("BUY NOW", "ADD", "SIP ONLY") or f_tot >= 65:
+        elif (
+            (dec["action"] in ("BUY NOW", "ADD") or sip_qualified)
+            and run.final_action == "BUY"
+            and float(m.get("rr_ratio") or 0.0) >= 1.5
+            and run.conviction_score >= 0.65
+        ):
             tx_type = "BUY"
         else:
             continue

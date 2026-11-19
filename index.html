@@ -491,6 +491,19 @@
 
         <div class="kpi-strip-grid" id="btBenchmarkKpis"></div>
 
+        <div class="terminal-box" id="btSelectivityBanner" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center;"></div>
+
+        <div class="panel" id="btDecisionQualityPanel" style="background: var(--bg-base); border-color: var(--border-strong);">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">Decision Quality Verdict — 3 Empirical Questions</div>
+              <div class="panel-subtitle" id="btDqSubtitle">Leave-one-out agent ablation · Gemini CRO 2×2 intervention audit · Moreshwar vs Simple Benchmarks</div>
+            </div>
+            <span class="tag-pill tag-score" id="btLiveSamplePill">LIVE LEDGER: 0 / 30 SETTLED</span>
+          </div>
+          <div class="dq-verdict-grid" id="btDecisionQualityGrid"></div>
+        </div>
+
         <div class="two-col-grid">
           <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
             <div class="panel-header">

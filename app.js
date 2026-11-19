@@ -910,6 +910,131 @@ function renderBacktestAnalytics() {
     </div>
   `;
 
+  const selM = bt.selectivity_metrics || {};
+  const dqa = bt.decision_quality_answers || {};
+  const sampleCtx = dqa.sample_context || {};
+  const selBannerEl = document.getElementById("btSelectivityBanner");
+  if (selBannerEl) {
+    selBannerEl.innerHTML = `
+      <div>
+        <strong style="color:var(--accent-cyan);">Quality Selectivity Gate:</strong>
+        Filtered <strong>${selM.noise_reduction_pct ?? 0}%</strong> noisy candidates (${selM.noisy_candidates_filtered ?? 0} of ${selM.unfiltered_candidate_windows ?? 0} rejected pre-CRO · ${selM.quality_gated_signals ?? 0} strict setups → ${selM.recalibrated_active_signals ?? 0} post-CRO active)
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">
+        Live Forward Ledger: <strong>${sampleCtx.settled_records ?? 0}/${sampleCtx.min_recommended_settled ?? 30}</strong> settled (${sampleCtx.open_records ?? 0} awaiting T+1..T+14)
+      </div>
+    `;
+  }
+
+  const livePillEl = document.getElementById("btLiveSamplePill");
+  if (livePillEl) {
+    const sCount = sampleCtx.settled_records ?? 0;
+    const minReq = sampleCtx.min_recommended_settled ?? 30;
+    livePillEl.textContent = sampleCtx.sufficient_live_sample
+      ? `LIVE LEDGER: ${sCount} SETTLED (STATISTICALLY ACTIVE)`
+      : `LIVE LEDGER: ${sCount} / ${minReq} SETTLED · 1Y WALK-FORWARD ACTIVE`;
+    livePillEl.className = `tag-pill ${sampleCtx.sufficient_live_sample ? "tag-target" : "tag-score"}`;
+  }
+
+  const dqGridEl = document.getElementById("btDecisionQualityGrid");
+  if (dqGridEl) {
+    const q1 = dqa.top_contributing_agent || {};
+    const q2 = dqa.gemini_intervention_audit || {};
+    const q3 = dqa.moreshwar_vs_benchmarks || {};
+    const q2Blk = q2.blocks || {};
+    const q2Down = q2.downgrades || {};
+    const q2Comb = q2.combined_scorecard || {};
+    const q2Live = q2.live_ledger_audit || {};
+    const q1Rank = Array.isArray(q1.ranking) ? q1.ranking : [];
+    const q3Rows = Array.isArray(q3.rows) ? q3.rows : [];
+    const mVerdict = String(q3.verdict || "UNDERPERFORMS BENCHMARKS");
+    const mTone = mVerdict.includes("OUTPERFORMS ALL") ? "tag-target" : mVerdict.includes("OUTPERFORMS") || mVerdict.includes("MIXED") ? "tag-score" : "tag-stop";
+
+    dqGridEl.innerHTML = `
+      <div class="dq-card" style="border-top:2px solid var(--accent-cyan);">
+        <div class="dq-card-head">
+          <span class="dq-q-title">Q1. TOP PROFIT AGENT</span>
+          <span class="tag-pill tag-target">#1 ${escHtml(q1.winner || "--")}</span>
+        </div>
+        <div class="dq-headline">${escHtml(q1.summary || "Computing agent ablation ranking...")}</div>
+        <div class="table-scroll">
+          <table class="data-table dq-compact-table">
+            <thead>
+              <tr><th>#</th><th>Agent</th><th>Cum Lift</th><th>DD Saved</th><th>Verdict</th></tr>
+            </thead>
+            <tbody>
+              ${q1Rank.map((r) => `
+                <tr>
+                  <td style="font-family:var(--font-mono);font-weight:700;">#${r.rank}</td>
+                  <td style="font-family:var(--font-mono);font-weight:700;">${escHtml(r.agent)}</td>
+                  <td style="font-family:var(--font-mono);color:${r.cum_return_lift_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${r.cum_return_lift_pct >= 0 ? "+" : ""}${r.cum_return_lift_pct}%</td>
+                  <td style="font-family:var(--font-mono);color:${r.drawdown_saved_pct >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${r.drawdown_saved_pct >= 0 ? "+" : ""}${r.drawdown_saved_pct}%</td>
+                  <td style="font-size:10px;color:${String(r.verdict).includes("POSITIVE") ? "var(--accent-emerald)" : "var(--accent-amber)"};">${escHtml(r.verdict)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dq-card" style="border-top:2px solid var(--accent-amber);">
+        <div class="dq-card-head">
+          <span class="dq-q-title">Q2. GEMINI CRO AUDIT</span>
+          <span class="tag-pill tag-entry">${q2Comb.prevention_rate_pct ?? 0}% PREVENTED</span>
+        </div>
+        <div class="dq-headline">${escHtml(q2Comb.headline || "Tracking CRO blocks vs downgrades.")}</div>
+        <div class="dq-mini-grid">
+          <div class="dq-mini-stat">
+            <div class="dq-mini-lbl">Bad Trades Prevented</div>
+            <div class="dq-mini-val" style="color:var(--accent-emerald);">${q2Comb.bad_trades_prevented ?? 0} / ${q2.total_interventions ?? 0}</div>
+            <div class="dq-mini-sub">Blk ${q2Blk.prevented_bad_trades ?? 0} (avg -${q2Blk.avg_loss_avoided_pct ?? 0}%) + Down ${q2Down.beneficial_downgrades ?? 0}</div>
+          </div>
+          <div class="dq-mini-stat">
+            <div class="dq-mini-lbl">Unnecessary Downgrades</div>
+            <div class="dq-mini-val" style="color:var(--accent-crimson);">${q2Comb.good_trades_unnecessarily_downgraded ?? 0} / ${q2.total_interventions ?? 0}</div>
+            <div class="dq-mini-sub">Missed Blk ${q2Blk.unnecessarily_blocked_good_trades ?? 0} (+${q2Blk.avg_upside_missed_pct ?? 0}%) + Down ${q2Down.unnecessary_downgrades ?? 0}</div>
+          </div>
+          <div class="dq-mini-stat">
+            <div class="dq-mini-lbl">Net CRO Value Added</div>
+            <div class="dq-mini-val" style="color:${(q2Comb.net_intervention_value_pct || 0) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${(q2Comb.net_intervention_value_pct || 0) >= 0 ? "+" : ""}${q2Comb.net_intervention_value_pct ?? 0}%</div>
+            <div class="dq-mini-sub">Preserved ${q2Down.preserved_winners ?? 0} · Unfilled ${q2Down.unfilled_pullbacks ?? 0}</div>
+          </div>
+          <div class="dq-mini-stat">
+            <div class="dq-mini-lbl">Live Ledger Audit</div>
+            <div class="dq-mini-val" style="color:var(--accent-cyan);">${q2Live.settled_interventions ?? 0} Settled</div>
+            <div class="dq-mini-sub">${q2Live.open_awaiting_settlement ?? 0} awaiting T+1..T+14</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dq-card" style="border-top:2px solid var(--accent-crimson);">
+        <div class="dq-card-head">
+          <span class="dq-q-title">Q3. MORESHWAR VS BENCHMARKS</span>
+          <span class="tag-pill ${mTone}">${escHtml(mVerdict)}</span>
+        </div>
+        <div class="dq-headline">${escHtml(q3.diagnostic || "")}</div>
+        <div class="table-scroll">
+          <table class="data-table dq-compact-table">
+            <thead>
+              <tr><th>Strategy</th><th>Sig</th><th>Win%</th><th>Cum%</th><th>DD%</th></tr>
+            </thead>
+            <tbody>
+              ${q3Rows.map((r) => `
+                <tr>
+                  <td style="font-size:10px;font-weight:${String(r.strategy).includes("Moreshwar") ? "700" : "500"};">${escHtml(r.strategy)}</td>
+                  <td style="font-family:var(--font-mono);">${r.signals ?? 0}</td>
+                  <td style="font-family:var(--font-mono);">${r.win_rate_pct ?? "--"}%</td>
+                  <td style="font-family:var(--font-mono);font-weight:700;color:${(r.cumulative_return_pct || 0) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${(r.cumulative_return_pct || 0) >= 0 ? "+" : ""}${r.cumulative_return_pct ?? 0}%</td>
+                  <td style="font-family:var(--font-mono);">${r.max_drawdown_pct != null ? `${r.max_drawdown_pct}%` : "--"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
   const rows = [
     ["Total Signals", trOrig.total_signals, trRecal.total_signals, trAct.total_signals],
     ["Winners / Losers", `${trOrig.winners || 0} / ${trOrig.losers || 0}`, `${trRecal.winners || 0} / ${trRecal.losers || 0}`, `${trAct.winners || 0} / ${trAct.losers || 0}`],
@@ -996,8 +1121,9 @@ function renderAuditLedger() {
 
   const trail = appState.auditTrail;
   const records = (trail && Array.isArray(trail.records)) ? trail.records : [];
+  const acc = trail?.accumulation_summary || {};
   if (subEl) {
-    subEl.textContent = `${records.length} Permanent Decisions Recorded · Updated ${fmtTsShort(trail?.updated_at)} · Click any row for 4-stage inspection`;
+    subEl.textContent = `${records.length} Permanent Decisions · ${acc.settled_count ?? 0}/${acc.min_recommended_settled ?? 30} Settled (${acc.open_count ?? records.length} open monitoring) · Updated ${fmtTsShort(trail?.updated_at)}`;
   }
 
   // Sync symbol filter options without losing selection
@@ -1101,6 +1227,7 @@ function renderAuditLedger() {
       </div>
       <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);">
         MFE: +${out.mfe_pct ?? 0}% · MAE: ${out.mae_pct ?? 0}% · Hold: ${out.holding_days ?? 0}d<br>
+        CRO Verdict: <strong>${escHtml(out.cro_verdict || "PENDING_FORWARD_BARS")}</strong>${out.original_counterfactual_pct != null ? ` (Orig CF: ${out.original_counterfactual_pct >= 0 ? "+" : ""}${out.original_counterfactual_pct}%)` : ""}<br>
         Broker: ${out.broker_executed ? `Fill ${fmtCurrency(out.broker_fill_price, cur, 2)} (${escHtml(out.order_id)})` : "Not Executed (Analytical Audit)"}
       </div>
       <div style="font-size:10.5px;color:var(--text-muted);">

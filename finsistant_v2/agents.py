@@ -218,13 +218,17 @@ class ExecutionAgent(BaseTradingAgent):
         notional = round(qty * price, 2)
 
         matrix_action = decision["action"]
+        price_above_sma = price >= float(snap.get("sma_20") or price)
+        rr_ok = float(moreshwar.get("rr_ratio") or 0.0) >= 1.5
+        sip_aligned = matrix_action == "SIP ONLY" and conviction >= 0.72 and price_above_sma
+
         if active_trades >= max_trades and matrix_action in ("BUY NOW", "ADD", "SIP ONLY"):
             action = "HOLD"
             signal = "REJECTED"
             qty = 0
             notional = 0.0
             reason = f"Guardrail triggered: Open trades ({active_trades}) reached MAX_CONCURRENT_TRADES ({max_trades})."
-        elif matrix_action in ("BUY NOW", "ADD", "SIP ONLY") or conviction >= 0.62:
+        elif (matrix_action in ("BUY NOW", "ADD") or sip_aligned) and rr_ok and conviction >= 0.60:
             action = "BUY"
             signal = "APPROVED"
             reason = (
@@ -241,10 +245,13 @@ class ExecutionAgent(BaseTradingAgent):
             )
         else:
             action = "HOLD"
-            signal = "NEUTRAL"
+            signal = "FILTERED" if matrix_action in ("BUY NOW", "ADD", "SIP ONLY") else "NEUTRAL"
             qty = 0
             notional = 0.0
-            reason = f"Decision Matrix: {matrix_action}. {decision['rationale']}"
+            reason = (
+                f"Quality Gate Hold ({matrix_action}, Conv {conviction*100:.1f}%, R:R 1:{moreshwar['rr_ratio']}): "
+                f"{decision.get('rationale', '')}"
+            )
 
         receipt = {
             "order_id": f"fnv2-ord-{int(time.time() * 1000) % 1000000:06d}",

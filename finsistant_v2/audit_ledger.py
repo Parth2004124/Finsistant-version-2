@@ -225,87 +225,154 @@ def _build_record(
     }
 
 
+def _eval_plan_forward(
+    fwd_bars: list[dict[str, Any]],
+    entry_ref: float,
+    tp: float,
+    sl: float,
+    weight: float = 1.0,
+) -> tuple[str, float, float, float, int]:
+    """Deterministically evaluate a decision plan over up to 14 forward daily bars."""
+    if not fwd_bars or entry_ref <= 0:
+        return "OPEN", 0.0, 0.0, 0.0, 0
+    mfe = 0.0
+    mae = 0.0
+    for idx, bar in enumerate(fwd_bars[:14]):
+        hi = float(bar.get("high") or bar.get("close") or entry_ref)
+        lo = float(bar.get("low") or bar.get("close") or entry_ref)
+        mfe = max(mfe, round(((hi - entry_ref) / entry_ref) * 100.0, 2))
+        mae = min(mae, round(((lo - entry_ref) / entry_ref) * 100.0, 2))
+        if sl > 0 and lo <= sl:
+            ret = round((((sl - entry_ref) / entry_ref) * 100.0 - 0.35) * weight, 2)
+            return "STOP_HIT", ret, mfe, mae, idx + 1
+        if tp > 0 and hi >= tp:
+            ret = round((((tp - entry_ref) / entry_ref) * 100.0 - 0.35) * weight, 2)
+            return "TARGET_HIT", ret, mfe, mae, idx + 1
+    last_bar = fwd_bars[min(13, len(fwd_bars) - 1)]
+    cl = float(last_bar.get("close") or entry_ref)
+    raw_ret = ((cl - entry_ref) / entry_ref) * 100.0
+    if len(fwd_bars) >= 14:
+        return "HORIZON_CLOSED", round((raw_ret - 0.35) * weight, 2), mfe, mae, 14
+    return "OPEN", round(raw_ret * weight, 2), mfe, mae, len(fwd_bars)
+
+
+def _classify_cro_verdict(
+    recal_applied: bool,
+    is_deferred: bool,
+    settled: bool,
+    orig_ret: float | None,
+    final_ret: float | None,
+) -> str:
+    if not recal_applied:
+        return "NO_INTERVENTION"
+    if not settled or orig_ret is None:
+        return "PENDING_FORWARD_BARS"
+    if is_deferred:
+        return "PREVENTED_BAD_TRADE" if orig_ret < 0 else "UNNECESSARY_BLOCK"
+    f_val = float(final_ret if final_ret is not None else orig_ret)
+    if orig_ret < 0 and f_val > orig_ret + 0.05:
+        return "PREVENTED_BAD_TRADE"
+    if orig_ret >= 0 and f_val < orig_ret - 0.05:
+        return "UNNECESSARY_DOWNGRADE"
+    if orig_ret >= 0 and f_val >= orig_ret - 0.05:
+        return "PRESERVED_OR_IMPROVED_WINNER"
+    if f_val > orig_ret + 0.05:
+        return "BENEFICIAL_DOWNGRADE"
+    return "NEUTRAL_OR_TIGHTENED"
+
+
 def _update_outcome_from_bars(rec: dict[str, Any], analysis: dict[str, Any]) -> None:
-    """Update historical audit record outcome deterministically from subsequent real daily bars."""
+    """Update historical audit record outcome & CRO counterfactuals deterministically from real daily bars."""
     candles = analysis.get("candles") or []
     rec_date = str(rec.get("market_date") or "")
     out = rec.get("outcome") or {}
+    orig_d = rec.get("original_decision") or {}
     final_d = rec.get("final_decision") or {}
+    deltas = rec.get("recalibration_deltas") or {}
     spot_now = float(analysis.get("price") or 0.0)
     last_bar_date = str(analysis.get("last_candle_date") or (candles[-1]["date"] if candles else rec_date))
 
-    if out.get("status") in ("TARGET_HIT", "STOP_HIT", "HORIZON_CLOSED") and out.get("realized_return_pct") is not None:
+    if out.get("status") in ("TARGET_HIT", "STOP_HIT", "HORIZON_CLOSED") and out.get("realized_return_pct") is not None and out.get("cro_verdict"):
         return
 
     entry_ref = float(out.get("broker_fill_price") or final_d.get("entry") or rec.get("market_snapshot", {}).get("spot_price") or 0.0)
     if entry_ref <= 0:
         return
 
+    orig_entry = float(orig_d.get("entry") or rec.get("market_snapshot", {}).get("spot_price") or entry_ref)
+    orig_tp = float(orig_d.get("target") or 0.0)
+    orig_sl = float(orig_d.get("stop_loss") or 0.0)
+    orig_qty = max(1, int(orig_d.get("qty") or 1))
+    fin_qty = int(final_d.get("qty") if final_d.get("qty") is not None else orig_qty)
+    size_weight = min(1.25, max(0.0, fin_qty / orig_qty)) if deltas.get("applied") else 1.0
+
     fwd_bars = [c for c in candles if str(c.get("date", "")) > rec_date]
     now_iso = datetime.now(timezone.utc).isoformat()
+    is_deferred = final_d.get("status") == "DEFERRED" or "AVOID" in str(final_d.get("action", "")).upper()
+
     if not fwd_bars:
         if spot_now > 0:
             pct = round(((spot_now - entry_ref) / entry_ref) * 100.0, 2)
+            orig_pct = round(((spot_now - orig_entry) / max(1e-6, orig_entry)) * 100.0, 2)
             out["latest_mark_price"] = spot_now
             out["mark_date"] = last_bar_date
-            if final_d.get("status") == "DEFERRED":
-                out["counterfactual_return_pct"] = pct
+            out["original_counterfactual_pct"] = orig_pct
+            out["original_counterfactual_status"] = "OPEN"
+            if is_deferred:
+                out["counterfactual_return_pct"] = orig_pct
             else:
                 out["unrealized_return_pct"] = pct
+            out["cro_verdict"] = _classify_cro_verdict(bool(deltas.get("applied")), is_deferred, False, orig_pct, pct)
             out["marked_at"] = now_iso
+        rec["outcome"] = out
+        return
+
+    orig_status, orig_ret, _, _, _ = _eval_plan_forward(fwd_bars, orig_entry, orig_tp, orig_sl, weight=1.0)
+    out["original_counterfactual_status"] = orig_status
+    out["original_counterfactual_pct"] = orig_ret
+    orig_settled = orig_status in ("TARGET_HIT", "STOP_HIT", "HORIZON_CLOSED")
+
+    if is_deferred:
+        last_idx_d = min(13, len(fwd_bars) - 1)
+        latest_c = float(fwd_bars[last_idx_d]["close"])
+        mark_dt = fwd_bars[last_idx_d]["date"]
+        out["latest_mark_price"] = latest_c
+        out["mark_date"] = mark_dt
+        out["holding_days"] = min(14, len(fwd_bars))
+        out["counterfactual_return_pct"] = orig_ret
+        out["status"] = "DEFERRED_COUNTERFACTUAL" if orig_settled else "DEFERRED_MONITORED"
+        out["cro_verdict"] = _classify_cro_verdict(True, True, orig_settled, orig_ret, 0.0)
+        out["marked_at"] = now_iso
         rec["outcome"] = out
         return
 
     tp = float(final_d.get("target") or 0.0)
     sl = float(final_d.get("stop_loss") or 0.0)
-    mfe = float(out.get("mfe_pct") or 0.0)
-    mae = float(out.get("mae_pct") or 0.0)
+    fin_status, fin_ret, mfe, mae, hold_days = _eval_plan_forward(fwd_bars, entry_ref, tp, sl, weight=1.0)
+    weighted_fin_ret = round(fin_ret * size_weight, 2)
 
-    is_deferred = final_d.get("status") == "DEFERRED" or "AVOID" in str(final_d.get("action", "")).upper()
-    if is_deferred:
-        latest_c = float(fwd_bars[-1]["close"])
-        out["latest_mark_price"] = latest_c
-        out["mark_date"] = fwd_bars[-1]["date"]
-        out["holding_days"] = len(fwd_bars)
-        out["counterfactual_return_pct"] = round(((latest_c - entry_ref) / entry_ref) * 100.0, 2)
-        out["status"] = "DEFERRED_COUNTERFACTUAL"
-        out["marked_at"] = now_iso
-        rec["outcome"] = out
-        return
+    last_idx = min(max(0, hold_days - 1), len(fwd_bars) - 1)
+    out["mfe_pct"] = max(float(out.get("mfe_pct") or 0.0), mfe)
+    out["mae_pct"] = min(float(out.get("mae_pct") or 0.0), mae)
+    out["holding_days"] = hold_days
+    out["latest_mark_price"] = float(fwd_bars[last_idx].get("close") or entry_ref)
+    out["mark_date"] = fwd_bars[last_idx]["date"]
 
-    for idx, bar in enumerate(fwd_bars[:14]):
-        hi = float(bar.get("high") or bar.get("close") or entry_ref)
-        lo = float(bar.get("low") or bar.get("close") or entry_ref)
-        cl = float(bar.get("close") or entry_ref)
-        mfe = max(mfe, round(((hi - entry_ref) / entry_ref) * 100.0, 2))
-        mae = min(mae, round(((lo - entry_ref) / entry_ref) * 100.0, 2))
-        out["mfe_pct"] = mfe
-        out["mae_pct"] = mae
-        out["holding_days"] = idx + 1
-        out["latest_mark_price"] = cl
-        out["mark_date"] = bar["date"]
-
-        if sl > 0 and lo <= sl:
-            out["status"] = "STOP_HIT"
-            out["realized_return_pct"] = round(((sl - entry_ref) / entry_ref) * 100.0 - 0.35, 2)
-            out["marked_at"] = now_iso
-            rec["outcome"] = out
-            return
-        if tp > 0 and hi >= tp:
-            out["status"] = "TARGET_HIT"
-            out["realized_return_pct"] = round(((tp - entry_ref) / entry_ref) * 100.0 - 0.35, 2)
-            out["marked_at"] = now_iso
-            rec["outcome"] = out
-            return
-
-    latest_c = float(fwd_bars[min(13, len(fwd_bars) - 1)]["close"])
-    pct = round(((latest_c - entry_ref) / entry_ref) * 100.0, 2)
-    out["unrealized_return_pct"] = pct
-    if len(fwd_bars) >= 14:
-        out["status"] = "HORIZON_CLOSED"
-        out["realized_return_pct"] = round(pct - 0.35, 2)
+    fin_settled = fin_status in ("TARGET_HIT", "STOP_HIT", "HORIZON_CLOSED")
+    if fin_settled:
+        out["status"] = fin_status
+        out["realized_return_pct"] = fin_ret
     else:
+        out["unrealized_return_pct"] = fin_ret
         out["status"] = "BROKER_EXECUTED" if out.get("broker_executed") else "OPEN"
+
+    out["cro_verdict"] = _classify_cro_verdict(
+        bool(deltas.get("applied")),
+        False,
+        fin_settled and orig_settled,
+        orig_ret,
+        weighted_fin_ret,
+    )
     out["marked_at"] = now_iso
     rec["outcome"] = out
 
@@ -394,13 +461,61 @@ def record_broker_execution(
     return ledger
 
 
+def summarize_live_ledger_quality(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Summarize real forward-accumulated ledger settlements & live CRO confusion outcomes."""
+    settled = [
+        r for r in records
+        if (r.get("outcome") or {}).get("status") in ("TARGET_HIT", "STOP_HIT", "HORIZON_CLOSED", "DEFERRED_COUNTERFACTUAL")
+    ]
+    verdict_counts: dict[str, int] = {
+        "PREVENTED_BAD_TRADE": 0,
+        "BENEFICIAL_DOWNGRADE": 0,
+        "PRESERVED_OR_IMPROVED_WINNER": 0,
+        "UNNECESSARY_DOWNGRADE": 0,
+        "UNNECESSARY_BLOCK": 0,
+        "PENDING_FORWARD_BARS": 0,
+    }
+    for r in records:
+        v = str((r.get("outcome") or {}).get("cro_verdict") or "PENDING_FORWARD_BARS")
+        if v in verdict_counts:
+            verdict_counts[v] += 1
+
+    distinct_dates = sorted({str(r.get("market_date", "")) for r in records if r.get("market_date")})
+    settled_cro_total = (
+        verdict_counts["PREVENTED_BAD_TRADE"]
+        + verdict_counts["BENEFICIAL_DOWNGRADE"]
+        + verdict_counts["PRESERVED_OR_IMPROVED_WINNER"]
+        + verdict_counts["UNNECESSARY_DOWNGRADE"]
+        + verdict_counts["UNNECESSARY_BLOCK"]
+    )
+    prevented_total = verdict_counts["PREVENTED_BAD_TRADE"] + verdict_counts["BENEFICIAL_DOWNGRADE"]
+    unnecessary_total = verdict_counts["UNNECESSARY_DOWNGRADE"] + verdict_counts["UNNECESSARY_BLOCK"]
+
+    return {
+        "total_records": len(records),
+        "distinct_market_dates": len(distinct_dates),
+        "date_span": [distinct_dates[0], distinct_dates[-1]] if distinct_dates else [],
+        "settled_count": len(settled),
+        "open_count": len(records) - len(settled),
+        "min_recommended_settled": 30,
+        "sufficient_live_sample": len(settled) >= 30,
+        "cro_settled_interventions": settled_cro_total,
+        "cro_prevented_bad_trades": prevented_total,
+        "cro_unnecessary_downgrades": unnecessary_total,
+        "cro_preserved_winners": verdict_counts["PRESERVED_OR_IMPROVED_WINNER"],
+        "verdict_breakdown": verdict_counts,
+    }
+
+
 def build_audit_dashboard_view(ledger: dict[str, Any], limit: int = 80) -> dict[str, Any]:
     """Build compact, UI-ready audit ledger view for Web, Mobile APK, and /api/audit."""
-    records = (ledger.get("records") or [])[:limit]
+    all_records = ledger.get("records") or []
+    records = all_records[:limit]
     return {
         "updated_at": ledger.get("updated_at"),
-        "total_records": len(ledger.get("records") or []),
+        "total_records": len(all_records),
         "last_market_timestamp": records[0].get("market_timestamp") if records else None,
         "engine_versions": ENGINE_VERSIONS,
+        "accumulation_summary": summarize_live_ledger_quality(all_records),
         "records": records,
     }
