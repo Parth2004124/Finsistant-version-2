@@ -566,9 +566,25 @@ function handleStockyQuery(rawText) {
   renderChat();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  initFallbackUniverse();
+function runUniverseScan(isAuto = false) {
+  Object.keys(appState.assets).forEach((sym) => {
+    appState.assets[sym] = computeAssetModel(sym, appState.assets[sym]);
+  });
   renderAllViews();
+
+  const assetsList = Object.values(appState.assets);
+  const buysCount = assetsList.filter((a) => a.fScore.total >= 65).length;
+  const sellsCount = assetsList.filter((a) => a.qty > 0 && a.fScore.total <= 45).length;
+  const stamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const metaEl = document.getElementById("pipelineMetaText");
+  if (metaEl) {
+    metaEl.textContent = `${isAuto ? "Auto-scan" : "Manual scan"} complete (${stamp}) · ${buysCount} Buy Picks · ${sellsCount} Sell Warning${sellsCount === 1 ? "" : "s"}`;
+  }
+}
+
+function bootFinsistantApp() {
+  initFallbackUniverse();
+  runUniverseScan(true);
   renderChat();
 
   // Tabs
@@ -611,7 +627,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("scanNowBtn").addEventListener("click", () => {
-    renderAllViews();
+    runUniverseScan(false);
   });
 
   document.getElementById("addSymbolBtn").addEventListener("click", () => {
@@ -665,4 +681,10 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", () => {
     drawUnifiedChart(appState.assets[appState.activeSymbol]);
   });
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", bootFinsistantApp);
+} else {
+  bootFinsistantApp();
+}
