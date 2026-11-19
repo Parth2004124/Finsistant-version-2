@@ -820,6 +820,77 @@
         </div>
       </div>
 
+      <!-- SECTION 2.2: MORESHWAR 2.2 INTEGRATED RESEARCH BENCHMARK -->
+      <div class="panel intel-section" id="intelSectionV22" style="border-color: hsla(160, 84%, 39%, 0.45);">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">2.2 Moreshwar 2.2 — Integrated Optimization, Stress &amp; Validation (INR Research)</div>
+            <div class="panel-subtitle" id="mv22Subtitle">IS-Selected Portfolio &amp; Risk Layer (`OPT_REG_DD_N8`) · 4-Fold Walk-Forward · 1,200x Block Bootstraps · Terminal Holdout</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <span class="tag-pill tag-stop">SIMULATED RESEARCH BENCHMARK — NOT LIVE TRADING</span>
+            <span class="tag-pill tag-score" id="mv22DecisionBadge">NO-GO · M1.0 ACTIVE IN PROD</span>
+          </div>
+        </div>
+
+        <div class="mv21-verdict-banner" id="mv22DecisionBanner"></div>
+
+        <div class="kpi-strip-grid" id="mv22HeaderKpis"></div>
+
+        <div class="two-col-grid">
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Evolution Scorecard (M2.1 → P1 → P2 → Integrated M2.2)</div>
+                <div class="panel-subtitle">Net INR after Zerodha delivery taxes/DP &amp; 7.5 bps slippage · NVDA isolated</div>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table dq-compact-table">
+                <thead>
+                  <tr>
+                    <th>Version</th>
+                    <th>5Y Net%</th>
+                    <th>CAGR</th>
+                    <th>MaxDD</th>
+                    <th>NetPF</th>
+                    <th>Sharpe</th>
+                    <th>Trades</th>
+                    <th>Cost%</th>
+                  </tr>
+                </thead>
+                <tbody id="mv22ScorecardBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Stress Matrix, Holdout &amp; Block Bootstrap (1,200x)</div>
+                <div class="panel-subtitle">Cost 1.25x–2.0x · t+2 Delay · Gap Shock · 10D/20D Block Confidence</div>
+              </div>
+            </div>
+            <div class="table-scroll" style="max-height:220px;">
+              <table class="data-table dq-compact-table">
+                <thead>
+                  <tr>
+                    <th>Scenario</th>
+                    <th>5Y Net%</th>
+                    <th>OOS%</th>
+                    <th>MaxDD</th>
+                    <th>NetPF</th>
+                    <th>Cost ₹</th>
+                  </tr>
+                </thead>
+                <tbody id="mv22StressBody"></tbody>
+              </table>
+            </div>
+            <div id="mv22BootstrapSummary" style="margin-top:8px;font-size:11.5px;color:var(--text-secondary);line-height:1.5;"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- SECTION 3: AI DECISION AUDIT & HISTORY -->
       <div class="panel intel-section" id="intelSectionAudit">
         <div class="panel-header" style="flex-wrap: wrap;">

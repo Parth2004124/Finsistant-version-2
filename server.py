@@ -76,6 +76,7 @@ KITE_META: dict[str, Any] = {"connected": False, "status": "Not initialized", "h
 BACKTEST_CACHE: dict[str, Any] = {}
 MORESHWAR_V2_RESEARCH: dict[str, Any] = {}
 MORESHWAR_V2_1_RESEARCH: dict[str, Any] = {}
+MORESHWAR_V2_2_RESEARCH: dict[str, Any] = {}
 AUDIT_LEDGER_CACHE: dict[str, Any] = {}
 PROVENANCE_CACHE: dict[str, Any] = {}
 AUTO_RULES: list[dict[str, Any]] = [
@@ -183,6 +184,14 @@ def _refresh_analytics_and_audit(force_new_for_symbol: str | None = None, force_
     if v21_path.exists():
         try:
             MORESHWAR_V2_1_RESEARCH = json.loads(v21_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
+    global MORESHWAR_V2_2_RESEARCH
+    v22_path = BASE_DIR / "reports" / "moreshwar_2_2" / "integrated_final_report.json"
+    if v22_path.exists():
+        try:
+            MORESHWAR_V2_2_RESEARCH = json.loads(v22_path.read_text(encoding="utf-8"))
         except Exception:
             pass
 
@@ -539,6 +548,7 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "backtest": BACKTEST_CACHE,
         "moreshwar_v2_research": MORESHWAR_V2_RESEARCH,
         "moreshwar_v2_1_research": MORESHWAR_V2_1_RESEARCH,
+        "moreshwar_v2_2_research": MORESHWAR_V2_2_RESEARCH,
         "audit_trail": build_audit_dashboard_view(AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)),
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,
@@ -610,6 +620,15 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(MORESHWAR_V2_1_RESEARCH or {"status": "unavailable"})
+            return
+        if path == "/api/research/v2_2":
+            v22_path = BASE_DIR / "reports" / "moreshwar_2_2" / "integrated_final_report.json"
+            if not MORESHWAR_V2_2_RESEARCH and v22_path.exists():
+                try:
+                    MORESHWAR_V2_2_RESEARCH.update(json.loads(v22_path.read_text(encoding="utf-8")))
+                except Exception:
+                    pass
+            self._send_json(MORESHWAR_V2_2_RESEARCH or {"status": "unavailable"})
             return
         if path == "/api/audit":
             ledger = AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)
