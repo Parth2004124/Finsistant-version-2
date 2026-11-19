@@ -25,7 +25,7 @@ import urllib.parse
 import urllib.request
 
 GEMINI_DEFAULT_MODEL = "gemini-2.5-flash"
-GEMINI_FALLBACK_MODELS = ("gemini-2.5-flash", "gemini-2.0-flash")
+GEMINI_FALLBACK_MODELS = ("gemini-2.5-flash", "gemini-2.5-flash-lite")
 
 
 def _redact_key(text: str, api_key: str) -> str:
@@ -64,7 +64,14 @@ def _extract_json_block(raw_text: str) -> dict[str, Any]:
 def _call_gemini_generate(prompt: str, api_key: str, response_mime_type: str = "application/json", timeout: int = 25) -> tuple[str, str]:
     """Call Gemini generateContent REST API and return (text, model_used)."""
     last_error = "Unknown Gemini API failure"
-    for model in GEMINI_FALLBACK_MODELS:
+    attempts: list[tuple[str, float]] = [
+        ("gemini-2.5-flash", 0.0),
+        ("gemini-2.5-flash", 1.5),
+        ("gemini-2.5-flash-lite", 0.5),
+    ]
+    for model, wait_s in attempts:
+        if wait_s > 0:
+            time.sleep(wait_s)
         encoded_key = urllib.parse.quote(api_key, safe="")
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={encoded_key}"
         gen_cfg: dict[str, Any] = {
@@ -98,6 +105,9 @@ def _call_gemini_generate(prompt: str, api_key: str, response_mime_type: str = "
                 if not text:
                     last_error = f"{model}: empty text in candidate"
                     continue
+                if response_mime_type == "application/json":
+                    # Validate complete JSON before returning so truncated/partial chunks trigger retry
+                    _extract_json_block(text)
                 return text, model
         except urllib.error.HTTPError as exc:
             raw_err = exc.read().decode("utf-8", errors="replace")
@@ -111,7 +121,7 @@ def _call_gemini_generate(prompt: str, api_key: str, response_mime_type: str = "
             if exc.code in (400, 401, 403) and "not found" not in err_msg.lower():
                 raise RuntimeError(_redact_key(last_error, api_key)) from exc
             if exc.code == 429:
-                time.sleep(1.0)
+                time.sleep(1.5)
         except Exception as exc:
             last_error = f"{type(exc).__name__} ({model}): {_redact_key(str(exc), api_key)}"
 
@@ -499,7 +509,7 @@ def critique_suggested_trades(
     pipelines: dict[str, dict[str, Any]],
     trade_queue: list[dict[str, Any]],
     api_key: str | None = None,
-    max_workers: int = 4,
+    max_workers: int = 2,
     focus_note: str = "",
 ) -> dict[str, dict[str, Any]]:
     """Critically analyze every suggested trade and watchlist asset via live Gemini API."""
