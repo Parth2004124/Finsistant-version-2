@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Finsistant Version 2 — Live Quant, Fundamental &amp; Multi-Agent Platform</title>
+  <meta name="description" content="Finsistant Version 2 — Live Market Data + StockSight V2 + Finsistant Polynomial Regression & Stocky AI + 3-Agent Orchestrator (Zero Simulation)." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-group">
+      <div class="brand-mark">FV2</div>
+      <div>
+        <h1 class="brand-title">Finsistant Version 2 <span style="color: var(--text-muted); font-weight: 400;">/</span> Live Orchestration Terminal</h1>
+        <div class="brand-subtitle" id="liveSourceSubtitle">Connecting to live data &amp; 3-Agent Orchestrator (Zero Simulation)...</div>
+      </div>
+    </div>
+
+    <div class="portfolio-ribbon">
+      <div class="ribbon-stat">
+        <span>Invested:</span>
+        <strong id="hdrInvested">₹0</strong>
+      </div>
+      <div class="ribbon-stat">
+        <span>Current:</span>
+        <strong id="hdrCurrent">₹0</strong>
+      </div>
+      <div class="ribbon-stat">
+        <span>Net P&amp;L:</span>
+        <strong id="hdrPnl">₹0 (0.00%)</strong>
+      </div>
+      <div class="ribbon-stat">
+        <span>Cash Balance:</span>
+        <strong id="hdrBalance">₹0</strong>
+      </div>
+      <div class="ribbon-stat">
+        <span>Portfolio Health:</span>
+        <strong id="hdrHealth" style="color: var(--accent-cyan);">0 Holdings</strong>
+      </div>
+
+      <nav class="nav-tabs desktop-only-tabs" aria-label="Platform Modules">
+        <button type="button" class="nav-tab active" data-tab="mission">1. Execution Mission Control</button>
+        <button type="button" class="nav-tab" data-tab="stocksight">2. StockSight V2 &amp; Portfolio</button>
+        <button type="button" class="nav-tab" data-tab="agents">3. Multi-Agent &amp; .env Setup</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- TAB 1: EXECUTION MISSION CONTROL -->
+    <section class="tab-panel active" id="panel-mission">
+      <div class="mission-grid">
+        <!-- TAB 1 MOBILE PANE: PICKS QUEUE -->
+        <div class="panel mobile-pane active-mobile-pane" data-mobile-view="picks">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">Top Picks Queue (Live Orchestrator Scan)</div>
+              <div class="panel-subtitle">Real market feed · Click any setup to inspect</div>
+            </div>
+            <button type="button" class="btn-secondary" id="scanNowBtn">Scan Now</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.3fr repeat(4, auto); gap: 6px; padding: 0 8px; font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono);">
+            <span>SYMBOL</span>
+            <span>ENTRY</span>
+            <span>TARGET</span>
+            <span>STOP</span>
+            <span>SCORE</span>
+          </div>
+
+          <div class="picks-list" id="picksQueueContainer"></div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+            <button type="button" class="btn-primary" id="executeSelectedBtn" style="flex: 1;">EXECUTE SELECTED</button>
+            <button type="button" class="btn-danger" id="executeAllBtn">EXECUTE ALL</button>
+          </div>
+
+          <button type="button" class="btn-secondary mobile-jump-btn" id="mobileOpenChartBtn">Inspect Active Chart &amp; Gemini CRO →</button>
+          <div id="sellWarningContainer"></div>
+          <div class="terminal-box" id="analysisTerminalBox"></div>
+        </div>
+
+        <!-- TAB 2 MOBILE PANE: CHART & GEMINI CRO -->
+        <div class="mobile-pane" data-mobile-view="chart" style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="mobile-ticker-strip" id="mobileTickerStrip" aria-label="Quick Asset Switcher"></div>
+          <div class="panel">
+            <div class="panel-header" style="flex-wrap: wrap;">
+              <div>
+                <div class="panel-title" id="centerChartTitle">Loading live symbol...</div>
+                <div class="panel-subtitle" id="centerChartSub">Real OHLCV Candles + Degree-2 Polynomial Regression + Moreshwar Levels</div>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 10px;">
+                <span style="font-family: var(--font-mono); font-size: 20px; font-weight: 700;" id="centerSpotPrice">--</span>
+                <span id="centerSpotChg" style="font-family: var(--font-mono); font-size: 12px;">--</span>
+                <span class="tag-pill tag-target" id="centerDecisionBadge">--</span>
+              </div>
+            </div>
+
+            <div class="chart-box">
+              <canvas id="unifiedChart"></canvas>
+            </div>
+
+            <div class="chart-legend">
+              <span><i class="legend-dot" style="background: var(--accent-emerald);"></i>Moreshwar Target (TP): <strong id="legTarget">--</strong></span>
+              <span><i class="legend-dot" style="background: var(--accent-cyan);"></i>Spot / Entry (CP): <strong id="legEntry">--</strong></span>
+              <span><i class="legend-dot" style="background: var(--accent-crimson);"></i>Stop-Loss (SL): <strong id="legStop">--</strong></span>
+              <span><i class="legend-dot" style="background: var(--accent-amber);"></i>30D Quant Regression: <strong id="legReg">--</strong></span>
+            </div>
+          </div>
+
+          <!-- 3-AGENT ORCHESTRATOR PIPELINE CARDS -->
+          <div class="panel">
+            <div class="panel-header" style="flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">Multi-Agent Orchestrator Pipeline (AgentRunner)</div>
+                <div class="panel-subtitle" id="pipelineMetaText">Waiting for live scan...</div>
+              </div>
+              <button type="button" class="btn-secondary" id="switchToStockSightBtn">View 4-Pillar &amp; Porter Breakdown →</button>
+            </div>
+
+            <div class="agents-row">
+              <div class="agent-card">
+                <div class="agent-head">
+                  <strong style="font-family: var(--font-mono); font-size: 12.5px;">TechBot_1</strong>
+                  <span class="tag-pill tag-target" id="agTechBadge">--</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary);">TechnicalAnalyst · Conf: <strong id="agTechConf">--</strong></div>
+                <div class="progress-track"><div class="progress-fill" id="agTechBar" style="width: 0%;"></div></div>
+                <div style="font-size: 11.5px; color: var(--text-secondary);" id="agTechDesc"></div>
+              </div>
+
+              <div class="agent-card">
+                <div class="agent-head">
+                  <strong style="font-family: var(--font-mono); font-size: 12.5px;">FundBot_1</strong>
+                  <span class="tag-pill tag-target" id="agFundBadge">--</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary);">FundamentalAnalyst · Score: <strong id="agFundConf">--</strong></div>
+                <div class="progress-track"><div class="progress-fill" id="agFundBar" style="width: 0%;"></div></div>
+                <div style="font-size: 11.5px; color: var(--text-secondary);" id="agFundDesc"></div>
+              </div>
+
+              <div class="agent-card">
+                <div class="agent-head">
+                  <strong style="font-family: var(--font-mono); font-size: 12.5px;">ExecBot_1</strong>
+                  <span class="tag-pill tag-entry" id="agExecBadge">--</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary);">ExecutionAgent · Conviction: <strong id="agExecConf">--</strong></div>
+                <div class="progress-track"><div class="progress-fill" id="agExecBar" style="width: 0%;"></div></div>
+                <div style="font-size: 11.5px; color: var(--text-secondary);" id="agExecDesc"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GEMINI CRITICAL TRADE ANALYST (FILLS CENTER BLANK SPACE) -->
+          <div class="panel" id="geminiRationalePanel">
+            <div class="panel-header" style="flex-wrap: wrap;">
+              <div style="min-width: 0; flex: 1;">
+                <div class="panel-title" id="geminiPanelTitle">Gemini Critical Trade Analyst</div>
+                <div class="panel-subtitle" id="geminiPanelSub">Independent AI risk &amp; thesis audit for every suggested trade</div>
+              </div>
+              <div class="gemini-badges">
+                <span class="tag-pill tag-score" id="geminiRiskBadge">RISK: --</span>
+                <span class="tag-pill tag-entry" id="geminiStanceBadge">--</span>
+              </div>
+            </div>
+
+            <div class="gemini-split-grid">
+              <div class="gemini-box gemini-bull">
+                <div class="gemini-label" style="color: var(--accent-emerald);">BULL CATALYSTS (EVIDENCE)</div>
+                <div class="gemini-text" id="geminiBullText">Waiting for Gemini live trade audit...</div>
+              </div>
+              <div class="gemini-box gemini-bear">
+                <div class="gemini-label" style="color: var(--accent-crimson);">CRITICAL RED FLAGS &amp; RISKS</div>
+                <div class="gemini-text" id="geminiRisksText">Waiting for Gemini live trade audit...</div>
+              </div>
+            </div>
+
+            <div class="terminal-box gemini-rationale-box" id="geminiRationaleBox">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); font-weight: 700;">CRITICAL TRADE RATIONALE</span>
+                <span style="font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted);" id="geminiModelStamp">--</span>
+              </div>
+              <div id="geminiRationaleBody" style="color: var(--text-primary); line-height: 1.55;">Waiting for live Gemini analysis...</div>
+            </div>
+
+            <div class="recalibration-strip" id="geminiCalibrationStrip">
+              <div class="recal-head">
+                <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--accent-amber);">IMPLEMENTED PLATFORM RECALIBRATION</span>
+                <span class="tag-pill tag-score" id="geminiRecalStatusBadge">ARMED</span>
+              </div>
+              <div class="recal-grid" id="geminiRecalGrid">
+                <div class="recal-cell"><span class="recal-k">ACTION</span><strong id="recalActionVal">--</strong></div>
+                <div class="recal-cell"><span class="recal-k">LIMIT ENTRY</span><strong id="recalEntryVal">--</strong></div>
+                <div class="recal-cell"><span class="recal-k">TARGET / SL</span><strong id="recalTpSlVal">--</strong></div>
+                <div class="recal-cell"><span class="recal-k">QTY / CONV</span><strong id="recalQtyVal">--</strong></div>
+              </div>
+              <div class="gemini-text" id="geminiRecalSummary">Auto-recalibration adjusts Entry, Target, Stop-Loss, Sizing, and Conviction from live Gemini CRO criticism.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4 MOBILE PANE: HOLDINGS & STOCKY AI -->
+        <div class="mobile-pane" data-mobile-view="ai" style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="panel">
+            <div class="panel-header" style="flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">Live Kite Holdings</div>
+                <div class="panel-subtitle" id="kiteStatusSubtitle">Checking Kite connection...</div>
+              </div>
+              <button type="button" class="btn-secondary" id="manageHoldingsBtn">Watchlist / Portfolio</button>
+            </div>
+
+            <div class="table-scroll"><table class="data-table">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>Qty</th>
+                  <th>LTP</th>
+                  <th>P&amp;L</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="miniHoldingsTableBody"></tbody>
+            </table></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header" style="flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">Stocky AI Assistant</div>
+                <div class="panel-subtitle">Live Quant, Fundamental &amp; Order Execution Bot</div>
+              </div>
+            </div>
+
+            <div class="chip-row">
+              <button type="button" class="prompt-chip" data-prompt="Analyze RELIANCE">🔍 Analyze RELIANCE</button>
+              <button type="button" class="prompt-chip" data-prompt="Compare HDFCBANK vs ICICIBANK">⚖️ Compare HDFC vs ICICI</button>
+              <button type="button" class="prompt-chip" data-prompt="Invest 5 Lakh">💰 Invest 5 Lakh</button>
+              <button type="button" class="prompt-chip" data-prompt="Portfolio efficiency check">🛡️ Efficiency Audit</button>
+            </div>
+
+            <div class="chat-messages" id="stockyChatMessages"></div>
+
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="stockyChatInput" class="input-field" style="flex: 1;" placeholder="Ask Stocky (e.g. 'Analyze NVDA' or 'Compare TCS vs INFY')..." />
+              <button type="button" class="btn-primary" id="stockySendBtn">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: STOCKSIGHT V2 DEEP-DIVE SCORING & PORTFOLIO MANAGER -->
+    <section class="tab-panel" id="panel-stocksight">
+      <div class="two-col-grid">
+        <div class="panel">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title" id="ssDeepDiveTitle">StockSight V2 Dual-Scoring Engine</div>
+              <div class="panel-subtitle" id="ssIndustryBadge">Live Fundamental &amp; Porter Moat Analysis</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <span class="tag-pill tag-target" id="ssFundTotalBadge">Fundamental: --</span>
+              <span class="tag-pill tag-entry" id="ssPorterTotalBadge">Porter Moat: --</span>
+            </div>
+          </div>
+
+          <div class="pillar-grid" id="ssFourPillarsContainer"></div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+            <div class="panel-title" style="margin-bottom: 8px;">Porter's 5 Forces Qualitative Moat Breakdown (Max 100)</div>
+            <div class="pillar-grid" id="ssPortersGrid"></div>
+          </div>
+
+          <div class="terminal-box" id="ssDecisionMatrixBox"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">StockSight V2 Live Watchlist &amp; Portfolio</div>
+              <div class="panel-subtitle">Zero simulated holdings · Add live ticker when connected to backend</div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="addSymbolInput" class="input-field" placeholder="Live Ticker (e.g. AAPL)" style="width: 165px;" />
+              <button type="button" class="btn-primary" id="addSymbolBtn">Add Asset</button>
+            </div>
+          </div>
+
+          <div class="table-scroll"><table class="data-table">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Fund / Porter</th>
+                <th>Decision</th>
+                <th>Qty</th>
+                <th>Avg Price</th>
+                <th>LTP / Target</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="fullPortfolioManagerBody"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: MULTI-AGENT HEALTH, AUTO-EXECUTION RULES & .ENV SETUP -->
+    <section class="tab-panel" id="panel-agents">
+      <div class="two-col-grid">
+        <div class="panel">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">Finsistant Version 2 Runtime Configuration (.env)</div>
+              <div class="panel-subtitle">Live Backend Guardrails, Kite Status &amp; Auto-Execution Rules</div>
+            </div>
+            <button type="button" class="btn-primary" id="saveUnifiedConfigBtn">Save &amp; Re-Verify</button>
+          </div>
+
+          <div class="env-config-grid">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">FINSISTANT_ENVIRONMENT</label>
+              <select id="cfgEnv" class="select-field">
+                <option value="sandbox">sandbox</option>
+                <option value="staging">staging</option>
+                <option value="production" selected>production</option>
+              </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">AGENT_MODE</label>
+              <select id="cfgMode" class="select-field">
+                <option value="backtest">backtest</option>
+                <option value="paper_trading" selected>paper_trading</option>
+                <option value="live">live</option>
+              </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">MAX_CONCURRENT_TRADES</label>
+              <input type="number" id="cfgMaxTrades" class="input-field" value="5" min="1" max="50" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_API_KEY (Server .env)</label>
+              <input type="password" id="cfgKiteKey" class="input-field" placeholder="Set in .env or GitHub Secrets" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_API_SECRET (Server .env)</label>
+              <input type="password" id="cfgKiteSecret" class="input-field" placeholder="Set in .env or GitHub Secrets" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_USER_ID (Auto-TOTP)</label>
+              <input type="text" id="cfgKiteUser" class="input-field" placeholder="Zerodha Client ID (optional)" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_PASSWORD (Auto-TOTP)</label>
+              <input type="password" id="cfgKitePass" class="input-field" placeholder="Set in .env or GitHub Secrets" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_TOTP_SECRET (Base32)</label>
+              <input type="password" id="cfgKiteTotp" class="input-field" placeholder="Set in .env or GitHub Secrets" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">KITE_ACCESS_TOKEN (Daily)</label>
+              <input type="password" id="cfgKiteToken" class="input-field" placeholder="Auto-fetched daily to token.txt" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);">DATA_POLICY</label>
+              <input type="text" class="input-field" value="LIVE_ONLY (ZERO SIMULATION)" readonly />
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">Kite Daily Token Engine (<code>kite_auth.py</code>)</div>
+                <div class="panel-subtitle" id="kiteEngineStatusText">Checking daily Kite token status...</div>
+              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn-primary" id="kiteAutoLoginBtn">Auto-Fetch Daily Token</button>
+                <button type="button" class="btn-secondary" id="kiteLoginLinkBtn">Open Kite Login</button>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <input type="text" id="kiteReqTokenInput" class="input-field" placeholder="Paste request_token from Kite callback redirect" style="flex: 1; min-width: 200px;" />
+              <button type="button" class="btn-secondary" id="kiteExchangeTokenBtn">Exchange request_token</button>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div>
+                <div class="panel-title">GitHub Serverless Cloud Runner (Zero Laptop / Zero 3rd-Party)</div>
+                <div class="panel-subtitle" id="ghCloudStatusText">Automated 15m Mon–Fri scans active · Optional browser-only PAT enables 1-click on-demand scans</div>
+              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn-primary" id="triggerCloudScanBtn">Trigger Cloud Scan</button>
+                <a href="https://github.com/Parth2004124/Finsistant-version-2/actions/workflows/live-scan.yml" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center;">Open Actions</a>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <input type="password" id="ghCloudPatInput" class="input-field" placeholder="Optional fine-grained PAT (Actions: write on Finsistant-version-2, stored in browser only)" style="flex: 1; min-width: 220px;" />
+              <button type="button" class="btn-secondary" id="saveGhPatBtn">Save Browser Token</button>
+              <button type="button" class="btn-secondary" id="clearGhPatBtn">Clear</button>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+            <div class="panel-title" style="margin-bottom: 8px;">Finsistant Auto-Execution Rule Sets</div>
+            <div id="autoRulesList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">Unified Verification Console (<code>scripts/verify_setup.py</code>)</div>
+              <div class="panel-subtitle">Live telemetry across StockSight V2, Finsistant &amp; Multi-Agent Orchestrator</div>
+            </div>
+            <button type="button" class="btn-secondary" id="runUnifiedVerifyBtn">Refresh Scan Telemetry</button>
+          </div>
+
+          <pre class="terminal-box" id="unifiedVerifyOutput" style="min-height: 310px; overflow-x: auto;"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+    <button type="button" class="mob-nav-btn active" data-mob-tab="picks">
+      <span class="mob-ico" aria-hidden="true">⚡</span>
+      <span class="mob-lbl">Picks</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-mob-tab="chart">
+      <span class="mob-ico" aria-hidden="true">📈</span>
+      <span class="mob-lbl">Chart &amp; CRO</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-mob-tab="stocksight">
+      <span class="mob-ico" aria-hidden="true">🧠</span>
+      <span class="mob-lbl">StockSight</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-mob-tab="ai">
+      <span class="mob-ico" aria-hidden="true">🤖</span>
+      <span class="mob-lbl">Holdings &amp; AI</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-mob-tab="agents">
+      <span class="mob-ico" aria-hidden="true">⚙️</span>
+      <span class="mob-lbl">Setup</span>
+    </button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
