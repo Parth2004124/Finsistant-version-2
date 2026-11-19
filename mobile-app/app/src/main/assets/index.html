@@ -48,6 +48,7 @@
         <button type="button" class="nav-tab" data-tab="stocksight">2. StockSight V2 &amp; Portfolio</button>
         <button type="button" class="nav-tab" data-tab="agents">3. Multi-Agent &amp; .env Setup</button>
         <button type="button" class="nav-tab" data-tab="intelligence">4. Provenance, Backtest &amp; Audit</button>
+        <button type="button" class="nav-tab" data-tab="reports">5. Cumulative Reports</button>
       </nav>
     </div>
   </header>
@@ -600,6 +601,107 @@
         </div>
       </div>
     </section>
+
+    <!-- TAB 5: CUMULATIVE EXECUTIVE REPORTS (NATURAL LANGUAGE & VISUAL CHARTS) -->
+    <section class="tab-panel" id="panel-reports">
+      <div class="panel">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">Executive Performance Report — Cross-Tab Briefing</div>
+            <div class="panel-subtitle" id="rptHeaderSub">Plain-English synthesis across Execution, Watchlist Moat, Multi-Agent CRO, and Benchmarks</div>
+          </div>
+          <span class="tag-pill tag-entry" id="rptIsolationBadge">SIMULATED BACKTEST ISOLATED</span>
+        </div>
+
+        <div class="rpt-executive-brief" id="rptExecutiveBrief">Loading natural-language executive report...</div>
+
+        <div class="kpi-strip-grid" id="rptHighlightKpis"></div>
+      </div>
+
+      <div class="reports-chart-grid">
+        <div class="panel rpt-visual-card">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">1. Cumulative Return Path vs Nifty 50 (Base = 100)</div>
+              <div class="panel-subtitle">Visual growth comparison across causal 1-year walk-forward windows</div>
+            </div>
+          </div>
+          <div class="chart-box" style="height: 205px;">
+            <canvas id="rptEquityCanvas"></canvas>
+          </div>
+          <div class="chart-legend">
+            <span><i class="legend-dot" style="background: var(--accent-emerald);"></i>Recalibrated AI</span>
+            <span><i class="legend-dot" style="background: var(--accent-cyan);"></i>Original Moreshwar</span>
+            <span><i class="legend-dot" style="background: var(--accent-amber);"></i>Nifty 50 (^NSEI)</span>
+          </div>
+          <p class="rpt-caption" id="rptEquityCaption"></p>
+        </div>
+
+        <div class="panel rpt-visual-card">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">2. Which Agent Drives Returns &amp; Saves Drawdown?</div>
+              <div class="panel-subtitle">Return lift &amp; drawdown saved per agent vs ablating that agent</div>
+            </div>
+          </div>
+          <div class="chart-box" style="height: 205px;">
+            <canvas id="rptAgentCanvas"></canvas>
+          </div>
+          <div class="chart-legend">
+            <span><i class="legend-dot" style="background: var(--accent-emerald);"></i>Positive Lift</span>
+            <span><i class="legend-dot" style="background: var(--accent-cyan);"></i>Drawdown Saved</span>
+            <span><i class="legend-dot" style="background: var(--accent-crimson);"></i>Performance Drag</span>
+          </div>
+          <p class="rpt-caption" id="rptAgentCaption"></p>
+        </div>
+
+        <div class="panel rpt-visual-card">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">3. Gemini CRO Protection vs Missed Winners</div>
+              <div class="panel-subtitle">Interventions preventing bad trades vs unnecessary blocks/downgrades</div>
+            </div>
+          </div>
+          <div class="chart-box" style="height: 205px;">
+            <canvas id="rptCroCanvas"></canvas>
+          </div>
+          <div class="chart-legend">
+            <span><i class="legend-dot" style="background: var(--accent-emerald);"></i>Bad Trades Prevented</span>
+            <span><i class="legend-dot" style="background: var(--accent-crimson);"></i>Unnecessary Downgrades</span>
+            <span><i class="legend-dot" style="background: var(--accent-cyan);"></i>Preserved Winners</span>
+          </div>
+          <p class="rpt-caption" id="rptCroCaption"></p>
+        </div>
+
+        <div class="panel rpt-visual-card">
+          <div class="panel-header" style="flex-wrap: wrap;">
+            <div>
+              <div class="panel-title">4. Strategy Returns vs Simple Benchmarks</div>
+              <div class="panel-subtitle">Moreshwar vs Nifty 50, Equal-Weight, Simple SMA-20 &amp; Fixed 1:2 Exits</div>
+            </div>
+          </div>
+          <div class="chart-box" style="height: 205px;">
+            <canvas id="rptBenchmarkCanvas"></canvas>
+          </div>
+          <div class="chart-legend">
+            <span><i class="legend-dot" style="background: var(--accent-emerald);"></i>Outperforming Peer</span>
+            <span><i class="legend-dot" style="background: var(--accent-amber);"></i>Market Benchmark</span>
+            <span><i class="legend-dot" style="background: var(--accent-crimson);"></i>Negative Strategy</span>
+          </div>
+          <p class="rpt-caption" id="rptBenchmarkCaption"></p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">Across-Tab Plain-English Health &amp; Activity Summary</div>
+            <div class="panel-subtitle">Readable synthesis across Queue, Moat &amp; Holdings, Agents &amp; Audit</div>
+          </div>
+        </div>
+        <div class="rpt-story-grid" id="rptStoryContainer"></div>
+      </div>
+    </section>
   </main>
 
 
@@ -619,6 +721,10 @@
     <button type="button" class="mob-nav-btn" data-mob-tab="intelligence">
       <span class="mob-ico" aria-hidden="true">🛡️</span>
       <span class="mob-lbl">Audit</span>
+    </button>
+    <button type="button" class="mob-nav-btn" data-mob-tab="reports">
+      <span class="mob-ico" aria-hidden="true">📊</span>
+      <span class="mob-lbl">Report</span>
     </button>
     <button type="button" class="mob-nav-btn" data-mob-tab="ai">
       <span class="mob-ico" aria-hidden="true">🤖</span>

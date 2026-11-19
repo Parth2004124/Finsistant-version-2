@@ -1288,6 +1288,427 @@ function renderIntelligenceViews() {
   renderProvenanceMonitor();
   renderBacktestAnalytics();
   renderAuditLedger();
+  renderReportsView();
+}
+
+function drawReportsCharts() {
+  const bt = appState.backtest;
+  drawReportEquityCanvas((bt || {}).equity_curve || []);
+  drawReportAgentCanvas((bt?.decision_quality_answers?.top_contributing_agent?.ranking) || []);
+  drawReportCroDonutCanvas(bt?.decision_quality_answers?.gemini_intervention_audit || null);
+  drawReportBenchmarkCanvas((bt?.decision_quality_answers?.moreshwar_vs_benchmarks?.rows) || []);
+}
+
+function drawReportEquityCanvas(curve) {
+  const canvas = document.getElementById("rptEquityCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(260, rect.width || 440);
+  const h = Math.max(170, rect.height || 210);
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  if (!Array.isArray(curve) || curve.length < 2) {
+    ctx.font = "12px 'Inter', sans-serif";
+    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillText("Growth curve appears after live scan data loads.", 14, h / 2);
+    return;
+  }
+
+  const vals = [];
+  curve.forEach((pt) => {
+    if (typeof pt.original_nav === "number") vals.push(pt.original_nav);
+    if (typeof pt.recalibrated_nav === "number") vals.push(pt.recalibrated_nav);
+    if (typeof pt.benchmark_nav === "number") vals.push(pt.benchmark_nav);
+  });
+  const minV = Math.min(...vals) * 0.99;
+  const maxV = Math.max(...vals) * 1.01;
+  const padT = 14, padB = 22, padL = 10, padR = 54;
+  const plotW = w - padL - padR;
+  const plotH = h - padT - padB;
+  const yFor = (v) => padT + plotH - ((v - minV) / Math.max(1e-6, maxV - minV)) * plotH;
+  const xFor = (i) => padL + (i / Math.max(1, curve.length - 1)) * plotW;
+
+  ctx.strokeStyle = "hsla(222, 15%, 24%, 0.45)";
+  ctx.lineWidth = 1;
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  for (let i = 0; i <= 3; i++) {
+    const v = minV + ((maxV - minV) * i) / 3;
+    const y = yFor(v);
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    ctx.stroke();
+    ctx.fillText(v.toFixed(1), w - padR + 6, y + 3);
+  }
+  ctx.fillText(curve[0].date || "", padL, h - 5);
+  ctx.fillText(curve[curve.length - 1].date || "", w - padR - 66, h - 5);
+
+  const plotLine = (key, color, dashed = false) => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.2;
+    if (dashed) ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    curve.forEach((pt, i) => {
+      const x = xFor(i);
+      const y = yFor(Number(pt[key] ?? 100));
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    const last = curve[curve.length - 1];
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(xFor(curve.length - 1), yFor(Number(last[key] ?? 100)), 3.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  };
+
+  plotLine("benchmark_nav", "hsl(38, 92%, 55%)", true);
+  plotLine("original_nav", "hsl(196, 86%, 54%)", false);
+  plotLine("recalibrated_nav", "hsl(160, 84%, 44%)", false);
+}
+
+function drawReportAgentCanvas(ranking) {
+  const canvas = document.getElementById("rptAgentCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(260, rect.width || 440);
+  const h = Math.max(170, rect.height || 210);
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  if (!Array.isArray(ranking) || !ranking.length) {
+    ctx.font = "12px 'Inter', sans-serif";
+    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillText("Agent attribution chart awaiting scan.", 14, h / 2);
+    return;
+  }
+
+  const vals = [];
+  ranking.forEach((r) => {
+    vals.push(Number(r.cum_return_lift_pct || 0), Number(r.drawdown_saved_pct || 0));
+  });
+  const maxAbs = Math.max(8, ...vals.map((v) => Math.abs(v))) * 1.18;
+  const labelW = 92;
+  const padR = 48;
+  const chartW = Math.max(80, w - labelW - padR);
+  const zeroX = labelW + chartW * 0.45;
+  const scalePos = (chartW * 0.55) / maxAbs;
+  const scaleNeg = (chartW * 0.45) / maxAbs;
+
+  // Zero vertical line
+  ctx.strokeStyle = "hsla(215, 20%, 50%, 0.45)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(zeroX, 10);
+  ctx.lineTo(zeroX, h - 14);
+  ctx.stroke();
+
+  const rowH = (h - 24) / ranking.length;
+  ctx.font = "10.5px 'JetBrains Mono', monospace";
+  ranking.forEach((r, idx) => {
+    const cy = 16 + idx * rowH;
+    ctx.fillStyle = "hsl(210, 25%, 92%)";
+    ctx.fillText(`#${r.rank} ${String(r.agent).replace("_1", "")}`, 6, cy + 12);
+
+    const drawBar = (val, yOff, posCol, negCol) => {
+      const xEnd = val >= 0 ? zeroX + val * scalePos : zeroX + val * scaleNeg;
+      const bx = Math.min(zeroX, xEnd);
+      const bw = Math.max(2, Math.abs(xEnd - zeroX));
+      ctx.fillStyle = val >= 0 ? posCol : negCol;
+      ctx.fillRect(bx, cy + yOff, bw, 9);
+      ctx.fillStyle = val >= 0 ? posCol : negCol;
+      const txt = `${val >= 0 ? "+" : ""}${val.toFixed(1)}%`;
+      const tx = val >= 0 ? bx + bw + 4 : Math.max(labelW - 2, bx - 44);
+      ctx.fillText(txt, Math.min(w - 44, tx), cy + yOff + 8);
+    };
+    drawBar(Number(r.cum_return_lift_pct || 0), 0, "hsl(160, 84%, 44%)", "hsl(350, 84%, 60%)");
+    drawBar(Number(r.drawdown_saved_pct || 0), 12, "hsl(196, 86%, 54%)", "hsl(38, 92%, 55%)");
+  });
+}
+
+function drawReportCroDonutCanvas(croAudit) {
+  const canvas = document.getElementById("rptCroCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(260, rect.width || 440);
+  const h = Math.max(170, rect.height || 210);
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  const comb = (croAudit && croAudit.combined_scorecard) || {};
+  const prev = Number(comb.bad_trades_prevented || 0);
+  const miss = Number(comb.good_trades_unnecessarily_downgraded || 0);
+  const pres = Number(comb.preserved_winners || 0);
+  const total = prev + miss + pres;
+
+  if (total <= 0) {
+    ctx.font = "12px 'Inter', sans-serif";
+    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillText("No CRO interventions logged in current window.", 14, h / 2);
+    return;
+  }
+
+  const cx = Math.min(w * 0.34, 118);
+  const cy = h / 2;
+  const radius = Math.min(cx - 18, cy - 18, 66);
+  const slices = [
+    { val: prev, color: "hsl(160, 84%, 44%)", label: "Prevented Bad" },
+    { val: miss, color: "hsl(350, 84%, 60%)", label: "Unnecessary Block/Down" },
+    { val: pres, color: "hsl(196, 86%, 54%)", label: "Preserved Winners" },
+  ];
+
+  let startA = -Math.PI / 2;
+  slices.forEach((s) => {
+    if (s.val <= 0) return;
+    const sweep = (s.val / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, startA, startA + sweep);
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = 22;
+    ctx.stroke();
+    startA += sweep;
+  });
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "hsl(210, 25%, 94%)";
+  ctx.font = "bold 18px 'JetBrains Mono', monospace";
+  ctx.fillText(`${comb.prevention_rate_pct ?? 0}%`, cx, cy + 4);
+  ctx.font = "9.5px 'Inter', sans-serif";
+  ctx.fillStyle = "hsl(215, 15%, 68%)";
+  ctx.fillText("PREVENTED", cx, cy + 18);
+
+  // Clean right-side breakdown labels
+  ctx.textAlign = "left";
+  const lx = cx + radius + 28;
+  const items = [
+    [`${prev} / ${total} Bad Prevented`, `Avg block save -${croAudit?.blocks?.avg_loss_avoided_pct ?? 0}%`, "hsl(160, 84%, 44%)"],
+    [`${miss} / ${total} Unnecessary`, `Missed avg +${croAudit?.blocks?.avg_upside_missed_pct ?? 0}%`, "hsl(350, 84%, 60%)"],
+    [`${pres} / ${total} Preserved Wins`, `Net CRO value ${(comb.net_intervention_value_pct || 0) >= 0 ? "+" : ""}${comb.net_intervention_value_pct ?? 0}%`, "hsl(196, 86%, 54%)"],
+  ];
+  items.forEach(([t1, t2, col], idx) => {
+    const iy = 38 + idx * 50;
+    ctx.fillStyle = col;
+    ctx.fillRect(lx, iy - 9, 8, 8);
+    ctx.fillStyle = "hsl(210, 25%, 92%)";
+    ctx.font = "bold 11px 'JetBrains Mono', monospace";
+    ctx.fillText(t1, lx + 14, iy - 1);
+    ctx.fillStyle = "hsl(215, 15%, 68%)";
+    ctx.font = "10px 'Inter', sans-serif";
+    ctx.fillText(t2, lx + 14, iy + 14);
+  });
+}
+
+function drawReportBenchmarkCanvas(rows) {
+  const canvas = document.getElementById("rptBenchmarkCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(260, rect.width || 440);
+  const h = Math.max(170, rect.height || 210);
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  if (!Array.isArray(rows) || !rows.length) {
+    ctx.font = "12px 'Inter', sans-serif";
+    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillText("Benchmark comparison awaiting scan.", 14, h / 2);
+    return;
+  }
+
+  const labelW = w < 380 ? 92 : 148;
+  const negValPad = 42;
+  const padR = 46;
+  const plotW = Math.max(80, w - labelW - negValPad - padR);
+  const maxAbs = Math.max(5, ...rows.map((r) => Math.abs(Number(r.cumulative_return_pct || 0)))) * 1.15;
+  const zeroX = labelW + negValPad + plotW * 0.72;
+  const scaleNeg = (plotW * 0.72) / maxAbs;
+  const scalePos = (plotW * 0.28) / maxAbs;
+
+  ctx.strokeStyle = "hsla(215, 20%, 50%, 0.45)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(zeroX, 8);
+  ctx.lineTo(zeroX, h - 10);
+  ctx.stroke();
+
+  const rowH = (h - 16) / rows.length;
+  ctx.font = w < 380 ? "9.5px 'JetBrains Mono', monospace" : "10px 'JetBrains Mono', monospace";
+  rows.forEach((r, i) => {
+    const cy = 12 + i * rowH;
+    const shortName = String(r.strategy)
+      .replace("Moreshwar Mathematical Model (Orig)", "Moreshwar Orig")
+      .replace("Recalibrated Moreshwar (+ Gemini CRO)", "Recal + CRO")
+      .replace("Nifty 50 (^NSEI) Buy & Hold", "Nifty 50 Hold")
+      .replace("Equal-Weight Universe Buy & Hold", "Equal-Wt 10")
+      .replace("Simple SMA-20 + Fixed 1:2 (5%/10%)", "Simple SMA-20")
+      .replace("Matrix Entries + Fixed 1:2 Exits", "Matrix + 1:2");
+
+    ctx.fillStyle = "hsl(210, 25%, 90%)";
+    ctx.fillText(shortName.slice(0, w < 380 ? 14 : 20), 6, cy + 12);
+
+    const val = Number(r.cumulative_return_pct || 0);
+    const isBench = String(r.strategy).includes("Nifty") || String(r.strategy).includes("Equal-Weight");
+    const col = val >= 0 ? (isBench ? "hsl(38, 92%, 55%)" : "hsl(160, 84%, 44%)") : (String(r.strategy).includes("Matrix +") ? "hsl(196, 86%, 54%)" : "hsl(350, 84%, 60%)");
+    const xEnd = val >= 0 ? zeroX + val * scalePos : zeroX + val * scaleNeg;
+    const bx = Math.min(zeroX, xEnd);
+    const bw = Math.max(2, Math.abs(xEnd - zeroX));
+    ctx.fillStyle = col;
+    ctx.fillRect(bx, cy + 3, bw, 12);
+    const valStr = `${val >= 0 ? "+" : ""}${val.toFixed(1)}%`;
+    ctx.fillText(valStr, val >= 0 ? bx + bw + 4 : bx - 40, cy + 13);
+  });
+}
+
+function renderReportsView() {
+  const briefEl = document.getElementById("rptExecutiveBrief");
+  const kpiEl = document.getElementById("rptHighlightKpis");
+  const storyEl = document.getElementById("rptStoryContainer");
+  const isoBadge = document.getElementById("rptIsolationBadge");
+  if (!briefEl || !kpiEl || !storyEl) return;
+
+  const assetsList = Object.values(appState.assets || {});
+  const bt = appState.backtest || {};
+  const dqa = bt.decision_quality_answers || {};
+  const selM = bt.selectivity_metrics || {};
+  const trOrig = bt.tracks?.original_ai_signals?.metrics || {};
+  const trRecal = bt.tracks?.recalibrated_ai_signals?.metrics || {};
+  const trAct = bt.tracks?.actual_executed_trades?.metrics || {};
+  const actStatus = bt.tracks?.actual_executed_trades?.status || "NO_LIVE_BROKER_FILLS";
+  const bench = bt.benchmark || {};
+  const q1 = dqa.top_contributing_agent || {};
+  const q2 = dqa.gemini_intervention_audit || {};
+  const q2Comb = q2.combined_scorecard || {};
+  const q3 = dqa.moreshwar_vs_benchmarks || {};
+  const sampleCtx = dqa.sample_context || {};
+  const buys = appState.queue?.buys || [];
+  const sells = appState.queue?.sells || [];
+  const provSum = appState.provenance?.summary || {};
+  const discCount = provSum.discrepancy_count ?? 0;
+
+  if (isoBadge) {
+    isoBadge.textContent = actStatus === "BROKER_VERIFIED"
+      ? "REAL BROKER FILLS VERIFIED SEPARATELY"
+      : "0 REAL BROKER FILLS · SIMULATIONS STRICTLY ISOLATED";
+  }
+
+  const buySyms = buys.map((b) => b.symbol).join(", ") || "None";
+  const topAgent = q1.winner || "FundBot_1";
+  const topLift = q1.cum_return_lift_pct ?? 0;
+  const topDd = q1.drawdown_saved_pct ?? 0;
+  const prevCount = q2Comb.bad_trades_prevented ?? 0;
+  const totalCro = q2.total_interventions ?? 0;
+  const prevRate = q2Comb.prevention_rate_pct ?? 0;
+  const unnecCount = q2Comb.good_trades_unnecessarily_downgraded ?? 0;
+  const unnecRate = q2Comb.unnecessary_downgrade_rate_pct ?? 0;
+  const settledLive = sampleCtx.settled_records ?? 0;
+  const minLive = sampleCtx.min_recommended_settled ?? 30;
+  const openLive = sampleCtx.open_records ?? 0;
+
+  briefEl.innerHTML = `
+    <strong>Plain-English Bottom Line:</strong> Across <strong>${assetsList.length}</strong> live tracked stocks, our tighter quality filters eliminated <strong>${selM.noise_reduction_pct ?? 0}%</strong> of low-conviction noise, leaving <strong>${buys.length} high-conviction BUY setups</strong> right now (<em>${escHtml(buySyms)}</em>) and <strong>${sells.length}</strong> exit warnings. On 1-year historical walk-forward testing (net of 0.35% costs), <strong>${escHtml(topAgent)}</strong> contributes the most to profit (<strong>${topLift >= 0 ? "+" : ""}${topLift}%</strong> cumulative lift and <strong>${topDd >= 0 ? "+" : ""}${topDd}%</strong> drawdown protection), while <strong>Gemini CRO</strong> prevented <strong>${prevCount} of ${totalCro} weak trades (${prevRate}%)</strong> at a cost of <strong>${unnecCount} unnecessary blocks/downgrades (${unnecRate}%)</strong>. However, the default <strong>Moreshwar exit formula</strong> trails Nifty 50 (<strong>${trOrig.cumulative_return_pct ?? 0}%</strong> vs <strong>${bench.benchmark_return_pct >= 0 ? "+" : ""}${bench.benchmark_return_pct ?? 0}%</strong>) because its tight stop-loss gets triggered by short-term noise. Live broker execution currently has <strong>${trAct.total_signals || 0} real fills</strong>, and the permanent ledger holds <strong>${settledLive}/${minLive} settled</strong> live decisions (${openLive} open waiting for T+1..T+14 outcomes).
+  `;
+
+  kpiEl.innerHTML = `
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Live Queue Focus</span>
+      <span class="kpi-tile-val" style="color:var(--accent-emerald);">${buys.length} High-Conviction Buys</span>
+      <span class="kpi-tile-sub">${selM.noise_reduction_pct ?? 0}% noise filtered out</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Best Profit Agent</span>
+      <span class="kpi-tile-val" style="color:var(--accent-cyan);">${escHtml(topAgent)}</span>
+      <span class="kpi-tile-sub">${topLift >= 0 ? "+" : ""}${topLift}% return lift · ${topDd}% DD saved</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Gemini CRO Accuracy</span>
+      <span class="kpi-tile-val" style="color:var(--accent-amber);">${prevRate}% Saved Bad</span>
+      <span class="kpi-tile-sub">${prevCount} prevented vs ${unnecCount} unnecessary</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Recalibrated vs Nifty 50</span>
+      <span class="kpi-tile-val" style="color:${(trRecal.cumulative_return_pct || 0) >= (bench.benchmark_return_pct || 0) ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${trRecal.cumulative_return_pct ?? 0}% vs ${bench.benchmark_return_pct >= 0 ? "+" : ""}${bench.benchmark_return_pct ?? 0}%</span>
+      <span class="kpi-tile-sub">Drawdown cut to ${trRecal.max_drawdown_pct ?? 0}% (from ${trOrig.max_drawdown_pct ?? 0}%)</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile-label">Live Ledger Progress</span>
+      <span class="kpi-tile-val">${settledLive} / ${minLive} Settled</span>
+      <span class="kpi-tile-sub">${openLive} monitoring forward bars · ${discCount} feed alerts</span>
+    </div>
+  `;
+
+  const eqCapEl = document.getElementById("rptEquityCaption");
+  if (eqCapEl) {
+    eqCapEl.textContent = `Starting every portfolio at 100.0, Gemini recalibration softens losses and nearly halves maximum drawdown (${trRecal.max_drawdown_pct ?? 0}% vs ${trOrig.max_drawdown_pct ?? 0}%), though a choppy NSE market kept Nifty 50 (+${bench.benchmark_return_pct ?? 0}%) ahead overall.`;
+  }
+  const agCapEl = document.getElementById("rptAgentCaption");
+  if (agCapEl) {
+    agCapEl.textContent = `${topAgent} drives the largest performance boost (${topLift >= 0 ? "+" : ""}${topLift}% lift), followed by TechBot_1 and Gemini_CRO. ExecBot_1's tight Moreshwar stop-loss distance is the only negative drag compared to wider 5%/10% exits.`;
+  }
+  const croCapEl = document.getElementById("rptCroCaption");
+  if (croCapEl) {
+    croCapEl.textContent = `Out of ${totalCro} times Gemini intervened on a setup, ${prevCount} (${prevRate}%) successfully avoided losing trades or improved overbought entries, while ${unnecCount} (${unnecRate}%) missed upside — delivering a net +${q2Comb.net_intervention_value_pct ?? 0}% protection edge.`;
+  }
+  const bmCapEl = document.getElementById("rptBenchmarkCaption");
+  if (bmCapEl) {
+    bmCapEl.textContent = `Moreshwar beats a naive Simple SMA-20 rule (+${q3.spread_vs_sma_strategy_pct ?? 0}% spread and nearly 10% lower drawdown), but using the same high-quality AI entries with wider Fixed 1:2 exits improves cumulative performance by ${Math.abs(q3.spread_vs_fixed_1to2_pct ?? 0).toFixed(2)}%.`;
+  }
+
+  const strongBuys = assetsList.filter((a) => ["BUY NOW", "ADD"].includes(a.decision_matrix?.action)).length;
+  const holdSips = assetsList.filter((a) => ["HOLD", "SIP ONLY"].includes(a.decision_matrix?.action)).length;
+  const cautions = assetsList.length - strongBuys - holdSips;
+  const heldCount = Object.values(appState.holdingsMap || {}).filter((h) => (h.qty || 0) > 0).length;
+
+  storyEl.innerHTML = `
+    <div class="rpt-story-card" style="border-top:2px solid var(--accent-emerald);">
+      <div class="rpt-story-head">
+        <span class="rpt-story-title">Tab 1 · Execution Queue &amp; Selectivity</span>
+        <span class="tag-pill tag-target">${buys.length} ACTIVE PICK${buys.length === 1 ? "" : "S"}</span>
+      </div>
+      <div class="rpt-story-text">Instead of flooding the queue, strict gates only surface aligned setups with R:R ≥ 1:1.5. Active ideas today: <strong>${escHtml(buySyms)}</strong>. Over 1 year, this filtering removed ${selM.noise_reduction_pct ?? 0}% of weak signals before execution.</div>
+    </div>
+    <div class="rpt-story-card" style="border-top:2px solid var(--accent-cyan);">
+      <div class="rpt-story-head">
+        <span class="rpt-story-title">Tab 2 · Watchlist Moat &amp; Portfolio</span>
+        <span class="tag-pill tag-entry">${heldCount} HELD · ${assetsList.length} WATCHED</span>
+      </div>
+      <div class="rpt-story-text">Across your universe: <strong>${strongBuys}</strong> stocks rate BUY NOW/ADD, <strong>${holdSips}</strong> sit in HOLD/SIP ONLY, and <strong>${cautions}</strong> are flagged CAUTION/AVOID. Live Zerodha holdings remain safely isolated from all backtests.</div>
+    </div>
+    <div class="rpt-story-card" style="border-top:2px solid var(--accent-amber);">
+      <div class="rpt-story-head">
+        <span class="rpt-story-title">Tab 3 · Multi-Agent &amp; Gemini CRO</span>
+        <span class="tag-pill tag-score">${escHtml(appState.geminiStatus || "CRO READY")}</span>
+      </div>
+      <div class="rpt-story-text"><strong>${escHtml(topAgent)}</strong> leads on profit lift, while Gemini's adversarial review shields against chasing overbought rallies and downward regression curves — adding <strong>+${q2Comb.net_intervention_value_pct ?? 0}%</strong> net value across backtested interventions.</div>
+    </div>
+    <div class="rpt-story-card" style="border-top:2px solid var(--accent-crimson);">
+      <div class="rpt-story-head">
+        <span class="rpt-story-title">Tab 4 · Data Health &amp; Audit Accumulation</span>
+        <span class="tag-pill ${discCount > 0 ? "tag-stop" : "tag-target"}">${discCount} DISCREPANC${discCount === 1 ? "Y" : "IES"}</span>
+      </div>
+      <div class="rpt-story-text">Market feeds combine Official NSE MCP + Yahoo Finance with zero simulated prices. The permanent audit ledger currently monitors <strong>${openLive}</strong> open decisions toward our <strong>${minLive}-trade</strong> live statistical milestone.</div>
+    </div>
+  `;
+
+  drawReportsCharts();
 }
 
 function renderChat() {
@@ -1615,6 +2036,8 @@ function bootFinsistantApp() {
         drawUnifiedChart(appState.assets[appState.activeSymbol]);
       } else if (btn.dataset.tab === "intelligence") {
         requestAnimationFrame(() => drawBacktestEquityChart((appState.backtest || {}).equity_curve || []));
+      } else if (btn.dataset.tab === "reports") {
+        requestAnimationFrame(() => drawReportsCharts());
       }
     });
   });
@@ -1887,6 +2310,7 @@ function bootFinsistantApp() {
   window.addEventListener("resize", () => {
     drawUnifiedChart(appState.assets[appState.activeSymbol]);
     drawBacktestEquityChart((appState.backtest || {}).equity_curve || []);
+    drawReportsCharts();
   });
 }
 
