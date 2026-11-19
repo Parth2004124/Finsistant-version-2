@@ -1,8 +1,20 @@
 {
   "data_mode": "LIVE_ONLY",
   "data_source": "Yahoo Finance Live Market Data + 3-Agent Orchestrator",
-  "kite_status": "0 holdings (Kite access token not configured \u2014 live market feed active)",
-  "generated_at": "2026-11-19T06:00:03.192054+00:00",
+  "kite_status": "0 holdings (Kite credentials not configured \u2014 live market feed active)",
+  "kite_auth": {
+    "trading_day_ist": "2026-11-19",
+    "api_key_configured": false,
+    "api_secret_configured": false,
+    "user_id_configured": false,
+    "password_configured": false,
+    "totp_secret_configured": false,
+    "auto_login_ready": false,
+    "daily_token_cached": false,
+    "access_token_active": false,
+    "login_url": ""
+  },
+  "generated_at": "2026-11-19T06:20:43.661609+00:00",
   "portfolio": {
     "stats": {
       "invested": 0.0,
@@ -23,25 +35,25 @@
         "sector": "Energy",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 1361.5,
-        "ltp": 1361.5,
-        "change_pct": -0.11,
+        "avg_price": 1361.6,
+        "ltp": 1361.6,
+        "change_pct": -0.1,
         "fundamental_score": 72,
         "porters_score": 65,
         "decision": "BUY NOW",
         "moreshwar": {
           "x_composite_score": 68.5,
-          "spot_price": 1361.5,
-          "entry_price": 1333.65,
-          "target": 1454.66,
-          "stop_loss": 1318.66,
+          "spot_price": 1361.6,
+          "entry_price": 1333.75,
+          "target": 1454.76,
+          "stop_loss": 1318.76,
           "rr_ratio": 2.17,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": -0.11
+        "net_chg": -0.1
       },
       {
         "symbol": "TCS",
@@ -52,25 +64,25 @@
         "sector": "Technology",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 2357.2,
-        "ltp": 2357.2,
-        "change_pct": -0.94,
+        "avg_price": 2358.6,
+        "ltp": 2358.6,
+        "change_pct": -0.88,
         "fundamental_score": 80,
         "porters_score": 85,
         "decision": "SIP ONLY",
         "moreshwar": {
           "x_composite_score": 82.5,
-          "spot_price": 2357.2,
-          "entry_price": 2330.36,
-          "target": 2551.9,
-          "stop_loss": 2315.9,
+          "spot_price": 2358.6,
+          "entry_price": 2331.76,
+          "target": 2553.3,
+          "stop_loss": 2317.3,
           "rr_ratio": 4.71,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": -0.94
+        "net_chg": -0.88
       },
       {
         "symbol": "HDFCBANK",
@@ -81,25 +93,25 @@
         "sector": "Financial Services",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 808.5,
-        "ltp": 808.5,
-        "change_pct": 0.04,
+        "avg_price": 810.55,
+        "ltp": 810.55,
+        "change_pct": 0.3,
         "fundamental_score": 70,
         "porters_score": 75,
         "decision": "BUY NOW",
         "moreshwar": {
           "x_composite_score": 72.5,
-          "spot_price": 808.5,
-          "entry_price": 790.62,
-          "target": 881.0,
-          "stop_loss": 781.0,
+          "spot_price": 810.55,
+          "entry_price": 792.67,
+          "target": 883.05,
+          "stop_loss": 783.05,
           "rr_ratio": 2.64,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": 0.04
+        "net_chg": 0.3
       },
       {
         "symbol": "ICICIBANK",
@@ -110,25 +122,25 @@
         "sector": "Financial Services",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 1593.6,
-        "ltp": 1593.6,
-        "change_pct": -0.48,
+        "avg_price": 1596.4,
+        "ltp": 1596.4,
+        "change_pct": -0.31,
         "fundamental_score": 85,
         "porters_score": 85,
         "decision": "BUY NOW",
         "moreshwar": {
           "x_composite_score": 85.0,
-          "spot_price": 1593.6,
-          "entry_price": 1578.1,
-          "target": 1728.75,
-          "stop_loss": 1569.75,
+          "spot_price": 1596.4,
+          "entry_price": 1580.8,
+          "target": 1732.4,
+          "stop_loss": 1572.4,
           "rr_ratio": 5.67,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": -0.48
+        "net_chg": -0.31
       },
       {
         "symbol": "INFY",
@@ -139,25 +151,25 @@
         "sector": "Technology",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 1083.2,
-        "ltp": 1083.2,
-        "change_pct": -2.31,
+        "avg_price": 1084.5,
+        "ltp": 1084.5,
+        "change_pct": -2.19,
         "fundamental_score": 72,
         "porters_score": 65,
         "decision": "WAIT",
         "moreshwar": {
           "x_composite_score": 68.5,
-          "spot_price": 1083.2,
-          "entry_price": 1061.09,
-          "target": 1157.18,
-          "stop_loss": 1049.18,
+          "spot_price": 1084.5,
+          "entry_price": 1062.39,
+          "target": 1158.48,
+          "stop_loss": 1050.48,
           "rr_ratio": 2.17,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": -2.31
+        "net_chg": -2.19
       },
       {
         "symbol": "TATAMOTORS",
@@ -168,25 +180,25 @@
         "sector": "Consumer Cyclical",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 449.1,
-        "ltp": 449.1,
-        "change_pct": 1.19,
+        "avg_price": 451.2,
+        "ltp": 451.2,
+        "change_pct": 1.67,
         "fundamental_score": 49,
         "porters_score": 45,
         "decision": "SIP ONLY",
         "moreshwar": {
           "x_composite_score": 47.0,
-          "spot_price": 449.1,
-          "entry_price": 414.65,
-          "target": 496.1,
-          "stop_loss": 396.1,
+          "spot_price": 451.2,
+          "entry_price": 416.75,
+          "target": 498.2,
+          "stop_loss": 398.2,
           "rr_ratio": 0.89,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": 1.19
+        "net_chg": 1.67
       },
       {
         "symbol": "NVDA",
@@ -226,25 +238,25 @@
         "sector": "Communication Services",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 70.97,
-        "ltp": 70.97,
-        "change_pct": 0.28,
+        "avg_price": 70.95,
+        "ltp": 70.95,
+        "change_pct": 0.25,
         "fundamental_score": 38,
         "porters_score": 40,
         "decision": "AVOID",
         "moreshwar": {
           "x_composite_score": 39.0,
-          "spot_price": 70.97,
-          "entry_price": 63.87,
-          "target": 109.97,
-          "stop_loss": 60.32,
-          "rr_ratio": 3.66,
+          "spot_price": 70.95,
+          "entry_price": 63.86,
+          "target": 109.95,
+          "stop_loss": 60.31,
+          "rr_ratio": 3.67,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": 0.28
+        "net_chg": 0.25
       },
       {
         "symbol": "ITC",
@@ -255,25 +267,25 @@
         "sector": "Consumer Defensive",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 298.0,
-        "ltp": 298.0,
-        "change_pct": 0.47,
+        "avg_price": 298.15,
+        "ltp": 298.15,
+        "change_pct": 0.52,
         "fundamental_score": 62,
         "porters_score": 70,
         "decision": "WAIT",
         "moreshwar": {
           "x_composite_score": 66.0,
-          "spot_price": 298.0,
-          "entry_price": 275.9,
-          "target": 364.0,
-          "stop_loss": 264.0,
+          "spot_price": 298.15,
+          "entry_price": 276.05,
+          "target": 364.15,
+          "stop_loss": 264.15,
           "rr_ratio": 1.94,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": 0.47
+        "net_chg": 0.52
       },
       {
         "symbol": "SBIN",
@@ -284,32 +296,32 @@
         "sector": "Financial Services",
         "asset_type": "STOCK",
         "qty": 0,
-        "avg_price": 1143.25,
-        "ltp": 1143.25,
-        "change_pct": 0.73,
+        "avg_price": 1143.35,
+        "ltp": 1143.35,
+        "change_pct": 0.74,
         "fundamental_score": 90,
         "porters_score": 70,
         "decision": "BUY NOW",
         "moreshwar": {
           "x_composite_score": 80.0,
-          "spot_price": 1143.25,
-          "entry_price": 1128.43,
-          "target": 1234.45,
-          "stop_loss": 1120.45,
+          "spot_price": 1143.35,
+          "entry_price": 1128.53,
+          "target": 1234.55,
+          "stop_loss": 1120.55,
           "rr_ratio": 4.0,
           "is_holding": false
         },
         "invested": 0.0,
         "current": 0.0,
         "pnl": 0.0,
-        "net_chg": 0.73
+        "net_chg": 0.74
       }
     ]
   },
   "queue": {
     "buys": [
       {
-        "id": "pick-reliance-8003",
+        "id": "pick-reliance-9243",
         "symbol": "RELIANCE",
         "name": "Reliance Industries Limited",
         "currency": "INR",
@@ -321,16 +333,16 @@
         "porters_score": 65,
         "confidence": 80.0,
         "decision_badge": "BUY NOW",
-        "entry": 1361.5,
-        "target": 1454.66,
-        "stop_loss": 1318.66,
+        "entry": 1361.6,
+        "target": 1454.76,
+        "stop_loss": 1318.76,
         "rr_ratio": 2.17,
         "qty": 16,
         "horizon_days": "14D",
-        "rationale": "Fundamental 72/100 (Bus 32/40, Moat 10/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 65/100 [POWER]. Balanced valuation at P/E 22.4x. Strong top-line expansion (29.8% YoY) & profit growth (40.7% YoY). Decision Matrix: BUY NOW (80.0% conviction). Auto-Risk sized 16 shares (INR 21,784.00) | Moreshwar Target 1,454.66 / SL 1,318.66 (R:R 1:2.17)."
+        "rationale": "Fundamental 72/100 (Bus 32/40, Moat 10/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 65/100 [POWER]. Balanced valuation at P/E 22.4x. Strong top-line expansion (29.8% YoY) & profit growth (40.7% YoY). Decision Matrix: BUY NOW (80.0% conviction). Auto-Risk sized 16 shares (INR 21,785.60) | Moreshwar Target 1,454.76 / SL 1,318.76 (R:R 1:2.17)."
       },
       {
-        "id": "pick-tcs-8003",
+        "id": "pick-tcs-9243",
         "symbol": "TCS",
         "name": "Tata Consultancy Services Limited",
         "currency": "INR",
@@ -342,16 +354,16 @@
         "porters_score": 85,
         "confidence": 68.8,
         "decision_badge": "SIP ONLY",
-        "entry": 2357.2,
-        "target": 2551.9,
-        "stop_loss": 2315.9,
+        "entry": 2358.6,
+        "target": 2553.3,
+        "stop_loss": 2317.3,
         "rr_ratio": 4.71,
         "qty": 9,
         "horizon_days": "14D",
-        "rationale": "Fundamental 80/100 (Bus 30/40, Moat 20/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [IT]. Attractive valuation at P/E 16.5x with value margin of safety. High capital efficiency (ROE 45.6%, ROCE 39.0%) underscores durable moat. Decision Matrix: SIP ONLY (68.8% conviction). Auto-Risk sized 9 shares (INR 21,214.80) | Moreshwar Target 2,551.90 / SL 2,315.90 (R:R 1:4.71)."
+        "rationale": "Fundamental 80/100 (Bus 30/40, Moat 20/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [IT]. Attractive valuation at P/E 16.5x with value margin of safety. High capital efficiency (ROE 45.6%, ROCE 39.0%) underscores durable moat. Decision Matrix: SIP ONLY (68.8% conviction). Auto-Risk sized 9 shares (INR 21,227.40) | Moreshwar Target 2,553.30 / SL 2,317.30 (R:R 1:4.71)."
       },
       {
-        "id": "pick-hdfcbank-8003",
+        "id": "pick-hdfcbank-9243",
         "symbol": "HDFCBANK",
         "name": "HDFC Bank Limited",
         "currency": "INR",
@@ -363,16 +375,16 @@
         "porters_score": 75,
         "confidence": 82.2,
         "decision_badge": "BUY NOW",
-        "entry": 808.5,
-        "target": 881.0,
-        "stop_loss": 781.0,
+        "entry": 810.55,
+        "target": 883.05,
+        "stop_loss": 783.05,
         "rr_ratio": 2.64,
         "qty": 27,
         "horizon_days": "14D",
-        "rationale": "Fundamental 70/100 (Bus 35/40, Moat 5/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [BANKING]. Attractive valuation at P/E 17.7x with value margin of safety. Strong top-line expansion (80.8% YoY) & profit growth (21.3% YoY). Decision Matrix: BUY NOW (82.2% conviction). Auto-Risk sized 27 shares (INR 21,829.50) | Moreshwar Target 881.00 / SL 781.00 (R:R 1:2.64)."
+        "rationale": "Fundamental 70/100 (Bus 35/40, Moat 5/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [BANKING]. Attractive valuation at P/E 17.7x with value margin of safety. Strong top-line expansion (80.8% YoY) & profit growth (21.3% YoY). Decision Matrix: BUY NOW (82.2% conviction). Auto-Risk sized 27 shares (INR 21,884.85) | Moreshwar Target 883.05 / SL 783.05 (R:R 1:2.64)."
       },
       {
-        "id": "pick-icicibank-8003",
+        "id": "pick-icicibank-9243",
         "symbol": "ICICIBANK",
         "name": "ICICI Bank Limited",
         "currency": "INR",
@@ -384,16 +396,16 @@
         "porters_score": 85,
         "confidence": 89.1,
         "decision_badge": "BUY NOW",
-        "entry": 1593.6,
-        "target": 1728.75,
-        "stop_loss": 1569.75,
+        "entry": 1596.4,
+        "target": 1732.4,
+        "stop_loss": 1572.4,
         "rr_ratio": 5.67,
         "qty": 13,
         "horizon_days": "14D",
-        "rationale": "Fundamental 85/100 (Bus 40/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [BANKING]. Balanced valuation at P/E 19.6x. High capital efficiency (ROE 16.5%, ROCE 12.2%) underscores durable moat. Strong top-line expansion (15.8% YoY) & profit growth (22.1% YoY). Decision Matrix: BUY NOW (89.1% conviction). Auto-Risk sized 13 shares (INR 20,716.80) | Moreshwar Target 1,728.75 / SL 1,569.75 (R:R 1:5.67)."
+        "rationale": "Fundamental 85/100 (Bus 40/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [BANKING]. Balanced valuation at P/E 19.6x. High capital efficiency (ROE 16.5%, ROCE 12.2%) underscores durable moat. Strong top-line expansion (15.8% YoY) & profit growth (22.1% YoY). Decision Matrix: BUY NOW (89.1% conviction). Auto-Risk sized 13 shares (INR 20,753.20) | Moreshwar Target 1,732.40 / SL 1,572.40 (R:R 1:5.67)."
       },
       {
-        "id": "pick-infy-8003",
+        "id": "pick-infy-9243",
         "symbol": "INFY",
         "name": "Infosys Limited",
         "currency": "INR",
@@ -405,16 +417,16 @@
         "porters_score": 65,
         "confidence": 61.1,
         "decision_badge": "WAIT",
-        "entry": 1083.2,
-        "target": 1157.18,
-        "stop_loss": 1049.18,
+        "entry": 1084.5,
+        "target": 1158.48,
+        "stop_loss": 1050.48,
         "rr_ratio": 2.17,
         "qty": 1,
         "horizon_days": "14D",
         "rationale": "Fundamental 72/100 (Bus 17/40, Moat 15/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 65/100 [IT]. Attractive valuation at P/E 14.4x with value margin of safety. High capital efficiency (ROE 29.9%, ROCE 25.8%) underscores durable moat. Decision Matrix: WAIT. Core moat is high, but near-term growth trajectory is slowing. Wait for stabilization."
       },
       {
-        "id": "pick-tatamotors-8003",
+        "id": "pick-tatamotors-9243",
         "symbol": "TATAMOTORS",
         "name": "Tata Motors Limited",
         "currency": "INR",
@@ -426,16 +438,16 @@
         "porters_score": 45,
         "confidence": 68.1,
         "decision_badge": "SIP ONLY",
-        "entry": 449.1,
-        "target": 496.1,
-        "stop_loss": 396.1,
+        "entry": 451.2,
+        "target": 498.2,
+        "stop_loss": 398.2,
         "rr_ratio": 0.89,
         "qty": 28,
         "horizon_days": "14D",
-        "rationale": "Fundamental 49/100 (Bus 19/40, Moat 5/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 45/100 [FMCG]. Balanced valuation at P/E 26.2x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY). Decision Matrix: SIP ONLY (68.1% conviction). Auto-Risk sized 28 shares (INR 12,574.80) | Moreshwar Target 496.10 / SL 396.10 (R:R 1:0.89)."
+        "rationale": "Fundamental 49/100 (Bus 19/40, Moat 5/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 45/100 [FMCG]. Balanced valuation at P/E 26.3x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY). Decision Matrix: SIP ONLY (68.1% conviction). Auto-Risk sized 28 shares (INR 12,633.60) | Moreshwar Target 498.20 / SL 398.20 (R:R 1:0.89)."
       },
       {
-        "id": "pick-nvda-8003",
+        "id": "pick-nvda-9243",
         "symbol": "NVDA",
         "name": "NVIDIA Corporation",
         "currency": "USD",
@@ -456,7 +468,7 @@
         "rationale": "Fundamental 80/100 (Bus 40/40, Moat 20/20, Mgmt 10/20, Risk 10/20) \u00b7 Porter's 5 Forces 99/100 [IT]. Attractive valuation at P/E 16.2x with value margin of safety. High capital efficiency (ROE 117.2%, ROCE 98.1%) underscores durable moat. Strong top-line expansion (105.9% YoY) & profit growth (127.8% YoY). Decision Matrix: SIP ONLY (57.3% conviction). Auto-Risk sized 142 shares (INR 21,436.32) | Moreshwar Target 240.46 / SL 140.46 (R:R 1:8.52)."
       },
       {
-        "id": "pick-sbin-8003",
+        "id": "pick-sbin-9243",
         "symbol": "SBIN",
         "name": "State Bank of India",
         "currency": "INR",
@@ -468,13 +480,13 @@
         "porters_score": 70,
         "confidence": 86.3,
         "decision_badge": "BUY NOW",
-        "entry": 1143.25,
-        "target": 1234.45,
-        "stop_loss": 1120.45,
+        "entry": 1143.35,
+        "target": 1234.55,
+        "stop_loss": 1120.55,
         "rr_ratio": 4.0,
         "qty": 19,
         "horizon_days": "14D",
-        "rationale": "Fundamental 90/100 (Bus 25/40, Moat 15/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 70/100 [BANKING]. Attractive valuation at P/E 11.7x with value margin of safety. Decision Matrix: BUY NOW (86.3% conviction). Auto-Risk sized 19 shares (INR 21,721.75) | Moreshwar Target 1,234.45 / SL 1,120.45 (R:R 1:4.0)."
+        "rationale": "Fundamental 90/100 (Bus 25/40, Moat 15/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 70/100 [BANKING]. Attractive valuation at P/E 11.7x with value margin of safety. Decision Matrix: BUY NOW (86.3% conviction). Auto-Risk sized 19 shares (INR 21,723.65) | Moreshwar Target 1,234.55 / SL 1,120.55 (R:R 1:4.0)."
       }
     ],
     "sells": [],
@@ -490,34 +502,34 @@
       "sector": "Energy",
       "asset_type": "STOCK",
       "setup_type": "Institutional Breakout",
-      "price": 1361.5,
-      "change_pct": -0.11,
-      "fetched_at": "2026-11-19T06:00:01.013629+00:00",
+      "price": 1361.6,
+      "change_pct": -0.1,
+      "fetched_at": "2026-11-19T06:20:41.526388+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
       "rsi_14": 95.0,
-      "macd": 41.167,
-      "macd_signal": 33.144,
+      "macd": 41.175,
+      "macd_signal": 33.146,
       "sma_20": 1279.53,
-      "ema_12": 1326.61,
+      "ema_12": 1326.63,
       "ema_26": 1285.45,
-      "bb_upper": 1430.19,
+      "bb_upper": 1430.2,
       "bb_lower": 1128.87,
-      "projected_30d_target": 1651.96,
+      "projected_30d_target": 1652.0,
       "regression_std_dev": 28.3,
       "regression_curve": "Upward Curve",
       "future_projection": [
-        1429.96,
-        1447.23,
-        1465.09,
-        1483.52,
-        1502.54,
-        1522.14,
-        1542.33,
-        1563.09,
-        1584.43,
-        1606.36,
-        1628.87,
-        1651.96
+        1429.98,
+        1447.25,
+        1465.11,
+        1483.55,
+        1502.57,
+        1522.17,
+        1542.36,
+        1563.12,
+        1584.47,
+        1606.4,
+        1628.91,
+        1652.0
       ],
       "fundamental_score": {
         "business": 32,
@@ -543,7 +555,7 @@
           "sales_growth": 29.8,
           "profit_growth": 40.7,
           "debt_to_equity": 0.44,
-          "mcap_cr": 1842446.18,
+          "mcap_cr": 1842581.45,
           "beta": 0.18
         }
       },
@@ -557,10 +569,10 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 68.5,
-        "spot_price": 1361.5,
-        "entry_price": 1333.65,
-        "target": 1454.66,
-        "stop_loss": 1318.66,
+        "spot_price": 1361.6,
+        "entry_price": 1333.75,
+        "target": 1454.76,
+        "stop_loss": 1318.76,
         "rr_ratio": 2.17,
         "is_holding": false
       },
@@ -683,9 +695,9 @@
           "rsi_14": 45.99,
           "bb_upper": 1269.47,
           "bb_lower": 1165.9,
-          "reg_value": 1184.23,
-          "reg_upper": 1212.53,
-          "reg_lower": 1155.93
+          "reg_value": 1184.22,
+          "reg_upper": 1212.52,
+          "reg_lower": 1155.92
         },
         {
           "date": "2026-10-07",
@@ -721,9 +733,9 @@
           "rsi_14": 36.68,
           "bb_upper": 1266.98,
           "bb_lower": 1162.55,
-          "reg_value": 1182.14,
-          "reg_upper": 1210.44,
-          "reg_lower": 1153.84
+          "reg_value": 1182.13,
+          "reg_upper": 1210.43,
+          "reg_lower": 1153.83
         },
         {
           "date": "2026-10-09",
@@ -740,9 +752,9 @@
           "rsi_14": 38.19,
           "bb_upper": 1266.97,
           "bb_lower": 1157.62,
-          "reg_value": 1181.97,
-          "reg_upper": 1210.27,
-          "reg_lower": 1153.67
+          "reg_value": 1181.96,
+          "reg_upper": 1210.26,
+          "reg_lower": 1153.66
         },
         {
           "date": "2026-10-12",
@@ -759,9 +771,9 @@
           "rsi_14": 30.58,
           "bb_upper": 1267.8,
           "bb_lower": 1151.17,
-          "reg_value": 1182.38,
-          "reg_upper": 1210.68,
-          "reg_lower": 1154.08
+          "reg_value": 1182.37,
+          "reg_upper": 1210.67,
+          "reg_lower": 1154.07
         },
         {
           "date": "2026-10-13",
@@ -778,9 +790,9 @@
           "rsi_14": 33.89,
           "bb_upper": 1267.17,
           "bb_lower": 1147.52,
-          "reg_value": 1183.37,
-          "reg_upper": 1211.67,
-          "reg_lower": 1155.07
+          "reg_value": 1183.36,
+          "reg_upper": 1211.66,
+          "reg_lower": 1155.06
         },
         {
           "date": "2026-10-14",
@@ -873,9 +885,9 @@
           "rsi_14": 56.43,
           "bb_upper": 1247.84,
           "bb_lower": 1148.73,
-          "reg_value": 1197.05,
-          "reg_upper": 1225.35,
-          "reg_lower": 1168.75
+          "reg_value": 1197.04,
+          "reg_upper": 1225.34,
+          "reg_lower": 1168.74
         },
         {
           "date": "2026-10-22",
@@ -987,9 +999,9 @@
           "rsi_14": 47.21,
           "bb_upper": 1225.19,
           "bb_lower": 1149.85,
-          "reg_value": 1232.65,
-          "reg_upper": 1260.95,
-          "reg_lower": 1204.35
+          "reg_value": 1232.66,
+          "reg_upper": 1260.96,
+          "reg_lower": 1204.36
         },
         {
           "date": "2026-10-30",
@@ -1006,9 +1018,9 @@
           "rsi_14": 48.54,
           "bb_upper": 1225.36,
           "bb_lower": 1147.47,
-          "reg_value": 1240.62,
-          "reg_upper": 1268.92,
-          "reg_lower": 1212.32
+          "reg_value": 1240.63,
+          "reg_upper": 1268.93,
+          "reg_lower": 1212.33
         },
         {
           "date": "2026-11-02",
@@ -1063,9 +1075,9 @@
           "rsi_14": 72.43,
           "bb_upper": 1296.92,
           "bb_lower": 1110.59,
-          "reg_value": 1268.02,
-          "reg_upper": 1296.32,
-          "reg_lower": 1239.72
+          "reg_value": 1268.03,
+          "reg_upper": 1296.33,
+          "reg_lower": 1239.73
         },
         {
           "date": "2026-11-05",
@@ -1139,9 +1151,9 @@
           "rsi_14": 73.58,
           "bb_upper": 1359.39,
           "bb_lower": 1105.95,
-          "reg_value": 1312.7,
-          "reg_upper": 1341.0,
-          "reg_lower": 1284.4
+          "reg_value": 1312.71,
+          "reg_upper": 1341.01,
+          "reg_lower": 1284.41
         },
         {
           "date": "2026-11-12",
@@ -1158,9 +1170,9 @@
           "rsi_14": 81.32,
           "bb_upper": 1372.39,
           "bb_lower": 1110.25,
-          "reg_value": 1325.32,
-          "reg_upper": 1353.62,
-          "reg_lower": 1297.02
+          "reg_value": 1325.33,
+          "reg_upper": 1353.63,
+          "reg_lower": 1297.03
         },
         {
           "date": "2026-11-13",
@@ -1177,9 +1189,9 @@
           "rsi_14": 80.89,
           "bb_upper": 1383.56,
           "bb_lower": 1115.59,
-          "reg_value": 1338.52,
-          "reg_upper": 1366.82,
-          "reg_lower": 1310.22
+          "reg_value": 1338.53,
+          "reg_upper": 1366.83,
+          "reg_lower": 1310.23
         },
         {
           "date": "2026-11-16",
@@ -1196,9 +1208,9 @@
           "rsi_14": 80.35,
           "bb_upper": 1395.2,
           "bb_lower": 1116.93,
-          "reg_value": 1352.31,
-          "reg_upper": 1380.61,
-          "reg_lower": 1324.01
+          "reg_value": 1352.32,
+          "reg_upper": 1380.62,
+          "reg_lower": 1324.02
         },
         {
           "date": "2026-11-17",
@@ -1215,9 +1227,9 @@
           "rsi_14": 83.86,
           "bb_upper": 1409.37,
           "bb_lower": 1118.34,
-          "reg_value": 1366.67,
-          "reg_upper": 1394.97,
-          "reg_lower": 1338.37
+          "reg_value": 1366.69,
+          "reg_upper": 1394.99,
+          "reg_lower": 1338.39
         },
         {
           "date": "2026-11-18",
@@ -1234,28 +1246,28 @@
           "rsi_14": 95.0,
           "bb_upper": 1420.62,
           "bb_lower": 1123.19,
-          "reg_value": 1381.62,
-          "reg_upper": 1409.92,
-          "reg_lower": 1353.32
+          "reg_value": 1381.64,
+          "reg_upper": 1409.94,
+          "reg_lower": 1353.34
         },
         {
           "date": "2026-11-19",
           "open": 1361.9,
           "high": 1366.7,
           "low": 1349.7,
-          "close": 1361.5,
-          "volume": 4230888,
+          "close": 1361.6,
+          "volume": 4604661,
           "sma_20": 1279.53,
-          "ema_12": 1326.61,
+          "ema_12": 1326.63,
           "ema_26": 1285.45,
-          "macd": 41.167,
-          "macd_signal": 33.144,
+          "macd": 41.175,
+          "macd_signal": 33.146,
           "rsi_14": 95.0,
-          "bb_upper": 1430.19,
+          "bb_upper": 1430.2,
           "bb_lower": 1128.87,
-          "reg_value": 1397.15,
-          "reg_upper": 1425.45,
-          "reg_lower": 1368.85
+          "reg_value": 1397.17,
+          "reg_upper": 1425.47,
+          "reg_lower": 1368.87
         }
       ]
     },
@@ -1268,34 +1280,34 @@
       "sector": "Technology",
       "asset_type": "STOCK",
       "setup_type": "Moat Accumulation",
-      "price": 2357.2,
-      "change_pct": -0.94,
-      "fetched_at": "2026-11-19T06:00:01.256662+00:00",
+      "price": 2358.6,
+      "change_pct": -0.88,
+      "fetched_at": "2026-11-19T06:20:41.758779+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
-      "rsi_14": 29.75,
-      "macd": 19.61,
-      "macd_signal": 44.373,
-      "sma_20": 2464.3,
-      "ema_12": 2420.21,
-      "ema_26": 2400.6,
-      "bb_upper": 2563.13,
-      "bb_lower": 2365.48,
-      "projected_30d_target": 2494.6,
-      "regression_std_dev": 108.72,
+      "rsi_14": 29.89,
+      "macd": 19.722,
+      "macd_signal": 44.395,
+      "sma_20": 2464.38,
+      "ema_12": 2420.43,
+      "ema_26": 2400.71,
+      "bb_upper": 2562.9,
+      "bb_lower": 2365.85,
+      "projected_30d_target": 2495.22,
+      "regression_std_dev": 108.68,
       "regression_curve": "Downward Curve",
       "future_projection": [
-        2490.8,
-        2492.9,
-        2494.64,
-        2496.03,
-        2497.08,
-        2497.77,
-        2498.12,
-        2498.11,
-        2497.76,
-        2497.05,
-        2496.0,
-        2494.6
+        2491.11,
+        2493.23,
+        2495.0,
+        2496.42,
+        2497.49,
+        2498.21,
+        2498.59,
+        2498.61,
+        2498.29,
+        2497.62,
+        2496.6,
+        2495.22
       ],
       "fundamental_score": {
         "business": 30,
@@ -1314,14 +1326,14 @@
         "explanation": "Strong Moat & Growth",
         "nlp": "Attractive valuation at P/E 16.5x with value margin of safety. High capital efficiency (ROE 45.6%, ROCE 39.0%) underscores durable moat.",
         "ratios": {
-          "pe": 16.52,
+          "pe": 16.53,
           "roe": 45.57,
           "roce": 39.04,
           "opm": 24.59,
           "sales_growth": 11.2,
           "profit_growth": 15.0,
           "debt_to_equity": 0.1,
-          "mcap_cr": 852855.57,
+          "mcap_cr": 853362.13,
           "beta": 0.07
         }
       },
@@ -1335,10 +1347,10 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 82.5,
-        "spot_price": 2357.2,
-        "entry_price": 2330.36,
-        "target": 2551.9,
-        "stop_loss": 2315.9,
+        "spot_price": 2358.6,
+        "entry_price": 2331.76,
+        "target": 2553.3,
+        "stop_loss": 2317.3,
         "rr_ratio": 4.71,
         "is_holding": false
       },
@@ -1366,9 +1378,9 @@
           "rsi_14": 10.82,
           "bb_upper": 2243.36,
           "bb_lower": 2016.2,
-          "reg_value": 2167.33,
-          "reg_upper": 2276.05,
-          "reg_lower": 2058.61
+          "reg_value": 2167.31,
+          "reg_upper": 2275.99,
+          "reg_lower": 2058.63
         },
         {
           "date": "2026-09-29",
@@ -1385,9 +1397,9 @@
           "rsi_14": 9.28,
           "bb_upper": 2242.84,
           "bb_lower": 1999.02,
-          "reg_value": 2182.37,
-          "reg_upper": 2291.09,
-          "reg_lower": 2073.65
+          "reg_value": 2182.35,
+          "reg_upper": 2291.03,
+          "reg_lower": 2073.67
         },
         {
           "date": "2026-09-30",
@@ -1404,9 +1416,9 @@
           "rsi_14": 15.04,
           "bb_upper": 2238.09,
           "bb_lower": 1992.04,
-          "reg_value": 2197.06,
-          "reg_upper": 2305.78,
-          "reg_lower": 2088.34
+          "reg_value": 2197.03,
+          "reg_upper": 2305.71,
+          "reg_lower": 2088.35
         },
         {
           "date": "2026-10-01",
@@ -1423,8 +1435,8 @@
           "rsi_14": 21.7,
           "bb_upper": 2232.1,
           "bb_lower": 1991.87,
-          "reg_value": 2211.41,
-          "reg_upper": 2320.13,
+          "reg_value": 2211.37,
+          "reg_upper": 2320.05,
           "reg_lower": 2102.69
         },
         {
@@ -1442,9 +1454,9 @@
           "rsi_14": 30.51,
           "bb_upper": 2227.91,
           "bb_lower": 1996.41,
-          "reg_value": 2225.4,
-          "reg_upper": 2334.12,
-          "reg_lower": 2116.68
+          "reg_value": 2225.35,
+          "reg_upper": 2334.03,
+          "reg_lower": 2116.67
         },
         {
           "date": "2026-10-06",
@@ -1461,9 +1473,9 @@
           "rsi_14": 29.3,
           "bb_upper": 2223.34,
           "bb_lower": 1999.36,
-          "reg_value": 2239.04,
-          "reg_upper": 2347.76,
-          "reg_lower": 2130.32
+          "reg_value": 2238.99,
+          "reg_upper": 2347.67,
+          "reg_lower": 2130.31
         },
         {
           "date": "2026-10-07",
@@ -1480,9 +1492,9 @@
           "rsi_14": 33.17,
           "bb_upper": 2218.88,
           "bb_lower": 1999.94,
-          "reg_value": 2252.33,
-          "reg_upper": 2361.05,
-          "reg_lower": 2143.61
+          "reg_value": 2252.28,
+          "reg_upper": 2360.96,
+          "reg_lower": 2143.6
         },
         {
           "date": "2026-10-08",
@@ -1499,9 +1511,9 @@
           "rsi_14": 32.48,
           "bb_upper": 2214.8,
           "bb_lower": 2000.08,
-          "reg_value": 2265.27,
-          "reg_upper": 2373.99,
-          "reg_lower": 2156.55
+          "reg_value": 2265.22,
+          "reg_upper": 2373.9,
+          "reg_lower": 2156.54
         },
         {
           "date": "2026-10-09",
@@ -1518,9 +1530,9 @@
           "rsi_14": 57.96,
           "bb_upper": 2216.82,
           "bb_lower": 2003.46,
-          "reg_value": 2277.86,
-          "reg_upper": 2386.58,
-          "reg_lower": 2169.14
+          "reg_value": 2277.81,
+          "reg_upper": 2386.49,
+          "reg_lower": 2169.13
         },
         {
           "date": "2026-10-12",
@@ -1537,9 +1549,9 @@
           "rsi_14": 49.44,
           "bb_upper": 2214.97,
           "bb_lower": 2006.88,
-          "reg_value": 2290.1,
-          "reg_upper": 2398.82,
-          "reg_lower": 2181.38
+          "reg_value": 2290.05,
+          "reg_upper": 2398.73,
+          "reg_lower": 2181.37
         },
         {
           "date": "2026-10-13",
@@ -1556,9 +1568,9 @@
           "rsi_14": 68.32,
           "bb_upper": 2241.52,
           "bb_lower": 1996.16,
-          "reg_value": 2301.99,
-          "reg_upper": 2410.71,
-          "reg_lower": 2193.27
+          "reg_value": 2301.94,
+          "reg_upper": 2410.62,
+          "reg_lower": 2193.26
         },
         {
           "date": "2026-10-14",
@@ -1575,8 +1587,8 @@
           "rsi_14": 72.98,
           "bb_upper": 2257.37,
           "bb_lower": 1985.7,
-          "reg_value": 2313.53,
-          "reg_upper": 2422.25,
+          "reg_value": 2313.49,
+          "reg_upper": 2422.17,
           "reg_lower": 2204.81
         },
         {
@@ -1594,9 +1606,9 @@
           "rsi_14": 75.73,
           "bb_upper": 2296.11,
           "bb_lower": 1963.08,
-          "reg_value": 2324.73,
-          "reg_upper": 2433.45,
-          "reg_lower": 2216.01
+          "reg_value": 2324.68,
+          "reg_upper": 2433.36,
+          "reg_lower": 2216.0
         },
         {
           "date": "2026-10-16",
@@ -1613,8 +1625,8 @@
           "rsi_14": 80.84,
           "bb_upper": 2364.11,
           "bb_lower": 1922.58,
-          "reg_value": 2335.57,
-          "reg_upper": 2444.29,
+          "reg_value": 2335.53,
+          "reg_upper": 2444.21,
           "reg_lower": 2226.85
         },
         {
@@ -1632,8 +1644,8 @@
           "rsi_14": 81.79,
           "bb_upper": 2420.65,
           "bb_lower": 1901.63,
-          "reg_value": 2346.06,
-          "reg_upper": 2454.78,
+          "reg_value": 2346.02,
+          "reg_upper": 2454.7,
           "reg_lower": 2237.34
         },
         {
@@ -1651,9 +1663,9 @@
           "rsi_14": 88.58,
           "bb_upper": 2485.45,
           "bb_lower": 1876.86,
-          "reg_value": 2356.2,
-          "reg_upper": 2464.92,
-          "reg_lower": 2247.48
+          "reg_value": 2356.17,
+          "reg_upper": 2464.85,
+          "reg_lower": 2247.49
         },
         {
           "date": "2026-10-22",
@@ -1670,9 +1682,9 @@
           "rsi_14": 85.24,
           "bb_upper": 2534.48,
           "bb_lower": 1868.02,
-          "reg_value": 2365.99,
-          "reg_upper": 2474.71,
-          "reg_lower": 2257.27
+          "reg_value": 2365.97,
+          "reg_upper": 2474.65,
+          "reg_lower": 2257.29
         },
         {
           "date": "2026-10-23",
@@ -1689,9 +1701,9 @@
           "rsi_14": 85.21,
           "bb_upper": 2581.36,
           "bb_lower": 1865.18,
-          "reg_value": 2375.44,
-          "reg_upper": 2484.16,
-          "reg_lower": 2266.72
+          "reg_value": 2375.42,
+          "reg_upper": 2484.1,
+          "reg_lower": 2266.74
         },
         {
           "date": "2026-10-26",
@@ -1708,9 +1720,9 @@
           "rsi_14": 84.37,
           "bb_upper": 2622.42,
           "bb_lower": 1868.92,
-          "reg_value": 2384.53,
-          "reg_upper": 2493.25,
-          "reg_lower": 2275.81
+          "reg_value": 2384.52,
+          "reg_upper": 2493.2,
+          "reg_lower": 2275.84
         },
         {
           "date": "2026-10-27",
@@ -1728,8 +1740,8 @@
           "bb_upper": 2650.45,
           "bb_lower": 1882.38,
           "reg_value": 2393.27,
-          "reg_upper": 2501.99,
-          "reg_lower": 2284.55
+          "reg_upper": 2501.95,
+          "reg_lower": 2284.59
         },
         {
           "date": "2026-10-28",
@@ -1746,9 +1758,9 @@
           "rsi_14": 79.09,
           "bb_upper": 2667.72,
           "bb_lower": 1904.04,
-          "reg_value": 2401.66,
-          "reg_upper": 2510.38,
-          "reg_lower": 2292.94
+          "reg_value": 2401.67,
+          "reg_upper": 2510.35,
+          "reg_lower": 2292.99
         },
         {
           "date": "2026-10-29",
@@ -1765,9 +1777,9 @@
           "rsi_14": 80.16,
           "bb_upper": 2680.12,
           "bb_lower": 1936.2,
-          "reg_value": 2409.71,
-          "reg_upper": 2518.43,
-          "reg_lower": 2300.99
+          "reg_value": 2409.72,
+          "reg_upper": 2518.4,
+          "reg_lower": 2301.04
         },
         {
           "date": "2026-10-30",
@@ -1784,9 +1796,9 @@
           "rsi_14": 78.36,
           "bb_upper": 2692.15,
           "bb_lower": 1969.37,
-          "reg_value": 2417.4,
-          "reg_upper": 2526.12,
-          "reg_lower": 2308.68
+          "reg_value": 2417.43,
+          "reg_upper": 2526.11,
+          "reg_lower": 2308.75
         },
         {
           "date": "2026-11-02",
@@ -1803,9 +1815,9 @@
           "rsi_14": 82.42,
           "bb_upper": 2700.72,
           "bb_lower": 2003.47,
-          "reg_value": 2424.74,
+          "reg_value": 2424.78,
           "reg_upper": 2533.46,
-          "reg_lower": 2316.02
+          "reg_lower": 2316.1
         },
         {
           "date": "2026-11-03",
@@ -1822,9 +1834,9 @@
           "rsi_14": 76.16,
           "bb_upper": 2707.61,
           "bb_lower": 2035.05,
-          "reg_value": 2431.73,
-          "reg_upper": 2540.45,
-          "reg_lower": 2323.01
+          "reg_value": 2431.79,
+          "reg_upper": 2540.47,
+          "reg_lower": 2323.11
         },
         {
           "date": "2026-11-04",
@@ -1841,9 +1853,9 @@
           "rsi_14": 64.05,
           "bb_upper": 2701.29,
           "bb_lower": 2074.97,
-          "reg_value": 2438.38,
-          "reg_upper": 2547.1,
-          "reg_lower": 2329.66
+          "reg_value": 2438.45,
+          "reg_upper": 2547.13,
+          "reg_lower": 2329.77
         },
         {
           "date": "2026-11-05",
@@ -1860,9 +1872,9 @@
           "rsi_14": 65.14,
           "bb_upper": 2691.22,
           "bb_lower": 2126.58,
-          "reg_value": 2444.67,
-          "reg_upper": 2553.39,
-          "reg_lower": 2335.95
+          "reg_value": 2444.75,
+          "reg_upper": 2553.43,
+          "reg_lower": 2336.07
         },
         {
           "date": "2026-11-06",
@@ -1879,9 +1891,9 @@
           "rsi_14": 54.54,
           "bb_upper": 2669.53,
           "bb_lower": 2190.52,
-          "reg_value": 2450.61,
-          "reg_upper": 2559.33,
-          "reg_lower": 2341.89
+          "reg_value": 2450.71,
+          "reg_upper": 2559.39,
+          "reg_lower": 2342.03
         },
         {
           "date": "2026-11-09",
@@ -1898,9 +1910,9 @@
           "rsi_14": 51.87,
           "bb_upper": 2650.29,
           "bb_lower": 2241.7,
-          "reg_value": 2456.21,
-          "reg_upper": 2564.93,
-          "reg_lower": 2347.49
+          "reg_value": 2456.32,
+          "reg_upper": 2565.0,
+          "reg_lower": 2347.64
         },
         {
           "date": "2026-11-11",
@@ -1917,9 +1929,9 @@
           "rsi_14": 41.2,
           "bb_upper": 2604.98,
           "bb_lower": 2321.72,
-          "reg_value": 2461.45,
-          "reg_upper": 2570.17,
-          "reg_lower": 2352.73
+          "reg_value": 2461.58,
+          "reg_upper": 2570.26,
+          "reg_lower": 2352.9
         },
         {
           "date": "2026-11-12",
@@ -1936,9 +1948,9 @@
           "rsi_14": 40.25,
           "bb_upper": 2582.98,
           "bb_lower": 2361.03,
-          "reg_value": 2466.34,
-          "reg_upper": 2575.06,
-          "reg_lower": 2357.62
+          "reg_value": 2466.5,
+          "reg_upper": 2575.18,
+          "reg_lower": 2357.82
         },
         {
           "date": "2026-11-13",
@@ -1955,9 +1967,9 @@
           "rsi_14": 32.13,
           "bb_upper": 2563.49,
           "bb_lower": 2390.78,
-          "reg_value": 2470.89,
-          "reg_upper": 2579.61,
-          "reg_lower": 2362.17
+          "reg_value": 2471.06,
+          "reg_upper": 2579.74,
+          "reg_lower": 2362.38
         },
         {
           "date": "2026-11-16",
@@ -1974,9 +1986,9 @@
           "rsi_14": 30.89,
           "bb_upper": 2552.24,
           "bb_lower": 2407.53,
-          "reg_value": 2475.08,
-          "reg_upper": 2583.8,
-          "reg_lower": 2366.36
+          "reg_value": 2475.27,
+          "reg_upper": 2583.95,
+          "reg_lower": 2366.59
         },
         {
           "date": "2026-11-17",
@@ -1993,9 +2005,9 @@
           "rsi_14": 35.13,
           "bb_upper": 2555.9,
           "bb_lower": 2398.03,
-          "reg_value": 2478.92,
-          "reg_upper": 2587.64,
-          "reg_lower": 2370.2
+          "reg_value": 2479.14,
+          "reg_upper": 2587.82,
+          "reg_lower": 2370.46
         },
         {
           "date": "2026-11-18",
@@ -2012,28 +2024,28 @@
           "rsi_14": 36.3,
           "bb_upper": 2562.41,
           "bb_lower": 2383.38,
-          "reg_value": 2482.42,
-          "reg_upper": 2591.14,
-          "reg_lower": 2373.7
+          "reg_value": 2482.65,
+          "reg_upper": 2591.33,
+          "reg_lower": 2373.97
         },
         {
           "date": "2026-11-19",
           "open": 2367.0,
           "high": 2385.6,
           "low": 2331.5,
-          "close": 2357.2,
-          "volume": 1078361,
-          "sma_20": 2464.3,
-          "ema_12": 2420.21,
-          "ema_26": 2400.6,
-          "macd": 19.61,
-          "macd_signal": 44.373,
-          "rsi_14": 29.75,
-          "bb_upper": 2563.13,
-          "bb_lower": 2365.48,
-          "reg_value": 2485.56,
-          "reg_upper": 2594.28,
-          "reg_lower": 2376.84
+          "close": 2358.6,
+          "volume": 1173760,
+          "sma_20": 2464.38,
+          "ema_12": 2420.43,
+          "ema_26": 2400.71,
+          "macd": 19.722,
+          "macd_signal": 44.395,
+          "rsi_14": 29.89,
+          "bb_upper": 2562.9,
+          "bb_lower": 2365.85,
+          "reg_value": 2485.82,
+          "reg_upper": 2594.5,
+          "reg_lower": 2377.14
         }
       ]
     },
@@ -2046,34 +2058,34 @@
       "sector": "Financial Services",
       "asset_type": "STOCK",
       "setup_type": "High Quality Value",
-      "price": 808.5,
-      "change_pct": 0.04,
-      "fetched_at": "2026-11-19T06:00:01.508291+00:00",
+      "price": 810.55,
+      "change_pct": 0.3,
+      "fetched_at": "2026-11-19T06:20:41.991330+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
-      "rsi_14": 89.5,
-      "macd": 28.068,
-      "macd_signal": 21.246,
-      "sma_20": 749.81,
-      "ema_12": 787.53,
-      "ema_26": 759.46,
-      "bb_upper": 859.0,
-      "bb_lower": 640.61,
-      "projected_30d_target": 980.02,
-      "regression_std_dev": 21.31,
+      "rsi_14": 89.63,
+      "macd": 28.231,
+      "macd_signal": 21.279,
+      "sma_20": 749.91,
+      "ema_12": 787.85,
+      "ema_26": 759.62,
+      "bb_upper": 859.33,
+      "bb_lower": 640.48,
+      "projected_30d_target": 980.94,
+      "regression_std_dev": 21.27,
       "regression_curve": "Upward Curve",
       "future_projection": [
-        845.42,
-        855.87,
-        866.67,
-        877.83,
-        889.35,
-        901.23,
-        913.47,
-        926.06,
-        939.02,
-        952.33,
-        966.0,
-        980.02
+        845.86,
+        856.35,
+        867.19,
+        878.39,
+        889.95,
+        901.88,
+        914.16,
+        926.79,
+        939.79,
+        953.15,
+        966.87,
+        980.94
       ],
       "fundamental_score": {
         "business": 35,
@@ -2092,14 +2104,14 @@
         "explanation": "Strong Moat & Growth",
         "nlp": "Attractive valuation at P/E 17.7x with value margin of safety. Strong top-line expansion (80.8% YoY) & profit growth (21.3% YoY).",
         "ratios": {
-          "pe": 17.67,
+          "pe": 17.72,
           "roe": 11.0,
           "roce": 8.2,
           "opm": 36.6,
           "sales_growth": 80.8,
           "profit_growth": 21.3,
           "debt_to_equity": 0.0,
-          "mcap_cr": 1247815.09,
+          "mcap_cr": 1250978.96,
           "beta": 0.39
         }
       },
@@ -2113,10 +2125,10 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 72.5,
-        "spot_price": 808.5,
-        "entry_price": 790.62,
-        "target": 881.0,
-        "stop_loss": 781.0,
+        "spot_price": 810.55,
+        "entry_price": 792.67,
+        "target": 883.05,
+        "stop_loss": 783.05,
         "rr_ratio": 2.64,
         "is_holding": false
       },
@@ -2144,9 +2156,9 @@
           "rsi_14": 51.69,
           "bb_upper": 746.82,
           "bb_lower": 709.37,
-          "reg_value": 710.54,
-          "reg_upper": 731.85,
-          "reg_lower": 689.23
+          "reg_value": 710.51,
+          "reg_upper": 731.78,
+          "reg_lower": 689.24
         },
         {
           "date": "2026-09-29",
@@ -2163,8 +2175,8 @@
           "rsi_14": 53.97,
           "bb_upper": 745.72,
           "bb_lower": 709.49,
-          "reg_value": 707.74,
-          "reg_upper": 729.05,
+          "reg_value": 707.7,
+          "reg_upper": 728.97,
           "reg_lower": 686.43
         },
         {
@@ -2182,9 +2194,9 @@
           "rsi_14": 45.71,
           "bb_upper": 746.28,
           "bb_lower": 705.78,
-          "reg_value": 705.3,
-          "reg_upper": 726.61,
-          "reg_lower": 683.99
+          "reg_value": 705.25,
+          "reg_upper": 726.52,
+          "reg_lower": 683.98
         },
         {
           "date": "2026-10-01",
@@ -2201,9 +2213,9 @@
           "rsi_14": 52.24,
           "bb_upper": 745.28,
           "bb_lower": 706.03,
-          "reg_value": 703.22,
-          "reg_upper": 724.53,
-          "reg_lower": 681.91
+          "reg_value": 703.16,
+          "reg_upper": 724.43,
+          "reg_lower": 681.89
         },
         {
           "date": "2026-10-05",
@@ -2220,9 +2232,9 @@
           "rsi_14": 45.12,
           "bb_upper": 745.92,
           "bb_lower": 702.42,
-          "reg_value": 701.5,
-          "reg_upper": 722.81,
-          "reg_lower": 680.19
+          "reg_value": 701.43,
+          "reg_upper": 722.7,
+          "reg_lower": 680.16
         },
         {
           "date": "2026-10-06",
@@ -2239,9 +2251,9 @@
           "rsi_14": 47.99,
           "bb_upper": 745.27,
           "bb_lower": 701.37,
-          "reg_value": 700.13,
-          "reg_upper": 721.44,
-          "reg_lower": 678.82
+          "reg_value": 700.06,
+          "reg_upper": 721.33,
+          "reg_lower": 678.79
         },
         {
           "date": "2026-10-07",
@@ -2258,9 +2270,9 @@
           "rsi_14": 42.83,
           "bb_upper": 745.5,
           "bb_lower": 698.56,
-          "reg_value": 699.12,
-          "reg_upper": 720.43,
-          "reg_lower": 677.81
+          "reg_value": 699.05,
+          "reg_upper": 720.32,
+          "reg_lower": 677.78
         },
         {
           "date": "2026-10-08",
@@ -2277,9 +2289,9 @@
           "rsi_14": 42.18,
           "bb_upper": 747.02,
           "bb_lower": 693.55,
-          "reg_value": 698.47,
-          "reg_upper": 719.78,
-          "reg_lower": 677.16
+          "reg_value": 698.4,
+          "reg_upper": 719.67,
+          "reg_lower": 677.13
         },
         {
           "date": "2026-10-09",
@@ -2296,9 +2308,9 @@
           "rsi_14": 40.85,
           "bb_upper": 746.22,
           "bb_lower": 692.9,
-          "reg_value": 698.18,
-          "reg_upper": 719.49,
-          "reg_lower": 676.87
+          "reg_value": 698.1,
+          "reg_upper": 719.37,
+          "reg_lower": 676.83
         },
         {
           "date": "2026-10-12",
@@ -2315,9 +2327,9 @@
           "rsi_14": 36.0,
           "bb_upper": 745.55,
           "bb_lower": 692.02,
-          "reg_value": 698.24,
-          "reg_upper": 719.55,
-          "reg_lower": 676.93
+          "reg_value": 698.17,
+          "reg_upper": 719.44,
+          "reg_lower": 676.9
         },
         {
           "date": "2026-10-13",
@@ -2334,9 +2346,9 @@
           "rsi_14": 40.67,
           "bb_upper": 744.72,
           "bb_lower": 692.38,
-          "reg_value": 698.67,
-          "reg_upper": 719.98,
-          "reg_lower": 677.36
+          "reg_value": 698.59,
+          "reg_upper": 719.86,
+          "reg_lower": 677.32
         },
         {
           "date": "2026-10-14",
@@ -2353,9 +2365,9 @@
           "rsi_14": 40.07,
           "bb_upper": 744.64,
           "bb_lower": 691.87,
-          "reg_value": 699.45,
-          "reg_upper": 720.76,
-          "reg_lower": 678.14
+          "reg_value": 699.38,
+          "reg_upper": 720.65,
+          "reg_lower": 678.11
         },
         {
           "date": "2026-10-15",
@@ -2372,9 +2384,9 @@
           "rsi_14": 49.28,
           "bb_upper": 745.14,
           "bb_lower": 691.91,
-          "reg_value": 700.59,
-          "reg_upper": 721.9,
-          "reg_lower": 679.28
+          "reg_value": 700.52,
+          "reg_upper": 721.79,
+          "reg_lower": 679.25
         },
         {
           "date": "2026-10-16",
@@ -2391,9 +2403,9 @@
           "rsi_14": 47.53,
           "bb_upper": 746.17,
           "bb_lower": 692.46,
-          "reg_value": 702.09,
-          "reg_upper": 723.4,
-          "reg_lower": 680.78
+          "reg_value": 702.03,
+          "reg_upper": 723.3,
+          "reg_lower": 680.76
         },
         {
           "date": "2026-10-19",
@@ -2410,9 +2422,9 @@
           "rsi_14": 47.43,
           "bb_upper": 744.84,
           "bb_lower": 691.89,
-          "reg_value": 703.94,
-          "reg_upper": 725.25,
-          "reg_lower": 682.63
+          "reg_value": 703.89,
+          "reg_upper": 725.16,
+          "reg_lower": 682.62
         },
         {
           "date": "2026-10-21",
@@ -2429,9 +2441,9 @@
           "rsi_14": 44.32,
           "bb_upper": 741.78,
           "bb_lower": 691.7,
-          "reg_value": 706.16,
-          "reg_upper": 727.47,
-          "reg_lower": 684.85
+          "reg_value": 706.11,
+          "reg_upper": 727.38,
+          "reg_lower": 684.84
         },
         {
           "date": "2026-10-22",
@@ -2448,8 +2460,8 @@
           "rsi_14": 44.67,
           "bb_upper": 739.3,
           "bb_lower": 689.72,
-          "reg_value": 708.73,
-          "reg_upper": 730.04,
+          "reg_value": 708.69,
+          "reg_upper": 729.96,
           "reg_lower": 687.42
         },
         {
@@ -2467,9 +2479,9 @@
           "rsi_14": 38.75,
           "bb_upper": 736.49,
           "bb_lower": 688.09,
-          "reg_value": 711.66,
-          "reg_upper": 732.97,
-          "reg_lower": 690.35
+          "reg_value": 711.63,
+          "reg_upper": 732.9,
+          "reg_lower": 690.36
         },
         {
           "date": "2026-10-26",
@@ -2486,9 +2498,9 @@
           "rsi_14": 42.69,
           "bb_upper": 735.37,
           "bb_lower": 685.12,
-          "reg_value": 714.94,
-          "reg_upper": 736.25,
-          "reg_lower": 693.63
+          "reg_value": 714.93,
+          "reg_upper": 736.2,
+          "reg_lower": 693.66
         },
         {
           "date": "2026-10-27",
@@ -2506,8 +2518,8 @@
           "bb_upper": 733.02,
           "bb_lower": 681.93,
           "reg_value": 718.59,
-          "reg_upper": 739.9,
-          "reg_lower": 697.28
+          "reg_upper": 739.86,
+          "reg_lower": 697.32
         },
         {
           "date": "2026-10-28",
@@ -2524,9 +2536,9 @@
           "rsi_14": 42.22,
           "bb_upper": 732.48,
           "bb_lower": 679.09,
-          "reg_value": 722.59,
-          "reg_upper": 743.9,
-          "reg_lower": 701.28
+          "reg_value": 722.6,
+          "reg_upper": 743.87,
+          "reg_lower": 701.33
         },
         {
           "date": "2026-10-29",
@@ -2543,9 +2555,9 @@
           "rsi_14": 45.68,
           "bb_upper": 731.04,
           "bb_lower": 676.6,
-          "reg_value": 726.95,
-          "reg_upper": 748.26,
-          "reg_lower": 705.64
+          "reg_value": 726.98,
+          "reg_upper": 748.25,
+          "reg_lower": 705.71
         },
         {
           "date": "2026-10-30",
@@ -2562,9 +2574,9 @@
           "rsi_14": 42.64,
           "bb_upper": 730.55,
           "bb_lower": 675.49,
-          "reg_value": 731.67,
-          "reg_upper": 752.98,
-          "reg_lower": 710.36
+          "reg_value": 731.72,
+          "reg_upper": 752.99,
+          "reg_lower": 710.45
         },
         {
           "date": "2026-11-02",
@@ -2581,9 +2593,9 @@
           "rsi_14": 47.62,
           "bb_upper": 728.22,
           "bb_lower": 675.71,
-          "reg_value": 736.75,
-          "reg_upper": 758.06,
-          "reg_lower": 715.44
+          "reg_value": 736.81,
+          "reg_upper": 758.08,
+          "reg_lower": 715.54
         },
         {
           "date": "2026-11-03",
@@ -2600,9 +2612,9 @@
           "rsi_14": 54.82,
           "bb_upper": 731.18,
           "bb_lower": 674.82,
-          "reg_value": 742.18,
-          "reg_upper": 763.49,
-          "reg_lower": 720.87
+          "reg_value": 742.27,
+          "reg_upper": 763.54,
+          "reg_lower": 721.0
         },
         {
           "date": "2026-11-04",
@@ -2619,9 +2631,9 @@
           "rsi_14": 60.21,
           "bb_upper": 735.89,
           "bb_lower": 672.63,
-          "reg_value": 747.98,
-          "reg_upper": 769.29,
-          "reg_lower": 726.67
+          "reg_value": 748.08,
+          "reg_upper": 769.35,
+          "reg_lower": 726.81
         },
         {
           "date": "2026-11-05",
@@ -2638,9 +2650,9 @@
           "rsi_14": 62.33,
           "bb_upper": 746.98,
           "bb_lower": 667.26,
-          "reg_value": 754.13,
-          "reg_upper": 775.44,
-          "reg_lower": 732.82
+          "reg_value": 754.25,
+          "reg_upper": 775.52,
+          "reg_lower": 732.98
         },
         {
           "date": "2026-11-06",
@@ -2657,9 +2669,9 @@
           "rsi_14": 68.48,
           "bb_upper": 764.54,
           "bb_lower": 659.3,
-          "reg_value": 760.64,
-          "reg_upper": 781.95,
-          "reg_lower": 739.33
+          "reg_value": 760.78,
+          "reg_upper": 782.05,
+          "reg_lower": 739.51
         },
         {
           "date": "2026-11-09",
@@ -2676,9 +2688,9 @@
           "rsi_14": 78.02,
           "bb_upper": 781.03,
           "bb_lower": 651.9,
-          "reg_value": 767.51,
-          "reg_upper": 788.82,
-          "reg_lower": 746.2
+          "reg_value": 767.68,
+          "reg_upper": 788.95,
+          "reg_lower": 746.41
         },
         {
           "date": "2026-11-11",
@@ -2695,9 +2707,9 @@
           "rsi_14": 81.71,
           "bb_upper": 796.81,
           "bb_lower": 646.3,
-          "reg_value": 774.73,
-          "reg_upper": 796.04,
-          "reg_lower": 753.42
+          "reg_value": 774.93,
+          "reg_upper": 796.2,
+          "reg_lower": 753.66
         },
         {
           "date": "2026-11-12",
@@ -2714,9 +2726,9 @@
           "rsi_14": 89.43,
           "bb_upper": 811.33,
           "bb_lower": 641.6,
-          "reg_value": 782.31,
-          "reg_upper": 803.62,
-          "reg_lower": 761.0
+          "reg_value": 782.54,
+          "reg_upper": 803.81,
+          "reg_lower": 761.27
         },
         {
           "date": "2026-11-13",
@@ -2733,9 +2745,9 @@
           "rsi_14": 85.41,
           "bb_upper": 822.06,
           "bb_lower": 640.2,
-          "reg_value": 790.25,
-          "reg_upper": 811.56,
-          "reg_lower": 768.94
+          "reg_value": 790.51,
+          "reg_upper": 811.78,
+          "reg_lower": 769.24
         },
         {
           "date": "2026-11-16",
@@ -2752,9 +2764,9 @@
           "rsi_14": 88.98,
           "bb_upper": 833.81,
           "bb_lower": 637.42,
-          "reg_value": 798.55,
-          "reg_upper": 819.86,
-          "reg_lower": 777.24
+          "reg_value": 798.83,
+          "reg_upper": 820.1,
+          "reg_lower": 777.56
         },
         {
           "date": "2026-11-17",
@@ -2771,9 +2783,9 @@
           "rsi_14": 92.52,
           "bb_upper": 843.92,
           "bb_lower": 635.92,
-          "reg_value": 807.21,
-          "reg_upper": 828.52,
-          "reg_lower": 785.9
+          "reg_value": 807.52,
+          "reg_upper": 828.79,
+          "reg_lower": 786.25
         },
         {
           "date": "2026-11-18",
@@ -2790,28 +2802,28 @@
           "rsi_14": 88.35,
           "bb_upper": 851.96,
           "bb_lower": 637.49,
-          "reg_value": 816.23,
-          "reg_upper": 837.54,
-          "reg_lower": 794.92
+          "reg_value": 816.57,
+          "reg_upper": 837.84,
+          "reg_lower": 795.3
         },
         {
           "date": "2026-11-19",
           "open": 807.2,
           "high": 812.0,
           "low": 804.2,
-          "close": 808.5,
-          "volume": 7303955,
-          "sma_20": 749.81,
-          "ema_12": 787.53,
-          "ema_26": 759.46,
-          "macd": 28.068,
-          "macd_signal": 21.246,
-          "rsi_14": 89.5,
-          "bb_upper": 859.0,
-          "bb_lower": 640.61,
-          "reg_value": 825.6,
-          "reg_upper": 846.91,
-          "reg_lower": 804.29
+          "close": 810.55,
+          "volume": 8433249,
+          "sma_20": 749.91,
+          "ema_12": 787.85,
+          "ema_26": 759.62,
+          "macd": 28.231,
+          "macd_signal": 21.279,
+          "rsi_14": 89.63,
+          "bb_upper": 859.33,
+          "bb_lower": 640.48,
+          "reg_value": 825.97,
+          "reg_upper": 847.24,
+          "reg_lower": 804.7
         }
       ]
     },
@@ -2824,34 +2836,34 @@
       "sector": "Financial Services",
       "asset_type": "STOCK",
       "setup_type": "Momentum Leader",
-      "price": 1593.6,
-      "change_pct": -0.48,
-      "fetched_at": "2026-11-19T06:00:01.760036+00:00",
+      "price": 1596.4,
+      "change_pct": -0.31,
+      "fetched_at": "2026-11-19T06:20:42.228580+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
-      "rsi_14": 85.45,
-      "macd": 62.52,
-      "macd_signal": 52.941,
-      "sma_20": 1488.24,
-      "ema_12": 1550.42,
-      "ema_26": 1487.9,
-      "bb_upper": 1673.99,
-      "bb_lower": 1302.49,
-      "projected_30d_target": 1921.82,
-      "regression_std_dev": 28.49,
+      "rsi_14": 86.18,
+      "macd": 62.72,
+      "macd_signal": 52.98,
+      "sma_20": 1488.36,
+      "ema_12": 1550.8,
+      "ema_26": 1488.08,
+      "bb_upper": 1674.4,
+      "bb_lower": 1302.33,
+      "projected_30d_target": 1922.95,
+      "regression_std_dev": 28.41,
       "regression_curve": "Upward Curve",
       "future_projection": [
-        1672.64,
-        1692.52,
-        1712.95,
-        1733.94,
-        1755.48,
-        1777.58,
-        1800.23,
-        1823.44,
-        1847.21,
-        1871.52,
-        1896.4,
-        1921.82
+        1673.19,
+        1693.11,
+        1713.59,
+        1734.63,
+        1756.22,
+        1778.37,
+        1801.07,
+        1824.33,
+        1848.15,
+        1872.53,
+        1897.46,
+        1922.95
       ],
       "fundamental_score": {
         "business": 40,
@@ -2870,14 +2882,14 @@
         "explanation": "Strong Moat & Growth",
         "nlp": "Balanced valuation at P/E 19.6x. High capital efficiency (ROE 16.5%, ROCE 12.2%) underscores durable moat. Strong top-line expansion (15.8% YoY) & profit growth (22.1% YoY).",
         "ratios": {
-          "pe": 19.57,
+          "pe": 19.6,
           "roe": 16.49,
           "roce": 12.17,
           "opm": 29.95,
           "sales_growth": 15.8,
           "profit_growth": 22.1,
           "debt_to_equity": 0.0,
-          "mcap_cr": 1144862.02,
+          "mcap_cr": 1146873.6,
           "beta": 0.19
         }
       },
@@ -2891,10 +2903,10 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 85.0,
-        "spot_price": 1593.6,
-        "entry_price": 1578.1,
-        "target": 1728.75,
-        "stop_loss": 1569.75,
+        "spot_price": 1596.4,
+        "entry_price": 1580.8,
+        "target": 1732.4,
+        "stop_loss": 1572.4,
         "rr_ratio": 5.67,
         "is_holding": false
       },
@@ -2922,9 +2934,9 @@
           "rsi_14": 19.05,
           "bb_upper": 1367.8,
           "bb_lower": 1308.92,
-          "reg_value": 1327.36,
-          "reg_upper": 1355.85,
-          "reg_lower": 1298.87
+          "reg_value": 1327.32,
+          "reg_upper": 1355.73,
+          "reg_lower": 1298.91
         },
         {
           "date": "2026-09-29",
@@ -2941,9 +2953,9 @@
           "rsi_14": 16.93,
           "bb_upper": 1372.8,
           "bb_lower": 1295.53,
-          "reg_value": 1326.7,
-          "reg_upper": 1355.19,
-          "reg_lower": 1298.21
+          "reg_value": 1326.65,
+          "reg_upper": 1355.06,
+          "reg_lower": 1298.24
         },
         {
           "date": "2026-09-30",
@@ -2960,9 +2972,9 @@
           "rsi_14": 37.79,
           "bb_upper": 1370.75,
           "bb_lower": 1295.5,
-          "reg_value": 1326.6,
-          "reg_upper": 1355.09,
-          "reg_lower": 1298.11
+          "reg_value": 1326.53,
+          "reg_upper": 1354.94,
+          "reg_lower": 1298.12
         },
         {
           "date": "2026-10-01",
@@ -2979,9 +2991,9 @@
           "rsi_14": 34.53,
           "bb_upper": 1369.48,
           "bb_lower": 1293.3,
-          "reg_value": 1327.05,
-          "reg_upper": 1355.54,
-          "reg_lower": 1298.56
+          "reg_value": 1326.98,
+          "reg_upper": 1355.39,
+          "reg_lower": 1298.57
         },
         {
           "date": "2026-10-05",
@@ -2998,9 +3010,9 @@
           "rsi_14": 43.87,
           "bb_upper": 1368.14,
           "bb_lower": 1294.73,
-          "reg_value": 1328.05,
-          "reg_upper": 1356.54,
-          "reg_lower": 1299.56
+          "reg_value": 1327.98,
+          "reg_upper": 1356.39,
+          "reg_lower": 1299.57
         },
         {
           "date": "2026-10-06",
@@ -3017,9 +3029,9 @@
           "rsi_14": 47.64,
           "bb_upper": 1368.1,
           "bb_lower": 1296.28,
-          "reg_value": 1329.62,
-          "reg_upper": 1358.11,
-          "reg_lower": 1301.13
+          "reg_value": 1329.53,
+          "reg_upper": 1357.94,
+          "reg_lower": 1301.12
         },
         {
           "date": "2026-10-07",
@@ -3036,8 +3048,8 @@
           "rsi_14": 49.61,
           "bb_upper": 1370.64,
           "bb_lower": 1296.91,
-          "reg_value": 1331.73,
-          "reg_upper": 1360.22,
+          "reg_value": 1331.65,
+          "reg_upper": 1360.06,
           "reg_lower": 1303.24
         },
         {
@@ -3055,9 +3067,9 @@
           "rsi_14": 50.43,
           "bb_upper": 1371.15,
           "bb_lower": 1298.19,
-          "reg_value": 1334.4,
-          "reg_upper": 1362.89,
-          "reg_lower": 1305.91
+          "reg_value": 1334.31,
+          "reg_upper": 1362.72,
+          "reg_lower": 1305.9
         },
         {
           "date": "2026-10-09",
@@ -3074,9 +3086,9 @@
           "rsi_14": 54.98,
           "bb_upper": 1372.45,
           "bb_lower": 1299.15,
-          "reg_value": 1337.63,
-          "reg_upper": 1366.12,
-          "reg_lower": 1309.14
+          "reg_value": 1337.54,
+          "reg_upper": 1365.95,
+          "reg_lower": 1309.13
         },
         {
           "date": "2026-10-12",
@@ -3093,9 +3105,9 @@
           "rsi_14": 48.53,
           "bb_upper": 1371.74,
           "bb_lower": 1300.3,
-          "reg_value": 1341.41,
-          "reg_upper": 1369.9,
-          "reg_lower": 1312.92
+          "reg_value": 1341.32,
+          "reg_upper": 1369.73,
+          "reg_lower": 1312.91
         },
         {
           "date": "2026-10-13",
@@ -3112,9 +3124,9 @@
           "rsi_14": 55.56,
           "bb_upper": 1373.61,
           "bb_lower": 1300.85,
-          "reg_value": 1345.75,
-          "reg_upper": 1374.24,
-          "reg_lower": 1317.26
+          "reg_value": 1345.66,
+          "reg_upper": 1374.07,
+          "reg_lower": 1317.25
         },
         {
           "date": "2026-10-14",
@@ -3131,8 +3143,8 @@
           "rsi_14": 49.66,
           "bb_upper": 1372.52,
           "bb_lower": 1300.76,
-          "reg_value": 1350.64,
-          "reg_upper": 1379.13,
+          "reg_value": 1350.56,
+          "reg_upper": 1378.97,
           "reg_lower": 1322.15
         },
         {
@@ -3150,8 +3162,8 @@
           "rsi_14": 60.9,
           "bb_upper": 1379.85,
           "bb_lower": 1296.49,
-          "reg_value": 1356.09,
-          "reg_upper": 1384.58,
+          "reg_value": 1356.01,
+          "reg_upper": 1384.42,
           "reg_lower": 1327.6
         },
         {
@@ -3169,9 +3181,9 @@
           "rsi_14": 63.94,
           "bb_upper": 1389.5,
           "bb_lower": 1291.78,
-          "reg_value": 1362.09,
-          "reg_upper": 1390.58,
-          "reg_lower": 1333.6
+          "reg_value": 1362.02,
+          "reg_upper": 1390.43,
+          "reg_lower": 1333.61
         },
         {
           "date": "2026-10-19",
@@ -3188,9 +3200,9 @@
           "rsi_14": 66.26,
           "bb_upper": 1394.65,
           "bb_lower": 1290.84,
-          "reg_value": 1368.65,
-          "reg_upper": 1397.14,
-          "reg_lower": 1340.16
+          "reg_value": 1368.58,
+          "reg_upper": 1396.99,
+          "reg_lower": 1340.17
         },
         {
           "date": "2026-10-21",
@@ -3207,9 +3219,9 @@
           "rsi_14": 69.56,
           "bb_upper": 1399.83,
           "bb_lower": 1289.66,
-          "reg_value": 1375.76,
-          "reg_upper": 1404.25,
-          "reg_lower": 1347.27
+          "reg_value": 1375.7,
+          "reg_upper": 1404.11,
+          "reg_lower": 1347.29
         },
         {
           "date": "2026-10-22",
@@ -3226,9 +3238,9 @@
           "rsi_14": 67.36,
           "bb_upper": 1407.46,
           "bb_lower": 1287.92,
-          "reg_value": 1383.43,
-          "reg_upper": 1411.92,
-          "reg_lower": 1354.94
+          "reg_value": 1383.38,
+          "reg_upper": 1411.79,
+          "reg_lower": 1354.97
         },
         {
           "date": "2026-10-23",
@@ -3245,9 +3257,9 @@
           "rsi_14": 69.5,
           "bb_upper": 1413.36,
           "bb_lower": 1287.44,
-          "reg_value": 1391.65,
-          "reg_upper": 1420.14,
-          "reg_lower": 1363.16
+          "reg_value": 1391.62,
+          "reg_upper": 1420.03,
+          "reg_lower": 1363.21
         },
         {
           "date": "2026-10-26",
@@ -3264,9 +3276,9 @@
           "rsi_14": 67.59,
           "bb_upper": 1420.31,
           "bb_lower": 1287.34,
-          "reg_value": 1400.43,
-          "reg_upper": 1428.92,
-          "reg_lower": 1371.94
+          "reg_value": 1400.41,
+          "reg_upper": 1428.82,
+          "reg_lower": 1372.0
         },
         {
           "date": "2026-10-27",
@@ -3284,8 +3296,8 @@
           "bb_upper": 1423.58,
           "bb_lower": 1290.08,
           "reg_value": 1409.76,
-          "reg_upper": 1438.25,
-          "reg_lower": 1381.27
+          "reg_upper": 1438.17,
+          "reg_lower": 1381.35
         },
         {
           "date": "2026-10-28",
@@ -3302,9 +3314,9 @@
           "rsi_14": 54.98,
           "bb_upper": 1422.93,
           "bb_lower": 1298.29,
-          "reg_value": 1419.65,
-          "reg_upper": 1448.14,
-          "reg_lower": 1391.16
+          "reg_value": 1419.66,
+          "reg_upper": 1448.07,
+          "reg_lower": 1391.25
         },
         {
           "date": "2026-10-29",
@@ -3321,9 +3333,9 @@
           "rsi_14": 59.3,
           "bb_upper": 1420.05,
           "bb_lower": 1310.61,
-          "reg_value": 1430.09,
-          "reg_upper": 1458.58,
-          "reg_lower": 1401.6
+          "reg_value": 1430.12,
+          "reg_upper": 1458.53,
+          "reg_lower": 1401.71
         },
         {
           "date": "2026-10-30",
@@ -3340,9 +3352,9 @@
           "rsi_14": 60.36,
           "bb_upper": 1421.76,
           "bb_lower": 1316.53,
-          "reg_value": 1441.08,
-          "reg_upper": 1469.57,
-          "reg_lower": 1412.59
+          "reg_value": 1441.14,
+          "reg_upper": 1469.55,
+          "reg_lower": 1412.73
         },
         {
           "date": "2026-11-02",
@@ -3359,9 +3371,9 @@
           "rsi_14": 61.66,
           "bb_upper": 1418.71,
           "bb_lower": 1327.26,
-          "reg_value": 1452.64,
-          "reg_upper": 1481.13,
-          "reg_lower": 1424.15
+          "reg_value": 1452.71,
+          "reg_upper": 1481.12,
+          "reg_lower": 1424.3
         },
         {
           "date": "2026-11-03",
@@ -3378,9 +3390,9 @@
           "rsi_14": 64.61,
           "bb_upper": 1424.51,
           "bb_lower": 1330.71,
-          "reg_value": 1464.74,
-          "reg_upper": 1493.23,
-          "reg_lower": 1436.25
+          "reg_value": 1464.84,
+          "reg_upper": 1493.25,
+          "reg_lower": 1436.43
         },
         {
           "date": "2026-11-04",
@@ -3397,9 +3409,9 @@
           "rsi_14": 71.49,
           "bb_upper": 1429.88,
           "bb_lower": 1333.47,
-          "reg_value": 1477.41,
-          "reg_upper": 1505.9,
-          "reg_lower": 1448.92
+          "reg_value": 1477.53,
+          "reg_upper": 1505.94,
+          "reg_lower": 1449.12
         },
         {
           "date": "2026-11-05",
@@ -3416,9 +3428,9 @@
           "rsi_14": 74.69,
           "bb_upper": 1458.11,
           "bb_lower": 1319.49,
-          "reg_value": 1490.62,
-          "reg_upper": 1519.11,
-          "reg_lower": 1462.13
+          "reg_value": 1490.77,
+          "reg_upper": 1519.18,
+          "reg_lower": 1462.36
         },
         {
           "date": "2026-11-06",
@@ -3435,9 +3447,9 @@
           "rsi_14": 80.29,
           "bb_upper": 1503.1,
           "bb_lower": 1296.72,
-          "reg_value": 1504.4,
-          "reg_upper": 1532.89,
-          "reg_lower": 1475.91
+          "reg_value": 1504.57,
+          "reg_upper": 1532.98,
+          "reg_lower": 1476.16
         },
         {
           "date": "2026-11-09",
@@ -3454,9 +3466,9 @@
           "rsi_14": 85.94,
           "bb_upper": 1541.41,
           "bb_lower": 1281.81,
-          "reg_value": 1518.72,
-          "reg_upper": 1547.21,
-          "reg_lower": 1490.23
+          "reg_value": 1518.93,
+          "reg_upper": 1547.34,
+          "reg_lower": 1490.52
         },
         {
           "date": "2026-11-11",
@@ -3473,9 +3485,9 @@
           "rsi_14": 80.81,
           "bb_upper": 1566.04,
           "bb_lower": 1280.34,
-          "reg_value": 1533.61,
-          "reg_upper": 1562.1,
-          "reg_lower": 1505.12
+          "reg_value": 1533.84,
+          "reg_upper": 1562.25,
+          "reg_lower": 1505.43
         },
         {
           "date": "2026-11-12",
@@ -3492,9 +3504,9 @@
           "rsi_14": 81.12,
           "bb_upper": 1591.68,
           "bb_lower": 1277.68,
-          "reg_value": 1549.04,
-          "reg_upper": 1577.53,
-          "reg_lower": 1520.55
+          "reg_value": 1549.31,
+          "reg_upper": 1577.72,
+          "reg_lower": 1520.9
         },
         {
           "date": "2026-11-13",
@@ -3511,9 +3523,9 @@
           "rsi_14": 80.57,
           "bb_upper": 1610.14,
           "bb_lower": 1283.72,
-          "reg_value": 1565.04,
-          "reg_upper": 1593.53,
-          "reg_lower": 1536.55
+          "reg_value": 1565.34,
+          "reg_upper": 1593.75,
+          "reg_lower": 1536.93
         },
         {
           "date": "2026-11-16",
@@ -3530,9 +3542,9 @@
           "rsi_14": 80.09,
           "bb_upper": 1628.19,
           "bb_lower": 1285.23,
-          "reg_value": 1581.58,
-          "reg_upper": 1610.07,
-          "reg_lower": 1553.09
+          "reg_value": 1581.92,
+          "reg_upper": 1610.33,
+          "reg_lower": 1553.51
         },
         {
           "date": "2026-11-17",
@@ -3549,9 +3561,9 @@
           "rsi_14": 85.3,
           "bb_upper": 1646.57,
           "bb_lower": 1287.02,
-          "reg_value": 1598.68,
-          "reg_upper": 1627.17,
-          "reg_lower": 1570.19
+          "reg_value": 1599.06,
+          "reg_upper": 1627.47,
+          "reg_lower": 1570.65
         },
         {
           "date": "2026-11-18",
@@ -3568,28 +3580,28 @@
           "rsi_14": 88.14,
           "bb_upper": 1662.14,
           "bb_lower": 1293.48,
-          "reg_value": 1616.34,
-          "reg_upper": 1644.83,
-          "reg_lower": 1587.85
+          "reg_value": 1616.76,
+          "reg_upper": 1645.17,
+          "reg_lower": 1588.35
         },
         {
           "date": "2026-11-19",
           "open": 1601.0,
           "high": 1603.7,
           "low": 1585.7,
-          "close": 1593.6,
-          "volume": 5172442,
-          "sma_20": 1488.24,
-          "ema_12": 1550.42,
-          "ema_26": 1487.9,
-          "macd": 62.52,
-          "macd_signal": 52.941,
-          "rsi_14": 85.45,
-          "bb_upper": 1673.99,
-          "bb_lower": 1302.49,
-          "reg_value": 1634.55,
-          "reg_upper": 1663.04,
-          "reg_lower": 1606.06
+          "close": 1596.1,
+          "volume": 5481712,
+          "sma_20": 1488.36,
+          "ema_12": 1550.8,
+          "ema_26": 1488.08,
+          "macd": 62.72,
+          "macd_signal": 52.98,
+          "rsi_14": 86.18,
+          "bb_upper": 1674.4,
+          "bb_lower": 1302.33,
+          "reg_value": 1635.01,
+          "reg_upper": 1663.42,
+          "reg_lower": 1606.6
         }
       ]
     },
@@ -3602,34 +3614,34 @@
       "sector": "Technology",
       "asset_type": "STOCK",
       "setup_type": "Channel Breakout",
-      "price": 1083.2,
-      "change_pct": -2.31,
-      "fetched_at": "2026-11-19T06:00:02.014239+00:00",
+      "price": 1084.5,
+      "change_pct": -2.19,
+      "fetched_at": "2026-11-19T06:20:42.478215+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
-      "rsi_14": 37.7,
-      "macd": 6.322,
-      "macd_signal": 17.215,
-      "sma_20": 1147.32,
-      "ema_12": 1131.45,
-      "ema_26": 1125.13,
-      "bb_upper": 1193.76,
-      "bb_lower": 1100.87,
-      "projected_30d_target": 1184.54,
-      "regression_std_dev": 42.22,
+      "rsi_14": 37.81,
+      "macd": 6.386,
+      "macd_signal": 17.228,
+      "sma_20": 1147.36,
+      "ema_12": 1131.58,
+      "ema_26": 1125.19,
+      "bb_upper": 1193.58,
+      "bb_lower": 1101.13,
+      "projected_30d_target": 1184.9,
+      "regression_std_dev": 42.19,
       "regression_curve": "Downward Curve",
       "future_projection": [
-        1165.88,
-        1167.9,
-        1169.86,
-        1171.76,
-        1173.59,
-        1175.35,
-        1177.05,
-        1178.68,
-        1180.24,
-        1181.74,
-        1183.17,
-        1184.54
+        1166.05,
+        1168.09,
+        1170.07,
+        1171.98,
+        1173.82,
+        1175.6,
+        1177.32,
+        1178.96,
+        1180.55,
+        1182.06,
+        1183.51,
+        1184.9
       ],
       "fundamental_score": {
         "business": 17,
@@ -3648,14 +3660,14 @@
         "explanation": "Profit Drag",
         "nlp": "Attractive valuation at P/E 14.4x with value margin of safety. High capital efficiency (ROE 29.9%, ROCE 25.8%) underscores durable moat.",
         "ratios": {
-          "pe": 14.42,
+          "pe": 14.44,
           "roe": 29.95,
           "roce": 25.81,
           "opm": 22.28,
           "sales_growth": 1.4,
           "profit_growth": -2.6,
           "debt_to_equity": 0.09,
-          "mcap_cr": 438736.76,
+          "mcap_cr": 439263.32,
           "beta": 0.02
         }
       },
@@ -3669,10 +3681,10 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 68.5,
-        "spot_price": 1083.2,
-        "entry_price": 1061.09,
-        "target": 1157.18,
-        "stop_loss": 1049.18,
+        "spot_price": 1084.5,
+        "entry_price": 1062.39,
+        "target": 1158.48,
+        "stop_loss": 1050.48,
         "rr_ratio": 2.17,
         "is_holding": false
       },
@@ -3700,9 +3712,9 @@
           "rsi_14": 5.0,
           "bb_upper": 1084.77,
           "bb_lower": 985.89,
-          "reg_value": 1044.36,
-          "reg_upper": 1086.58,
-          "reg_lower": 1002.14
+          "reg_value": 1044.35,
+          "reg_upper": 1086.54,
+          "reg_lower": 1002.16
         },
         {
           "date": "2026-09-29",
@@ -3719,9 +3731,9 @@
           "rsi_14": 16.52,
           "bb_upper": 1082.03,
           "bb_lower": 985.01,
-          "reg_value": 1048.84,
-          "reg_upper": 1091.06,
-          "reg_lower": 1006.62
+          "reg_value": 1048.82,
+          "reg_upper": 1091.01,
+          "reg_lower": 1006.63
         },
         {
           "date": "2026-09-30",
@@ -3738,9 +3750,9 @@
           "rsi_14": 13.42,
           "bb_upper": 1081.54,
           "bb_lower": 978.93,
-          "reg_value": 1053.25,
-          "reg_upper": 1095.47,
-          "reg_lower": 1011.03
+          "reg_value": 1053.23,
+          "reg_upper": 1095.42,
+          "reg_lower": 1011.04
         },
         {
           "date": "2026-10-01",
@@ -3757,9 +3769,9 @@
           "rsi_14": 36.38,
           "bb_upper": 1079.95,
           "bb_lower": 981.25,
-          "reg_value": 1057.59,
-          "reg_upper": 1099.81,
-          "reg_lower": 1015.37
+          "reg_value": 1057.57,
+          "reg_upper": 1099.76,
+          "reg_lower": 1015.38
         },
         {
           "date": "2026-10-05",
@@ -3776,9 +3788,9 @@
           "rsi_14": 33.25,
           "bb_upper": 1077.72,
           "bb_lower": 982.04,
-          "reg_value": 1061.86,
-          "reg_upper": 1104.08,
-          "reg_lower": 1019.64
+          "reg_value": 1061.84,
+          "reg_upper": 1104.03,
+          "reg_lower": 1019.65
         },
         {
           "date": "2026-10-06",
@@ -3795,9 +3807,9 @@
           "rsi_14": 31.99,
           "bb_upper": 1075.72,
           "bb_lower": 981.9,
-          "reg_value": 1066.07,
-          "reg_upper": 1108.29,
-          "reg_lower": 1023.85
+          "reg_value": 1066.05,
+          "reg_upper": 1108.24,
+          "reg_lower": 1023.86
         },
         {
           "date": "2026-10-07",
@@ -3814,8 +3826,8 @@
           "rsi_14": 31.13,
           "bb_upper": 1075.3,
           "bb_lower": 977.72,
-          "reg_value": 1070.22,
-          "reg_upper": 1112.44,
+          "reg_value": 1070.19,
+          "reg_upper": 1112.38,
           "reg_lower": 1028.0
         },
         {
@@ -3833,8 +3845,8 @@
           "rsi_14": 33.24,
           "bb_upper": 1074.1,
           "bb_lower": 975.45,
-          "reg_value": 1074.3,
-          "reg_upper": 1116.52,
+          "reg_value": 1074.27,
+          "reg_upper": 1116.46,
           "reg_lower": 1032.08
         },
         {
@@ -3852,8 +3864,8 @@
           "rsi_14": 43.1,
           "bb_upper": 1072.64,
           "bb_lower": 976.76,
-          "reg_value": 1078.31,
-          "reg_upper": 1120.53,
+          "reg_value": 1078.28,
+          "reg_upper": 1120.47,
           "reg_lower": 1036.09
         },
         {
@@ -3871,9 +3883,9 @@
           "rsi_14": 45.22,
           "bb_upper": 1071.16,
           "bb_lower": 977.74,
-          "reg_value": 1082.25,
-          "reg_upper": 1124.47,
-          "reg_lower": 1040.03
+          "reg_value": 1082.23,
+          "reg_upper": 1124.42,
+          "reg_lower": 1040.04
         },
         {
           "date": "2026-10-13",
@@ -3890,9 +3902,9 @@
           "rsi_14": 57.22,
           "bb_upper": 1074.73,
           "bb_lower": 977.94,
-          "reg_value": 1086.13,
-          "reg_upper": 1128.35,
-          "reg_lower": 1043.91
+          "reg_value": 1086.11,
+          "reg_upper": 1128.3,
+          "reg_lower": 1043.92
         },
         {
           "date": "2026-10-14",
@@ -3909,8 +3921,8 @@
           "rsi_14": 63.86,
           "bb_upper": 1077.75,
           "bb_lower": 976.01,
-          "reg_value": 1089.95,
-          "reg_upper": 1132.17,
+          "reg_value": 1089.92,
+          "reg_upper": 1132.11,
           "reg_lower": 1047.73
         },
         {
@@ -3928,9 +3940,9 @@
           "rsi_14": 68.4,
           "bb_upper": 1090.42,
           "bb_lower": 968.35,
-          "reg_value": 1093.69,
-          "reg_upper": 1135.91,
-          "reg_lower": 1051.47
+          "reg_value": 1093.67,
+          "reg_upper": 1135.86,
+          "reg_lower": 1051.48
         },
         {
           "date": "2026-10-16",
@@ -3947,8 +3959,8 @@
           "rsi_14": 77.16,
           "bb_upper": 1117.73,
           "bb_lower": 951.3,
-          "reg_value": 1097.38,
-          "reg_upper": 1139.6,
+          "reg_value": 1097.35,
+          "reg_upper": 1139.54,
           "reg_lower": 1055.16
         },
         {
@@ -3966,9 +3978,9 @@
           "rsi_14": 69.68,
           "bb_upper": 1131.51,
           "bb_lower": 945.45,
-          "reg_value": 1100.99,
-          "reg_upper": 1143.21,
-          "reg_lower": 1058.77
+          "reg_value": 1100.97,
+          "reg_upper": 1143.16,
+          "reg_lower": 1058.78
         },
         {
           "date": "2026-10-21",
@@ -3985,9 +3997,9 @@
           "rsi_14": 71.86,
           "bb_upper": 1153.78,
           "bb_lower": 936.13,
-          "reg_value": 1104.54,
-          "reg_upper": 1146.76,
-          "reg_lower": 1062.32
+          "reg_value": 1104.52,
+          "reg_upper": 1146.71,
+          "reg_lower": 1062.33
         },
         {
           "date": "2026-10-22",
@@ -4004,9 +4016,9 @@
           "rsi_14": 73.26,
           "bb_upper": 1169.43,
           "bb_lower": 932.87,
-          "reg_value": 1108.02,
-          "reg_upper": 1150.24,
-          "reg_lower": 1065.8
+          "reg_value": 1108.01,
+          "reg_upper": 1150.2,
+          "reg_lower": 1065.82
         },
         {
           "date": "2026-10-23",
@@ -4023,9 +4035,9 @@
           "rsi_14": 69.68,
           "bb_upper": 1183.24,
           "bb_lower": 932.39,
-          "reg_value": 1111.44,
-          "reg_upper": 1153.66,
-          "reg_lower": 1069.22
+          "reg_value": 1111.43,
+          "reg_upper": 1153.62,
+          "reg_lower": 1069.24
         },
         {
           "date": "2026-10-26",
@@ -4042,9 +4054,9 @@
           "rsi_14": 74.28,
           "bb_upper": 1197.56,
           "bb_lower": 933.22,
-          "reg_value": 1114.79,
-          "reg_upper": 1157.01,
-          "reg_lower": 1072.57
+          "reg_value": 1114.78,
+          "reg_upper": 1156.97,
+          "reg_lower": 1072.59
         },
         {
           "date": "2026-10-27",
@@ -4062,8 +4074,8 @@
           "bb_upper": 1208.66,
           "bb_lower": 938.4,
           "reg_value": 1118.07,
-          "reg_upper": 1160.29,
-          "reg_lower": 1075.85
+          "reg_upper": 1160.26,
+          "reg_lower": 1075.88
         },
         {
           "date": "2026-10-28",
@@ -4080,9 +4092,9 @@
           "rsi_14": 70.89,
           "bb_upper": 1212.26,
           "bb_lower": 946.79,
-          "reg_value": 1121.29,
-          "reg_upper": 1163.51,
-          "reg_lower": 1079.07
+          "reg_value": 1121.3,
+          "reg_upper": 1163.49,
+          "reg_lower": 1079.11
         },
         {
           "date": "2026-10-29",
@@ -4099,9 +4111,9 @@
           "rsi_14": 72.49,
           "bb_upper": 1218.45,
           "bb_lower": 953.72,
-          "reg_value": 1124.44,
-          "reg_upper": 1166.66,
-          "reg_lower": 1082.22
+          "reg_value": 1124.45,
+          "reg_upper": 1166.64,
+          "reg_lower": 1082.26
         },
         {
           "date": "2026-10-30",
@@ -4118,9 +4130,9 @@
           "rsi_14": 73.46,
           "bb_upper": 1227.62,
           "bb_lower": 963.64,
-          "reg_value": 1127.53,
-          "reg_upper": 1169.75,
-          "reg_lower": 1085.31
+          "reg_value": 1127.55,
+          "reg_upper": 1169.74,
+          "reg_lower": 1085.36
         },
         {
           "date": "2026-11-02",
@@ -4137,9 +4149,9 @@
           "rsi_14": 69.32,
           "bb_upper": 1233.77,
           "bb_lower": 970.09,
-          "reg_value": 1130.55,
-          "reg_upper": 1172.77,
-          "reg_lower": 1088.33
+          "reg_value": 1130.57,
+          "reg_upper": 1172.76,
+          "reg_lower": 1088.38
         },
         {
           "date": "2026-11-03",
@@ -4156,9 +4168,9 @@
           "rsi_14": 62.81,
           "bb_upper": 1236.06,
           "bb_lower": 980.56,
-          "reg_value": 1133.5,
+          "reg_value": 1133.53,
           "reg_upper": 1175.72,
-          "reg_lower": 1091.28
+          "reg_lower": 1091.34
         },
         {
           "date": "2026-11-04",
@@ -4175,9 +4187,9 @@
           "rsi_14": 56.09,
           "bb_upper": 1234.37,
           "bb_lower": 993.68,
-          "reg_value": 1136.39,
-          "reg_upper": 1178.61,
-          "reg_lower": 1094.17
+          "reg_value": 1136.43,
+          "reg_upper": 1178.62,
+          "reg_lower": 1094.24
         },
         {
           "date": "2026-11-05",
@@ -4194,9 +4206,9 @@
           "rsi_14": 58.27,
           "bb_upper": 1231.27,
           "bb_lower": 1014.32,
-          "reg_value": 1139.21,
-          "reg_upper": 1181.43,
-          "reg_lower": 1096.99
+          "reg_value": 1139.26,
+          "reg_upper": 1181.45,
+          "reg_lower": 1097.07
         },
         {
           "date": "2026-11-06",
@@ -4213,9 +4225,9 @@
           "rsi_14": 53.26,
           "bb_upper": 1226.62,
           "bb_lower": 1037.41,
-          "reg_value": 1141.96,
-          "reg_upper": 1184.18,
-          "reg_lower": 1099.74
+          "reg_value": 1142.02,
+          "reg_upper": 1184.21,
+          "reg_lower": 1099.83
         },
         {
           "date": "2026-11-09",
@@ -4232,9 +4244,9 @@
           "rsi_14": 53.82,
           "bb_upper": 1219.28,
           "bb_lower": 1057.82,
-          "reg_value": 1144.65,
-          "reg_upper": 1186.87,
-          "reg_lower": 1102.43
+          "reg_value": 1144.72,
+          "reg_upper": 1186.91,
+          "reg_lower": 1102.53
         },
         {
           "date": "2026-11-11",
@@ -4251,9 +4263,9 @@
           "rsi_14": 47.59,
           "bb_upper": 1205.12,
           "bb_lower": 1085.48,
-          "reg_value": 1147.28,
-          "reg_upper": 1189.5,
-          "reg_lower": 1105.06
+          "reg_value": 1147.35,
+          "reg_upper": 1189.54,
+          "reg_lower": 1105.16
         },
         {
           "date": "2026-11-12",
@@ -4270,9 +4282,9 @@
           "rsi_14": 49.59,
           "bb_upper": 1195.81,
           "bb_lower": 1103.7,
-          "reg_value": 1149.83,
-          "reg_upper": 1192.05,
-          "reg_lower": 1107.61
+          "reg_value": 1149.92,
+          "reg_upper": 1192.11,
+          "reg_lower": 1107.73
         },
         {
           "date": "2026-11-13",
@@ -4289,9 +4301,9 @@
           "rsi_14": 47.71,
           "bb_upper": 1189.08,
           "bb_lower": 1115.78,
-          "reg_value": 1152.32,
-          "reg_upper": 1194.54,
-          "reg_lower": 1110.1
+          "reg_value": 1152.42,
+          "reg_upper": 1194.61,
+          "reg_lower": 1110.23
         },
         {
           "date": "2026-11-16",
@@ -4308,9 +4320,9 @@
           "rsi_14": 45.98,
           "bb_upper": 1185.52,
           "bb_lower": 1122.85,
-          "reg_value": 1154.75,
-          "reg_upper": 1196.97,
-          "reg_lower": 1112.53
+          "reg_value": 1154.86,
+          "reg_upper": 1197.05,
+          "reg_lower": 1112.67
         },
         {
           "date": "2026-11-17",
@@ -4327,9 +4339,9 @@
           "rsi_14": 43.94,
           "bb_upper": 1185.47,
           "bb_lower": 1119.78,
-          "reg_value": 1157.11,
-          "reg_upper": 1199.33,
-          "reg_lower": 1114.89
+          "reg_value": 1157.23,
+          "reg_upper": 1199.42,
+          "reg_lower": 1115.04
         },
         {
           "date": "2026-11-18",
@@ -4346,28 +4358,28 @@
           "rsi_14": 47.17,
           "bb_upper": 1188.44,
           "bb_lower": 1114.62,
-          "reg_value": 1159.4,
-          "reg_upper": 1201.62,
-          "reg_lower": 1117.18
+          "reg_value": 1159.53,
+          "reg_upper": 1201.72,
+          "reg_lower": 1117.34
         },
         {
           "date": "2026-11-19",
           "open": 1096.3,
           "high": 1097.0,
           "low": 1073.2,
-          "close": 1083.7,
-          "volume": 4768185,
-          "sma_20": 1147.32,
-          "ema_12": 1131.45,
-          "ema_26": 1125.13,
-          "macd": 6.322,
-          "macd_signal": 17.215,
-          "rsi_14": 37.7,
-          "bb_upper": 1193.76,
-          "bb_lower": 1100.87,
-          "reg_value": 1161.62,
-          "reg_upper": 1203.84,
-          "reg_lower": 1119.4
+          "close": 1084.5,
+          "volume": 5108325,
+          "sma_20": 1147.36,
+          "ema_12": 1131.58,
+          "ema_26": 1125.19,
+          "macd": 6.386,
+          "macd_signal": 17.228,
+          "rsi_14": 37.81,
+          "bb_upper": 1193.58,
+          "bb_lower": 1101.13,
+          "reg_value": 1161.77,
+          "reg_upper": 1203.96,
+          "reg_lower": 1119.58
         }
       ]
     },
@@ -4380,34 +4392,34 @@
       "sector": "Consumer Cyclical",
       "asset_type": "STOCK",
       "setup_type": "Deep Value Turnaround",
-      "price": 449.1,
-      "change_pct": 1.19,
-      "fetched_at": "2026-11-19T06:00:02.230332+00:00",
+      "price": 451.2,
+      "change_pct": 1.67,
+      "fetched_at": "2026-11-19T06:20:42.701160+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
-      "rsi_14": 70.23,
-      "macd": 7.684,
-      "macd_signal": 3.802,
-      "sma_20": 419.46,
-      "ema_12": 434.27,
-      "ema_26": 426.58,
-      "bb_upper": 462.09,
-      "bb_lower": 376.83,
-      "projected_30d_target": 499.86,
-      "regression_std_dev": 12.26,
+      "rsi_14": 70.74,
+      "macd": 7.851,
+      "macd_signal": 3.836,
+      "sma_20": 419.57,
+      "ema_12": 434.59,
+      "ema_26": 426.74,
+      "bb_upper": 462.5,
+      "bb_lower": 376.64,
+      "projected_30d_target": 500.81,
+      "regression_std_dev": 12.28,
       "regression_curve": "Upward Curve",
       "future_projection": [
-        451.39,
-        455.02,
-        458.81,
-        462.75,
-        466.85,
-        471.1,
-        475.51,
-        480.07,
-        484.79,
-        489.66,
-        494.68,
-        499.86
+        451.85,
+        455.52,
+        459.35,
+        463.33,
+        467.47,
+        471.76,
+        476.21,
+        480.82,
+        485.58,
+        490.5,
+        495.58,
+        500.81
       ],
       "fundamental_score": {
         "business": 19,
@@ -4424,16 +4436,16 @@
           "req": "roce"
         },
         "explanation": "Profit Drag & Low Margin",
-        "nlp": "Balanced valuation at P/E 26.2x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY).",
+        "nlp": "Balanced valuation at P/E 26.3x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY).",
         "ratios": {
-          "pe": 26.19,
+          "pe": 26.31,
           "roe": 0.0,
           "roce": 0.0,
           "opm": 8.61,
           "sales_growth": 35.1,
           "profit_growth": 0.0,
           "debt_to_equity": 0.25,
-          "mcap_cr": 165395.96,
+          "mcap_cr": 166169.36,
           "beta": 1.0
         }
       },
@@ -4447,10 +4459,10 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 47.0,
-        "spot_price": 449.1,
-        "entry_price": 414.65,
-        "target": 496.1,
-        "stop_loss": 396.1,
+        "spot_price": 451.2,
+        "entry_price": 416.75,
+        "target": 498.2,
+        "stop_loss": 398.2,
         "rr_ratio": 0.89,
         "is_holding": false
       },
@@ -4478,9 +4490,9 @@
           "rsi_14": 54.56,
           "bb_upper": 452.74,
           "bb_lower": 422.62,
-          "reg_value": 425.63,
-          "reg_upper": 437.89,
-          "reg_lower": 413.37
+          "reg_value": 425.6,
+          "reg_upper": 437.88,
+          "reg_lower": 413.32
         },
         {
           "date": "2026-09-29",
@@ -4497,9 +4509,9 @@
           "rsi_14": 52.26,
           "bb_upper": 452.0,
           "bb_lower": 421.99,
-          "reg_value": 423.55,
-          "reg_upper": 435.81,
-          "reg_lower": 411.29
+          "reg_value": 423.51,
+          "reg_upper": 435.79,
+          "reg_lower": 411.23
         },
         {
           "date": "2026-09-30",
@@ -4516,9 +4528,9 @@
           "rsi_14": 46.33,
           "bb_upper": 452.4,
           "bb_lower": 419.04,
-          "reg_value": 421.62,
-          "reg_upper": 433.88,
-          "reg_lower": 409.36
+          "reg_value": 421.56,
+          "reg_upper": 433.84,
+          "reg_lower": 409.28
         },
         {
           "date": "2026-10-01",
@@ -4535,9 +4547,9 @@
           "rsi_14": 42.81,
           "bb_upper": 453.47,
           "bb_lower": 414.85,
-          "reg_value": 419.84,
-          "reg_upper": 432.1,
-          "reg_lower": 407.58
+          "reg_value": 419.78,
+          "reg_upper": 432.06,
+          "reg_lower": 407.5
         },
         {
           "date": "2026-10-05",
@@ -4554,9 +4566,9 @@
           "rsi_14": 49.81,
           "bb_upper": 452.63,
           "bb_lower": 414.64,
-          "reg_value": 418.21,
-          "reg_upper": 430.47,
-          "reg_lower": 405.95
+          "reg_value": 418.15,
+          "reg_upper": 430.43,
+          "reg_lower": 405.87
         },
         {
           "date": "2026-10-06",
@@ -4573,9 +4585,9 @@
           "rsi_14": 53.35,
           "bb_upper": 451.99,
           "bb_lower": 415.3,
-          "reg_value": 416.75,
-          "reg_upper": 429.01,
-          "reg_lower": 404.49
+          "reg_value": 416.68,
+          "reg_upper": 428.96,
+          "reg_lower": 404.4
         },
         {
           "date": "2026-10-07",
@@ -4592,9 +4604,9 @@
           "rsi_14": 51.78,
           "bb_upper": 451.27,
           "bb_lower": 415.31,
-          "reg_value": 415.43,
-          "reg_upper": 427.69,
-          "reg_lower": 403.17
+          "reg_value": 415.36,
+          "reg_upper": 427.64,
+          "reg_lower": 403.08
         },
         {
           "date": "2026-10-08",
@@ -4611,9 +4623,9 @@
           "rsi_14": 39.12,
           "bb_upper": 451.95,
           "bb_lower": 412.26,
-          "reg_value": 414.27,
-          "reg_upper": 426.53,
-          "reg_lower": 402.01
+          "reg_value": 414.2,
+          "reg_upper": 426.48,
+          "reg_lower": 401.92
         },
         {
           "date": "2026-10-09",
@@ -4630,9 +4642,9 @@
           "rsi_14": 33.91,
           "bb_upper": 452.61,
           "bb_lower": 409.18,
-          "reg_value": 413.27,
-          "reg_upper": 425.53,
-          "reg_lower": 401.01
+          "reg_value": 413.19,
+          "reg_upper": 425.47,
+          "reg_lower": 400.91
         },
         {
           "date": "2026-10-12",
@@ -4649,9 +4661,9 @@
           "rsi_14": 31.04,
           "bb_upper": 453.71,
           "bb_lower": 405.3,
-          "reg_value": 412.42,
-          "reg_upper": 424.68,
-          "reg_lower": 400.16
+          "reg_value": 412.34,
+          "reg_upper": 424.62,
+          "reg_lower": 400.06
         },
         {
           "date": "2026-10-13",
@@ -4668,9 +4680,9 @@
           "rsi_14": 39.81,
           "bb_upper": 453.09,
           "bb_lower": 404.66,
-          "reg_value": 411.72,
-          "reg_upper": 423.98,
-          "reg_lower": 399.46
+          "reg_value": 411.65,
+          "reg_upper": 423.93,
+          "reg_lower": 399.37
         },
         {
           "date": "2026-10-14",
@@ -4687,9 +4699,9 @@
           "rsi_14": 33.38,
           "bb_upper": 453.21,
           "bb_lower": 403.35,
-          "reg_value": 411.18,
-          "reg_upper": 423.44,
-          "reg_lower": 398.92
+          "reg_value": 411.11,
+          "reg_upper": 423.39,
+          "reg_lower": 398.83
         },
         {
           "date": "2026-10-15",
@@ -4706,9 +4718,9 @@
           "rsi_14": 42.8,
           "bb_upper": 453.2,
           "bb_lower": 403.22,
-          "reg_value": 410.8,
-          "reg_upper": 423.06,
-          "reg_lower": 398.54
+          "reg_value": 410.73,
+          "reg_upper": 423.01,
+          "reg_lower": 398.45
         },
         {
           "date": "2026-10-16",
@@ -4725,9 +4737,9 @@
           "rsi_14": 39.46,
           "bb_upper": 452.35,
           "bb_lower": 402.56,
-          "reg_value": 410.56,
-          "reg_upper": 422.82,
-          "reg_lower": 398.3
+          "reg_value": 410.5,
+          "reg_upper": 422.78,
+          "reg_lower": 398.22
         },
         {
           "date": "2026-10-19",
@@ -4744,9 +4756,9 @@
           "rsi_14": 42.18,
           "bb_upper": 450.36,
           "bb_lower": 402.14,
-          "reg_value": 410.49,
-          "reg_upper": 422.75,
-          "reg_lower": 398.23
+          "reg_value": 410.43,
+          "reg_upper": 422.71,
+          "reg_lower": 398.15
         },
         {
           "date": "2026-10-21",
@@ -4763,9 +4775,9 @@
           "rsi_14": 42.91,
           "bb_upper": 447.77,
           "bb_lower": 402.03,
-          "reg_value": 410.57,
-          "reg_upper": 422.83,
-          "reg_lower": 398.31
+          "reg_value": 410.52,
+          "reg_upper": 422.8,
+          "reg_lower": 398.24
         },
         {
           "date": "2026-10-22",
@@ -4782,9 +4794,9 @@
           "rsi_14": 45.6,
           "bb_upper": 445.8,
           "bb_lower": 401.41,
-          "reg_value": 410.8,
-          "reg_upper": 423.06,
-          "reg_lower": 398.54
+          "reg_value": 410.76,
+          "reg_upper": 423.04,
+          "reg_lower": 398.48
         },
         {
           "date": "2026-10-23",
@@ -4801,9 +4813,9 @@
           "rsi_14": 39.85,
           "bb_upper": 442.68,
           "bb_lower": 399.12,
-          "reg_value": 411.18,
+          "reg_value": 411.16,
           "reg_upper": 423.44,
-          "reg_lower": 398.92
+          "reg_lower": 398.88
         },
         {
           "date": "2026-10-26",
@@ -4820,9 +4832,9 @@
           "rsi_14": 27.91,
           "bb_upper": 444.03,
           "bb_lower": 392.46,
-          "reg_value": 411.73,
+          "reg_value": 411.71,
           "reg_upper": 423.99,
-          "reg_lower": 399.47
+          "reg_lower": 399.43
         },
         {
           "date": "2026-10-27",
@@ -4840,8 +4852,8 @@
           "bb_upper": 440.85,
           "bb_lower": 391.4,
           "reg_value": 412.42,
-          "reg_upper": 424.68,
-          "reg_lower": 400.16
+          "reg_upper": 424.7,
+          "reg_lower": 400.14
         },
         {
           "date": "2026-10-28",
@@ -4858,9 +4870,9 @@
           "rsi_14": 35.83,
           "bb_upper": 438.91,
           "bb_lower": 390.02,
-          "reg_value": 413.27,
-          "reg_upper": 425.53,
-          "reg_lower": 401.01
+          "reg_value": 413.28,
+          "reg_upper": 425.56,
+          "reg_lower": 401.0
         },
         {
           "date": "2026-10-29",
@@ -4877,9 +4889,9 @@
           "rsi_14": 42.45,
           "bb_upper": 437.05,
           "bb_lower": 388.9,
-          "reg_value": 414.28,
-          "reg_upper": 426.54,
-          "reg_lower": 402.02
+          "reg_value": 414.31,
+          "reg_upper": 426.59,
+          "reg_lower": 402.03
         },
         {
           "date": "2026-10-30",
@@ -4896,9 +4908,9 @@
           "rsi_14": 41.93,
           "bb_upper": 436.47,
           "bb_lower": 386.94,
-          "reg_value": 415.44,
-          "reg_upper": 427.7,
-          "reg_lower": 403.18
+          "reg_value": 415.48,
+          "reg_upper": 427.76,
+          "reg_lower": 403.2
         },
         {
           "date": "2026-11-02",
@@ -4915,9 +4927,9 @@
           "rsi_14": 48.19,
           "bb_upper": 436.1,
           "bb_lower": 385.91,
-          "reg_value": 416.75,
-          "reg_upper": 429.01,
-          "reg_lower": 404.49
+          "reg_value": 416.82,
+          "reg_upper": 429.1,
+          "reg_lower": 404.54
         },
         {
           "date": "2026-11-03",
@@ -4934,9 +4946,9 @@
           "rsi_14": 41.62,
           "bb_upper": 434.04,
           "bb_lower": 385.71,
-          "reg_value": 418.22,
-          "reg_upper": 430.48,
-          "reg_lower": 405.96
+          "reg_value": 418.3,
+          "reg_upper": 430.58,
+          "reg_lower": 406.02
         },
         {
           "date": "2026-11-04",
@@ -4953,9 +4965,9 @@
           "rsi_14": 41.78,
           "bb_upper": 430.0,
           "bb_lower": 386.65,
-          "reg_value": 419.85,
-          "reg_upper": 432.11,
-          "reg_lower": 407.59
+          "reg_value": 419.95,
+          "reg_upper": 432.23,
+          "reg_lower": 407.67
         },
         {
           "date": "2026-11-05",
@@ -4972,9 +4984,9 @@
           "rsi_14": 53.31,
           "bb_upper": 430.27,
           "bb_lower": 386.49,
-          "reg_value": 421.62,
-          "reg_upper": 433.88,
-          "reg_lower": 409.36
+          "reg_value": 421.75,
+          "reg_upper": 434.03,
+          "reg_lower": 409.47
         },
         {
           "date": "2026-11-06",
@@ -4991,9 +5003,9 @@
           "rsi_14": 52.31,
           "bb_upper": 432.05,
           "bb_lower": 385.94,
-          "reg_value": 423.56,
-          "reg_upper": 435.82,
-          "reg_lower": 411.3
+          "reg_value": 423.71,
+          "reg_upper": 435.99,
+          "reg_lower": 411.43
         },
         {
           "date": "2026-11-09",
@@ -5010,9 +5022,9 @@
           "rsi_14": 58.52,
           "bb_upper": 436.34,
           "bb_lower": 384.29,
-          "reg_value": 425.64,
-          "reg_upper": 437.9,
-          "reg_lower": 413.38
+          "reg_value": 425.82,
+          "reg_upper": 438.1,
+          "reg_lower": 413.54
         },
         {
           "date": "2026-11-11",
@@ -5029,9 +5041,9 @@
           "rsi_14": 62.6,
           "bb_upper": 442.53,
           "bb_lower": 382.25,
-          "reg_value": 427.89,
-          "reg_upper": 440.15,
-          "reg_lower": 415.63
+          "reg_value": 428.09,
+          "reg_upper": 440.37,
+          "reg_lower": 415.81
         },
         {
           "date": "2026-11-12",
@@ -5048,9 +5060,9 @@
           "rsi_14": 66.68,
           "bb_upper": 449.25,
           "bb_lower": 379.18,
-          "reg_value": 430.28,
-          "reg_upper": 442.54,
-          "reg_lower": 418.02
+          "reg_value": 430.51,
+          "reg_upper": 442.79,
+          "reg_lower": 418.23
         },
         {
           "date": "2026-11-13",
@@ -5067,9 +5079,9 @@
           "rsi_14": 65.78,
           "bb_upper": 451.17,
           "bb_lower": 379.09,
-          "reg_value": 432.83,
-          "reg_upper": 445.09,
-          "reg_lower": 420.57
+          "reg_value": 433.09,
+          "reg_upper": 445.37,
+          "reg_lower": 420.81
         },
         {
           "date": "2026-11-16",
@@ -5086,9 +5098,9 @@
           "rsi_14": 69.68,
           "bb_upper": 451.75,
           "bb_lower": 379.05,
-          "reg_value": 435.54,
-          "reg_upper": 447.8,
-          "reg_lower": 423.28
+          "reg_value": 435.83,
+          "reg_upper": 448.11,
+          "reg_lower": 423.55
         },
         {
           "date": "2026-11-17",
@@ -5105,9 +5117,9 @@
           "rsi_14": 70.27,
           "bb_upper": 455.25,
           "bb_lower": 378.01,
-          "reg_value": 438.4,
-          "reg_upper": 450.66,
-          "reg_lower": 426.14
+          "reg_value": 438.72,
+          "reg_upper": 451.0,
+          "reg_lower": 426.44
         },
         {
           "date": "2026-11-18",
@@ -5124,28 +5136,28 @@
           "rsi_14": 69.03,
           "bb_upper": 458.28,
           "bb_lower": 377.48,
-          "reg_value": 441.42,
-          "reg_upper": 453.68,
-          "reg_lower": 429.16
+          "reg_value": 441.77,
+          "reg_upper": 454.05,
+          "reg_lower": 429.49
         },
         {
           "date": "2026-11-19",
           "open": 446.5,
-          "high": 449.75,
+          "high": 452.2,
           "low": 443.6,
-          "close": 449.1,
-          "volume": 2371773,
-          "sma_20": 419.46,
-          "ema_12": 434.27,
-          "ema_26": 426.58,
-          "macd": 7.684,
-          "macd_signal": 3.802,
-          "rsi_14": 70.23,
-          "bb_upper": 462.09,
-          "bb_lower": 376.83,
-          "reg_value": 444.59,
-          "reg_upper": 456.85,
-          "reg_lower": 432.33
+          "close": 451.2,
+          "volume": 3302947,
+          "sma_20": 419.57,
+          "ema_12": 434.59,
+          "ema_26": 426.74,
+          "macd": 7.851,
+          "macd_signal": 3.836,
+          "rsi_14": 70.74,
+          "bb_upper": 462.5,
+          "bb_lower": 376.64,
+          "reg_value": 444.97,
+          "reg_upper": 457.25,
+          "reg_lower": 432.69
         }
       ]
     },
@@ -5160,7 +5172,7 @@
       "setup_type": "AI Momentum Continuation",
       "price": 150.96,
       "change_pct": -2.89,
-      "fetched_at": "2026-11-19T06:00:02.456162+00:00",
+      "fetched_at": "2026-11-19T06:20:42.918256+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
       "rsi_14": 15.82,
       "macd": -17.001,
@@ -5936,34 +5948,34 @@
       "sector": "Communication Services",
       "asset_type": "STOCK",
       "setup_type": "Risk Breakdown Warning",
-      "price": 70.97,
-      "change_pct": 0.28,
-      "fetched_at": "2026-11-19T06:00:02.705947+00:00",
+      "price": 70.95,
+      "change_pct": 0.25,
+      "fetched_at": "2026-11-19T06:20:43.158225+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
-      "rsi_14": 50.73,
-      "macd": -0.034,
-      "macd_signal": -0.779,
+      "rsi_14": 50.7,
+      "macd": -0.035,
+      "macd_signal": -0.78,
       "sma_20": 68.11,
-      "ema_12": 70.1,
+      "ema_12": 70.09,
       "ema_26": 70.13,
-      "bb_upper": 75.04,
+      "bb_upper": 75.03,
       "bb_lower": 61.18,
-      "projected_30d_target": 77.06,
+      "projected_30d_target": 77.05,
       "regression_std_dev": 2.71,
       "regression_curve": "Upward Curve",
       "future_projection": [
-        71.27,
-        71.67,
-        72.09,
-        72.54,
+        71.26,
+        71.66,
+        72.08,
+        72.53,
         73.01,
         73.51,
-        74.04,
-        74.59,
-        75.17,
+        74.03,
+        74.58,
+        75.16,
         75.77,
         76.4,
-        77.06
+        77.05
       ],
       "fundamental_score": {
         "business": 10,
@@ -5982,14 +5994,14 @@
         "explanation": "Balanced Setup",
         "nlp": "Balanced valuation at P/E 38.8x.",
         "ratios": {
-          "pe": 38.78,
+          "pe": 38.77,
           "roe": 1.43,
           "roce": 0.94,
           "opm": -0.56,
           "sales_growth": 13.0,
           "profit_growth": -36.7,
           "debt_to_equity": 0.01,
-          "mcap_cr": 6816.81,
+          "mcap_cr": 6814.89,
           "beta": 0.72
         }
       },
@@ -6003,11 +6015,11 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 39.0,
-        "spot_price": 70.97,
-        "entry_price": 63.87,
-        "target": 109.97,
-        "stop_loss": 60.32,
-        "rr_ratio": 3.66,
+        "spot_price": 70.95,
+        "entry_price": 63.86,
+        "target": 109.95,
+        "stop_loss": 60.31,
+        "rr_ratio": 3.67,
         "is_holding": false
       },
       "decision_matrix": {
@@ -6091,9 +6103,9 @@
           "rsi_14": 30.38,
           "bb_upper": 80.98,
           "bb_lower": 72.74,
-          "reg_value": 73.23,
-          "reg_upper": 75.94,
-          "reg_lower": 70.52
+          "reg_value": 73.24,
+          "reg_upper": 75.95,
+          "reg_lower": 70.53
         },
         {
           "date": "2026-10-05",
@@ -6509,9 +6521,9 @@
           "rsi_14": 41.17,
           "bb_upper": 76.79,
           "bb_lower": 61.24,
-          "reg_value": 68.54,
-          "reg_upper": 71.25,
-          "reg_lower": 65.83
+          "reg_value": 68.53,
+          "reg_upper": 71.24,
+          "reg_lower": 65.82
         },
         {
           "date": "2026-11-05",
@@ -6642,9 +6654,9 @@
           "rsi_14": 60.09,
           "bb_upper": 75.68,
           "bb_lower": 60.96,
-          "reg_value": 69.68,
-          "reg_upper": 72.39,
-          "reg_lower": 66.97
+          "reg_value": 69.67,
+          "reg_upper": 72.38,
+          "reg_lower": 66.96
         },
         {
           "date": "2026-11-17",
@@ -6680,24 +6692,24 @@
           "rsi_14": 52.56,
           "bb_upper": 75.25,
           "bb_lower": 61.11,
-          "reg_value": 70.24,
-          "reg_upper": 72.95,
-          "reg_lower": 67.53
+          "reg_value": 70.23,
+          "reg_upper": 72.94,
+          "reg_lower": 67.52
         },
         {
           "date": "2026-11-19",
           "open": 70.51,
           "high": 71.49,
           "low": 70.2,
-          "close": 70.97,
-          "volume": 3792565,
+          "close": 70.95,
+          "volume": 3908269,
           "sma_20": 68.11,
-          "ema_12": 70.1,
+          "ema_12": 70.09,
           "ema_26": 70.13,
-          "macd": -0.034,
-          "macd_signal": -0.779,
-          "rsi_14": 50.73,
-          "bb_upper": 75.04,
+          "macd": -0.035,
+          "macd_signal": -0.78,
+          "rsi_14": 50.7,
+          "bb_upper": 75.03,
           "bb_lower": 61.18,
           "reg_value": 70.55,
           "reg_upper": 73.26,
@@ -6714,34 +6726,34 @@
       "sector": "Consumer Defensive",
       "asset_type": "STOCK",
       "setup_type": "Dividend Compounder",
-      "price": 298.0,
-      "change_pct": 0.47,
-      "fetched_at": "2026-11-19T06:00:02.935433+00:00",
+      "price": 298.15,
+      "change_pct": 0.52,
+      "fetched_at": "2026-11-19T06:20:43.406226+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
-      "rsi_14": 83.33,
-      "macd": 8.593,
-      "macd_signal": 6.281,
-      "sma_20": 276.28,
-      "ema_12": 286.3,
-      "ema_26": 277.71,
-      "bb_upper": 303.09,
-      "bb_lower": 249.46,
-      "projected_30d_target": 337.9,
+      "rsi_14": 83.38,
+      "macd": 8.605,
+      "macd_signal": 6.283,
+      "sma_20": 276.29,
+      "ema_12": 286.32,
+      "ema_26": 277.72,
+      "bb_upper": 303.12,
+      "bb_lower": 249.45,
+      "projected_30d_target": 337.96,
       "regression_std_dev": 4.75,
       "regression_curve": "Upward Curve",
       "future_projection": [
-        301.9,
-        304.72,
-        307.63,
-        310.63,
-        313.72,
-        316.9,
-        320.17,
-        323.53,
-        326.99,
-        330.53,
-        334.17,
-        337.9
+        301.94,
+        304.75,
+        307.67,
+        310.67,
+        313.76,
+        316.94,
+        320.22,
+        323.59,
+        327.04,
+        330.59,
+        334.23,
+        337.96
       ],
       "fundamental_score": {
         "business": 17,
@@ -6760,14 +6772,14 @@
         "explanation": "Profit Drag",
         "nlp": "Balanced valuation at P/E 19.8x. High capital efficiency (ROE 26.8%, ROCE 23.3%) underscores durable moat.",
         "ratios": {
-          "pe": 19.77,
+          "pe": 19.78,
           "roe": 26.79,
           "roce": 23.33,
           "opm": 29.58,
           "sales_growth": 3.9,
           "profit_growth": -18.8,
           "debt_to_equity": 0.01,
-          "mcap_cr": 373474.41,
+          "mcap_cr": 373662.39,
           "beta": -0.07
         }
       },
@@ -6781,10 +6793,10 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 66.0,
-        "spot_price": 298.0,
-        "entry_price": 275.9,
-        "target": 364.0,
-        "stop_loss": 264.0,
+        "spot_price": 298.15,
+        "entry_price": 276.05,
+        "target": 364.15,
+        "stop_loss": 264.15,
         "rr_ratio": 1.94,
         "is_holding": false
       },
@@ -6926,9 +6938,9 @@
           "rsi_14": 51.59,
           "bb_upper": 272.49,
           "bb_lower": 257.62,
-          "reg_value": 259.74,
-          "reg_upper": 264.49,
-          "reg_lower": 254.99
+          "reg_value": 259.73,
+          "reg_upper": 264.48,
+          "reg_lower": 254.98
         },
         {
           "date": "2026-10-08",
@@ -6964,9 +6976,9 @@
           "rsi_14": 52.87,
           "bb_upper": 272.96,
           "bb_lower": 256.14,
-          "reg_value": 259.82,
-          "reg_upper": 264.57,
-          "reg_lower": 255.07
+          "reg_value": 259.81,
+          "reg_upper": 264.56,
+          "reg_lower": 255.06
         },
         {
           "date": "2026-10-12",
@@ -7097,9 +7109,9 @@
           "rsi_14": 47.63,
           "bb_upper": 271.95,
           "bb_lower": 255.53,
-          "reg_value": 262.97,
-          "reg_upper": 267.72,
-          "reg_lower": 258.22
+          "reg_value": 262.96,
+          "reg_upper": 267.71,
+          "reg_lower": 258.21
         },
         {
           "date": "2026-10-22",
@@ -7211,9 +7223,9 @@
           "rsi_14": 61.74,
           "bb_upper": 268.84,
           "bb_lower": 254.49,
-          "reg_value": 269.21,
-          "reg_upper": 273.96,
-          "reg_lower": 264.46
+          "reg_value": 269.22,
+          "reg_upper": 273.97,
+          "reg_lower": 264.47
         },
         {
           "date": "2026-10-30",
@@ -7230,9 +7242,9 @@
           "rsi_14": 49.38,
           "bb_upper": 269.17,
           "bb_lower": 254.45,
-          "reg_value": 270.57,
-          "reg_upper": 275.32,
-          "reg_lower": 265.82
+          "reg_value": 270.58,
+          "reg_upper": 275.33,
+          "reg_lower": 265.83
         },
         {
           "date": "2026-11-02",
@@ -7287,9 +7299,9 @@
           "rsi_14": 76.5,
           "bb_upper": 274.37,
           "bb_lower": 252.13,
-          "reg_value": 275.2,
-          "reg_upper": 279.95,
-          "reg_lower": 270.45
+          "reg_value": 275.21,
+          "reg_upper": 279.96,
+          "reg_lower": 270.46
         },
         {
           "date": "2026-11-05",
@@ -7325,9 +7337,9 @@
           "rsi_14": 76.17,
           "bb_upper": 280.14,
           "bb_lower": 250.49,
-          "reg_value": 278.74,
-          "reg_upper": 283.49,
-          "reg_lower": 273.99
+          "reg_value": 278.75,
+          "reg_upper": 283.5,
+          "reg_lower": 274.0
         },
         {
           "date": "2026-11-09",
@@ -7344,9 +7356,9 @@
           "rsi_14": 72.96,
           "bb_upper": 281.9,
           "bb_lower": 250.01,
-          "reg_value": 280.65,
-          "reg_upper": 285.4,
-          "reg_lower": 275.9
+          "reg_value": 280.66,
+          "reg_upper": 285.41,
+          "reg_lower": 275.91
         },
         {
           "date": "2026-11-11",
@@ -7363,9 +7375,9 @@
           "rsi_14": 76.02,
           "bb_upper": 284.82,
           "bb_lower": 249.8,
-          "reg_value": 282.65,
-          "reg_upper": 287.4,
-          "reg_lower": 277.9
+          "reg_value": 282.66,
+          "reg_upper": 287.41,
+          "reg_lower": 277.91
         },
         {
           "date": "2026-11-12",
@@ -7382,9 +7394,9 @@
           "rsi_14": 79.9,
           "bb_upper": 287.15,
           "bb_lower": 249.77,
-          "reg_value": 284.73,
-          "reg_upper": 289.48,
-          "reg_lower": 279.98
+          "reg_value": 284.75,
+          "reg_upper": 289.5,
+          "reg_lower": 280.0
         },
         {
           "date": "2026-11-13",
@@ -7401,9 +7413,9 @@
           "rsi_14": 82.26,
           "bb_upper": 289.36,
           "bb_lower": 249.92,
-          "reg_value": 286.91,
-          "reg_upper": 291.66,
-          "reg_lower": 282.16
+          "reg_value": 286.93,
+          "reg_upper": 291.68,
+          "reg_lower": 282.18
         },
         {
           "date": "2026-11-16",
@@ -7420,9 +7432,9 @@
           "rsi_14": 84.95,
           "bb_upper": 293.61,
           "bb_lower": 248.79,
-          "reg_value": 289.18,
-          "reg_upper": 293.93,
-          "reg_lower": 284.43
+          "reg_value": 289.2,
+          "reg_upper": 293.95,
+          "reg_lower": 284.45
         },
         {
           "date": "2026-11-17",
@@ -7439,9 +7451,9 @@
           "rsi_14": 82.78,
           "bb_upper": 296.75,
           "bb_lower": 248.62,
-          "reg_value": 291.55,
-          "reg_upper": 296.3,
-          "reg_lower": 286.8
+          "reg_value": 291.57,
+          "reg_upper": 296.32,
+          "reg_lower": 286.82
         },
         {
           "date": "2026-11-18",
@@ -7458,28 +7470,28 @@
           "rsi_14": 84.61,
           "bb_upper": 300.02,
           "bb_lower": 248.93,
-          "reg_value": 294.0,
-          "reg_upper": 298.75,
-          "reg_lower": 289.25
+          "reg_value": 294.02,
+          "reg_upper": 298.77,
+          "reg_lower": 289.27
         },
         {
           "date": "2026-11-19",
           "open": 296.8,
           "high": 300.2,
           "low": 296.65,
-          "close": 298.0,
-          "volume": 9083318,
-          "sma_20": 276.28,
-          "ema_12": 286.3,
-          "ema_26": 277.71,
-          "macd": 8.593,
-          "macd_signal": 6.281,
-          "rsi_14": 83.33,
-          "bb_upper": 303.09,
-          "bb_lower": 249.46,
-          "reg_value": 296.54,
-          "reg_upper": 301.29,
-          "reg_lower": 291.79
+          "close": 298.15,
+          "volume": 9378319,
+          "sma_20": 276.29,
+          "ema_12": 286.32,
+          "ema_26": 277.72,
+          "macd": 8.605,
+          "macd_signal": 6.283,
+          "rsi_14": 83.38,
+          "bb_upper": 303.12,
+          "bb_lower": 249.45,
+          "reg_value": 296.57,
+          "reg_upper": 301.32,
+          "reg_lower": 291.82
         }
       ]
     },
@@ -7492,34 +7504,34 @@
       "sector": "Financial Services",
       "asset_type": "STOCK",
       "setup_type": "PSU Banking Leader",
-      "price": 1143.25,
-      "change_pct": 0.73,
-      "fetched_at": "2026-11-19T06:00:03.175608+00:00",
+      "price": 1143.35,
+      "change_pct": 0.74,
+      "fetched_at": "2026-11-19T06:20:43.643698+00:00",
       "data_source": "Yahoo Finance Live (yfinance)",
       "rsi_14": 86.01,
-      "macd": 41.812,
-      "macd_signal": 27.112,
-      "sma_20": 1021.66,
-      "ema_12": 1072.47,
-      "ema_26": 1030.66,
-      "bb_upper": 1149.64,
-      "bb_lower": 893.69,
-      "projected_30d_target": 1338.59,
+      "macd": 41.82,
+      "macd_signal": 27.114,
+      "sma_20": 1021.67,
+      "ema_12": 1072.49,
+      "ema_26": 1030.67,
+      "bb_upper": 1149.66,
+      "bb_lower": 893.67,
+      "projected_30d_target": 1338.63,
       "regression_std_dev": 17.06,
       "regression_curve": "Upward Curve",
       "future_projection": [
-        1150.98,
-        1165.56,
-        1180.63,
-        1196.19,
-        1212.25,
-        1228.81,
-        1245.87,
-        1263.42,
-        1281.47,
-        1300.01,
-        1319.05,
-        1338.59
+        1151.0,
+        1165.58,
+        1180.65,
+        1196.22,
+        1212.28,
+        1228.84,
+        1245.9,
+        1263.46,
+        1281.51,
+        1300.05,
+        1319.09,
+        1338.63
       ],
       "fundamental_score": {
         "business": 25,
@@ -7545,7 +7557,7 @@
           "sales_growth": 7.8,
           "profit_growth": 20.4,
           "debt_to_equity": 0.0,
-          "mcap_cr": 1055290.35,
+          "mcap_cr": 1055382.62,
           "beta": 0.38
         }
       },
@@ -7559,10 +7571,10 @@
       },
       "moreshwar_levels": {
         "x_composite_score": 80.0,
-        "spot_price": 1143.25,
-        "entry_price": 1128.43,
-        "target": 1234.45,
-        "stop_loss": 1120.45,
+        "spot_price": 1143.35,
+        "entry_price": 1128.53,
+        "target": 1234.55,
+        "stop_loss": 1120.55,
         "rr_ratio": 4.0,
         "is_holding": false
       },
@@ -7628,9 +7640,9 @@
           "rsi_14": 45.7,
           "bb_upper": 1007.21,
           "bb_lower": 954.31,
-          "reg_value": 953.59,
-          "reg_upper": 970.65,
-          "reg_lower": 936.53
+          "reg_value": 953.58,
+          "reg_upper": 970.64,
+          "reg_lower": 936.52
         },
         {
           "date": "2026-10-01",
@@ -7666,9 +7678,9 @@
           "rsi_14": 45.38,
           "bb_upper": 1007.24,
           "bb_lower": 947.22,
-          "reg_value": 948.49,
-          "reg_upper": 965.55,
-          "reg_lower": 931.43
+          "reg_value": 948.48,
+          "reg_upper": 965.54,
+          "reg_lower": 931.42
         },
         {
           "date": "2026-10-06",
@@ -7742,9 +7754,9 @@
           "rsi_14": 33.61,
           "bb_upper": 1005.91,
           "bb_lower": 937.76,
-          "reg_value": 944.25,
-          "reg_upper": 961.31,
-          "reg_lower": 927.19
+          "reg_value": 944.24,
+          "reg_upper": 961.3,
+          "reg_lower": 927.18
         },
         {
           "date": "2026-10-12",
@@ -7761,9 +7773,9 @@
           "rsi_14": 29.02,
           "bb_upper": 1006.12,
           "bb_lower": 934.3,
-          "reg_value": 944.43,
-          "reg_upper": 961.49,
-          "reg_lower": 927.37
+          "reg_value": 944.42,
+          "reg_upper": 961.48,
+          "reg_lower": 927.36
         },
         {
           "date": "2026-10-13",
@@ -7799,9 +7811,9 @@
           "rsi_14": 35.27,
           "bb_upper": 1004.94,
           "bb_lower": 932.85,
-          "reg_value": 946.28,
-          "reg_upper": 963.34,
-          "reg_lower": 929.22
+          "reg_value": 946.27,
+          "reg_upper": 963.33,
+          "reg_lower": 929.21
         },
         {
           "date": "2026-10-15",
@@ -7818,9 +7830,9 @@
           "rsi_14": 42.46,
           "bb_upper": 1002.02,
           "bb_lower": 932.63,
-          "reg_value": 947.95,
-          "reg_upper": 965.01,
-          "reg_lower": 930.89
+          "reg_value": 947.94,
+          "reg_upper": 965.0,
+          "reg_lower": 930.88
         },
         {
           "date": "2026-10-16",
@@ -7894,9 +7906,9 @@
           "rsi_14": 54.35,
           "bb_upper": 987.39,
           "bb_lower": 937.41,
-          "reg_value": 959.59,
-          "reg_upper": 976.65,
-          "reg_lower": 942.53
+          "reg_value": 959.58,
+          "reg_upper": 976.64,
+          "reg_lower": 942.52
         },
         {
           "date": "2026-10-23",
@@ -7989,9 +8001,9 @@
           "rsi_14": 60.78,
           "bb_upper": 975.08,
           "bb_lower": 940.8,
-          "reg_value": 985.3,
-          "reg_upper": 1002.36,
-          "reg_lower": 968.24
+          "reg_value": 985.31,
+          "reg_upper": 1002.37,
+          "reg_lower": 968.25
         },
         {
           "date": "2026-10-30",
@@ -8065,9 +8077,9 @@
           "rsi_14": 57.86,
           "bb_upper": 984.46,
           "bb_lower": 938.2,
-          "reg_value": 1014.81,
-          "reg_upper": 1031.87,
-          "reg_lower": 997.75
+          "reg_value": 1014.82,
+          "reg_upper": 1031.88,
+          "reg_lower": 997.76
         },
         {
           "date": "2026-11-05",
@@ -8084,9 +8096,9 @@
           "rsi_14": 63.21,
           "bb_upper": 994.0,
           "bb_lower": 933.9,
-          "reg_value": 1023.43,
-          "reg_upper": 1040.49,
-          "reg_lower": 1006.37
+          "reg_value": 1023.44,
+          "reg_upper": 1040.5,
+          "reg_lower": 1006.38
         },
         {
           "date": "2026-11-06",
@@ -8103,9 +8115,9 @@
           "rsi_14": 65.1,
           "bb_upper": 1004.23,
           "bb_lower": 931.52,
-          "reg_value": 1032.54,
-          "reg_upper": 1049.6,
-          "reg_lower": 1015.48
+          "reg_value": 1032.55,
+          "reg_upper": 1049.61,
+          "reg_lower": 1015.49
         },
         {
           "date": "2026-11-09",
@@ -8122,9 +8134,9 @@
           "rsi_14": 67.29,
           "bb_upper": 1020.36,
           "bb_lower": 923.68,
-          "reg_value": 1042.15,
-          "reg_upper": 1059.21,
-          "reg_lower": 1025.09
+          "reg_value": 1042.16,
+          "reg_upper": 1059.22,
+          "reg_lower": 1025.1
         },
         {
           "date": "2026-11-11",
@@ -8141,9 +8153,9 @@
           "rsi_14": 73.83,
           "bb_upper": 1037.95,
           "bb_lower": 918.11,
-          "reg_value": 1052.26,
-          "reg_upper": 1069.32,
-          "reg_lower": 1035.2
+          "reg_value": 1052.27,
+          "reg_upper": 1069.33,
+          "reg_lower": 1035.21
         },
         {
           "date": "2026-11-12",
@@ -8160,9 +8172,9 @@
           "rsi_14": 75.97,
           "bb_upper": 1059.92,
           "bb_lower": 909.09,
-          "reg_value": 1062.86,
-          "reg_upper": 1079.92,
-          "reg_lower": 1045.8
+          "reg_value": 1062.87,
+          "reg_upper": 1079.93,
+          "reg_lower": 1045.81
         },
         {
           "date": "2026-11-13",
@@ -8179,9 +8191,9 @@
           "rsi_14": 77.67,
           "bb_upper": 1075.49,
           "bb_lower": 906.03,
-          "reg_value": 1073.96,
-          "reg_upper": 1091.02,
-          "reg_lower": 1056.9
+          "reg_value": 1073.98,
+          "reg_upper": 1091.04,
+          "reg_lower": 1056.92
         },
         {
           "date": "2026-11-16",
@@ -8198,9 +8210,9 @@
           "rsi_14": 78.48,
           "bb_upper": 1091.14,
           "bb_lower": 903.43,
-          "reg_value": 1085.56,
-          "reg_upper": 1102.62,
-          "reg_lower": 1068.5
+          "reg_value": 1085.57,
+          "reg_upper": 1102.63,
+          "reg_lower": 1068.51
         },
         {
           "date": "2026-11-17",
@@ -8217,9 +8229,9 @@
           "rsi_14": 85.53,
           "bb_upper": 1108.67,
           "bb_lower": 900.5,
-          "reg_value": 1097.65,
-          "reg_upper": 1114.71,
-          "reg_lower": 1080.59
+          "reg_value": 1097.67,
+          "reg_upper": 1114.73,
+          "reg_lower": 1080.61
         },
         {
           "date": "2026-11-18",
@@ -8236,70 +8248,70 @@
           "rsi_14": 86.4,
           "bb_upper": 1130.06,
           "bb_lower": 895.24,
-          "reg_value": 1110.24,
-          "reg_upper": 1127.3,
-          "reg_lower": 1093.18
+          "reg_value": 1110.26,
+          "reg_upper": 1127.32,
+          "reg_lower": 1093.2
         },
         {
           "date": "2026-11-19",
           "open": 1148.0,
           "high": 1152.5,
           "low": 1141.0,
-          "close": 1143.25,
-          "volume": 16642021,
-          "sma_20": 1021.66,
-          "ema_12": 1072.47,
-          "ema_26": 1030.66,
-          "macd": 41.812,
-          "macd_signal": 27.112,
+          "close": 1143.35,
+          "volume": 17389648,
+          "sma_20": 1021.67,
+          "ema_12": 1072.49,
+          "ema_26": 1030.67,
+          "macd": 41.82,
+          "macd_signal": 27.114,
           "rsi_14": 86.01,
-          "bb_upper": 1149.64,
-          "bb_lower": 893.69,
-          "reg_value": 1123.32,
-          "reg_upper": 1140.38,
-          "reg_lower": 1106.26
+          "bb_upper": 1149.66,
+          "bb_lower": 893.67,
+          "reg_value": 1123.34,
+          "reg_upper": 1140.4,
+          "reg_lower": 1106.28
         }
       ]
     }
   },
   "pipelines": {
     "RELIANCE": {
-      "run_id": "fnv2-run-003177",
+      "run_id": "fnv2-run-243646",
       "symbol": "RELIANCE",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.177160+00:00",
-      "duration_ms": 0.74,
+      "started_at": "2026-11-19T06:20:43.645543+00:00",
+      "duration_ms": 0.77,
       "final_action": "BUY",
       "decision_badge": "BUY NOW",
       "conviction_score": 0.8,
-      "position_size": 21784.0,
+      "position_size": 21785.6,
       "quantity": 16,
-      "entry_price": 1333.65,
-      "stop_loss": 1318.66,
-      "take_profit": 1454.66,
+      "entry_price": 1333.75,
+      "stop_loss": 1318.76,
+      "take_profit": 1454.76,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.177849+00:00",
+          "timestamp": "2026-11-19T06:20:43.646261+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "BULLISH",
           "confidence": 0.94,
-          "summary": "Spot 1,361.50 vs 20D SMA 1,279.53 (Upward Curve, 30D Reg Target 1,651.96). RSI(14)=95.0, MACD=+41.17 vs Sig=+33.14.",
+          "summary": "Spot 1,361.60 vs 20D SMA 1,279.53 (Upward Curve, 30D Reg Target 1,652.00). RSI(14)=95.0, MACD=+41.17 vs Sig=+33.15.",
           "metrics": {
-            "price": 1361.5,
+            "price": 1361.6,
             "sma_20": 1279.53,
             "rsi_14": 95.0,
-            "macd": 41.167,
-            "projected_30d_target": 1651.96,
+            "macd": 41.175,
+            "projected_30d_target": 1652.0,
             "regression_curve": "Upward Curve",
             "technical_score": 94
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.177869+00:00",
+          "timestamp": "2026-11-19T06:20:43.646280+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -8333,7 +8345,7 @@
                 "sales_growth": 29.8,
                 "profit_growth": 40.7,
                 "debt_to_equity": 0.44,
-                "mcap_cr": 1842446.18,
+                "mcap_cr": 1842581.45,
                 "beta": 0.18
               }
             },
@@ -8348,15 +8360,15 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.177897+00:00",
+          "timestamp": "2026-11-19T06:20:43.646306+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
           "signal": "APPROVED",
           "confidence": 0.8,
-          "summary": "Decision Matrix: BUY NOW (80.0% conviction). Auto-Risk sized 16 shares (INR 21,784.00) | Moreshwar Target 1,454.66 / SL 1,318.66 (R:R 1:2.17).",
+          "summary": "Decision Matrix: BUY NOW (80.0% conviction). Auto-Risk sized 16 shares (INR 21,785.60) | Moreshwar Target 1,454.76 / SL 1,318.76 (R:R 1:2.17).",
           "metrics": {
-            "order_id": "fnv2-ord-003177",
+            "order_id": "fnv2-ord-243646",
             "symbol": "RELIANCE",
             "side": "BUY",
             "decision_badge": "BUY NOW",
@@ -8364,18 +8376,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "QUEUED",
             "quantity": 16,
-            "entry_price": 1333.65,
-            "fill_price": 1361.5,
-            "notional": 21784.0,
-            "stop_loss": 1318.66,
-            "take_profit": 1454.66,
+            "entry_price": 1333.75,
+            "fill_price": 1361.6,
+            "notional": 21785.6,
+            "stop_loss": 1318.76,
+            "take_profit": 1454.76,
             "rr_ratio": "1 : 2.17",
             "active_trades_slots": "1 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003177",
+        "order_id": "fnv2-ord-243646",
         "symbol": "RELIANCE",
         "side": "BUY",
         "decision_badge": "BUY NOW",
@@ -8383,52 +8395,52 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "QUEUED",
         "quantity": 16,
-        "entry_price": 1333.65,
-        "fill_price": 1361.5,
-        "notional": 21784.0,
-        "stop_loss": 1318.66,
-        "take_profit": 1454.66,
+        "entry_price": 1333.75,
+        "fill_price": 1361.6,
+        "notional": 21785.6,
+        "stop_loss": 1318.76,
+        "take_profit": 1454.76,
         "rr_ratio": "1 : 2.17",
         "active_trades_slots": "1 / 5"
       }
     },
     "TCS": {
-      "run_id": "fnv2-run-003179",
+      "run_id": "fnv2-run-243648",
       "symbol": "TCS",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.178831+00:00",
-      "duration_ms": 0.7,
+      "started_at": "2026-11-19T06:20:43.647302+00:00",
+      "duration_ms": 0.75,
       "final_action": "BUY",
       "decision_badge": "SIP ONLY",
       "conviction_score": 0.688,
-      "position_size": 21214.8,
+      "position_size": 21227.4,
       "quantity": 9,
-      "entry_price": 2330.36,
-      "stop_loss": 2315.9,
-      "take_profit": 2551.9,
+      "entry_price": 2331.76,
+      "stop_loss": 2317.3,
+      "take_profit": 2553.3,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.179495+00:00",
+          "timestamp": "2026-11-19T06:20:43.648015+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "NEUTRAL",
           "confidence": 0.52,
-          "summary": "Spot 2,357.20 vs 20D SMA 2,464.30 (Downward Curve, 30D Reg Target 2,494.60). RSI(14)=29.75, MACD=+19.61 vs Sig=+44.37.",
+          "summary": "Spot 2,358.60 vs 20D SMA 2,464.38 (Downward Curve, 30D Reg Target 2,495.22). RSI(14)=29.89, MACD=+19.72 vs Sig=+44.40.",
           "metrics": {
-            "price": 2357.2,
-            "sma_20": 2464.3,
-            "rsi_14": 29.75,
-            "macd": 19.61,
-            "projected_30d_target": 2494.6,
+            "price": 2358.6,
+            "sma_20": 2464.38,
+            "rsi_14": 29.89,
+            "macd": 19.722,
+            "projected_30d_target": 2495.22,
             "regression_curve": "Downward Curve",
             "technical_score": 52
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.179506+00:00",
+          "timestamp": "2026-11-19T06:20:43.648028+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -8455,14 +8467,14 @@
               "explanation": "Strong Moat & Growth",
               "nlp": "Attractive valuation at P/E 16.5x with value margin of safety. High capital efficiency (ROE 45.6%, ROCE 39.0%) underscores durable moat.",
               "ratios": {
-                "pe": 16.52,
+                "pe": 16.53,
                 "roe": 45.57,
                 "roce": 39.04,
                 "opm": 24.59,
                 "sales_growth": 11.2,
                 "profit_growth": 15.0,
                 "debt_to_equity": 0.1,
-                "mcap_cr": 852855.57,
+                "mcap_cr": 853362.13,
                 "beta": 0.07
               }
             },
@@ -8477,15 +8489,15 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.179524+00:00",
+          "timestamp": "2026-11-19T06:20:43.648047+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
           "signal": "APPROVED",
           "confidence": 0.688,
-          "summary": "Decision Matrix: SIP ONLY (68.8% conviction). Auto-Risk sized 9 shares (INR 21,214.80) | Moreshwar Target 2,551.90 / SL 2,315.90 (R:R 1:4.71).",
+          "summary": "Decision Matrix: SIP ONLY (68.8% conviction). Auto-Risk sized 9 shares (INR 21,227.40) | Moreshwar Target 2,553.30 / SL 2,317.30 (R:R 1:4.71).",
           "metrics": {
-            "order_id": "fnv2-ord-003179",
+            "order_id": "fnv2-ord-243648",
             "symbol": "TCS",
             "side": "BUY",
             "decision_badge": "SIP ONLY",
@@ -8493,18 +8505,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "QUEUED",
             "quantity": 9,
-            "entry_price": 2330.36,
-            "fill_price": 2357.2,
-            "notional": 21214.8,
-            "stop_loss": 2315.9,
-            "take_profit": 2551.9,
+            "entry_price": 2331.76,
+            "fill_price": 2358.6,
+            "notional": 21227.4,
+            "stop_loss": 2317.3,
+            "take_profit": 2553.3,
             "rr_ratio": "1 : 4.71",
             "active_trades_slots": "1 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003179",
+        "order_id": "fnv2-ord-243648",
         "symbol": "TCS",
         "side": "BUY",
         "decision_badge": "SIP ONLY",
@@ -8512,52 +8524,52 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "QUEUED",
         "quantity": 9,
-        "entry_price": 2330.36,
-        "fill_price": 2357.2,
-        "notional": 21214.8,
-        "stop_loss": 2315.9,
-        "take_profit": 2551.9,
+        "entry_price": 2331.76,
+        "fill_price": 2358.6,
+        "notional": 21227.4,
+        "stop_loss": 2317.3,
+        "take_profit": 2553.3,
         "rr_ratio": "1 : 4.71",
         "active_trades_slots": "1 / 5"
       }
     },
     "HDFCBANK": {
-      "run_id": "fnv2-run-003181",
+      "run_id": "fnv2-run-243649",
       "symbol": "HDFCBANK",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.180396+00:00",
-      "duration_ms": 0.68,
+      "started_at": "2026-11-19T06:20:43.648987+00:00",
+      "duration_ms": 0.74,
       "final_action": "BUY",
       "decision_badge": "BUY NOW",
       "conviction_score": 0.822,
-      "position_size": 21829.5,
+      "position_size": 21884.85,
       "quantity": 27,
-      "entry_price": 790.62,
-      "stop_loss": 781.0,
-      "take_profit": 881.0,
+      "entry_price": 792.67,
+      "stop_loss": 783.05,
+      "take_profit": 883.05,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.181037+00:00",
+          "timestamp": "2026-11-19T06:20:43.649692+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "BULLISH",
           "confidence": 0.94,
-          "summary": "Spot 808.50 vs 20D SMA 749.81 (Upward Curve, 30D Reg Target 980.02). RSI(14)=89.5, MACD=+28.07 vs Sig=+21.25.",
+          "summary": "Spot 810.55 vs 20D SMA 749.91 (Upward Curve, 30D Reg Target 980.94). RSI(14)=89.63, MACD=+28.23 vs Sig=+21.28.",
           "metrics": {
-            "price": 808.5,
-            "sma_20": 749.81,
-            "rsi_14": 89.5,
-            "macd": 28.068,
-            "projected_30d_target": 980.02,
+            "price": 810.55,
+            "sma_20": 749.91,
+            "rsi_14": 89.63,
+            "macd": 28.231,
+            "projected_30d_target": 980.94,
             "regression_curve": "Upward Curve",
             "technical_score": 94
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.181050+00:00",
+          "timestamp": "2026-11-19T06:20:43.649705+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -8584,14 +8596,14 @@
               "explanation": "Strong Moat & Growth",
               "nlp": "Attractive valuation at P/E 17.7x with value margin of safety. Strong top-line expansion (80.8% YoY) & profit growth (21.3% YoY).",
               "ratios": {
-                "pe": 17.67,
+                "pe": 17.72,
                 "roe": 11.0,
                 "roce": 8.2,
                 "opm": 36.6,
                 "sales_growth": 80.8,
                 "profit_growth": 21.3,
                 "debt_to_equity": 0.0,
-                "mcap_cr": 1247815.09,
+                "mcap_cr": 1250978.96,
                 "beta": 0.39
               }
             },
@@ -8606,15 +8618,15 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.181069+00:00",
+          "timestamp": "2026-11-19T06:20:43.649724+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
           "signal": "APPROVED",
           "confidence": 0.822,
-          "summary": "Decision Matrix: BUY NOW (82.2% conviction). Auto-Risk sized 27 shares (INR 21,829.50) | Moreshwar Target 881.00 / SL 781.00 (R:R 1:2.64).",
+          "summary": "Decision Matrix: BUY NOW (82.2% conviction). Auto-Risk sized 27 shares (INR 21,884.85) | Moreshwar Target 883.05 / SL 783.05 (R:R 1:2.64).",
           "metrics": {
-            "order_id": "fnv2-ord-003181",
+            "order_id": "fnv2-ord-243649",
             "symbol": "HDFCBANK",
             "side": "BUY",
             "decision_badge": "BUY NOW",
@@ -8622,18 +8634,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "QUEUED",
             "quantity": 27,
-            "entry_price": 790.62,
-            "fill_price": 808.5,
-            "notional": 21829.5,
-            "stop_loss": 781.0,
-            "take_profit": 881.0,
+            "entry_price": 792.67,
+            "fill_price": 810.55,
+            "notional": 21884.85,
+            "stop_loss": 783.05,
+            "take_profit": 883.05,
             "rr_ratio": "1 : 2.64",
             "active_trades_slots": "1 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003181",
+        "order_id": "fnv2-ord-243649",
         "symbol": "HDFCBANK",
         "side": "BUY",
         "decision_badge": "BUY NOW",
@@ -8641,52 +8653,52 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "QUEUED",
         "quantity": 27,
-        "entry_price": 790.62,
-        "fill_price": 808.5,
-        "notional": 21829.5,
-        "stop_loss": 781.0,
-        "take_profit": 881.0,
+        "entry_price": 792.67,
+        "fill_price": 810.55,
+        "notional": 21884.85,
+        "stop_loss": 783.05,
+        "take_profit": 883.05,
         "rr_ratio": "1 : 2.64",
         "active_trades_slots": "1 / 5"
       }
     },
     "ICICIBANK": {
-      "run_id": "fnv2-run-003182",
+      "run_id": "fnv2-run-243651",
       "symbol": "ICICIBANK",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.181927+00:00",
-      "duration_ms": 0.7,
+      "started_at": "2026-11-19T06:20:43.650668+00:00",
+      "duration_ms": 0.74,
       "final_action": "BUY",
       "decision_badge": "BUY NOW",
       "conviction_score": 0.891,
-      "position_size": 20716.8,
+      "position_size": 20753.2,
       "quantity": 13,
-      "entry_price": 1578.1,
-      "stop_loss": 1569.75,
-      "take_profit": 1728.75,
+      "entry_price": 1580.8,
+      "stop_loss": 1572.4,
+      "take_profit": 1732.4,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.182594+00:00",
+          "timestamp": "2026-11-19T06:20:43.651367+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "BULLISH",
           "confidence": 0.94,
-          "summary": "Spot 1,593.60 vs 20D SMA 1,488.24 (Upward Curve, 30D Reg Target 1,921.82). RSI(14)=85.45, MACD=+62.52 vs Sig=+52.94.",
+          "summary": "Spot 1,596.40 vs 20D SMA 1,488.36 (Upward Curve, 30D Reg Target 1,922.95). RSI(14)=86.18, MACD=+62.72 vs Sig=+52.98.",
           "metrics": {
-            "price": 1593.6,
-            "sma_20": 1488.24,
-            "rsi_14": 85.45,
-            "macd": 62.52,
-            "projected_30d_target": 1921.82,
+            "price": 1596.4,
+            "sma_20": 1488.36,
+            "rsi_14": 86.18,
+            "macd": 62.72,
+            "projected_30d_target": 1922.95,
             "regression_curve": "Upward Curve",
             "technical_score": 94
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.182605+00:00",
+          "timestamp": "2026-11-19T06:20:43.651378+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -8713,14 +8725,14 @@
               "explanation": "Strong Moat & Growth",
               "nlp": "Balanced valuation at P/E 19.6x. High capital efficiency (ROE 16.5%, ROCE 12.2%) underscores durable moat. Strong top-line expansion (15.8% YoY) & profit growth (22.1% YoY).",
               "ratios": {
-                "pe": 19.57,
+                "pe": 19.6,
                 "roe": 16.49,
                 "roce": 12.17,
                 "opm": 29.95,
                 "sales_growth": 15.8,
                 "profit_growth": 22.1,
                 "debt_to_equity": 0.0,
-                "mcap_cr": 1144862.02,
+                "mcap_cr": 1146873.6,
                 "beta": 0.19
               }
             },
@@ -8735,15 +8747,15 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.182622+00:00",
+          "timestamp": "2026-11-19T06:20:43.651398+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
           "signal": "APPROVED",
           "confidence": 0.891,
-          "summary": "Decision Matrix: BUY NOW (89.1% conviction). Auto-Risk sized 13 shares (INR 20,716.80) | Moreshwar Target 1,728.75 / SL 1,569.75 (R:R 1:5.67).",
+          "summary": "Decision Matrix: BUY NOW (89.1% conviction). Auto-Risk sized 13 shares (INR 20,753.20) | Moreshwar Target 1,732.40 / SL 1,572.40 (R:R 1:5.67).",
           "metrics": {
-            "order_id": "fnv2-ord-003182",
+            "order_id": "fnv2-ord-243651",
             "symbol": "ICICIBANK",
             "side": "BUY",
             "decision_badge": "BUY NOW",
@@ -8751,18 +8763,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "QUEUED",
             "quantity": 13,
-            "entry_price": 1578.1,
-            "fill_price": 1593.6,
-            "notional": 20716.8,
-            "stop_loss": 1569.75,
-            "take_profit": 1728.75,
+            "entry_price": 1580.8,
+            "fill_price": 1596.4,
+            "notional": 20753.2,
+            "stop_loss": 1572.4,
+            "take_profit": 1732.4,
             "rr_ratio": "1 : 5.67",
             "active_trades_slots": "1 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003182",
+        "order_id": "fnv2-ord-243651",
         "symbol": "ICICIBANK",
         "side": "BUY",
         "decision_badge": "BUY NOW",
@@ -8770,52 +8782,52 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "QUEUED",
         "quantity": 13,
-        "entry_price": 1578.1,
-        "fill_price": 1593.6,
-        "notional": 20716.8,
-        "stop_loss": 1569.75,
-        "take_profit": 1728.75,
+        "entry_price": 1580.8,
+        "fill_price": 1596.4,
+        "notional": 20753.2,
+        "stop_loss": 1572.4,
+        "take_profit": 1732.4,
         "rr_ratio": "1 : 5.67",
         "active_trades_slots": "1 / 5"
       }
     },
     "INFY": {
-      "run_id": "fnv2-run-003184",
+      "run_id": "fnv2-run-243653",
       "symbol": "INFY",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.183485+00:00",
-      "duration_ms": 0.66,
+      "started_at": "2026-11-19T06:20:43.652315+00:00",
+      "duration_ms": 0.75,
       "final_action": "HOLD",
       "decision_badge": "WAIT",
       "conviction_score": 0.611,
       "position_size": 0.0,
       "quantity": 0,
-      "entry_price": 1061.09,
-      "stop_loss": 1049.18,
-      "take_profit": 1157.18,
+      "entry_price": 1062.39,
+      "stop_loss": 1050.48,
+      "take_profit": 1158.48,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.184121+00:00",
+          "timestamp": "2026-11-19T06:20:43.653028+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "NEUTRAL",
           "confidence": 0.52,
-          "summary": "Spot 1,083.20 vs 20D SMA 1,147.32 (Downward Curve, 30D Reg Target 1,184.54). RSI(14)=37.7, MACD=+6.32 vs Sig=+17.21.",
+          "summary": "Spot 1,084.50 vs 20D SMA 1,147.36 (Downward Curve, 30D Reg Target 1,184.90). RSI(14)=37.81, MACD=+6.39 vs Sig=+17.23.",
           "metrics": {
-            "price": 1083.2,
-            "sma_20": 1147.32,
-            "rsi_14": 37.7,
-            "macd": 6.322,
-            "projected_30d_target": 1184.54,
+            "price": 1084.5,
+            "sma_20": 1147.36,
+            "rsi_14": 37.81,
+            "macd": 6.386,
+            "projected_30d_target": 1184.9,
             "regression_curve": "Downward Curve",
             "technical_score": 52
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.184131+00:00",
+          "timestamp": "2026-11-19T06:20:43.653038+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -8842,14 +8854,14 @@
               "explanation": "Profit Drag",
               "nlp": "Attractive valuation at P/E 14.4x with value margin of safety. High capital efficiency (ROE 29.9%, ROCE 25.8%) underscores durable moat.",
               "ratios": {
-                "pe": 14.42,
+                "pe": 14.44,
                 "roe": 29.95,
                 "roce": 25.81,
                 "opm": 22.28,
                 "sales_growth": 1.4,
                 "profit_growth": -2.6,
                 "debt_to_equity": 0.09,
-                "mcap_cr": 438736.76,
+                "mcap_cr": 439263.32,
                 "beta": 0.02
               }
             },
@@ -8864,7 +8876,7 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.184146+00:00",
+          "timestamp": "2026-11-19T06:20:43.653055+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
@@ -8872,7 +8884,7 @@
           "confidence": 0.611,
           "summary": "Decision Matrix: WAIT. Core moat is high, but near-term growth trajectory is slowing. Wait for stabilization.",
           "metrics": {
-            "order_id": "fnv2-ord-003184",
+            "order_id": "fnv2-ord-243653",
             "symbol": "INFY",
             "side": "HOLD",
             "decision_badge": "WAIT",
@@ -8880,18 +8892,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "STANDBY",
             "quantity": 0,
-            "entry_price": 1061.09,
-            "fill_price": 1083.2,
+            "entry_price": 1062.39,
+            "fill_price": 1084.5,
             "notional": 0.0,
-            "stop_loss": 1049.18,
-            "take_profit": 1157.18,
+            "stop_loss": 1050.48,
+            "take_profit": 1158.48,
             "rr_ratio": "1 : 2.17",
             "active_trades_slots": "0 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003184",
+        "order_id": "fnv2-ord-243653",
         "symbol": "INFY",
         "side": "HOLD",
         "decision_badge": "WAIT",
@@ -8899,58 +8911,58 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "STANDBY",
         "quantity": 0,
-        "entry_price": 1061.09,
-        "fill_price": 1083.2,
+        "entry_price": 1062.39,
+        "fill_price": 1084.5,
         "notional": 0.0,
-        "stop_loss": 1049.18,
-        "take_profit": 1157.18,
+        "stop_loss": 1050.48,
+        "take_profit": 1158.48,
         "rr_ratio": "1 : 2.17",
         "active_trades_slots": "0 / 5"
       }
     },
     "TATAMOTORS": {
-      "run_id": "fnv2-run-003185",
+      "run_id": "fnv2-run-243654",
       "symbol": "TATAMOTORS",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.185033+00:00",
-      "duration_ms": 0.7,
+      "started_at": "2026-11-19T06:20:43.653986+00:00",
+      "duration_ms": 0.74,
       "final_action": "BUY",
       "decision_badge": "SIP ONLY",
       "conviction_score": 0.681,
-      "position_size": 12574.8,
+      "position_size": 12633.6,
       "quantity": 28,
-      "entry_price": 414.65,
-      "stop_loss": 396.1,
-      "take_profit": 496.1,
+      "entry_price": 416.75,
+      "stop_loss": 398.2,
+      "take_profit": 498.2,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.185691+00:00",
+          "timestamp": "2026-11-19T06:20:43.654690+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "BULLISH",
           "confidence": 0.94,
-          "summary": "Spot 449.10 vs 20D SMA 419.46 (Upward Curve, 30D Reg Target 499.86). RSI(14)=70.23, MACD=+7.68 vs Sig=+3.80.",
+          "summary": "Spot 451.20 vs 20D SMA 419.57 (Upward Curve, 30D Reg Target 500.81). RSI(14)=70.74, MACD=+7.85 vs Sig=+3.84.",
           "metrics": {
-            "price": 449.1,
-            "sma_20": 419.46,
-            "rsi_14": 70.23,
-            "macd": 7.684,
-            "projected_30d_target": 499.86,
+            "price": 451.2,
+            "sma_20": 419.57,
+            "rsi_14": 70.74,
+            "macd": 7.851,
+            "projected_30d_target": 500.81,
             "regression_curve": "Upward Curve",
             "technical_score": 94
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.185701+00:00",
+          "timestamp": "2026-11-19T06:20:43.654701+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
           "signal": "NEUTRAL",
           "confidence": 0.47,
-          "summary": "Fundamental 49/100 (Bus 19/40, Moat 5/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 45/100 [FMCG]. Balanced valuation at P/E 26.2x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY).",
+          "summary": "Fundamental 49/100 (Bus 19/40, Moat 5/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 45/100 [FMCG]. Balanced valuation at P/E 26.3x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY).",
           "metrics": {
             "fundamental_total": 49,
             "porters_total": 45,
@@ -8969,16 +8981,16 @@
                 "req": "roce"
               },
               "explanation": "Profit Drag & Low Margin",
-              "nlp": "Balanced valuation at P/E 26.2x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY).",
+              "nlp": "Balanced valuation at P/E 26.3x. Strong top-line expansion (35.1% YoY) & profit growth (0.0% YoY).",
               "ratios": {
-                "pe": 26.19,
+                "pe": 26.31,
                 "roe": 0.0,
                 "roce": 0.0,
                 "opm": 8.61,
                 "sales_growth": 35.1,
                 "profit_growth": 0.0,
                 "debt_to_equity": 0.25,
-                "mcap_cr": 165395.96,
+                "mcap_cr": 166169.36,
                 "beta": 1.0
               }
             },
@@ -8993,15 +9005,15 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.185722+00:00",
+          "timestamp": "2026-11-19T06:20:43.654720+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
           "signal": "APPROVED",
           "confidence": 0.681,
-          "summary": "Decision Matrix: SIP ONLY (68.1% conviction). Auto-Risk sized 28 shares (INR 12,574.80) | Moreshwar Target 496.10 / SL 396.10 (R:R 1:0.89).",
+          "summary": "Decision Matrix: SIP ONLY (68.1% conviction). Auto-Risk sized 28 shares (INR 12,633.60) | Moreshwar Target 498.20 / SL 398.20 (R:R 1:0.89).",
           "metrics": {
-            "order_id": "fnv2-ord-003185",
+            "order_id": "fnv2-ord-243654",
             "symbol": "TATAMOTORS",
             "side": "BUY",
             "decision_badge": "SIP ONLY",
@@ -9009,18 +9021,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "QUEUED",
             "quantity": 28,
-            "entry_price": 414.65,
-            "fill_price": 449.1,
-            "notional": 12574.8,
-            "stop_loss": 396.1,
-            "take_profit": 496.1,
+            "entry_price": 416.75,
+            "fill_price": 451.2,
+            "notional": 12633.6,
+            "stop_loss": 398.2,
+            "take_profit": 498.2,
             "rr_ratio": "1 : 0.89",
             "active_trades_slots": "1 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003185",
+        "order_id": "fnv2-ord-243654",
         "symbol": "TATAMOTORS",
         "side": "BUY",
         "decision_badge": "SIP ONLY",
@@ -9028,23 +9040,23 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "QUEUED",
         "quantity": 28,
-        "entry_price": 414.65,
-        "fill_price": 449.1,
-        "notional": 12574.8,
-        "stop_loss": 396.1,
-        "take_profit": 496.1,
+        "entry_price": 416.75,
+        "fill_price": 451.2,
+        "notional": 12633.6,
+        "stop_loss": 398.2,
+        "take_profit": 498.2,
         "rr_ratio": "1 : 0.89",
         "active_trades_slots": "1 / 5"
       }
     },
     "NVDA": {
-      "run_id": "fnv2-run-003187",
+      "run_id": "fnv2-run-243656",
       "symbol": "NVDA",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.186591+00:00",
-      "duration_ms": 0.67,
+      "started_at": "2026-11-19T06:20:43.655647+00:00",
+      "duration_ms": 0.72,
       "final_action": "BUY",
       "decision_badge": "SIP ONLY",
       "conviction_score": 0.573,
@@ -9055,7 +9067,7 @@
       "take_profit": 240.46,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.187230+00:00",
+          "timestamp": "2026-11-19T06:20:43.656335+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
@@ -9073,7 +9085,7 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.187240+00:00",
+          "timestamp": "2026-11-19T06:20:43.656346+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -9122,7 +9134,7 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.187256+00:00",
+          "timestamp": "2026-11-19T06:20:43.656363+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
@@ -9130,7 +9142,7 @@
           "confidence": 0.573,
           "summary": "Decision Matrix: SIP ONLY (57.3% conviction). Auto-Risk sized 142 shares (INR 21,436.32) | Moreshwar Target 240.46 / SL 140.46 (R:R 1:8.52).",
           "metrics": {
-            "order_id": "fnv2-ord-003187",
+            "order_id": "fnv2-ord-243656",
             "symbol": "NVDA",
             "side": "BUY",
             "decision_badge": "SIP ONLY",
@@ -9149,7 +9161,7 @@
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003187",
+        "order_id": "fnv2-ord-243656",
         "symbol": "NVDA",
         "side": "BUY",
         "decision_badge": "SIP ONLY",
@@ -9167,42 +9179,42 @@
       }
     },
     "ZEEL": {
-      "run_id": "fnv2-run-003188",
+      "run_id": "fnv2-run-243658",
       "symbol": "ZEEL",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.188121+00:00",
-      "duration_ms": 0.68,
+      "started_at": "2026-11-19T06:20:43.657292+00:00",
+      "duration_ms": 0.74,
       "final_action": "SELL",
       "decision_badge": "AVOID",
       "conviction_score": 0.57,
-      "position_size": 9935.8,
+      "position_size": 9933.0,
       "quantity": 140,
-      "entry_price": 63.87,
-      "stop_loss": 60.32,
-      "take_profit": 109.97,
+      "entry_price": 63.86,
+      "stop_loss": 60.31,
+      "take_profit": 109.95,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.188764+00:00",
+          "timestamp": "2026-11-19T06:20:43.657994+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "BULLISH",
           "confidence": 0.79,
-          "summary": "Spot 70.97 vs 20D SMA 68.11 (Upward Curve, 30D Reg Target 77.06). RSI(14)=50.73, MACD=-0.03 vs Sig=-0.78.",
+          "summary": "Spot 70.95 vs 20D SMA 68.11 (Upward Curve, 30D Reg Target 77.05). RSI(14)=50.7, MACD=-0.04 vs Sig=-0.78.",
           "metrics": {
-            "price": 70.97,
+            "price": 70.95,
             "sma_20": 68.11,
-            "rsi_14": 50.73,
-            "macd": -0.034,
-            "projected_30d_target": 77.06,
+            "rsi_14": 50.7,
+            "macd": -0.035,
+            "projected_30d_target": 77.05,
             "regression_curve": "Upward Curve",
             "technical_score": 79
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.188775+00:00",
+          "timestamp": "2026-11-19T06:20:43.658006+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -9229,14 +9241,14 @@
               "explanation": "Balanced Setup",
               "nlp": "Balanced valuation at P/E 38.8x.",
               "ratios": {
-                "pe": 38.78,
+                "pe": 38.77,
                 "roe": 1.43,
                 "roce": 0.94,
                 "opm": -0.56,
                 "sales_growth": 13.0,
                 "profit_growth": -36.7,
                 "debt_to_equity": 0.01,
-                "mcap_cr": 6816.81,
+                "mcap_cr": 6814.89,
                 "beta": 0.72
               }
             },
@@ -9251,7 +9263,7 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.188796+00:00",
+          "timestamp": "2026-11-19T06:20:43.658026+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
@@ -9259,7 +9271,7 @@
           "confidence": 0.57,
           "summary": "Decision Matrix: AVOID \u2014 Risk Warning triggered (57.0% score). Recommended exit/hedge to preserve capital.",
           "metrics": {
-            "order_id": "fnv2-ord-003188",
+            "order_id": "fnv2-ord-243658",
             "symbol": "ZEEL",
             "side": "SELL",
             "decision_badge": "AVOID",
@@ -9267,18 +9279,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "QUEUED",
             "quantity": 140,
-            "entry_price": 63.87,
-            "fill_price": 70.97,
-            "notional": 9935.8,
-            "stop_loss": 60.32,
-            "take_profit": 109.97,
-            "rr_ratio": "1 : 3.66",
+            "entry_price": 63.86,
+            "fill_price": 70.95,
+            "notional": 9933.0,
+            "stop_loss": 60.31,
+            "take_profit": 109.95,
+            "rr_ratio": "1 : 3.67",
             "active_trades_slots": "1 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003188",
+        "order_id": "fnv2-ord-243658",
         "symbol": "ZEEL",
         "side": "SELL",
         "decision_badge": "AVOID",
@@ -9286,52 +9298,52 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "QUEUED",
         "quantity": 140,
-        "entry_price": 63.87,
-        "fill_price": 70.97,
-        "notional": 9935.8,
-        "stop_loss": 60.32,
-        "take_profit": 109.97,
-        "rr_ratio": "1 : 3.66",
+        "entry_price": 63.86,
+        "fill_price": 70.95,
+        "notional": 9933.0,
+        "stop_loss": 60.31,
+        "take_profit": 109.95,
+        "rr_ratio": "1 : 3.67",
         "active_trades_slots": "1 / 5"
       }
     },
     "ITC": {
-      "run_id": "fnv2-run-003190",
+      "run_id": "fnv2-run-243659",
       "symbol": "ITC",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.189666+00:00",
-      "duration_ms": 0.66,
+      "started_at": "2026-11-19T06:20:43.658944+00:00",
+      "duration_ms": 0.79,
       "final_action": "BUY",
       "decision_badge": "WAIT",
       "conviction_score": 0.786,
-      "position_size": 13112.0,
+      "position_size": 13118.6,
       "quantity": 44,
-      "entry_price": 275.9,
-      "stop_loss": 264.0,
-      "take_profit": 364.0,
+      "entry_price": 276.05,
+      "stop_loss": 264.15,
+      "take_profit": 364.15,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.190293+00:00",
+          "timestamp": "2026-11-19T06:20:43.659694+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "BULLISH",
           "confidence": 0.94,
-          "summary": "Spot 298.00 vs 20D SMA 276.28 (Upward Curve, 30D Reg Target 337.90). RSI(14)=83.33, MACD=+8.59 vs Sig=+6.28.",
+          "summary": "Spot 298.15 vs 20D SMA 276.29 (Upward Curve, 30D Reg Target 337.96). RSI(14)=83.38, MACD=+8.61 vs Sig=+6.28.",
           "metrics": {
-            "price": 298.0,
-            "sma_20": 276.28,
-            "rsi_14": 83.33,
-            "macd": 8.593,
-            "projected_30d_target": 337.9,
+            "price": 298.15,
+            "sma_20": 276.29,
+            "rsi_14": 83.38,
+            "macd": 8.605,
+            "projected_30d_target": 337.96,
             "regression_curve": "Upward Curve",
             "technical_score": 94
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.190303+00:00",
+          "timestamp": "2026-11-19T06:20:43.659707+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -9358,14 +9370,14 @@
               "explanation": "Profit Drag",
               "nlp": "Balanced valuation at P/E 19.8x. High capital efficiency (ROE 26.8%, ROCE 23.3%) underscores durable moat.",
               "ratios": {
-                "pe": 19.77,
+                "pe": 19.78,
                 "roe": 26.79,
                 "roce": 23.33,
                 "opm": 29.58,
                 "sales_growth": 3.9,
                 "profit_growth": -18.8,
                 "debt_to_equity": 0.01,
-                "mcap_cr": 373474.41,
+                "mcap_cr": 373662.39,
                 "beta": -0.07
               }
             },
@@ -9380,15 +9392,15 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.190319+00:00",
+          "timestamp": "2026-11-19T06:20:43.659724+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
           "signal": "APPROVED",
           "confidence": 0.786,
-          "summary": "Decision Matrix: WAIT (78.6% conviction). Auto-Risk sized 44 shares (INR 13,112.00) | Moreshwar Target 364.00 / SL 264.00 (R:R 1:1.94).",
+          "summary": "Decision Matrix: WAIT (78.6% conviction). Auto-Risk sized 44 shares (INR 13,118.60) | Moreshwar Target 364.15 / SL 264.15 (R:R 1:1.94).",
           "metrics": {
-            "order_id": "fnv2-ord-003190",
+            "order_id": "fnv2-ord-243659",
             "symbol": "ITC",
             "side": "BUY",
             "decision_badge": "WAIT",
@@ -9396,18 +9408,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "QUEUED",
             "quantity": 44,
-            "entry_price": 275.9,
-            "fill_price": 298.0,
-            "notional": 13112.0,
-            "stop_loss": 264.0,
-            "take_profit": 364.0,
+            "entry_price": 276.05,
+            "fill_price": 298.15,
+            "notional": 13118.6,
+            "stop_loss": 264.15,
+            "take_profit": 364.15,
             "rr_ratio": "1 : 1.94",
             "active_trades_slots": "1 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003190",
+        "order_id": "fnv2-ord-243659",
         "symbol": "ITC",
         "side": "BUY",
         "decision_badge": "WAIT",
@@ -9415,52 +9427,52 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "QUEUED",
         "quantity": 44,
-        "entry_price": 275.9,
-        "fill_price": 298.0,
-        "notional": 13112.0,
-        "stop_loss": 264.0,
-        "take_profit": 364.0,
+        "entry_price": 276.05,
+        "fill_price": 298.15,
+        "notional": 13118.6,
+        "stop_loss": 264.15,
+        "take_profit": 364.15,
         "rr_ratio": "1 : 1.94",
         "active_trades_slots": "1 / 5"
       }
     },
     "SBIN": {
-      "run_id": "fnv2-run-003191",
+      "run_id": "fnv2-run-243661",
       "symbol": "SBIN",
       "timeframe": "1D",
       "environment": "production",
       "agent_mode": "paper_trading",
-      "started_at": "2026-11-19T06:00:03.191163+00:00",
-      "duration_ms": 0.71,
+      "started_at": "2026-11-19T06:20:43.660643+00:00",
+      "duration_ms": 0.75,
       "final_action": "BUY",
       "decision_badge": "BUY NOW",
       "conviction_score": 0.863,
-      "position_size": 21721.75,
+      "position_size": 21723.65,
       "quantity": 19,
-      "entry_price": 1128.43,
-      "stop_loss": 1120.45,
-      "take_profit": 1234.45,
+      "entry_price": 1128.53,
+      "stop_loss": 1120.55,
+      "take_profit": 1234.55,
       "messages": [
         {
-          "timestamp": "2026-11-19T06:00:03.191842+00:00",
+          "timestamp": "2026-11-19T06:20:43.661359+00:00",
           "agent_name": "TechBot_1",
           "agent_role": "TechnicalAnalyst",
           "stage": "TechSight & Quant Regression",
           "signal": "BULLISH",
           "confidence": 0.94,
-          "summary": "Spot 1,143.25 vs 20D SMA 1,021.66 (Upward Curve, 30D Reg Target 1,338.59). RSI(14)=86.01, MACD=+41.81 vs Sig=+27.11.",
+          "summary": "Spot 1,143.35 vs 20D SMA 1,021.67 (Upward Curve, 30D Reg Target 1,338.63). RSI(14)=86.01, MACD=+41.82 vs Sig=+27.11.",
           "metrics": {
-            "price": 1143.25,
-            "sma_20": 1021.66,
+            "price": 1143.35,
+            "sma_20": 1021.67,
             "rsi_14": 86.01,
-            "macd": 41.812,
-            "projected_30d_target": 1338.59,
+            "macd": 41.82,
+            "projected_30d_target": 1338.63,
             "regression_curve": "Upward Curve",
             "technical_score": 94
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.191851+00:00",
+          "timestamp": "2026-11-19T06:20:43.661369+00:00",
           "agent_name": "FundBot_1",
           "agent_role": "FundamentalAnalyst",
           "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -9494,7 +9506,7 @@
                 "sales_growth": 7.8,
                 "profit_growth": 20.4,
                 "debt_to_equity": 0.0,
-                "mcap_cr": 1055290.35,
+                "mcap_cr": 1055382.62,
                 "beta": 0.38
               }
             },
@@ -9509,15 +9521,15 @@
           }
         },
         {
-          "timestamp": "2026-11-19T06:00:03.191865+00:00",
+          "timestamp": "2026-11-19T06:20:43.661385+00:00",
           "agent_name": "ExecBot_1",
           "agent_role": "ExecutionAgent",
           "stage": "Moreshwar Levels & Kite Execution Bridge",
           "signal": "APPROVED",
           "confidence": 0.863,
-          "summary": "Decision Matrix: BUY NOW (86.3% conviction). Auto-Risk sized 19 shares (INR 21,721.75) | Moreshwar Target 1,234.45 / SL 1,120.45 (R:R 1:4.0).",
+          "summary": "Decision Matrix: BUY NOW (86.3% conviction). Auto-Risk sized 19 shares (INR 21,723.65) | Moreshwar Target 1,234.55 / SL 1,120.55 (R:R 1:4.0).",
           "metrics": {
-            "order_id": "fnv2-ord-003191",
+            "order_id": "fnv2-ord-243661",
             "symbol": "SBIN",
             "side": "BUY",
             "decision_badge": "BUY NOW",
@@ -9525,18 +9537,18 @@
             "broker_bridge": "Zerodha Kite Connect",
             "status": "QUEUED",
             "quantity": 19,
-            "entry_price": 1128.43,
-            "fill_price": 1143.25,
-            "notional": 21721.75,
-            "stop_loss": 1120.45,
-            "take_profit": 1234.45,
+            "entry_price": 1128.53,
+            "fill_price": 1143.35,
+            "notional": 21723.65,
+            "stop_loss": 1120.55,
+            "take_profit": 1234.55,
             "rr_ratio": "1 : 4.0",
             "active_trades_slots": "1 / 5"
           }
         }
       ],
       "order_receipt": {
-        "order_id": "fnv2-ord-003191",
+        "order_id": "fnv2-ord-243661",
         "symbol": "SBIN",
         "side": "BUY",
         "decision_badge": "BUY NOW",
@@ -9544,11 +9556,11 @@
         "broker_bridge": "Zerodha Kite Connect",
         "status": "QUEUED",
         "quantity": 19,
-        "entry_price": 1128.43,
-        "fill_price": 1143.25,
-        "notional": 21721.75,
-        "stop_loss": 1120.45,
-        "take_profit": 1234.45,
+        "entry_price": 1128.53,
+        "fill_price": 1143.35,
+        "notional": 21723.65,
+        "stop_loss": 1120.55,
+        "take_profit": 1234.55,
         "rr_ratio": "1 : 4.0",
         "active_trades_slots": "1 / 5"
       }
@@ -9583,34 +9595,34 @@
     "sector": "Energy",
     "asset_type": "STOCK",
     "setup_type": "Institutional Breakout",
-    "price": 1361.5,
-    "change_pct": -0.11,
-    "fetched_at": "2026-11-19T06:00:01.013629+00:00",
+    "price": 1361.6,
+    "change_pct": -0.1,
+    "fetched_at": "2026-11-19T06:20:41.526388+00:00",
     "data_source": "Yahoo Finance Live (yfinance)",
     "rsi_14": 95.0,
-    "macd": 41.167,
-    "macd_signal": 33.144,
+    "macd": 41.175,
+    "macd_signal": 33.146,
     "sma_20": 1279.53,
-    "ema_12": 1326.61,
+    "ema_12": 1326.63,
     "ema_26": 1285.45,
-    "bb_upper": 1430.19,
+    "bb_upper": 1430.2,
     "bb_lower": 1128.87,
-    "projected_30d_target": 1651.96,
+    "projected_30d_target": 1652.0,
     "regression_std_dev": 28.3,
     "regression_curve": "Upward Curve",
     "future_projection": [
-      1429.96,
-      1447.23,
-      1465.09,
-      1483.52,
-      1502.54,
-      1522.14,
-      1542.33,
-      1563.09,
-      1584.43,
-      1606.36,
-      1628.87,
-      1651.96
+      1429.98,
+      1447.25,
+      1465.11,
+      1483.55,
+      1502.57,
+      1522.17,
+      1542.36,
+      1563.12,
+      1584.47,
+      1606.4,
+      1628.91,
+      1652.0
     ],
     "fundamental_score": {
       "business": 32,
@@ -9636,7 +9648,7 @@
         "sales_growth": 29.8,
         "profit_growth": 40.7,
         "debt_to_equity": 0.44,
-        "mcap_cr": 1842446.18,
+        "mcap_cr": 1842581.45,
         "beta": 0.18
       }
     },
@@ -9650,10 +9662,10 @@
     },
     "moreshwar_levels": {
       "x_composite_score": 68.5,
-      "spot_price": 1361.5,
-      "entry_price": 1333.65,
-      "target": 1454.66,
-      "stop_loss": 1318.66,
+      "spot_price": 1361.6,
+      "entry_price": 1333.75,
+      "target": 1454.76,
+      "stop_loss": 1318.76,
       "rr_ratio": 2.17,
       "is_holding": false
     },
@@ -9776,9 +9788,9 @@
         "rsi_14": 45.99,
         "bb_upper": 1269.47,
         "bb_lower": 1165.9,
-        "reg_value": 1184.23,
-        "reg_upper": 1212.53,
-        "reg_lower": 1155.93
+        "reg_value": 1184.22,
+        "reg_upper": 1212.52,
+        "reg_lower": 1155.92
       },
       {
         "date": "2026-10-07",
@@ -9814,9 +9826,9 @@
         "rsi_14": 36.68,
         "bb_upper": 1266.98,
         "bb_lower": 1162.55,
-        "reg_value": 1182.14,
-        "reg_upper": 1210.44,
-        "reg_lower": 1153.84
+        "reg_value": 1182.13,
+        "reg_upper": 1210.43,
+        "reg_lower": 1153.83
       },
       {
         "date": "2026-10-09",
@@ -9833,9 +9845,9 @@
         "rsi_14": 38.19,
         "bb_upper": 1266.97,
         "bb_lower": 1157.62,
-        "reg_value": 1181.97,
-        "reg_upper": 1210.27,
-        "reg_lower": 1153.67
+        "reg_value": 1181.96,
+        "reg_upper": 1210.26,
+        "reg_lower": 1153.66
       },
       {
         "date": "2026-10-12",
@@ -9852,9 +9864,9 @@
         "rsi_14": 30.58,
         "bb_upper": 1267.8,
         "bb_lower": 1151.17,
-        "reg_value": 1182.38,
-        "reg_upper": 1210.68,
-        "reg_lower": 1154.08
+        "reg_value": 1182.37,
+        "reg_upper": 1210.67,
+        "reg_lower": 1154.07
       },
       {
         "date": "2026-10-13",
@@ -9871,9 +9883,9 @@
         "rsi_14": 33.89,
         "bb_upper": 1267.17,
         "bb_lower": 1147.52,
-        "reg_value": 1183.37,
-        "reg_upper": 1211.67,
-        "reg_lower": 1155.07
+        "reg_value": 1183.36,
+        "reg_upper": 1211.66,
+        "reg_lower": 1155.06
       },
       {
         "date": "2026-10-14",
@@ -9966,9 +9978,9 @@
         "rsi_14": 56.43,
         "bb_upper": 1247.84,
         "bb_lower": 1148.73,
-        "reg_value": 1197.05,
-        "reg_upper": 1225.35,
-        "reg_lower": 1168.75
+        "reg_value": 1197.04,
+        "reg_upper": 1225.34,
+        "reg_lower": 1168.74
       },
       {
         "date": "2026-10-22",
@@ -10080,9 +10092,9 @@
         "rsi_14": 47.21,
         "bb_upper": 1225.19,
         "bb_lower": 1149.85,
-        "reg_value": 1232.65,
-        "reg_upper": 1260.95,
-        "reg_lower": 1204.35
+        "reg_value": 1232.66,
+        "reg_upper": 1260.96,
+        "reg_lower": 1204.36
       },
       {
         "date": "2026-10-30",
@@ -10099,9 +10111,9 @@
         "rsi_14": 48.54,
         "bb_upper": 1225.36,
         "bb_lower": 1147.47,
-        "reg_value": 1240.62,
-        "reg_upper": 1268.92,
-        "reg_lower": 1212.32
+        "reg_value": 1240.63,
+        "reg_upper": 1268.93,
+        "reg_lower": 1212.33
       },
       {
         "date": "2026-11-02",
@@ -10156,9 +10168,9 @@
         "rsi_14": 72.43,
         "bb_upper": 1296.92,
         "bb_lower": 1110.59,
-        "reg_value": 1268.02,
-        "reg_upper": 1296.32,
-        "reg_lower": 1239.72
+        "reg_value": 1268.03,
+        "reg_upper": 1296.33,
+        "reg_lower": 1239.73
       },
       {
         "date": "2026-11-05",
@@ -10232,9 +10244,9 @@
         "rsi_14": 73.58,
         "bb_upper": 1359.39,
         "bb_lower": 1105.95,
-        "reg_value": 1312.7,
-        "reg_upper": 1341.0,
-        "reg_lower": 1284.4
+        "reg_value": 1312.71,
+        "reg_upper": 1341.01,
+        "reg_lower": 1284.41
       },
       {
         "date": "2026-11-12",
@@ -10251,9 +10263,9 @@
         "rsi_14": 81.32,
         "bb_upper": 1372.39,
         "bb_lower": 1110.25,
-        "reg_value": 1325.32,
-        "reg_upper": 1353.62,
-        "reg_lower": 1297.02
+        "reg_value": 1325.33,
+        "reg_upper": 1353.63,
+        "reg_lower": 1297.03
       },
       {
         "date": "2026-11-13",
@@ -10270,9 +10282,9 @@
         "rsi_14": 80.89,
         "bb_upper": 1383.56,
         "bb_lower": 1115.59,
-        "reg_value": 1338.52,
-        "reg_upper": 1366.82,
-        "reg_lower": 1310.22
+        "reg_value": 1338.53,
+        "reg_upper": 1366.83,
+        "reg_lower": 1310.23
       },
       {
         "date": "2026-11-16",
@@ -10289,9 +10301,9 @@
         "rsi_14": 80.35,
         "bb_upper": 1395.2,
         "bb_lower": 1116.93,
-        "reg_value": 1352.31,
-        "reg_upper": 1380.61,
-        "reg_lower": 1324.01
+        "reg_value": 1352.32,
+        "reg_upper": 1380.62,
+        "reg_lower": 1324.02
       },
       {
         "date": "2026-11-17",
@@ -10308,9 +10320,9 @@
         "rsi_14": 83.86,
         "bb_upper": 1409.37,
         "bb_lower": 1118.34,
-        "reg_value": 1366.67,
-        "reg_upper": 1394.97,
-        "reg_lower": 1338.37
+        "reg_value": 1366.69,
+        "reg_upper": 1394.99,
+        "reg_lower": 1338.39
       },
       {
         "date": "2026-11-18",
@@ -10327,68 +10339,68 @@
         "rsi_14": 95.0,
         "bb_upper": 1420.62,
         "bb_lower": 1123.19,
-        "reg_value": 1381.62,
-        "reg_upper": 1409.92,
-        "reg_lower": 1353.32
+        "reg_value": 1381.64,
+        "reg_upper": 1409.94,
+        "reg_lower": 1353.34
       },
       {
         "date": "2026-11-19",
         "open": 1361.9,
         "high": 1366.7,
         "low": 1349.7,
-        "close": 1361.5,
-        "volume": 4230888,
+        "close": 1361.6,
+        "volume": 4604661,
         "sma_20": 1279.53,
-        "ema_12": 1326.61,
+        "ema_12": 1326.63,
         "ema_26": 1285.45,
-        "macd": 41.167,
-        "macd_signal": 33.144,
+        "macd": 41.175,
+        "macd_signal": 33.146,
         "rsi_14": 95.0,
-        "bb_upper": 1430.19,
+        "bb_upper": 1430.2,
         "bb_lower": 1128.87,
-        "reg_value": 1397.15,
-        "reg_upper": 1425.45,
-        "reg_lower": 1368.85
+        "reg_value": 1397.17,
+        "reg_upper": 1425.47,
+        "reg_lower": 1368.87
       }
     ]
   },
   "active_pipeline": {
-    "run_id": "fnv2-run-003177",
+    "run_id": "fnv2-run-243646",
     "symbol": "RELIANCE",
     "timeframe": "1D",
     "environment": "production",
     "agent_mode": "paper_trading",
-    "started_at": "2026-11-19T06:00:03.177160+00:00",
-    "duration_ms": 0.74,
+    "started_at": "2026-11-19T06:20:43.645543+00:00",
+    "duration_ms": 0.77,
     "final_action": "BUY",
     "decision_badge": "BUY NOW",
     "conviction_score": 0.8,
-    "position_size": 21784.0,
+    "position_size": 21785.6,
     "quantity": 16,
-    "entry_price": 1333.65,
-    "stop_loss": 1318.66,
-    "take_profit": 1454.66,
+    "entry_price": 1333.75,
+    "stop_loss": 1318.76,
+    "take_profit": 1454.76,
     "messages": [
       {
-        "timestamp": "2026-11-19T06:00:03.177849+00:00",
+        "timestamp": "2026-11-19T06:20:43.646261+00:00",
         "agent_name": "TechBot_1",
         "agent_role": "TechnicalAnalyst",
         "stage": "TechSight & Quant Regression",
         "signal": "BULLISH",
         "confidence": 0.94,
-        "summary": "Spot 1,361.50 vs 20D SMA 1,279.53 (Upward Curve, 30D Reg Target 1,651.96). RSI(14)=95.0, MACD=+41.17 vs Sig=+33.14.",
+        "summary": "Spot 1,361.60 vs 20D SMA 1,279.53 (Upward Curve, 30D Reg Target 1,652.00). RSI(14)=95.0, MACD=+41.17 vs Sig=+33.15.",
         "metrics": {
-          "price": 1361.5,
+          "price": 1361.6,
           "sma_20": 1279.53,
           "rsi_14": 95.0,
-          "macd": 41.167,
-          "projected_30d_target": 1651.96,
+          "macd": 41.175,
+          "projected_30d_target": 1652.0,
           "regression_curve": "Upward Curve",
           "technical_score": 94
         }
       },
       {
-        "timestamp": "2026-11-19T06:00:03.177869+00:00",
+        "timestamp": "2026-11-19T06:20:43.646280+00:00",
         "agent_name": "FundBot_1",
         "agent_role": "FundamentalAnalyst",
         "stage": "StockSight V2 4-Pillar & Porter Moat",
@@ -10422,7 +10434,7 @@
               "sales_growth": 29.8,
               "profit_growth": 40.7,
               "debt_to_equity": 0.44,
-              "mcap_cr": 1842446.18,
+              "mcap_cr": 1842581.45,
               "beta": 0.18
             }
           },
@@ -10437,15 +10449,15 @@
         }
       },
       {
-        "timestamp": "2026-11-19T06:00:03.177897+00:00",
+        "timestamp": "2026-11-19T06:20:43.646306+00:00",
         "agent_name": "ExecBot_1",
         "agent_role": "ExecutionAgent",
         "stage": "Moreshwar Levels & Kite Execution Bridge",
         "signal": "APPROVED",
         "confidence": 0.8,
-        "summary": "Decision Matrix: BUY NOW (80.0% conviction). Auto-Risk sized 16 shares (INR 21,784.00) | Moreshwar Target 1,454.66 / SL 1,318.66 (R:R 1:2.17).",
+        "summary": "Decision Matrix: BUY NOW (80.0% conviction). Auto-Risk sized 16 shares (INR 21,785.60) | Moreshwar Target 1,454.76 / SL 1,318.76 (R:R 1:2.17).",
         "metrics": {
-          "order_id": "fnv2-ord-003177",
+          "order_id": "fnv2-ord-243646",
           "symbol": "RELIANCE",
           "side": "BUY",
           "decision_badge": "BUY NOW",
@@ -10453,18 +10465,18 @@
           "broker_bridge": "Zerodha Kite Connect",
           "status": "QUEUED",
           "quantity": 16,
-          "entry_price": 1333.65,
-          "fill_price": 1361.5,
-          "notional": 21784.0,
-          "stop_loss": 1318.66,
-          "take_profit": 1454.66,
+          "entry_price": 1333.75,
+          "fill_price": 1361.6,
+          "notional": 21785.6,
+          "stop_loss": 1318.76,
+          "take_profit": 1454.76,
           "rr_ratio": "1 : 2.17",
           "active_trades_slots": "1 / 5"
         }
       }
     ],
     "order_receipt": {
-      "order_id": "fnv2-ord-003177",
+      "order_id": "fnv2-ord-243646",
       "symbol": "RELIANCE",
       "side": "BUY",
       "decision_badge": "BUY NOW",
@@ -10472,11 +10484,11 @@
       "broker_bridge": "Zerodha Kite Connect",
       "status": "QUEUED",
       "quantity": 16,
-      "entry_price": 1333.65,
-      "fill_price": 1361.5,
-      "notional": 21784.0,
-      "stop_loss": 1318.66,
-      "take_profit": 1454.66,
+      "entry_price": 1333.75,
+      "fill_price": 1361.6,
+      "notional": 21785.6,
+      "stop_loss": 1318.76,
+      "take_profit": 1454.76,
       "rr_ratio": "1 : 2.17",
       "active_trades_slots": "1 / 5"
     }
@@ -10489,7 +10501,7 @@
       "Finsistant Execution Terminal (TechSight Queue + Polynomial Regression + Stocky AI)",
       "Multi-Agent Orchestrator (TechBot_1 + FundBot_1 + ExecBot_1)"
     ],
-    "timestamp": "2026-11-19T06:00:03.192120+00:00",
+    "timestamp": "2026-11-19T06:20:43.661761+00:00",
     "environment": "production",
     "agent_mode": "paper_trading",
     "default_currency": "INR",
@@ -10529,6 +10541,10 @@
     "max_concurrent_trades": 5,
     "execution_password": "",
     "kite_api_key": "",
+    "kite_api_secret": "",
+    "kite_user_id": "",
+    "kite_password": "",
+    "kite_totp_secret": "",
     "kite_access_token": "",
     "gemini_api_key": ""
   }
