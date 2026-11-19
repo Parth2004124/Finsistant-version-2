@@ -28,6 +28,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install yfinance for live Yahoo Finance session
+        run: python3 -m pip install --quiet --upgrade yfinance
+
       - name: Run live data & 3-agent orchestration scan
         env:
           KITE_API_KEY: ${{ secrets.KITE_API_KEY }}

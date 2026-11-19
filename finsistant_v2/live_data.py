@@ -59,9 +59,116 @@ def _get_yahoo_crumb() -> str:
     return crumb
 
 
-def _fetch_json(url: str) -> dict[str, Any]:
-    with _OPENER.open(url, timeout=12) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+def _fetch_json(url: str, retries: int = 3) -> dict[str, Any]:
+    last_err: Exception | None = None
+    hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
+    for attempt in range(retries):
+        target = url
+        if attempt % 2 == 1 and "query1.finance.yahoo.com" in target:
+            target = target.replace("query1.finance.yahoo.com", hosts[1])
+        elif attempt % 2 == 1 and "query2.finance.yahoo.com" in target:
+            target = target.replace("query2.finance.yahoo.com", hosts[0])
+        try:
+            with _OPENER.open(target, timeout=12) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            last_err = exc
+            if exc.code == 429:
+                time.sleep(1.5 * (attempt + 1))
+                continue
+            raise
+        except Exception as exc:
+            last_err = exc
+            time.sleep(1.0 * (attempt + 1))
+    raise last_err or RuntimeError(f"Failed fetching {url}")
+
+
+def _fetch_via_yfinance(sym: str, yahoo_sym: str, exchange_hint: str) -> dict[str, Any] | None:
+    """Use yfinance (with curl_cffi browser TLS fingerprint) if installed."""
+    try:
+        import yfinance as yf  # type: ignore
+    except ImportError:
+        return None
+
+    ticker = yf.Ticker(yahoo_sym)
+    hist = ticker.history(period="1y", interval="1d", auto_adjust=False)
+    if hist is None or hist.empty:
+        return None
+
+    candles: list[dict[str, Any]] = []
+    for idx, row in hist.iterrows():
+        dt_str = idx.date().isoformat() if hasattr(idx, "date") else str(idx)[:10]
+        o, h, l, c = row.get("Open"), row.get("High"), row.get("Low"), row.get("Close")
+        if any(v is None or v != v for v in (o, h, l, c)):
+            continue
+        candles.append(
+            {
+                "date": dt_str,
+                "open": round(float(o), 2),
+                "high": round(float(h), 2),
+                "low": round(float(l), 2),
+                "close": round(float(c), 2),
+                "volume": int(row.get("Volume") or 0),
+            }
+        )
+    if len(candles) < 20:
+        return None
+
+    info = {}
+    try:
+        info = ticker.info or {}
+    except Exception:
+        info = {}
+
+    spot = float(info.get("regularMarketPrice") or info.get("currentPrice") or candles[-1]["close"])
+    prev_bar = float(candles[-2]["close"]) if len(candles) >= 2 else spot
+    change_pct = round(((spot - prev_bar) / max(1e-6, prev_bar)) * 100.0, 2)
+    ret_1y = round(((spot - float(candles[0]["close"])) / max(1e-6, float(candles[0]["close"]))) * 100.0, 2)
+
+    currency = str(info.get("currency") or ("INR" if yahoo_sym.endswith(".NS") else "USD"))
+    exchange = str(info.get("exchange") or exchange_hint)
+    if exchange == "NSI":
+        exchange = "NSE"
+
+    pe = float(info.get("trailingPE") or info.get("forwardPE") or 0.0)
+    roe_raw = info.get("returnOnEquity")
+    roa_raw = info.get("returnOnAssets")
+    roe = round(float(roe_raw) * 100.0, 2) if roe_raw is not None else 0.0
+    roce = round(((float(roe_raw or 0.0) * 0.7) + (float(roa_raw or 0.0) * 0.3)) * 100.0, 2) if (roe_raw is not None or roa_raw is not None) else roe
+    opm = round(float(info.get("operatingMargins") or 0.0) * 100.0, 2)
+    sales_growth = round(float(info.get("revenueGrowth") or 0.0) * 100.0, 2)
+    profit_growth = round(float(info.get("earningsGrowth") or info.get("earningsQuarterlyGrowth") or 0.0) * 100.0, 2)
+    mcap_raw = float(info.get("marketCap") or 0.0)
+    mcap_cr = round(mcap_raw / 1e7, 2) if currency == "INR" else round(mcap_raw / 1e6, 2)
+    beta = round(float(info.get("beta") or 1.0), 2)
+    de_raw = info.get("debtToEquity")
+    debt_to_equity = round(float(de_raw) / 100.0, 2) if de_raw is not None else 0.0
+
+    return {
+        "symbol": sym,
+        "yahoo_symbol": yahoo_sym,
+        "name": str(info.get("longName") or info.get("shortName") or sym),
+        "exchange": exchange,
+        "currency": currency,
+        "sector": str(info.get("sector") or info.get("industry") or "Equity"),
+        "asset_type": "STOCK",
+        "setup_type": DEFAULT_SYMBOL_CONFIG.get(sym, {}).get("setup_type", "Live Market Scan"),
+        "price": round(spot, 2),
+        "change_pct": change_pct,
+        "pe": round(pe, 2),
+        "roe": roe,
+        "roce": roce,
+        "opm": opm,
+        "sales_growth": sales_growth,
+        "profit_growth": profit_growth,
+        "mcap_cr": mcap_cr,
+        "beta": beta,
+        "ret_1y": ret_1y,
+        "debt_to_equity": debt_to_equity,
+        "candles": candles,
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "data_source": "Yahoo Finance Live (yfinance)",
+    }
 
 
 def resolve_yahoo_symbol(symbol: str) -> tuple[str, str]:
@@ -76,7 +183,7 @@ def resolve_yahoo_symbol(symbol: str) -> tuple[str, str]:
     for candidate, ex in ((f"{sym}.NS", "NSE"), (sym, "GLOBAL")):
         try:
             url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(candidate)}?range=5d&interval=1d"
-            data = _fetch_json(url)
+            data = _fetch_json(url, retries=2)
             res = data.get("chart", {}).get("result")
             if res and res[0].get("meta", {}).get("regularMarketPrice") is not None:
                 return candidate, ex
@@ -104,6 +211,17 @@ def fetch_live_market_snapshot(symbol: str, force_refresh: bool = False) -> dict
             return cached
 
     yahoo_sym, exchange_hint = resolve_yahoo_symbol(sym)
+
+    # Prefer yfinance if installed (handles Yahoo session/TLS cleanly on cloud runners)
+    try:
+        yf_snap = _fetch_via_yfinance(sym, yahoo_sym, exchange_hint)
+        if yf_snap:
+            _LIVE_CACHE[sym] = (now, yf_snap)
+            return yf_snap
+    except Exception:
+        pass
+
+    time.sleep(0.25)
     chart_url = (
         f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(yahoo_sym)}"
         "?range=1y&interval=1d"
