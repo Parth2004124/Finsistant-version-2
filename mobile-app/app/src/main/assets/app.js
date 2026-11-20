@@ -3408,18 +3408,24 @@ function renderMoreshwarV31Dashboard() {
     const om = hsum.frozen_outer_metrics || {};
     const nb = hsum.niftybees_full_metrics || {};
     const b45 = hsum.blend_45_55_full_metrics || {};
+    const fmtSharpe = (obj, fallback) => {
+      const v = obj.sharpe_ratio ?? obj.sharpe_vs_65_rf ?? obj.sharpe;
+      if (v == null || Number.isNaN(Number(v))) return fallback;
+      const n = Number(v);
+      return `${n >= 0 ? "+" : ""}${n.toFixed(2)}`;
+    };
     const rows = [
       ["G_SIMPLE_TREND_BASELINE (Frozen Winner)", "+120.03%", "10.46%", "+0.87", "+15.74% (DD 9.73%)"],
       ["Static Prompt 3 Primary (60/30/10 Fam E)", "+94.84%", "13.82%", "+0.62", "+9.76% (DD 13.46%)"],
-      ["100% NIFTYBEES Executable Benchmark", nb.total_return_pct != null ? fmtPct(nb.total_return_pct) : "+68.60%", nb.max_drawdown_pct != null ? `${Number(nb.max_drawdown_pct).toFixed(2)}%` : "16.02%", nb.sharpe != null ? Number(nb.sharpe).toFixed(2) : "+0.33", "+6.75% (DD 15.14%)"],
-      ["45/55 NIFTYBEES/LIQUIDBEES Benchmark", b45.total_return_pct != null ? fmtPct(b45.total_return_pct) : "+53.08%", b45.max_drawdown_pct != null ? `${Number(b45.max_drawdown_pct).toFixed(2)}%` : "6.09%", b45.sharpe != null ? Number(b45.sharpe).toFixed(2) : "+0.31", "Reference Benchmark"],
+      ["100% NIFTYBEES Executable Benchmark", nb.total_return_pct != null ? fmtPct(nb.total_return_pct) : "+68.60%", nb.max_drawdown_pct != null ? `${Number(nb.max_drawdown_pct).toFixed(2)}%` : "16.02%", fmtSharpe(nb, "+0.33"), "+6.75% (DD 15.14%)"],
+      ["45/55 NIFTYBEES/LIQUIDBEES Benchmark", b45.total_return_pct != null ? fmtPct(b45.total_return_pct) : "+53.08%", b45.max_drawdown_pct != null ? `${Number(b45.max_drawdown_pct).toFixed(2)}%` : "6.09%", fmtSharpe(b45, "+0.31"), "Reference Benchmark"],
     ];
     if (fm.total_return_pct != null) {
       rows[0] = [
         "G_SIMPLE_TREND_BASELINE (Frozen Winner)",
         fmtPct(fm.total_return_pct),
         `${Number(fm.max_drawdown_pct || 0).toFixed(2)}%`,
-        Number(fm.sharpe || 0).toFixed(2),
+        fmtSharpe(fm, "+0.87"),
         om.total_return_pct != null ? `${fmtPct(om.total_return_pct)} (DD ${Number(om.max_drawdown_pct || 0).toFixed(2)}%)` : "+15.74%",
       ];
     }
@@ -3431,14 +3437,30 @@ function renderMoreshwarV31Dashboard() {
   if (ordBody) {
     const orders = ex.recent_orders || [];
     const pending = ex.pending_next_session_orders || [];
-    if (!orders.length) {
+    if (!orders.length && !pending.length) {
       const doneSess = Number(vt.completed_unseen_sessions || 0);
-      const pendTxt = pending.length
-        ? ` · Pending next-session-open queue: ${pending.map((p) => `${p.kind}${p.target_core_inr ? ` (₹${Number(p.target_core_inr).toLocaleString("en-IN")})` : ""}`).join(", ")}`
-        : "";
-      ordBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">${doneSess > 0 ? `${doneSess} real prospective session(s) completed — 0 fills executed yet${pendTxt}.` : `No prospective simulated orders executed yet — awaiting first unseen NSE session after ${vt.prospective_start_date || "2026-11-19"}.`}</td></tr>`;
+      ordBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">${doneSess > 0 ? `${doneSess} real prospective session(s) completed — 0 fills executed yet.` : `No prospective simulated orders executed yet — awaiting first unseen NSE session after ${vt.prospective_start_date || "2026-11-19"}.`}</td></tr>`;
     } else {
-      ordBody.innerHTML = orders
+      const pendingRows = pending.map((p, idx) => {
+        const sym = p.symbol || (p.kind === "CORE_REBALANCE" ? "NIFTYBEES" : p.kind === "LIQUID_SWEEP" ? "LIQUIDBEES" : p.kind);
+        const qtyTxt = p.req_qty != null
+          ? `${p.req_qty} sh · <strong>QUEUED (NEXT OPEN)</strong>`
+          : p.target_core_inr != null
+            ? `Target ₹${Number(p.target_core_inr).toLocaleString("en-IN")} · <strong>QUEUED</strong>`
+            : `Auto Sweep · <strong>QUEUED</strong>`;
+        const pxTxt = p.expected_price != null ? `₹${Number(p.expected_price).toFixed(2)}` : "Next Open";
+        const evTxt = p.ev_net_bps != null ? `EV +${Number(p.ev_net_bps).toFixed(1)}` : "—";
+        const slTxt = p.stop_ratio != null ? `SL ${(Number(p.stop_ratio) * 100).toFixed(1)}%` : "At Fill";
+        return `<tr>
+          <td><code>NEXT-OPEN-${idx + 1}</code><br><span style="font-size:10px;color:var(--text-muted);">${(p.signal_timestamp || "").slice(0, 10) || "Next Open"}</span></td>
+          <td>${sym} (${p.kind})</td>
+          <td>${qtyTxt}</td>
+          <td>${pxTxt}</td>
+          <td>${evTxt}</td>
+          <td>${slTxt}</td>
+        </tr>`;
+      });
+      const filledRows = orders
         .slice(-15)
         .reverse()
         .map(
@@ -3450,8 +3472,8 @@ function renderMoreshwarV31Dashboard() {
             <td>${Number(o.slippage_bps || 0).toFixed(2)}</td>
             <td>₹${Number(o.total_cost_inr || 0).toFixed(2)}</td>
           </tr>`
-        )
-        .join("");
+        );
+      ordBody.innerHTML = [...pendingRows, ...filledRows].join("");
     }
   }
 
@@ -3666,6 +3688,24 @@ function renderMoreshwarV30Dashboard() {
 
   if (valBody) {
     const benches = Array.isArray(val.benchmark_comparison) ? val.benchmark_comparison : [];
+    const iv = val.independent_audit_verdict;
+    const verdictRows =
+      iv && typeof iv === "object"
+        ? [
+            `<tr>
+              <td><strong>Prompt 9 Independent Audit</strong></td>
+              <td><strong>${iv.deployment_decision || "NO-GO"}</strong></td>
+              <td>Paper Only: ${iv.approved_for_paper_research_monitoring ? "YES" : "NO"}</td>
+              <td>Live Capital: ${iv.approved_for_live_capital ? "YES" : "DISABLED"}</td>
+              <td>${iv.verdict_code || "NO_GO_LIVE_CAPITAL"}</td>
+            </tr>`,
+            ...(Array.isArray(iv.primary_reasons_for_no_go)
+              ? iv.primary_reasons_for_no_go.map(
+                  (r, i) => `<tr><td>Finding #${i + 1}</td><td colspan="4" style="white-space:normal;">${r}</td></tr>`
+                )
+              : []),
+          ].join("")
+        : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Prompt 9 Independent Audit Verdict: ${iv || "NO-GO Live Capital (Upgraded in Moreshwar 3.1)"}</td></tr>`;
     valBody.innerHTML = benches.length
       ? benches
           .slice(0, 8)
@@ -3677,7 +3717,7 @@ function renderMoreshwarV30Dashboard() {
             <td>${b.verdict || b.note || "Audited"}</td>
           </tr>`)
           .join("")
-      : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Prompt 9 Independent Audit Verdict: ${val.independent_audit_verdict || "NO-GO Live Capital (Upgraded in Moreshwar 3.1)"}</td></tr>`;
+      : verdictRows;
   }
 }
 

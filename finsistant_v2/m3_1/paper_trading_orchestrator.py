@@ -357,6 +357,14 @@ class PaperTradingOrchestrator:
             ],
             "summary": "Initialized cleanly; awaiting unseen prospective daily market bars.",
         }
+        dq_persisted = self.reports_dir / "data_quality_report.json"
+        if dq_persisted.exists():
+            try:
+                loaded_dq = json.loads(dq_persisted.read_text(encoding="utf-8"))
+                if isinstance(loaded_dq, dict) and loaded_dq.get("overall_status"):
+                    self._last_data_quality_report = loaded_dq
+            except Exception:
+                pass
 
     # ------------------------------------------------------------------
     # Daily Orchestration Cycle
