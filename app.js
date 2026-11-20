@@ -2219,9 +2219,18 @@ function renderIntelligenceViews() {
   if (secV21) secV21.style.display = (focus === "all" || focus === "v21") ? "flex" : "none";
   if (secV22) secV22.style.display = (focus === "all" || focus === "v21") ? "flex" : "none";
   const secV31 = document.getElementById("intelSectionV31");
+  const legacyDrawer = document.getElementById("legacyIntelArchiveLog");
+  const isLegacyFocus = ["provenance", "backtest", "v21", "v30", "audit"].includes(focus);
   if (secV30) secV30.style.display = (focus === "all" || focus === "v30") ? "flex" : "none";
-  if (secV31) secV31.style.display = (focus === "all" || focus === "v30" || focus === "v31") ? "flex" : "none";
+  if (secV31) secV31.style.display = (focus === "all" || focus === "v31") ? "flex" : "none";
   if (secAud) secAud.style.display = (focus === "all" || focus === "audit") ? "flex" : "none";
+  if (legacyDrawer) {
+    if (isLegacyFocus) {
+      legacyDrawer.open = true;
+    } else if (focus === "v31") {
+      legacyDrawer.open = false;
+    }
+  }
 
   renderProvenanceMonitor();
   renderBacktestAnalytics();
@@ -3006,6 +3015,29 @@ function bootFinsistantApp() {
       });
     });
   });
+
+  const legacyRptDrawer = document.getElementById("legacyReportsArchiveLog");
+  if (legacyRptDrawer) {
+    legacyRptDrawer.addEventListener("toggle", () => {
+      if (legacyRptDrawer.open) {
+        requestAnimationFrame(() => drawReportsCharts());
+      }
+    });
+  }
+  const legacyIntelDrawer = document.getElementById("legacyIntelArchiveLog");
+  if (legacyIntelDrawer) {
+    legacyIntelDrawer.addEventListener("toggle", () => {
+      if (legacyIntelDrawer.open) {
+        requestAnimationFrame(() => {
+          const mcAll = (appState.moreshwarV21Research || {}).monte_carlo || {};
+          const mcKey = String(appState.mv21Filters.model || "").includes("1.0") ? "moreshwar_1_0" : "moreshwar_2_1";
+          drawBacktestEquityChart((appState.backtest || {}).equity_curve || []);
+          drawMv21EquityChart(appState.moreshwarV21Research);
+          drawMv21MonteCarloChart(mcAll[mcKey] || mcAll.moreshwar_2_1 || mcAll);
+        });
+      }
+    });
+  }
 
   const auditSymF = document.getElementById("auditSymbolFilter");
   const auditStF = document.getElementById("auditStatusFilter");

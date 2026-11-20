@@ -1276,3 +1276,47 @@ canvas#backtestEquityChart {
   height: 215px !important;
 }
 
+.legacy-archive-drawer {
+  border: 1px dashed var(--border-subtle);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.45);
+  margin-top: 14px;
+  overflow: hidden;
+}
+
+.legacy-archive-drawer > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.legacy-archive-drawer > summary::-webkit-details-marker {
+  display: none;
+}
+
+.legacy-archive-drawer > summary:hover {
+  background: rgba(148, 163, 184, 0.06);
+  color: var(--text-primary);
+}
+
+.legacy-archive-drawer[open] > summary {
+  border-bottom: 1px dashed var(--border-subtle);
+}
+
+.legacy-archive-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+}
+
+
