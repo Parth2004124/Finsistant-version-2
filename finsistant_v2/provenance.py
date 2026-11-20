@@ -130,7 +130,12 @@ def build_asset_provenance(
         f"{analysis.get('last_candle_date', '')}T10:00:00+00:00" if analysis.get("last_candle_date") else None
     )
     market_kind = str(analysis.get("market_timestamp_kind") or "end_of_day_bar")
-    cache_hit = bool(analysis.get("cache_hit", False))
+    # `cache_hit` in live_data is only a <=60s in-process memo of a fetch made during the SAME
+    # scan run (the runner is ephemeral, nothing persists between runs). It is a live source
+    # fetch, not a "cached database" record, so it must not downgrade provenance to CACHED_DATABASE.
+    memo_hit = bool(analysis.get("cache_hit", False))
+    memo_age_s = float(analysis.get("cache_age_seconds") or 0.0)
+    cache_hit = memo_hit and memo_age_s > 120.0
 
     mkt_age_h = compute_age_hours(market_ts, ref_now)
     ret_age_h = compute_age_hours(retrieval_ts, ref_now)

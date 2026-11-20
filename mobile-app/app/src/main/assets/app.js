@@ -2816,13 +2816,21 @@ function updateCloudRunnerStatusUI(customMsg = null) {
     : "Automated 15m Mon–Fri GitHub Cloud Scans active · Save optional browser PAT below for 1-click on-demand scans";
 }
 
+function isCloudOrMobileAssetHost() {
+  try {
+    const h = String(window.location.hostname || "").toLowerCase();
+    const p = String(window.location.protocol || "").toLowerCase();
+    return h === "appassets.androidplatform.net" || h.endsWith(".github.io") || p === "file:";
+  } catch (_) {
+    return false;
+  }
+}
+
 async function fetchLatestCloudSnapshot(preferRaw = false) {
-  const candidates = preferRaw
-    ? [
-        `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/live_scan.json?ts=${Date.now()}`,
-        `live_scan.json?ts=${Date.now()}`
-      ]
-    : [`live_scan.json?ts=${Date.now()}`];
+  const useGithubFirst = preferRaw || isCloudOrMobileAssetHost();
+  const rawUrl = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/live_scan.json?ts=${Date.now()}`;
+  const localUrl = `live_scan.json?ts=${Date.now()}`;
+  const candidates = useGithubFirst ? [rawUrl, localUrl] : [localUrl, rawUrl];
 
   for (const url of candidates) {
     try {
@@ -3557,11 +3565,13 @@ function renderMoreshwarV31Dashboard() {
     const reconDiff = Number((recon && recon.reconciliation_diff_inr) || 0);
     const reconPass = (recon && recon.passed) !== false;
     const latestDt = (recon && recon.as_of_date) || (dq && dq.trading_date) || "2026-11-20";
+    const prospRet = ov.total_return_pct ?? ov.prospective_return_pct ?? 0;
+    const shaShort = (cfg.canonical_prefix_16 || cfg.canonical_sha256 || cfg.canonical_payload_sha256 || "47a30f4bbd004c5f").slice(0, 12);
 
     rptM31Brief.innerHTML =
       `<strong>Prospective Paper Trading (Real Unseen NSE Sessions Only · Post-2026-11-19):</strong> ` +
       `Completed <strong>${doneSess} / ${minSess}</strong> minimum unseen session(s) (latest <code>${latestDt}</code>${validBars > 0 ? ` across <strong>${validBars.toLocaleString("en-IN")}</strong> real NSE PIT-eligible stocks` : ""}). ` +
-      `Current Paper NAV is <strong>${fmtInr(ov.current_nav_inr)}</strong> (<strong>${fmtPct(ov.prospective_return_pct)}</strong> prospective return; <code>${recentOrders.length}</code> filled order(s) so far; <strong>${pending.length}</strong> order(s) queued for next-session open${tacQueued.length ? `: <em>${tacQueued.map((p) => p.symbol).join(", ")}</em>` : ""}). ` +
+      `Current Paper NAV is <strong>${fmtInr(ov.current_nav_inr)}</strong> (<strong>${fmtPct(prospRet)}</strong> prospective return; <code>${recentOrders.length}</code> filled order(s) so far; <strong>${pending.length}</strong> order(s) queued for next-session open${tacQueued.length ? `: <em>${tacQueued.map((p) => p.symbol).join(", ")}</em>` : ""}). ` +
       `Four-ledger reconciliation: <strong>${reconPass ? "PASS" : "FAIL"} (diff ₹${reconDiff.toFixed(4)})</strong>.` +
       `<br><strong>Separate 5-Year Historical Research Baseline (2021-07 → 2026-11-19 · Never Merged Into Prospective):</strong> ` +
       `Frozen winner <code>G_SIMPLE_TREND_BASELINE</code> returned <strong>${histRet}</strong> (Sharpe <strong>${histSharpe}</strong>, Max DD <strong>${histDd}</strong>) vs <strong>${nbRet}</strong> for 100% NIFTYBEES.`;
@@ -3570,7 +3580,7 @@ function renderMoreshwarV31Dashboard() {
       {
         label: "PROSPECTIVE PAPER NAV",
         value: fmtInr(ov.current_nav_inr),
-        sub: `${fmtPct(ov.prospective_return_pct)} unseen · ${doneSess}/${minSess} min (${targetSess} target)`,
+        sub: `${fmtPct(prospRet)} unseen · ${doneSess}/${minSess} min (${targetSess} target)`,
         tone: "emerald",
       },
       {
@@ -3594,7 +3604,7 @@ function renderMoreshwarV31Dashboard() {
       {
         label: "4-LEDGER AUDIT & SAFETY",
         value: reconPass ? `PASS (₹${reconDiff.toFixed(4)})` : "SAFE_MODE",
-        sub: `Live Broker: DISABLED · SHA ${(cfg.canonical_sha256 || "47a30f4bbd004c5f").slice(0, 12)}`,
+        sub: `Live Broker: DISABLED · SHA ${shaShort}`,
         tone: reconPass ? "emerald" : "crimson",
       },
     ]
@@ -3969,31 +3979,45 @@ function wireMoreshwarV31Controls() {
     });
   });
 
-  // Always fetch latest Moreshwar 3.1 live ledger (local API or GitHub raw reports) so older live_scan.json snapshots never mask newer paper sessions
-  fetch("/api/m3_1/dashboard", { cache: "no-store" })
-    .then((r) => (r.ok ? r.json() : null))
-    .then(async (payload) => {
+  async function refreshMoreshwarV31FromSource() {
+    if (isCloudOrMobileAssetHost()) {
+      const cloud = await fetchM31CloudFallback();
+      if (cloud) {
+        appState._moreshwarV31LiveLoaded = true;
+        appState.moreshwarV31 = cloud;
+        renderMoreshwarV31Dashboard();
+      }
+      return;
+    }
+    try {
+      const r = await fetch("/api/m3_1/dashboard", { cache: "no-store" });
+      const payload = r.ok ? await r.json() : null;
       if (payload && payload.prospective_paper_trading) {
         appState._moreshwarV31LiveLoaded = true;
         appState.moreshwarV31 = payload;
         renderMoreshwarV31Dashboard();
         return;
       }
-      const cloud = await fetchM31CloudFallback();
-      if (cloud) {
-        appState._moreshwarV31LiveLoaded = true;
-        appState.moreshwarV31 = cloud;
-        renderMoreshwarV31Dashboard();
-      }
-    })
-    .catch(async () => {
-      const cloud = await fetchM31CloudFallback();
-      if (cloud) {
-        appState._moreshwarV31LiveLoaded = true;
-        appState.moreshwarV31 = cloud;
-        renderMoreshwarV31Dashboard();
-      }
-    });
+    } catch (_) {
+      // Fall through to GitHub cloud raw reports
+    }
+    const cloud = await fetchM31CloudFallback();
+    if (cloud) {
+      appState._moreshwarV31LiveLoaded = true;
+      appState.moreshwarV31 = cloud;
+      renderMoreshwarV31Dashboard();
+    }
+  }
+
+  window.refreshFinsistantMobileScan = async () => {
+    await Promise.all([
+      runLiveScan(true),
+      refreshMoreshwarV31FromSource(),
+    ]);
+  };
+
+  // Always fetch latest Moreshwar 3.1 live ledger (local API or GitHub raw reports) so older live_scan.json snapshots never mask newer paper sessions
+  refreshMoreshwarV31FromSource();
 }
 
 if (document.readyState === "loading") {
