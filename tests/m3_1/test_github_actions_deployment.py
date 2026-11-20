@@ -333,3 +333,21 @@ def test_ga_smart_ntfy_and_email_notifier_logic() -> None:
     d_fail = mod.decide_and_format_notification(_ctx("2026-11-25", 3, state="SAFE_MODE"), session_newly_completed=False)
     assert d_fail["should_send"] is True and d_fail["priority"] == "high"
 
+
+def test_full_pit_universe_no_subset_and_real_data_ui_guards():
+    """Guard against silent universe subset truncation and verify real-data UI parity."""
+    uni_path = REPO_ROOT / "data" / "m3_1_paper_trading" / "nse_prospective_universe.json"
+    uni = json.loads(uni_path.read_text(encoding="utf-8"))
+    equities = uni.get("equities", [])
+    assert len(equities) >= 1000, f"Universe must include full PIT-eligible NSE equities, got only {len(equities)}"
+    assert uni.get("count") == len(equities)
+    tiers = {e.get("pit_tier") for e in equities}
+    assert "TIER_A_LARGE_CORE" in tiers and "TIER_B_BROAD_LIQUID" in tiers
+
+    # UI mirrors must be byte-for-byte identical and load real snapshot + CSV equity curve
+    root_js = (REPO_ROOT / "app.js").read_text(encoding="utf-8")
+    assert root_js == (REPO_ROOT / "web" / "app.js").read_text(encoding="utf-8")
+    assert root_js == (REPO_ROOT / "mobile-app" / "app" / "src" / "main" / "assets" / "app.js").read_text(encoding="utf-8")
+    assert "portfolio_snapshot.json" in root_js
+    assert "paper_trading_daily_report.csv" in root_js
+

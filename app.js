@@ -3430,8 +3430,13 @@ function renderMoreshwarV31Dashboard() {
 
   if (ordBody) {
     const orders = ex.recent_orders || [];
+    const pending = ex.pending_next_session_orders || [];
     if (!orders.length) {
-      ordBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No prospective simulated orders executed yet — awaiting first unseen NSE session after ${vt.prospective_start_date || "2026-11-19"}.</td></tr>`;
+      const doneSess = Number(vt.completed_unseen_sessions || 0);
+      const pendTxt = pending.length
+        ? ` · Pending next-session-open queue: ${pending.map((p) => `${p.kind}${p.target_core_inr ? ` (₹${Number(p.target_core_inr).toLocaleString("en-IN")})` : ""}`).join(", ")}`
+        : "";
+      ordBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">${doneSess > 0 ? `${doneSess} real prospective session(s) completed — 0 fills executed yet${pendTxt}.` : `No prospective simulated orders executed yet — awaiting first unseen NSE session after ${vt.prospective_start_date || "2026-11-19"}.`}</td></tr>`;
     } else {
       ordBody.innerHTML = orders
         .slice(-15)
@@ -3470,9 +3475,10 @@ function renderMoreshwarV31Dashboard() {
 
   if (monthlyEl) {
     const mrets = (prosp.performance || {}).monthly_returns || [];
+    const doneSess = Number(vt.completed_unseen_sessions || 0);
     monthlyEl.textContent = mrets.length
       ? "Prospective Monthly Returns: " + mrets.map((m) => `${m.month}: ${fmtPct(m.return_pct)} (${m.sessions}d)`).join(" · ")
-      : "Prospective Monthly Returns: 0 completed unseen sessions (strictly separated from 2021–2026 historical backtest).";
+      : `Prospective Monthly Returns: ${doneSess} completed unseen session(s) (strictly separated from 2021–2026 historical backtest).`;
   }
 
   drawMv31ProspectiveChart(data);
@@ -3492,10 +3498,11 @@ function drawMv31ProspectiveChart(data) {
   ctx.clearRect(0, 0, w, h);
 
   const curve = ((data || {}).prospective_paper_trading?.performance?.equity_curve) || [];
+  const doneSess = Number((data || {}).prospective_paper_trading?.validation_tracker?.completed_unseen_sessions || curve.length || 0);
   if (curve.length < 2) {
     ctx.font = "12px 'Inter', sans-serif";
     ctx.fillStyle = "hsl(215, 15%, 72%)";
-    ctx.fillText("Prospective Paper Curve: 0 unseen sessions recorded post-2026-11-19.", 14, h / 2 - 8);
+    ctx.fillText(`Prospective Paper Curve: ${doneSess} real unseen session(s) recorded post-2026-11-19 (line plots from session 2).`, 14, h / 2 - 8);
     ctx.fillStyle = "hsl(38, 92%, 60%)";
     ctx.fillText("Historical backtest (2021-07 → 2026-11-19) is shown separately on the right.", 14, h / 2 + 12);
     return;
@@ -3685,19 +3692,54 @@ async function fetchM31CloudFallback() {
       return null;
     }
   };
-  const [daily, prog, alerts, dq, cfg, p4sum] = await Promise.all([
+  const getText = async (rel) => {
+    try {
+      const r = await fetch(`${base}/${rel}?ts=${ts}`, { cache: "no-store" });
+      return r.ok ? await r.text() : null;
+    } catch (_) {
+      return null;
+    }
+  };
+  const [daily, prog, alerts, dq, cfg, p4sum, snap, csvText] = await Promise.all([
     getJson("prospective_paper_trading/paper_trading_daily_report.json"),
     getJson("prospective_paper_trading/prospective_validation_progress.json"),
     getJson("prospective_paper_trading/risk_alerts.json"),
     getJson("prospective_paper_trading/data_quality_report.json"),
     getJson("prospective_paper_trading/configuration_integrity.json"),
     getJson("strategy_intelligence/strategy_intelligence_summary.json"),
+    getJson("prospective_paper_trading/portfolio_snapshot.json"),
+    getText("prospective_paper_trading/paper_trading_daily_report.csv"),
   ]);
   if (!daily && !prog) return null;
   const nav = (daily && daily.portfolio_nav) || {};
   const recon = (daily && daily.reconciliation_result) || {};
   const reg = (daily && daily.regime_determination) || {};
   const alloc = (daily && daily.allocation) || {};
+  const openHoldings = Array.isArray(snap && snap.open_holdings) ? snap.open_holdings : [];
+  const openTactical = openHoldings.filter((h) => String(h.bucket || "").includes("TACTICAL"));
+  const equityCurve = [];
+  if (csvText) {
+    const lines = csvText.trim().split(/\r?\n/).filter(Boolean);
+    if (lines.length >= 2) {
+      const cols = lines[0].split(",");
+      const idx = (k) => cols.indexOf(k);
+      const iDate = idx("trading_date");
+      const iNav = idx("nav_inr");
+      const iNifty = idx("benchmark_niftybees_nav");
+      const iBlend = idx("benchmark_45_55_nav");
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(",");
+        if (iDate >= 0 && parts[iDate]) {
+          equityCurve.push({
+            trading_date: parts[iDate],
+            portfolio_nav: Number(parts[iNav] || 100000),
+            niftybees_nav: Number(parts[iNifty] || 100000),
+            blend_45_55_nav: Number(parts[iBlend] || 100000),
+          });
+        }
+      }
+    }
+  }
   return {
     release_version: (daily && daily.release_version) || "3.1.0-rc1",
     banner: "PAPER TRADING ONLY — LIVE TRADING DISABLED",
@@ -3714,8 +3756,8 @@ async function fetchM31CloudFallback() {
         available_cash_inr: recon.settled_cash_inr ?? 100000,
         pending_settlements_inr: recon.unsettled_cash_inr ?? 0,
         invested_capital_inr: Number(recon.core_value_inr || 0) + Number(recon.tactical_value_inr || 0) + Number(recon.liquid_value_inr || 0),
-        open_positions_count: 0,
-        open_tactical_positions_count: 0,
+        open_positions_count: openHoldings.length,
+        open_tactical_positions_count: openTactical.length,
       },
       strategy_status: {
         active_policy: "G_SIMPLE_TREND_BASELINE",
@@ -3733,8 +3775,11 @@ async function fetchM31CloudFallback() {
         family_e_new_entries_eligible: reg.allow_new_family_e_entries !== false,
         family_a_status: "SUSPENDED_HARD_BLOCKED",
       },
-      performance: { equity_curve: [], monthly_returns: [], has_prospective_sessions: Number((prog && prog.completed_unseen_sessions) || 0) > 0 },
-      execution_monitoring: { recent_orders: (daily && daily.simulated_orders_latest_session) || [] },
+      performance: { equity_curve: equityCurve, monthly_returns: [], has_prospective_sessions: Number((prog && prog.completed_unseen_sessions) || equityCurve.length || 0) > 0 },
+      execution_monitoring: {
+        recent_orders: (daily && daily.simulated_orders_latest_session) || [],
+        pending_next_session_orders: (daily && daily.pending_next_session_orders) || (snap && snap.pending_next_session_orders) || [],
+      },
       risk_dashboard: {
         overall_health: (alerts && alerts.overall_health) || "HEALTHY",
         metrics: (daily && daily.risk_metrics) || {},

@@ -708,12 +708,16 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
         if path == "/api/m3_1/reports":
             try:
                 orch, sched = _get_m3_1_runtime()
-                paths = orch.export_all_daily_reports()
+                existing_paths = {
+                    p.name: str(p)
+                    for p in sorted(orch.reports_dir.iterdir())
+                    if p.is_file()
+                } if orch.reports_dir.exists() else {}
                 self._send_json({
                     "status": "OK",
                     "paper_only": True,
                     "live_trading_enabled": False,
-                    "report_paths": paths,
+                    "report_paths": existing_paths,
                     "dashboard": orch.build_dashboard_payload(scheduler_status=sched.get_status()),
                 })
             except Exception as exc:

@@ -313,16 +313,15 @@ def fetch_completed_nse_eod_snapshot(
             "low": round(float(lb_row["Low"]), 4),
             "close": round(float(lb_row["Close"]), 4),
             "volume": round(float(lb_row.get("Volume", 0.0) or 0.0), 2),
-            "valid": True,
+            "valid": bool(float(lb_row["Open"]) > 0 and float(lb_row["Close"]) > 0),
         }
-    elif lb_df is not None and not lb_df.empty:
-        # LIQUIDBEES is a daily-dividend-pegged ~1000 INR ETF; if Yahoo omitted today's flat print, use last observed <= dt
-        last_lb = float(lb_df["Close"].iloc[-1])
-        lb_bar = {"open": round(last_lb, 4), "high": round(last_lb, 4), "low": round(last_lb, 4), "close": round(last_lb, 4), "volume": 0.0, "valid": last_lb > 0}
+        if not lb_bar["valid"]:
+            return None
     else:
+        # Strict zero-fabrication rule: never carry forward prior session prices for target_date
         return None
 
-    # 2. Load frozen prospective NSE equity universe + any open tactical holdings
+    # 2. Load full frozen prospective PIT-eligible NSE equity universe + any open tactical holdings
     uni_items: list[dict[str, Any]] = []
     if universe_path.exists():
         uni_payload = json.loads(universe_path.read_text(encoding="utf-8"))
@@ -342,9 +341,9 @@ def fetch_completed_nse_eod_snapshot(
             })
             seen_sids.add(sid)
 
-    # 3. Batch-download equity histories (chunks of 40 tickers for Yahoo Finance stability)
+    # 3. Batch-download full PIT-eligible equity universe histories (chunks of 100 tickers for Yahoo Finance stability)
     equity_histories: dict[str, dict[str, Any]] = {}
-    chunk_size = 40
+    chunk_size = 100
     for i in range(0, len(uni_items), chunk_size):
         chunk = uni_items[i : i + chunk_size]
         tickers = [str(u["yf_ticker"]) for u in chunk]
