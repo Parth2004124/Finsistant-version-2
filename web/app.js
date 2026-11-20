@@ -197,6 +197,7 @@ function applyPayload(payload) {
   appState.moreshwarV21Research = payload.moreshwar_v2_1_research || null;
   appState.moreshwarV22Research = payload.moreshwar_v2_2_research || null;
   appState.moreshwarV3Research = payload.moreshwar_v3_research || null;
+  appState.moreshwarV31 = payload.moreshwar_v3_1 || null;
   appState.auditTrail = payload.audit_trail || null;
   appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
   appState.rules = payload.rules || [];
@@ -2215,7 +2216,9 @@ function renderIntelligenceViews() {
   if (secBt) secBt.style.display = (focus === "all" || focus === "backtest") ? "flex" : "none";
   if (secV21) secV21.style.display = (focus === "all" || focus === "v21") ? "flex" : "none";
   if (secV22) secV22.style.display = (focus === "all" || focus === "v21") ? "flex" : "none";
+  const secV31 = document.getElementById("intelSectionV31");
   if (secV30) secV30.style.display = (focus === "all" || focus === "v30") ? "flex" : "none";
+  if (secV31) secV31.style.display = (focus === "all" || focus === "v30" || focus === "v31") ? "flex" : "none";
   if (secAud) secAud.style.display = (focus === "all" || focus === "audit") ? "flex" : "none";
 
   renderProvenanceMonitor();
@@ -2223,6 +2226,7 @@ function renderIntelligenceViews() {
   renderMoreshwarV21Dashboard();
   renderMoreshwarV22Dashboard();
   renderMoreshwarV30Dashboard();
+  renderMoreshwarV31Dashboard();
   renderAuditLedger();
   renderReportsView();
 }
@@ -3298,6 +3302,7 @@ function bootFinsistantApp() {
   }
 
   document.getElementById("runUnifiedVerifyBtn").addEventListener("click", () => runLiveScan(false));
+  wireMoreshwarV31Controls();
 
   window.addEventListener("resize", () => {
     const mcAll = (appState.moreshwarV21Research || {}).monte_carlo || {};
@@ -3307,7 +3312,266 @@ function bootFinsistantApp() {
     drawMv21EquityChart(appState.moreshwarV21Research);
     drawMv21MonteCarloChart(mcAll[mcKey] || mcAll.moreshwar_2_1 || mcAll);
     drawReportsCharts();
+    drawMv31ProspectiveChart(appState.moreshwarV31);
   });
+}
+
+function renderMoreshwarV31Dashboard() {
+  const data = appState.moreshwarV31;
+  const kpiEl = document.getElementById("mv31PortfolioOverviewKpis");
+  const stratEl = document.getElementById("mv31StrategyStatusBody");
+  const valEl = document.getElementById("mv31ValidationTrackerBody");
+  const histBody = document.getElementById("mv31HistoricalBaselineBody");
+  const ordBody = document.getElementById("mv31ExecutionOrdersBody");
+  const riskEl = document.getElementById("mv31RiskDashboardBody");
+  const hashBadge = document.getElementById("mv31ConfigHashBadge");
+  const stateBadge = document.getElementById("mv31EngineStateBadge");
+  const monthlyEl = document.getElementById("mv31MonthlyReturnsBody");
+  if (!kpiEl) return;
+
+  if (!data || !data.prospective_paper_trading) {
+    kpiEl.innerHTML = `<div class="kpi-chip"><div class="kpi-chip-label">Status</div><div class="kpi-chip-value">Loading M3.1 Paper Engine...</div></div>`;
+    return;
+  }
+
+  const cfg = data.configuration_integrity || {};
+  const eng = data.engine_state || {};
+  const sched = data.scheduler_status || {};
+  const prosp = data.prospective_paper_trading || {};
+  const ov = prosp.portfolio_overview || {};
+  const st = prosp.strategy_status || {};
+  const vt = prosp.validation_tracker || {};
+  const ex = prosp.execution_monitoring || {};
+  const rk = prosp.risk_dashboard || {};
+  const rm = rk.metrics || {};
+  const recon = rk.reconciliation || {};
+  const dq = rk.data_quality || {};
+  const hist = data.historical_research_baseline || {};
+  const hsum = hist.summary || {};
+
+  if (hashBadge) {
+    hashBadge.textContent = cfg.verified
+      ? `SHA256: ${cfg.canonical_prefix_16 || "47a30f4bbd004c5f"} · VERIFIED`
+      : "SHA256: MISMATCH · HALTED";
+  }
+  if (stateBadge) {
+    stateBadge.textContent = `ENGINE: ${eng.engine_state || "IDLE"} · SCHED: ${sched.status || "IDLE"}`;
+  }
+
+  const fmtInr = (v) => `₹${Number(v || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fmtPct = (v) => `${Number(v || 0) >= 0 ? "+" : ""}${Number(v || 0).toFixed(2)}%`;
+
+  kpiEl.innerHTML = [
+    { label: "Initial Capital", value: fmtInr(ov.initial_capital_inr) },
+    { label: "Current Paper NAV", value: fmtInr(ov.current_nav_inr) },
+    { label: "Prospective Return", value: fmtPct(ov.total_return_pct) },
+    { label: "Today's P&L", value: fmtInr(ov.today_pnl_inr) },
+    { label: "Available Cash", value: fmtInr(ov.available_cash_inr) },
+    { label: "Invested Capital", value: fmtInr(ov.invested_capital_inr) },
+    { label: "Open Positions", value: `${ov.open_positions_count || 0} (${ov.open_tactical_positions_count || 0} Fam E)` },
+    { label: "Pending T+1 Settle", value: fmtInr(ov.pending_settlements_inr) },
+  ]
+    .map((k) => `<div class="kpi-chip"><div class="kpi-chip-label">${k.label}</div><div class="kpi-chip-value">${k.value}</div></div>`)
+    .join("");
+
+  if (stratEl) {
+    const alloc = st.target_allocation_pct || {};
+    stratEl.innerHTML = `
+      <div><strong>Active Policy:</strong> <code>${st.active_policy || "G_SIMPLE_TREND_BASELINE"}</code> (${st.execution_profile || "EXP_E_COMBINED_EXEC_INTEL"})</div>
+      <div><strong>Regime State:</strong> Raw <code>${st.current_raw_regime || "BULL_TREND"}</code> · Confirmed <code>${st.confirmed_regime || "BULL_TREND"}</code> (Streak ${st.confirmation_streak_days || 0}/${st.confirmation_required_days || 3} sessions)</div>
+      <div><strong>Frozen Target Allocation:</strong> Core NIFTYBEES <strong>${alloc.core_niftybees ?? 60}%</strong> · Tactical Family E <strong>${alloc.tactical_family_e ?? 30}%</strong> · Liquid LIQUIDBEES <strong>${alloc.liquid_liquidbees ?? 10}%</strong> · Gold <strong>0%</strong> (not in frozen config)</div>
+      <div><strong>Family E New Entries:</strong> <strong>${st.family_e_new_entries_eligible ? "ELIGIBLE (Paper Only)" : "HALTED (Bear / Paused / Safe Mode)"}</strong> · <strong>Family A:</strong> <span style="color:var(--accent-red);">${st.family_a_status || "SUSPENDED_HARD_BLOCKED"}</span></div>
+      <div><strong>Config Integrity:</strong> ${cfg.verified ? "VERIFIED" : "FAILED"} · Prefix <code>${cfg.canonical_prefix_16 || "47a30f4bbd004c5f"}</code> · Live Trading: <strong>DISABLED</strong></div>
+    `;
+  }
+
+  if (valEl) {
+    const done = Number(vt.completed_unseen_sessions || 0);
+    const minReq = Number(vt.minimum_required_sessions || 60);
+    const tgt = Number(vt.target_sessions || 120);
+    const pctMin = Math.min(100, (done / Math.max(1, minReq)) * 100).toFixed(1);
+    const pctTgt = Math.min(100, (done / Math.max(1, tgt)) * 100).toFixed(1);
+    valEl.innerHTML = `
+      <div><strong>Prospective Start Boundary:</strong> <code>${vt.prospective_start_date || "2026-11-19"}</code> · Status: <strong>${vt.status_label || "AWAITING_FIRST_PROSPECTIVE_SESSION"}</strong></div>
+      <div><strong>Unseen Sessions Completed:</strong> <strong>${done} / ${minReq}</strong> minimum (${pctMin}%) · <strong>${done} / ${tgt}</strong> target (${pctTgt}%)</div>
+      <div style="background:rgba(255,255,255,0.08);height:7px;border-radius:4px;overflow:hidden;margin:4px 0 6px;">
+        <div style="width:${pctMin}%;height:100%;background:hsl(160,84%,44%);"></div>
+      </div>
+      <div><strong>Prospective Trades:</strong> ${vt.prospective_paper_trades || 0} filled · ${vt.prospective_rejected_orders || 0} rejected/failed</div>
+      <div><strong>Rolling Sharpe / Max DD:</strong> ${rm.rolling_sharpe != null ? rm.rolling_sharpe : (rm.rolling_ratios_sample_status || "INSUFFICIENT_SAMPLE")} · Max DD ${Number(rm.max_drawdown_pct || 0).toFixed(2)}%</div>
+      <div><strong>Data Quality:</strong> <code>${dq.overall_status || "PARTIAL_DIAGNOSTIC_ONLY"}</code> · <em>Incomplete validation is never reported as completed performance.</em></div>
+    `;
+  }
+
+  if (histBody) {
+    const fm = hsum.frozen_full_metrics || {};
+    const om = hsum.frozen_outer_metrics || {};
+    const nb = hsum.niftybees_full_metrics || {};
+    const b45 = hsum.blend_45_55_full_metrics || {};
+    const rows = [
+      ["G_SIMPLE_TREND_BASELINE (Frozen Winner)", "+120.03%", "10.46%", "+0.87", "+15.74% (DD 9.73%)"],
+      ["Static Prompt 3 Primary (60/30/10 Fam E)", "+94.84%", "13.82%", "+0.62", "+9.76% (DD 13.46%)"],
+      ["100% NIFTYBEES Executable Benchmark", nb.total_return_pct != null ? fmtPct(nb.total_return_pct) : "+68.60%", nb.max_drawdown_pct != null ? `${Number(nb.max_drawdown_pct).toFixed(2)}%` : "16.02%", nb.sharpe != null ? Number(nb.sharpe).toFixed(2) : "+0.33", "+6.75% (DD 15.14%)"],
+      ["45/55 NIFTYBEES/LIQUIDBEES Benchmark", b45.total_return_pct != null ? fmtPct(b45.total_return_pct) : "+53.08%", b45.max_drawdown_pct != null ? `${Number(b45.max_drawdown_pct).toFixed(2)}%` : "6.09%", b45.sharpe != null ? Number(b45.sharpe).toFixed(2) : "+0.31", "Reference Benchmark"],
+    ];
+    if (fm.total_return_pct != null) {
+      rows[0] = [
+        "G_SIMPLE_TREND_BASELINE (Frozen Winner)",
+        fmtPct(fm.total_return_pct),
+        `${Number(fm.max_drawdown_pct || 0).toFixed(2)}%`,
+        Number(fm.sharpe || 0).toFixed(2),
+        om.total_return_pct != null ? `${fmtPct(om.total_return_pct)} (DD ${Number(om.max_drawdown_pct || 0).toFixed(2)}%)` : "+15.74%",
+      ];
+    }
+    histBody.innerHTML = rows
+      .map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`)
+      .join("");
+  }
+
+  if (ordBody) {
+    const orders = ex.recent_orders || [];
+    if (!orders.length) {
+      ordBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No prospective simulated orders executed yet — awaiting first unseen NSE session after ${vt.prospective_start_date || "2026-11-19"}.</td></tr>`;
+    } else {
+      ordBody.innerHTML = orders
+        .slice(-15)
+        .reverse()
+        .map(
+          (o) => `<tr>
+            <td><code>${o.order_id}</code><br><span style="font-size:10px;color:var(--text-muted);">${o.trading_date}</span></td>
+            <td>${o.symbol} (${o.side})</td>
+            <td>${o.filled_qty}/${o.requested_qty} · <strong>${o.execution_status}</strong></td>
+            <td>${Number(o.actual_exec_price || 0).toFixed(2)}</td>
+            <td>${Number(o.slippage_bps || 0).toFixed(2)}</td>
+            <td>₹${Number(o.total_cost_inr || 0).toFixed(2)}</td>
+          </tr>`
+        )
+        .join("");
+    }
+  }
+
+  if (riskEl) {
+    const alerts = rk.alerts || [];
+    const alertHtml = alerts.length
+      ? alerts
+          .slice(0, 5)
+          .map((a) => `<div><span class="tag-pill ${a.severity === "CRITICAL" ? "tag-stop" : "tag-score"}">${a.severity}</span> <strong>${a.code}</strong>: ${a.description}</div>`)
+          .join("")
+      : `<div style="color:hsl(160,84%,44%);">No active critical or warning risk alerts.</div>`;
+    riskEl.innerHTML = `
+      <div><strong>System Health:</strong> <strong>${rk.overall_health || "HEALTHY"}</strong> · <strong>Reconciliation:</strong> ${recon.passed ? "PASS" : "FAIL"} (diff ₹${Number(recon.reconciliation_diff_inr || 0).toFixed(4)})</div>
+      <div><strong>Drawdown:</strong> Current ${Number(rm.current_drawdown_pct || 0).toFixed(2)}% · Max ${Number(rm.max_drawdown_pct || 0).toFixed(2)}% · <strong>CAGR:</strong> ${rm.cagr_pct != null ? fmtPct(rm.cagr_pct) : (rm.cagr_sample_status || "INSUFFICIENT_SAMPLE")}</div>
+      <div><strong>Exposure:</strong> Equity ${Number(rm.equity_exposure_pct || 0).toFixed(1)}% (Core ${Number(rm.core_etf_exposure_pct || 0).toFixed(1)}% + Fam E ${Number(rm.tactical_equity_exposure_pct || 0).toFixed(1)}%) · Liquid ${Number(rm.liquid_allocation_pct || 0).toFixed(1)}% · Cash ${Number(rm.cash_pct || 0).toFixed(1)}% · Gold 0.0%</div>
+      <div><strong>Costs &amp; Turnover:</strong> Total Costs ${fmtInr(rm.total_transaction_costs_inr)} (${Number(rm.cost_pct_of_gross_traded_value || 0).toFixed(3)}% of gross traded) · Turnover ${Number(rm.turnover_x || 0).toFixed(2)}x</div>
+      <div><strong>Data Quality:</strong> <code>${dq.overall_status || "PARTIAL_DIAGNOSTIC_ONLY"}</code> — ${dq.summary || ""}</div>
+      <div style="margin-top:6px;">${alertHtml}</div>
+    `;
+  }
+
+  if (monthlyEl) {
+    const mrets = (prosp.performance || {}).monthly_returns || [];
+    monthlyEl.textContent = mrets.length
+      ? "Prospective Monthly Returns: " + mrets.map((m) => `${m.month}: ${fmtPct(m.return_pct)} (${m.sessions}d)`).join(" · ")
+      : "Prospective Monthly Returns: 0 completed unseen sessions (strictly separated from 2021–2026 historical backtest).";
+  }
+
+  drawMv31ProspectiveChart(data);
+}
+
+function drawMv31ProspectiveChart(data) {
+  const canvas = document.getElementById("mv31ProspectiveChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(260, rect.width || 440);
+  const h = Math.max(170, rect.height || 190);
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  const curve = ((data || {}).prospective_paper_trading?.performance?.equity_curve) || [];
+  if (curve.length < 2) {
+    ctx.font = "12px 'Inter', sans-serif";
+    ctx.fillStyle = "hsl(215, 15%, 72%)";
+    ctx.fillText("Prospective Paper Curve: 0 unseen sessions recorded post-2026-11-19.", 14, h / 2 - 8);
+    ctx.fillStyle = "hsl(38, 92%, 60%)";
+    ctx.fillText("Historical backtest (2021-07 → 2026-11-19) is shown separately on the right.", 14, h / 2 + 12);
+    return;
+  }
+
+  const vals = [];
+  curve.forEach((pt) => {
+    vals.push(Number(pt.portfolio_nav || 100000), Number(pt.niftybees_nav || 100000), Number(pt.blend_45_55_nav || 100000));
+  });
+  const minV = Math.min(...vals) * 0.995;
+  const maxV = Math.max(...vals) * 1.005;
+  const padT = 14, padB = 22, padL = 10, padR = 58;
+  const plotW = w - padL - padR;
+  const plotH = h - padT - padB;
+  const yFor = (v) => padT + plotH - ((v - minV) / Math.max(1e-6, maxV - minV)) * plotH;
+  const xFor = (i) => padL + (i / Math.max(1, curve.length - 1)) * plotW;
+
+  const drawSeries = (key, color, dashed = false) => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.0;
+    if (dashed) ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    curve.forEach((pt, i) => {
+      const x = xFor(i);
+      const y = yFor(Number(pt[key] || 100000));
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.restore();
+  };
+  drawSeries("blend_45_55_nav", "hsl(215, 25%, 65%)", true);
+  drawSeries("niftybees_nav", "hsl(38, 92%, 55%)", true);
+  drawSeries("portfolio_nav", "hsl(160, 84%, 44%)", false);
+}
+
+function wireMoreshwarV31Controls() {
+  const buttons = document.querySelectorAll("[data-m31-action]");
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const action = btn.getAttribute("data-m31-action");
+      const bannerEl = document.getElementById("mv31BannerStatus");
+      try {
+        const res = await fetch("/api/m3_1/control", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action }),
+        });
+        const data = await res.json();
+        if (data.dashboard) {
+          appState.moreshwarV31 = data.dashboard;
+          renderMoreshwarV31Dashboard();
+        }
+        if (bannerEl) {
+          bannerEl.innerHTML = `<strong>PAPER TRADING ONLY — LIVE TRADING DISABLED:</strong> Action <code>${action}</code> → <strong>${data.status || res.status}</strong>`;
+        }
+      } catch (err) {
+        if (bannerEl) {
+          bannerEl.innerHTML = `<strong>PAPER TRADING ONLY — LIVE TRADING DISABLED:</strong> Control request error: ${err.message}`;
+        }
+      }
+    });
+  });
+
+  if (!appState.moreshwarV31) {
+    fetch("/api/m3_1/dashboard", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((payload) => {
+        if (payload && payload.prospective_paper_trading) {
+          appState.moreshwarV31 = payload;
+          renderMoreshwarV31Dashboard();
+        }
+      })
+      .catch(() => {});
+  }
 }
 
 if (document.readyState === "loading") {

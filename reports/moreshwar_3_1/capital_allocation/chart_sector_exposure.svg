@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420">
+<rect width="100%" height="100%" fill="#0f172a" rx="10"/>
+<text x="78" y="28" fill="#f8fafc" font-family="sans-serif" font-size="16" font-weight="bold">6. Moreshwar 3.1 (Exp I) Average Active Tactical Sector Exposure (% NAV)</text>
+<text x="78" y="47" fill="#94a3b8" font-family="sans-serif" font-size="11">4-Tier Hierarchy reduced Unclassified equities from 2,085 (73.6%) to 895 (31.6%)</text>
+<line x1="78" y1="315.0" x2="950" y2="315.0" stroke="#1e293b" stroke-width="1"/>
+<text x="70" y="319.0" text-anchor="end" fill="#94a3b8" font-family="sans-serif" font-size="10">0.0%</text>
+<line x1="78" y1="251.8" x2="950" y2="251.8" stroke="#1e293b" stroke-width="1"/>
+<text x="70" y="255.8" text-anchor="end" fill="#94a3b8" font-family="sans-serif" font-size="10">3.5%</text>
+<line x1="78" y1="188.5" x2="950" y2="188.5" stroke="#1e293b" stroke-width="1"/>
+<text x="70" y="192.5" text-anchor="end" fill="#94a3b8" font-family="sans-serif" font-size="10">7.1%</text>
+<line x1="78" y1="125.2" x2="950" y2="125.2" stroke="#1e293b" stroke-width="1"/>
+<text x="70" y="129.2" text-anchor="end" fill="#94a3b8" font-family="sans-serif" font-size="10">10.6%</text>
+<line x1="78" y1="62.0" x2="950" y2="62.0" stroke="#1e293b" stroke-width="1"/>
+<text x="70" y="66.0" text-anchor="end" fill="#94a3b8" font-family="sans-serif" font-size="10">14.1%</text>
+<line x1="78" y1="315.0" x2="950" y2="315.0" stroke="#64748b" stroke-width="1.2"/>
+<rect x="93.3" y="95.0" width="56.7" height="220.0" fill="#38bdf8" rx="3"/>
+<text x="121.6" y="89.0" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+12.3%</text>
+<text x="121.6" y="331" text-anchor="end" transform="rotate(-28 121.6 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Fast Moving Consumer G</text>
+<rect x="180.5" y="154.4" width="56.7" height="160.6" fill="#38bdf8" rx="3"/>
+<text x="208.8" y="148.4" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+9.0%</text>
+<text x="208.8" y="331" text-anchor="end" transform="rotate(-28 208.8 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Power</text>
+<rect x="267.7" y="157.5" width="56.7" height="157.5" fill="#38bdf8" rx="3"/>
+<text x="296.0" y="151.5" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+8.8%</text>
+<text x="296.0" y="331" text-anchor="end" transform="rotate(-28 296.0 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Information Technology</text>
+<rect x="354.9" y="181.6" width="56.7" height="133.4" fill="#38bdf8" rx="3"/>
+<text x="383.2" y="175.6" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+7.5%</text>
+<text x="383.2" y="331" text-anchor="end" transform="rotate(-28 383.2 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Financial Services</text>
+<rect x="442.1" y="187.9" width="56.7" height="127.1" fill="#38bdf8" rx="3"/>
+<text x="470.4" y="181.9" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+7.1%</text>
+<text x="470.4" y="331" text-anchor="end" transform="rotate(-28 470.4 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Oil Gas & Consumable F</text>
+<rect x="529.3" y="202.0" width="56.7" height="113.0" fill="#f59e0b" rx="3"/>
+<text x="557.6" y="196.0" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+6.3%</text>
+<text x="557.6" y="331" text-anchor="end" transform="rotate(-28 557.6 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">UNKNOWN_SECTOR</text>
+<rect x="616.5" y="206.9" width="56.7" height="108.1" fill="#38bdf8" rx="3"/>
+<text x="644.8" y="200.9" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+6.0%</text>
+<text x="644.8" y="331" text-anchor="end" transform="rotate(-28 644.8 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Metals & Mining</text>
+<rect x="703.7" y="207.4" width="56.7" height="107.6" fill="#38bdf8" rx="3"/>
+<text x="732.0" y="201.4" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+6.0%</text>
+<text x="732.0" y="331" text-anchor="end" transform="rotate(-28 732.0 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Automobile and Auto Co</text>
+<rect x="790.9" y="210.6" width="56.7" height="104.4" fill="#38bdf8" rx="3"/>
+<text x="819.2" y="204.6" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+5.8%</text>
+<text x="819.2" y="331" text-anchor="end" transform="rotate(-28 819.2 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Healthcare</text>
+<rect x="878.1" y="220.3" width="56.7" height="94.7" fill="#38bdf8" rx="3"/>
+<text x="906.4" y="214.3" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="bold">+5.3%</text>
+<text x="906.4" y="331" text-anchor="end" transform="rotate(-28 906.4 331)" fill="#cbd5e1" font-family="sans-serif" font-size="10">Consumer Services</text>
+<text x="16" y="188.5" transform="rotate(-90 16 188.5)" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">Avg Tactical Exposure (% NAV)</text>
+</svg>

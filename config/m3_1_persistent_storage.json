@@ -1,0 +1,38 @@
+{
+  "schema_version": "m3_1_persistent_storage_config_v1",
+  "release_version": "3.1.0-rc1",
+  "authoritative_storage_policy": {
+    "ephemeral_runner_filesystem_permitted": false,
+    "github_actions_cache_permitted": false,
+    "github_artifacts_as_authoritative_ledger_permitted": false,
+    "github_artifacts_role": "DAILY_REPORTS_AND_DIAGNOSTICS_ONLY",
+    "preferred_external_backend": "EXTERNAL_POSTGRESQL",
+    "external_connection_env_var": "M31_DATABASE_URL",
+    "fallback_durable_backend": "DURABLE_GIT_LEDGER",
+    "local_ledger_path": "data/m3_1_paper_trading/prospective_paper_ledger.db",
+    "prospective_universe_path": "data/m3_1_paper_trading/nse_prospective_universe.json",
+    "reports_directory": "reports/moreshwar_3_1/prospective_paper_trading"
+  },
+  "database_locking": {
+    "sqlite_lock_table": "distributed_execution_locks",
+    "postgres_advisory_lock_key": 31031031,
+    "lock_name": "m3_1_daily_paper_session",
+    "lease_ttl_seconds": 1800,
+    "reject_overlapping_runs": true,
+    "enter_safe_mode_on_stale_crash_lock": true
+  },
+  "reconnection_and_integrity": {
+    "max_connect_retries": 3,
+    "retry_backoff_seconds": 2.0,
+    "verify_sha256_on_download": true,
+    "verify_sqlite_integrity_check": true,
+    "verify_append_only_audit_chain": true,
+    "reconciliation_tolerance_inr": 0.01
+  },
+  "safety_invariants": {
+    "live_trading_enabled": false,
+    "broker_order_placement_enabled": false,
+    "automatic_capital_deployment_enabled": false,
+    "redact_credentials_in_logs": true
+  }
+}

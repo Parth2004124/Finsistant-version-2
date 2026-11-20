@@ -1,0 +1,146 @@
+{
+  "schema_version": "moreshwar_3_1_prospective_paper_v1",
+  "frozen_at_utc": "2026-11-20T05:03:18.563365+00:00",
+  "git_commit_sha": "e6af98fa70a83bc2d9bdfddde4bb3142a1e1ed3b",
+  "dataset_snapshot": "data/m3_universe/nse_pit_universe.db (2021-01-01 -> 2026-11-19, 1454 sessions)",
+  "live_trading_enabled": false,
+  "broker_order_placement_enabled": false,
+  "automatic_capital_deployment_enabled": false,
+  "prospective_validation_status": "INITIALIZED_ZERO_PROSPECTIVE_OBSERVATIONS_YET",
+  "selected_policy_id": "G_SIMPLE_TREND_BASELINE",
+  "selected_policy_name": "G. Simple Trend Baseline (NIFTYBEES >= SMA200: 60/30/10 else 45/10/45)",
+  "adaptive_override_accepted": true,
+  "selection_rationale": "Retained G_SIMPLE_TREND_BASELINE because adaptive policy improved both outer Sharpe and drawdown cleanly.",
+  "execution_config": {
+    "config_id": "EXP_E_COMBINED_EXEC_INTEL",
+    "config_name": "Exp E (FIXED 60/30/10, Core + Fam E) + Combined Execution Intelligence",
+    "core_target_pct": 60.0,
+    "tactical_target_pct": 30.0,
+    "liquid_target_pct": 10.0,
+    "allocation_mode": "FIXED",
+    "active_sleeves": [
+      "STRAT_E_DEFENSIVE_YIELD_LOWVOL"
+    ],
+    "sleeve_weights": [
+      [
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+        1.0
+      ]
+    ],
+    "hurdle_mode": "FIXED_200",
+    "replacement_policy": "NO_PROACTIVE_ROTATION",
+    "min_replacement_edge_bps": 999.0,
+    "min_hold_days_before_rotate": 999,
+    "protect_winner_pct": 0.0,
+    "stop_model": "C_VOL_ADJUSTED_TRAILING",
+    "execution_mode": "NEXT_SESSION_OPEN",
+    "sizing_mode": "B_VOLATILITY_ADJUSTED",
+    "event_driven_replenishment": true,
+    "periodic_review_interval_days": 20,
+    "replenish_min_gap_days": 2,
+    "sweep_unused_tactical_to_core": true,
+    "core_rebal_band_pct": 8.5,
+    "liquid_sweep_min_cash_inr": 5000.0,
+    "min_core_trade_inr": 3500.0,
+    "max_tactical_positions": 6,
+    "max_single_stock_pct": 15.0,
+    "min_tactical_lot_inr": 6500.0,
+    "max_sector_exposure_pct": 28.0,
+    "max_sector_positions": 2,
+    "max_industry_exposure_pct": 20.0,
+    "max_unknown_sector_exposure_pct": 22.0,
+    "max_pairwise_corr": 0.72,
+    "target_portfolio_vol_pct": 13.5,
+    "max_daily_vol_participation": 0.01,
+    "settlement_lag_days": 1,
+    "slippage_override_bps": null,
+    "hold_max_days": 120,
+    "cooldown_days": 10,
+    "enable_dividend_accounting": true
+  },
+  "regime_policy": {
+    "policy_id": "G_SIMPLE_TREND_BASELINE",
+    "policy_name": "G. Simple Trend Baseline (NIFTYBEES >= SMA200: 60/30/10 else 45/10/45)",
+    "regime_source": "SIMPLE_TREND",
+    "regime_rules": [
+      [
+        "BULL_TREND",
+        60.0,
+        30.0,
+        10.0,
+        true,
+        0.0,
+        1.0
+      ],
+      [
+        "BEAR_TREND",
+        45.0,
+        10.0,
+        45.0,
+        false,
+        80.0,
+        0.7
+      ]
+    ],
+    "allocation_confirm_days": 3
+  },
+  "tariff_schedule": {
+    "schedule_version": "m3_1_india_statutory_2021_2026_v1",
+    "oct_2024_effective_date": "2024-10-01",
+    "delivery_brokerage_mode": "ZERODHA_FREE",
+    "delivery_stt_buy": 0.001,
+    "delivery_stt_sell": 0.001,
+    "delivery_stamp_buy": 0.00015,
+    "equity_etf_stt_buy": 0.0,
+    "equity_etf_stt_sell": 1e-05,
+    "equity_etf_stamp_buy": 0.00015,
+    "equity_etf_tracking_diff_annual_bps": 5.0,
+    "liquid_etf_stt_buy": 0.0,
+    "liquid_etf_stt_sell": 0.0,
+    "liquid_etf_stamp_buy": 5e-05,
+    "liquid_etf_ter_annual_bps": 65.0,
+    "nse_cm_exch_pre_202410": 3.25e-05,
+    "nse_cm_exch_post_202410": 2.97e-05,
+    "sebi_fee_rate": 1e-06,
+    "gst_rate": 0.18,
+    "dp_charge_pre_202410_inr": 15.93,
+    "dp_charge_post_202410_inr": 15.34,
+    "equity_base_half_spread_bps": 4.0,
+    "equity_etf_half_spread_bps": 2.5,
+    "liquid_etf_half_spread_bps": 1.25,
+    "impact_eta_equity": 0.25,
+    "impact_eta_etf": 0.1
+  },
+  "monitoring_thresholds": {
+    "vol_expansion_ratio_warn": 1.45,
+    "vol_pctile_warn": 0.9,
+    "breadth_pct_warn": 35.0,
+    "breadth_delta_warn_pp": -15.0,
+    "normal_dd_watch_pct": 12.0,
+    "unexpected_dd_warn_pct": 16.0,
+    "unexpected_dd_suspend_pct": 21.0,
+    "min_trades_for_pf_eval": 15,
+    "rolling_pf_warn": 0.95,
+    "rolling_pf_suspend": 0.7,
+    "max_annual_turnover_warn_x": 10.0,
+    "max_cost_pct_gross_warn": 12.0,
+    "max_sector_conc_warn_pct": 28.0,
+    "excess_cash_warn_pct": 12.0,
+    "excess_cash_consecutive_days": 5,
+    "max_regime_flips_20d_warn": 4
+  },
+  "admitted_tactical_strategies": [
+    "STRAT_E_DEFENSIVE_YIELD_LOWVOL"
+  ],
+  "suspended_strategies": [
+    "STRAT_A_CS_MOMENTUM"
+  ],
+  "prospective_logging_requirements": [
+    "Log every daily regime feature vector, classification label, and confidence score before next-session open.",
+    "Log every candidate Family E signal, pre-trade economic value estimate, hurdle pass/reject decision, and rejection code.",
+    "Log every hypothetical fill, statutory/DP/slippage cost, cash dividend, and daily NAV reconciliation diff.",
+    "Log aligned 100% NIFTYBEES and 45/55 NIFTYBEES/LIQUIDBEES benchmark NAVs on identical prospective dates.",
+    "Freeze all parameters strictly during the prospective observation period (minimum 60-120 trading sessions)."
+  ],
+  "config_sha256_prefix": "47a30f4bbd004c5f"
+}

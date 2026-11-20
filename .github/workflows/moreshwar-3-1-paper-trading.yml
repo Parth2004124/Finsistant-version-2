@@ -1,0 +1,189 @@
+name: Moreshwar 3.1 — Daily Prospective Paper Trading (Paper-Only)
+
+on:
+  schedule:
+    # Asia/Kolkata (IST = UTC+05:30); NSE closes at 15:30 IST (10:00 UTC)
+    # 17:00 IST (11:30 UTC) — primary post-close daily EOD run
+    - cron: "30 11 * * 1-5"
+    # 18:00 IST (12:30 UTC) — idempotent retry if NSE EOD feed was delayed
+    - cron: "30 12 * * 1-5"
+    # 19:00 IST (13:30 UTC) — final idempotent retry for delayed EOD availability
+    - cron: "30 13 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Operational command (paper-only)"
+        required: true
+        default: "run-session"
+        type: choice
+        options:
+          - run-session
+          - verify
+          - reconcile
+          - recover
+      trading_date:
+        description: "NSE trading date YYYY-MM-DD or 'auto' (today in Asia/Kolkata)"
+        required: false
+        default: "auto"
+        type: string
+      mark_missed_if_unavailable:
+        description: "Record session as MISSED if completed post-close data is unavailable"
+        required: false
+        default: false
+        type: boolean
+      recovery_note:
+        description: "Audit note (used only when mode=recover)"
+        required: false
+        default: "manual_workflow_validated_recovery"
+        type: string
+
+# Single-flight execution: NEVER cancel an active portfolio-processing run!
+concurrency:
+  group: moreshwar-3-1-prospective-paper-trading
+  cancel-in-progress: false
+
+# Least-privilege default: deny all permissions at workflow scope
+permissions: {}
+
+env:
+  TZ: Asia/Kolkata
+  LIVE_TRADING_ENABLED: "false"
+  BROKER_ORDER_PLACEMENT_ENABLED: "false"
+  AUTOMATIC_CAPITAL_DEPLOYMENT_ENABLED: "false"
+
+jobs:
+  prospective-paper-trading:
+    name: Daily Prospective Paper Session (Paper-Only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout repository (immutable SHA)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11 (immutable SHA)
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Install minimal runtime dependencies (no broker SDKs)
+        run: |
+          python3 -m pip install --quiet --upgrade pip
+          python3 -m pip install --quiet numpy pandas yfinance python-dotenv pyotp "psycopg[binary]"
+
+      - name: Pre-run frozen configuration, safety & persistence verification
+        env:
+          M31_DATABASE_URL: ${{ secrets.M31_DATABASE_URL }}
+        run: |
+          python3 scripts/moreshwar_3_1_paper_ops.py verify
+
+      - name: Execute paper-only daily workflow command
+        id: execute_paper
+        env:
+          M31_DATABASE_URL: ${{ secrets.M31_DATABASE_URL }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          WORKFLOW_MODE: ${{ github.event.inputs.mode || 'run-session' }}
+          TRADING_DATE: ${{ github.event.inputs.trading_date || 'auto' }}
+          MARK_MISSED: ${{ github.event.inputs.mark_missed_if_unavailable || 'false' }}
+          RECOVERY_NOTE: ${{ github.event.inputs.recovery_note || 'manual_workflow_validated_recovery' }}
+        run: |
+          set -euo pipefail
+          if [ "$WORKFLOW_MODE" = "verify" ]; then
+            python3 scripts/moreshwar_3_1_paper_ops.py status
+          elif [ "$WORKFLOW_MODE" = "reconcile" ]; then
+            python3 scripts/moreshwar_3_1_paper_ops.py reconcile
+          elif [ "$WORKFLOW_MODE" = "recover" ]; then
+            python3 scripts/moreshwar_3_1_paper_ops.py recover --note "$RECOVERY_NOTE"
+          else
+            EXTRA_FLAG=""
+            if [ "$MARK_MISSED" = "true" ]; then
+              EXTRA_FLAG="--mark-missed"
+            fi
+            python3 scripts/moreshwar_3_1_paper_ops.py run-session \
+              --date "$TRADING_DATE" \
+              --fetch-live-eod \
+              --run-id "gha-${GITHUB_RUN_ID}" \
+              $EXTRA_FLAG
+          fi
+
+      - name: Post-run four-ledger reconciliation & audit-chain verification
+        env:
+          M31_DATABASE_URL: ${{ secrets.M31_DATABASE_URL }}
+        run: |
+          python3 scripts/moreshwar_3_1_paper_ops.py reconcile
+
+      - name: Publish sanitized daily summary to GitHub Step Summary
+        if: always()
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          rep_dir = Path("reports/moreshwar_3_1/prospective_paper_trading")
+          daily = json.loads((rep_dir / "paper_trading_daily_report.json").read_text()) if (rep_dir / "paper_trading_daily_report.json").exists() else {}
+          prog = json.loads((rep_dir / "prospective_validation_progress.json").read_text()) if (rep_dir / "prospective_validation_progress.json").exists() else {}
+          alerts = json.loads((rep_dir / "risk_alerts.json").read_text()) if (rep_dir / "risk_alerts.json").exists() else {}
+
+          print("## Moreshwar 3.1 — Daily Prospective Paper-Trading Report")
+          print("")
+          print("> **PAPER TRADING ONLY — LIVE TRADING: DISABLED · BROKER ORDERS: DISABLED · AUTO CAPITAL DEPLOYMENT: DISABLED**")
+          print("")
+          print(f"- **Trading Date:** `{daily.get('trading_date', 'N/A')}`")
+          print(f"- **Engine Status:** `{daily.get('engine_status', 'N/A')}`")
+          print(f"- **Config SHA256 Prefix:** `{str(daily.get('configuration_sha256', ''))[:16]}`")
+          print(f"- **Current Paper NAV:** `INR {daily.get('portfolio_nav', {}).get('current_nav_inr', 100000.0):,.2f}`")
+          print(f"- **Reconciliation Diff:** `INR {daily.get('reconciliation_result', {}).get('reconciliation_diff_inr', 0.0):.4f}` (Passed: `{daily.get('reconciliation_result', {}).get('passed', False)}`)")
+          print(f"- **Prospective Validation Progress:** `{prog.get('completed_unseen_sessions', 0)} / {prog.get('minimum_required_sessions', 60)}` min (`{prog.get('completed_unseen_sessions', 0)} / {prog.get('target_sessions', 120)}` target)")
+          print(f"- **Risk Health / Alerts:** `{alerts.get('overall_health', 'N/A')}` (`{alerts.get('alert_counts', {})}`)")
+          PY
+
+      - name: Upload daily reports & diagnostics as GitHub Artifacts (non-authoritative diagnostics only)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: moreshwar-3-1-daily-reports-${{ github.run_id }}
+          path: reports/moreshwar_3_1/prospective_paper_trading/
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Persist updated daily snapshots, audit trail & durable paper ledger
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            data/m3_1_paper_trading/prospective_paper_ledger.db \
+            data/m3_1_paper_trading/scheduler_status.json \
+            reports/moreshwar_3_1/prospective_paper_trading/
+          if git diff --staged --quiet; then
+            echo "No prospective paper-trading state or report changes to commit."
+          else
+            git commit -m "chore(m3.1-paper): persist daily prospective paper-trading state and audit reports"
+            git push
+          fi
+
+      - name: Failure notification (sanitized GitHub Issue + optional webhook)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          M31_ALERT_WEBHOOK_URL: ${{ secrets.M31_ALERT_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          TITLE="[Moreshwar 3.1 Paper Trading] Daily Workflow Failure / Safe-Mode Alert"
+          BODY="Automated Moreshwar 3.1 prospective paper-trading workflow failed on run ${RUN_URL}. Last valid durable portfolio state was preserved and SAFE_MODE recovery verification is required before resuming entries. (Live trading remains permanently DISABLED.)"
+          EXISTING=$(gh issue list --state open --search "in:title \"${TITLE}\"" --json number --jq '.[0].number // empty' || true)
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY" || true
+          else
+            gh issue create --title "$TITLE" --body "$BODY" || true
+          fi
+          if [ -n "${M31_ALERT_WEBHOOK_URL:-}" ]; then
+            curl -fsS -X POST -H "Content-Type: application/json" \
+              -d "{\"text\": \"Moreshwar 3.1 Paper-Trading Alert: workflow run failed (${RUN_URL}). Last valid state preserved; live trading disabled.\"}" \
+              "$M31_ALERT_WEBHOOK_URL" >/dev/null || true
+          fi

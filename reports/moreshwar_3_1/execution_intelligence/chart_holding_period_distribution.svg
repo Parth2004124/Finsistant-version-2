@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="400" viewBox="0 0 920 400">
+<rect width="920" height="400" fill="#ffffff"/>
+<text x="74" y="26" font-family="DejaVu Sans,Arial" font-size="15" font-weight="bold" fill="#0f172a">4. Tactical Holding-Period Distribution — EXP_E_COMBINED_EXEC_INTEL</text>
+<text x="74" y="44" font-family="DejaVu Sans,Arial" font-size="11" fill="#475569">Mean Hold: 60.2 sessions (Winner retention &amp; hysteresis prevent premature churn)</text>
+<line x1="74" y1="318.0" x2="896" y2="318.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66" y="322.0" text-anchor="end" font-family="DejaVu Sans,Arial" font-size="10" fill="#64748b">0.0</text>
+<line x1="74" y1="254.0" x2="896" y2="254.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66" y="258.0" text-anchor="end" font-family="DejaVu Sans,Arial" font-size="10" fill="#64748b">5.2</text>
+<line x1="74" y1="190.0" x2="896" y2="190.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66" y="194.0" text-anchor="end" font-family="DejaVu Sans,Arial" font-size="10" fill="#64748b">10.4</text>
+<line x1="74" y1="126.0" x2="896" y2="126.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66" y="130.0" text-anchor="end" font-family="DejaVu Sans,Arial" font-size="10" fill="#64748b">15.7</text>
+<line x1="74" y1="62.0" x2="896" y2="62.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66" y="66.0" text-anchor="end" font-family="DejaVu Sans,Arial" font-size="10" fill="#64748b">20.9</text>
+<line x1="74" y1="318.0" x2="896" y2="318.0" stroke="#64748b" stroke-width="1.2"/>
+<text x="16" y="190.0" transform="rotate(-90 16 190.0)" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="11" fill="#334155">Number of Trades</text>
+<rect x="123.5" y="269.0" width="36.0" height="49.0" fill="#7c3aed" rx="2"/>
+<text x="141.5" y="265.0" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="9" fill="#0f172a">4.0</text>
+<text x="142.5" y="354" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="10" fill="#334155">1-10d</text>
+<rect x="260.5" y="256.8" width="36.0" height="61.2" fill="#7c3aed" rx="2"/>
+<text x="278.5" y="252.8" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="9" fill="#0f172a">5.0</text>
+<text x="279.5" y="354" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="10" fill="#334155">11-20d</text>
+<rect x="397.5" y="85.3" width="36.0" height="232.7" fill="#7c3aed" rx="2"/>
+<text x="415.5" y="81.3" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="9" fill="#0f172a">19.0</text>
+<text x="416.5" y="354" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="10" fill="#334155">21-40d</text>
+<rect x="534.5" y="134.3" width="36.0" height="183.7" fill="#7c3aed" rx="2"/>
+<text x="552.5" y="130.3" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="9" fill="#0f172a">15.0</text>
+<text x="553.5" y="354" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="10" fill="#334155">41-60d</text>
+<rect x="671.5" y="158.8" width="36.0" height="159.2" fill="#7c3aed" rx="2"/>
+<text x="689.5" y="154.8" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="9" fill="#0f172a">13.0</text>
+<text x="690.5" y="354" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="10" fill="#334155">61-90d</text>
+<rect x="808.5" y="85.3" width="36.0" height="232.7" fill="#7c3aed" rx="2"/>
+<text x="826.5" y="81.3" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="9" fill="#0f172a">19.0</text>
+<text x="827.5" y="354" text-anchor="middle" font-family="DejaVu Sans,Arial" font-size="10" fill="#334155">91-120d</text>
+<rect x="74" y="378" width="12" height="10" fill="#7c3aed" rx="2"/>
+<text x="90" y="387" font-family="DejaVu Sans,Arial" font-size="10" fill="#1e293b">Holding Period Bucket</text>
+</svg>

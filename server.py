@@ -51,6 +51,12 @@ from finsistant_v2 import (
 )
 from finsistant_v2.audit_ledger import DEFAULT_LEDGER_PATH
 from finsistant_v2.kite_auth import write_daily_token_file
+from finsistant_v2.m3_1.paper_trading_orchestrator import PaperTradingOrchestrator
+from finsistant_v2.m3_1.paper_trading_scheduler import PaperTradingScheduler
+from finsistant_v2.m3_1.prospective_paper_trading_engine import (
+    ConfigIntegrityError,
+    PaperTradingSafetyError,
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = BASE_DIR / "web"
@@ -78,6 +84,8 @@ MORESHWAR_V2_RESEARCH: dict[str, Any] = {}
 MORESHWAR_V2_1_RESEARCH: dict[str, Any] = {}
 MORESHWAR_V2_2_RESEARCH: dict[str, Any] = {}
 MORESHWAR_V3_RESEARCH: dict[str, Any] = {}
+M3_1_ORCHESTRATOR: PaperTradingOrchestrator | None = None
+M3_1_SCHEDULER: PaperTradingScheduler | None = None
 AUDIT_LEDGER_CACHE: dict[str, Any] = {}
 PROVENANCE_CACHE: dict[str, Any] = {}
 AUTO_RULES: list[dict[str, Any]] = [
@@ -88,6 +96,34 @@ AUTO_RULES: list[dict[str, Any]] = [
 CASH_BALANCE: float = 0.0
 KITE_STATUS: str = "0 holdings (Kite access token not configured)"
 LAST_SCAN_AT: str = ""
+
+
+def _get_m3_1_runtime() -> tuple[PaperTradingOrchestrator, PaperTradingScheduler]:
+    """Lazily initialize the paper-only Moreshwar 3.1 orchestrator & scheduler."""
+    global M3_1_ORCHESTRATOR, M3_1_SCHEDULER
+    if M3_1_ORCHESTRATOR is None:
+        M3_1_ORCHESTRATOR = PaperTradingOrchestrator()
+    if M3_1_SCHEDULER is None:
+        M3_1_SCHEDULER = PaperTradingScheduler(orchestrator=M3_1_ORCHESTRATOR)
+    return M3_1_ORCHESTRATOR, M3_1_SCHEDULER
+
+
+def _get_m3_1_dashboard_payload() -> dict[str, Any]:
+    try:
+        orch, sched = _get_m3_1_runtime()
+        return orch.build_dashboard_payload(scheduler_status=sched.get_status())
+    except Exception as exc:
+        return {
+            "release_version": "3.1.0-rc1",
+            "banner": "PAPER TRADING ONLY — LIVE TRADING DISABLED",
+            "error": str(exc),
+            "safety_posture": {
+                "paper_trading_only": True,
+                "live_trading_enabled": False,
+                "broker_order_placement_enabled": False,
+                "automatic_capital_deployment_enabled": False,
+            },
+        }
 
 
 def _load_extra_watchlist_symbols() -> list[str]:
@@ -575,6 +611,7 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "moreshwar_v2_1_research": MORESHWAR_V2_1_RESEARCH,
         "moreshwar_v2_2_research": MORESHWAR_V2_2_RESEARCH,
         "moreshwar_v3_research": MORESHWAR_V3_RESEARCH,
+        "moreshwar_v3_1": _get_m3_1_dashboard_payload(),
         "audit_trail": build_audit_dashboard_view(AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)),
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,
@@ -664,6 +701,23 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(MORESHWAR_V3_RESEARCH or {"status": "unavailable"})
+            return
+        if path == "/api/m3_1/dashboard":
+            self._send_json(_get_m3_1_dashboard_payload())
+            return
+        if path == "/api/m3_1/reports":
+            try:
+                orch, sched = _get_m3_1_runtime()
+                paths = orch.export_all_daily_reports()
+                self._send_json({
+                    "status": "OK",
+                    "paper_only": True,
+                    "live_trading_enabled": False,
+                    "report_paths": paths,
+                    "dashboard": orch.build_dashboard_payload(scheduler_status=sched.get_status()),
+                })
+            except Exception as exc:
+                self._send_json({"error": str(exc)}, status=500)
             return
         if path == "/api/audit":
             ledger = AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)
@@ -1000,6 +1054,40 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
                     "health": runner.health_check(),
                 }
             )
+            return
+
+        if path == "/api/m3_1/control":
+            action = str(body.get("action", "")).strip()
+            try:
+                orch, sched = _get_m3_1_runtime()
+                res = orch.execute_paper_control(action, payload=body)
+                self._send_json(
+                    {
+                        **res,
+                        "live_trading_enabled": False,
+                        "broker_order_placement_enabled": False,
+                        "automatic_capital_deployment_enabled": False,
+                        "dashboard": orch.build_dashboard_payload(scheduler_status=sched.get_status()),
+                    },
+                    status=200,
+                )
+            except PaperTradingSafetyError as exc:
+                self._send_json(
+                    {
+                        "status": "BLOCKED",
+                        "error": str(exc),
+                        "live_trading_enabled": False,
+                        "broker_order_placement_enabled": False,
+                        "automatic_capital_deployment_enabled": False,
+                    },
+                    status=403,
+                )
+            except ConfigIntegrityError as exc:
+                self._send_json({"status": "CONFIG_INTEGRITY_ERROR", "error": str(exc)}, status=409)
+            except ValueError as exc:
+                self._send_json({"status": "BAD_REQUEST", "error": str(exc)}, status=400)
+            except Exception as exc:
+                self._send_json({"status": "ERROR", "error": str(exc)}, status=500)
             return
 
         self.send_error(404, "Not Found")

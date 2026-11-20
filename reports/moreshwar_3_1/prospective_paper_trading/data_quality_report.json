@@ -1,0 +1,20 @@
+{
+  "trading_date": "2026-11-19",
+  "checked_at_utc": "2026-11-20T09:17:53.035041+00:00",
+  "overall_status": "PARTIAL_DIAGNOSTIC_ONLY",
+  "niftybees_valid": true,
+  "liquidbees_valid": true,
+  "diagnostic_index_bars_available": false,
+  "known_boundaries": {
+    "historical_daily_bars_coverage": "2021-01-01 -> 2026-11-19 (1,454 sessions)",
+    "diagnostic_index_bars_end_date": "2025-10-10",
+    "intraday_tick_minute_data": "UNAVAILABLE",
+    "pit_macro_timestamps": "UNAVAILABLE",
+    "corporate_earnings_financials": "UNAVAILABLE"
+  },
+  "issues": [],
+  "warnings": [
+    "Awaiting first prospective NSE session after 2026-11-19; daily_index_bars ends 2025-10-10 (diagnostic-only)."
+  ],
+  "summary": "Initialized cleanly; awaiting unseen prospective daily market bars."
+}
