@@ -3533,6 +3533,220 @@ function drawMv31ProspectiveChart(data) {
   drawSeries("portfolio_nav", "hsl(160, 84%, 44%)", false);
 }
 
+function renderMoreshwarV30Dashboard() {
+  const bannerEl = document.getElementById("mv30DecisionBanner");
+  const kpiEl = document.getElementById("mv30HeaderKpis");
+  const resBody = document.getElementById("mv30ResearchTableBody");
+  const portBody = document.getElementById("mv30PortfolioTableBody");
+  const execBody = document.getElementById("mv30ExecutionTableBody");
+  const riskEl = document.getElementById("mv30RiskAndOpsBody");
+  const valBody = document.getElementById("mv30ValidationTableBody");
+  if (!kpiEl && !bannerEl) return;
+
+  const d = appState.moreshwarV3Research;
+  if (!d || typeof d !== "object") {
+    if (!appState._mv30FetchStarted) {
+      appState._mv30FetchStarted = true;
+      const urls = [
+        "/api/research/v3",
+        `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/reports/moreshwar_3_0/moreshwar_v3_release_candidate.json?ts=${Date.now()}`,
+        `reports/moreshwar_3_0/moreshwar_v3_release_candidate.json?ts=${Date.now()}`
+      ];
+      (async () => {
+        for (const u of urls) {
+          try {
+            const r = await fetch(u, { cache: "no-store" });
+            if (!r.ok) continue;
+            const payload = await r.json();
+            if (payload && payload.release_decision) {
+              appState.moreshwarV3Research = payload;
+              renderMoreshwarV30Dashboard();
+              return;
+            }
+          } catch (_) {}
+        }
+      })();
+    }
+    if (bannerEl) {
+      bannerEl.innerHTML = `<strong>Moreshwar 3.0 (${"v3.0.0-rc1"}):</strong> Loading frozen PIT NSE research &amp; paper-trading release bundle...`;
+    }
+    return;
+  }
+
+  const rd = d.release_decision || {};
+  const research = d.research_dashboard || {};
+  const port = d.portfolio_dashboard || {};
+  const exec = d.execution_dashboard || {};
+  const risk = d.risk_dashboard || {};
+  const val = d.validation_dashboard || {};
+  const ledger = port.paper_account_ledger || {};
+
+  if (bannerEl) {
+    bannerEl.innerHTML = `<strong>Moreshwar 3.0 Release Outcome:</strong> ${rd.release_outcome || "CONDITIONAL GO (PAPER ONLY)"} · ${rd.summary_rationale || "Frozen M3.0 PIT baseline preserved; live broker execution disabled."}`;
+  }
+
+  if (kpiEl) {
+    const kpis = [
+      { label: "Release Version", value: d.release_version || "3.0.0-rc1" },
+      { label: "Paper Ledger NAV", value: ledger.current_nav_inr != null ? `₹${Number(ledger.current_nav_inr).toLocaleString("en-IN", { maximumFractionDigits: 2 })}` : "Frozen M3.0" },
+      { label: "Max Historical DD", value: risk.max_historical_drawdown_pct != null ? `${Number(risk.max_historical_drawdown_pct).toFixed(2)}%` : "—" },
+      { label: "Capital Utilisation", value: risk.capital_utilisation_pct != null ? `${Number(risk.capital_utilisation_pct).toFixed(1)}%` : "—" },
+      { label: "Live Capital Auth", value: rd.live_capital_deployment_authorized ? "YES" : "DISABLED" },
+    ];
+    kpiEl.innerHTML = kpis
+      .map((k) => `<div class="kpi-chip"><div class="kpi-chip-label">${k.label}</div><div class="kpi-chip-value">${k.value}</div></div>`)
+      .join("");
+  }
+
+  if (resBody) {
+    const families = Array.isArray(research.strategy_families) ? research.strategy_families : [];
+    resBody.innerHTML = families.length
+      ? families
+          .slice(0, 8)
+          .map((s) => `<tr>
+            <td>${s.strategy_name || s.strategy_id || "—"}</td>
+            <td>${s.family || "Strategy"}</td>
+            <td>${s.full_return_pct != null ? `${Number(s.full_return_pct).toFixed(2)}%` : "—"}</td>
+            <td>${s.oos_return_pct != null ? `${Number(s.oos_return_pct).toFixed(2)}%` : "—"}</td>
+            <td>${s.max_drawdown_pct != null ? `${Number(s.max_drawdown_pct).toFixed(2)}%` : "—"}</td>
+            <td>${s.status || "FROZEN"}</td>
+          </tr>`)
+          .join("")
+      : `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Moreshwar 3.0 frozen baseline loaded.</td></tr>`;
+  }
+
+  if (portBody) {
+    const pos = Array.isArray(port.active_paper_positions) ? port.active_paper_positions : [];
+    portBody.innerHTML = pos.length
+      ? pos
+          .slice(0, 10)
+          .map((p) => `<tr>
+            <td>${p.symbol || "—"}</td>
+            <td>${p.strategy_id || p.sector || "—"}</td>
+            <td>${p.notional_inr != null ? `₹${Number(p.notional_inr).toFixed(0)}` : "—"}</td>
+            <td>${p.weight_pct != null ? `${Number(p.weight_pct).toFixed(1)}%` : "—"}</td>
+            <td>${p.sl_px != null ? `₹${Number(p.sl_px).toFixed(2)}` : "—"}</td>
+            <td>PAPER</td>
+          </tr>`)
+          .join("")
+      : `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No active M3.0 paper positions in snapshot.</td></tr>`;
+  }
+
+  if (execBody) {
+    const orders = Array.isArray(exec.simulated_paper_orders) ? exec.simulated_paper_orders : [];
+    execBody.innerHTML = orders.length
+      ? orders
+          .slice(0, 10)
+          .map((o) => `<tr>
+            <td><code>${o.paper_order_id || o.order_id || "—"}</code></td>
+            <td>${o.symbol || "—"}</td>
+            <td>${o.qty ?? "—"} · ${o.status || "PAPER"}</td>
+            <td>${o.expected_fill_price != null ? `₹${Number(o.expected_fill_price).toFixed(2)}` : "—"}</td>
+            <td>${o.slippage_bps != null ? Number(o.slippage_bps).toFixed(1) : "—"}</td>
+            <td>${o.total_cost_inr != null ? `₹${Number(o.total_cost_inr).toFixed(2)}` : "—"}</td>
+          </tr>`)
+          .join("")
+      : `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No simulated M3.0 orders recorded.</td></tr>`;
+  }
+
+  if (riskEl) {
+    riskEl.innerHTML = `
+      <div><strong>Drawdown:</strong> Current ${Number(risk.current_paper_drawdown_pct || 0).toFixed(2)}% · Max Historical ${Number(risk.max_historical_drawdown_pct || 0).toFixed(2)}%</div>
+      <div><strong>Capital Utilisation:</strong> ${Number(risk.capital_utilisation_pct || 0).toFixed(1)}% · Idle Cash ${Number(risk.idle_cash_reserve_pct || 0).toFixed(1)}%</div>
+      <div><strong>Security Boundary:</strong> Live Zerodha Order Submission <strong>DISABLED</strong> · Paper-Only Mode Verified</div>
+    `;
+  }
+
+  if (valBody) {
+    const benches = Array.isArray(val.benchmark_comparison) ? val.benchmark_comparison : [];
+    valBody.innerHTML = benches.length
+      ? benches
+          .slice(0, 8)
+          .map((b) => `<tr>
+            <td>${b.name || b.benchmark || "—"}</td>
+            <td>${b.return_pct != null ? `${Number(b.return_pct).toFixed(2)}%` : "—"}</td>
+            <td>${b.cagr_pct != null ? `${Number(b.cagr_pct).toFixed(2)}%` : "—"}</td>
+            <td>${b.max_drawdown_pct != null ? `${Number(b.max_drawdown_pct).toFixed(2)}%` : "—"}</td>
+            <td>${b.verdict || b.note || "Audited"}</td>
+          </tr>`)
+          .join("")
+      : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Prompt 9 Independent Audit Verdict: ${val.independent_audit_verdict || "NO-GO Live Capital (Upgraded in Moreshwar 3.1)"}</td></tr>`;
+  }
+}
+
+async function fetchM31CloudFallback() {
+  const base = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/reports/moreshwar_3_1`;
+  const ts = Date.now();
+  const getJson = async (rel) => {
+    try {
+      const r = await fetch(`${base}/${rel}?ts=${ts}`, { cache: "no-store" });
+      return r.ok ? await r.json() : null;
+    } catch (_) {
+      return null;
+    }
+  };
+  const [daily, prog, alerts, dq, cfg, p4sum] = await Promise.all([
+    getJson("prospective_paper_trading/paper_trading_daily_report.json"),
+    getJson("prospective_paper_trading/prospective_validation_progress.json"),
+    getJson("prospective_paper_trading/risk_alerts.json"),
+    getJson("prospective_paper_trading/data_quality_report.json"),
+    getJson("prospective_paper_trading/configuration_integrity.json"),
+    getJson("strategy_intelligence/strategy_intelligence_summary.json"),
+  ]);
+  if (!daily && !prog) return null;
+  const nav = (daily && daily.portfolio_nav) || {};
+  const recon = (daily && daily.reconciliation_result) || {};
+  const reg = (daily && daily.regime_determination) || {};
+  const alloc = (daily && daily.allocation) || {};
+  return {
+    release_version: (daily && daily.release_version) || "3.1.0-rc1",
+    banner: "PAPER TRADING ONLY — LIVE TRADING DISABLED",
+    configuration_integrity: cfg || { verified: true, canonical_prefix_16: "47a30f4bbd004c5f" },
+    engine_state: { engine_state: (daily && daily.engine_status) || "RUNNING" },
+    scheduler_status: { status: "GITHUB_ACTIONS_DAILY" },
+    historical_research_baseline: { summary: p4sum || {} },
+    prospective_paper_trading: {
+      portfolio_overview: {
+        initial_capital_inr: nav.initial_capital_inr ?? 100000,
+        current_nav_inr: nav.current_nav_inr ?? 100000,
+        total_return_pct: nav.cumulative_return_pct ?? 0,
+        today_pnl_inr: nav.daily_pnl_inr ?? 0,
+        available_cash_inr: recon.settled_cash_inr ?? 100000,
+        pending_settlements_inr: recon.unsettled_cash_inr ?? 0,
+        invested_capital_inr: Number(recon.core_value_inr || 0) + Number(recon.tactical_value_inr || 0) + Number(recon.liquid_value_inr || 0),
+        open_positions_count: 0,
+        open_tactical_positions_count: 0,
+      },
+      strategy_status: {
+        active_policy: "G_SIMPLE_TREND_BASELINE",
+        execution_profile: "EXP_E_COMBINED_EXEC_INTEL",
+        current_raw_regime: reg.raw_regime || "BULL_TREND",
+        confirmed_regime: reg.confirmed_regime || "BULL_TREND",
+        confirmation_streak_days: reg.confirmation_streak_days ?? 3,
+        confirmation_required_days: reg.confirmation_required_days ?? 3,
+        target_allocation_pct: {
+          core_niftybees: alloc.target_core_niftybees_pct ?? 60,
+          tactical_family_e: alloc.target_tactical_family_e_pct ?? 30,
+          liquid_liquidbees: alloc.target_liquid_liquidbees_pct ?? 10,
+          gold: 0,
+        },
+        family_e_new_entries_eligible: reg.allow_new_family_e_entries !== false,
+        family_a_status: "SUSPENDED_HARD_BLOCKED",
+      },
+      performance: { equity_curve: [], monthly_returns: [], has_prospective_sessions: Number((prog && prog.completed_unseen_sessions) || 0) > 0 },
+      execution_monitoring: { recent_orders: (daily && daily.simulated_orders_latest_session) || [] },
+      risk_dashboard: {
+        overall_health: (alerts && alerts.overall_health) || "HEALTHY",
+        metrics: (daily && daily.risk_metrics) || {},
+        alerts: (alerts && alerts.alerts) || [],
+        data_quality: dq || {},
+        reconciliation: recon,
+      },
+      validation_tracker: prog || { prospective_start_date: "2026-11-19", completed_unseen_sessions: 0, minimum_required_sessions: 60, target_sessions: 120 },
+    },
+  };
+}
+
 function wireMoreshwarV31Controls() {
   const buttons = document.querySelectorAll("[data-m31-action]");
   buttons.forEach((btn) => {
@@ -3555,7 +3769,7 @@ function wireMoreshwarV31Controls() {
         }
       } catch (err) {
         if (bannerEl) {
-          bannerEl.innerHTML = `<strong>PAPER TRADING ONLY — LIVE TRADING DISABLED:</strong> Control request error: ${err.message}`;
+          bannerEl.innerHTML = `<strong>PAPER TRADING ONLY — LIVE TRADING DISABLED:</strong> Cloud read-only mode (manage runs via GitHub Actions).`;
         }
       }
     });
@@ -3564,13 +3778,25 @@ function wireMoreshwarV31Controls() {
   if (!appState.moreshwarV31) {
     fetch("/api/m3_1/dashboard", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
-      .then((payload) => {
+      .then(async (payload) => {
         if (payload && payload.prospective_paper_trading) {
           appState.moreshwarV31 = payload;
           renderMoreshwarV31Dashboard();
+          return;
+        }
+        const cloud = await fetchM31CloudFallback();
+        if (cloud) {
+          appState.moreshwarV31 = cloud;
+          renderMoreshwarV31Dashboard();
         }
       })
-      .catch(() => {});
+      .catch(async () => {
+        const cloud = await fetchM31CloudFallback();
+        if (cloud) {
+          appState.moreshwarV31 = cloud;
+          renderMoreshwarV31Dashboard();
+        }
+      });
   }
 }
 

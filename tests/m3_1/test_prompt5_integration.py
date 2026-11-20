@@ -598,8 +598,8 @@ def test_9_7_dashboard_api_separation_controls_and_ui_parity(tmp_path: Path) -> 
     w_js = (root / "web" / "app.js").read_text(encoding="utf-8")
     m_js = (root / "mobile-app" / "app" / "src" / "main" / "assets" / "app.js").read_text(encoding="utf-8")
     assert r_js == w_js == m_js
-    assert "renderMoreshwarV31Dashboard" in r_js
-    assert "renderMoreshwarV30Dashboard" in r_js
+    assert "function renderMoreshwarV31Dashboard(" in r_js
+    assert "function renderMoreshwarV30Dashboard(" in r_js
 
     # Confirm all 12 production prospective reports exist in reports/moreshwar_3_1/prospective_paper_trading/
     for fname in (
