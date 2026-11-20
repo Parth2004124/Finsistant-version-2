@@ -21,6 +21,7 @@ on:
           - verify
           - reconcile
           - recover
+          - test-notify
       trading_date:
         description: "NSE trading date YYYY-MM-DD or 'auto' (today in Asia/Kolkata)"
         required: false
@@ -93,7 +94,8 @@ jobs:
           RECOVERY_NOTE: ${{ github.event.inputs.recovery_note || 'manual_workflow_validated_recovery' }}
         run: |
           set -euo pipefail
-          if [ "$WORKFLOW_MODE" = "verify" ]; then
+          BEFORE_CNT=$(python3 -c 'import json; from pathlib import Path; p=Path("reports/moreshwar_3_1/prospective_paper_trading/prospective_validation_progress.json"); print(json.loads(p.read_text()).get("completed_unseen_sessions",0) if p.exists() else 0)')
+          if [ "$WORKFLOW_MODE" = "verify" ] || [ "$WORKFLOW_MODE" = "test-notify" ]; then
             python3 scripts/moreshwar_3_1_paper_ops.py status
           elif [ "$WORKFLOW_MODE" = "reconcile" ]; then
             python3 scripts/moreshwar_3_1_paper_ops.py reconcile
@@ -109,6 +111,12 @@ jobs:
               --fetch-live-eod \
               --run-id "gha-${GITHUB_RUN_ID}" \
               $EXTRA_FLAG
+          fi
+          AFTER_CNT=$(python3 -c 'import json; from pathlib import Path; p=Path("reports/moreshwar_3_1/prospective_paper_trading/prospective_validation_progress.json"); print(json.loads(p.read_text()).get("completed_unseen_sessions",0) if p.exists() else 0)')
+          if [ "$AFTER_CNT" -gt "$BEFORE_CNT" ]; then
+            echo "newly_completed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "newly_completed=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Post-run four-ledger reconciliation & audit-chain verification
@@ -167,13 +175,41 @@ jobs:
             git push
           fi
 
-      - name: Failure notification (sanitized GitHub Issue + optional webhook)
+      - name: Send smart check-in notification (ntfy / optional email on milestones, Fridays, or test-notify)
+        if: success()
+        env:
+          M31_NTFY_URL: ${{ secrets.M31_NTFY_URL }}
+          M31_NTFY_TOPIC: ${{ secrets.M31_NTFY_TOPIC }}
+          M31_SMTP_HOST: ${{ secrets.M31_SMTP_HOST }}
+          M31_SMTP_PORT: ${{ secrets.M31_SMTP_PORT }}
+          M31_SMTP_USER: ${{ secrets.M31_SMTP_USER }}
+          M31_SMTP_PASS: ${{ secrets.M31_SMTP_PASS }}
+          M31_EMAIL_TO: ${{ secrets.M31_EMAIL_TO }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          WORKFLOW_MODE: ${{ github.event.inputs.mode || 'run-session' }}
+          NEWLY_COMPLETED: ${{ steps.execute_paper.outputs.newly_completed || 'false' }}
+        run: |
+          FORCE_FLAG=""
+          if [ "$WORKFLOW_MODE" = "test-notify" ]; then
+            FORCE_FLAG="--force"
+          fi
+          python3 scripts/m3_1_notify.py --newly-completed "$NEWLY_COMPLETED" --run-url "$RUN_URL" $FORCE_FLAG
+
+      - name: Failure notification (sanitized GitHub Issue + ntfy / optional email / webhook)
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          M31_NTFY_URL: ${{ secrets.M31_NTFY_URL }}
+          M31_NTFY_TOPIC: ${{ secrets.M31_NTFY_TOPIC }}
+          M31_SMTP_HOST: ${{ secrets.M31_SMTP_HOST }}
+          M31_SMTP_PORT: ${{ secrets.M31_SMTP_PORT }}
+          M31_SMTP_USER: ${{ secrets.M31_SMTP_USER }}
+          M31_SMTP_PASS: ${{ secrets.M31_SMTP_PASS }}
+          M31_EMAIL_TO: ${{ secrets.M31_EMAIL_TO }}
           M31_ALERT_WEBHOOK_URL: ${{ secrets.M31_ALERT_WEBHOOK_URL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          python3 scripts/m3_1_notify.py --failure --run-url "$RUN_URL" || true
           TITLE="[Moreshwar 3.1 Paper Trading] Daily Workflow Failure / Safe-Mode Alert"
           BODY="Automated Moreshwar 3.1 prospective paper-trading workflow failed on run ${RUN_URL}. Last valid durable portfolio state was preserved and SAFE_MODE recovery verification is required before resuming entries. (Live trading remains permanently DISABLED.)"
           EXISTING=$(gh issue list --state open --search "in:title \"${TITLE}\"" --json number --jq '.[0].number // empty' || true)

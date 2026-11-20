@@ -287,3 +287,49 @@ def test_ga_security_audit_workflow_yaml_and_credential_redaction() -> None:
     # Failure notification present
     assert "if: failure()" in yml
     assert "gh issue" in yml
+    assert "m3_1_notify.py" in yml
+
+
+def test_ga_smart_ntfy_and_email_notifier_logic() -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("m3_1_notify", REPO_ROOT / "scripts" / "m3_1_notify.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    assert mod.resolve_ntfy_url("", "my-secret-topic") == "https://ntfy.sh/my-secret-topic"
+    assert mod.resolve_ntfy_url("https://ntfy.example.com/custom", "ignored") == "https://ntfy.example.com/custom"
+
+    def _ctx(dt: str, completed: int, state: str = "RUNNING") -> dict:
+        return {
+            "daily": {
+                "trading_date": dt,
+                "engine_status": state,
+                "portfolio_nav": {"current_nav_inr": 101_500.0, "cumulative_return_pct": 1.5, "benchmark_niftybees_nav": 100_800.0, "initial_capital_inr": 100_000.0},
+                "reconciliation_result": {"passed": True, "reconciliation_diff_inr": 0.0},
+                "regime_determination": {"confirmed_regime": "BULL_TREND"},
+            },
+            "progress": {"completed_unseen_sessions": completed, "minimum_required_sessions": 60, "target_sessions": 120},
+            "alerts": {"overall_health": "HEALTHY", "alert_counts": {"CRITICAL": 0}},
+        }
+
+    # 1. Duplicate/idempotent retry (newly_completed=False) -> NO spam!
+    d_dup = mod.decide_and_format_notification(_ctx("2026-11-23", 2), session_newly_completed=False)
+    assert d_dup["should_send"] is False
+
+    # 2. Normal mid-week non-milestone session (Mon, day 3) -> NO spam!
+    d_mid = mod.decide_and_format_notification(_ctx("2026-11-25", 3), session_newly_completed=True)
+    assert d_mid["should_send"] is False
+
+    # 3. Friday weekly digest (Fri, day 4) -> sends weekly check-in!
+    d_fri = mod.decide_and_format_notification(_ctx("2026-11-27", 4), session_newly_completed=True)
+    assert d_fri["should_send"] is True and d_fri["reason"] == "WEEKLY_FRIDAY_DIGEST"
+
+    # 4. Day 60 interim review gate -> high-priority milestone alert!
+    d_60 = mod.decide_and_format_notification(_ctx("2027-02-18", 60), session_newly_completed=True)
+    assert d_60["should_send"] is True and d_60["priority"] == "high" and "60-SESSION" in d_60["title"]
+
+    # 5. SAFE_MODE or failure -> ALWAYS high-priority alert!
+    d_fail = mod.decide_and_format_notification(_ctx("2026-11-25", 3, state="SAFE_MODE"), session_newly_completed=False)
+    assert d_fail["should_send"] is True and d_fail["priority"] == "high"
+

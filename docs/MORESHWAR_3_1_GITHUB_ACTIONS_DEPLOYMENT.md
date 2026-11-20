@@ -38,9 +38,18 @@ Two durable persistence modes are supported by `finsistant_v2/m3_1/persistent_st
 - Database-level atomic lease locking (`distributed_execution_locks`) and idempotent `session_checkpoints` prevent duplicate orders, dividends, settlements, or double-charged transaction costs across retries.
 - GitHub Artifacts (`moreshwar-3-1-daily-reports-<run_id>`, 90-day retention) store diagnostic/report bundles only, never the authoritative ledger.
 
-### Optional Failure Webhook Secret
+### Push Notifications (`ntfy`, Recommended — Zero Email/Password Needed) & Optional Email
 - On any workflow failure, GitHub Actions automatically opens or comments on a sanitized GitHub Issue (`[Moreshwar 3.1 Paper Trading] Daily Workflow Failure / Safe-Mode Alert`).
-- Optionally add `M31_ALERT_WEBHOOK_URL` (Slack / Discord / Telegram webhook) in GitHub Secrets for instant mobile push alerts.
+- **Recommended — Instant Phone Push via `ntfy` (`scripts/m3_1_notify.py`):**
+  1. Install the free **ntfy** app (iOS / Android) or open `https://ntfy.sh`.
+  2. Subscribe to a private, hard-to-guess topic name (e.g., `moreshwar-31-paper-<random-string>`).
+  3. In GitHub Repo **Settings → Secrets and variables → Actions**, add ONE secret:
+     - `M31_NTFY_TOPIC` = `<your-private-topic-name>` (or `M31_NTFY_URL` if self-hosting ntfy).
+  4. Test instantly anytime via **Actions → Moreshwar 3.1 → Run workflow → `mode = test-notify`**.
+  - Smart non-spam cadence: notifies on **Day 1 & Day 2**, **every Friday weekly digest**, **milestones (Day 5, 10, 20, 30, 45, 60 Interim Gate, 90, 120 Full Gate)**, and **immediately on any failure / `SAFE_MODE`**. Silent on idempotent retries!
+- **Optional — Automatic Report Email (SMTP):**
+  - If you prefer email, add GitHub Secrets `M31_SMTP_HOST` (e.g. `smtp.gmail.com`), `M31_SMTP_PORT` (`587`), `M31_SMTP_USER`, `M31_SMTP_PASS` (app password), and `M31_EMAIL_TO`.
+- **Optional — Slack / Discord Webhook:** add `M31_ALERT_WEBHOOK_URL`.
 
 ---
 
