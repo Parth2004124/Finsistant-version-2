@@ -1,9 +1,9 @@
 {
-  "status": "COMPLETED",
+  "status": "WAITING_FOR_DATA",
   "last_checked_date": "2026-11-20",
-  "last_completed_date": "2026-11-20",
-  "last_reason": "Completed session 2026-11-20 cleanly (recon_diff=0.0000 INR)",
+  "last_completed_date": "",
+  "last_reason": "Daily market data for 2026-11-20 not yet available; waiting.",
   "missed_sessions": [],
-  "updated_at_utc": "2026-11-20T12:11:47.859845+00:00",
+  "updated_at_utc": "2026-11-20T09:17:53.056827+00:00",
   "live_trading_enabled": false
 }
