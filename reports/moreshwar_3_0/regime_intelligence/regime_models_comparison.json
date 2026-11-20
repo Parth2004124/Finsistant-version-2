@@ -1,0 +1,705 @@
+{
+  "generated_at": "2026-11-19T20:44:06.488249+00:00",
+  "is_cutoff": "2025-03-31",
+  "model_comparison": {
+    "RULE_5CORE_HYST": {
+      "in_sample": {
+        "days": 801,
+        "transitions": 49,
+        "transitions_per_year": 15.42,
+        "avg_regime_duration_days": 16.0,
+        "short_false_flips_le_2d": 0,
+        "false_flip_rate_pct": 0.0,
+        "regime_distribution": {
+          "SIDEWAYS_CHOP": {
+            "days": 78,
+            "pct_of_time": 9.7,
+            "nifty_next1d_ann_ret_pct": 1.49,
+            "nifty_next1d_ann_vol_pct": 13.15
+          },
+          "STRESS_BEAR": {
+            "days": 171,
+            "pct_of_time": 21.3,
+            "nifty_next1d_ann_ret_pct": 28.61,
+            "nifty_next1d_ann_vol_pct": 16.1
+          },
+          "STRONG_BULL": {
+            "days": 248,
+            "pct_of_time": 31.0,
+            "nifty_next1d_ann_ret_pct": 5.37,
+            "nifty_next1d_ann_vol_pct": 12.49
+          },
+          "WEAK_BEAR": {
+            "days": 22,
+            "pct_of_time": 2.7,
+            "nifty_next1d_ann_ret_pct": -28.69,
+            "nifty_next1d_ann_vol_pct": 15.72
+          },
+          "WEAK_BULL": {
+            "days": 281,
+            "pct_of_time": 35.1,
+            "nifty_next1d_ann_ret_pct": 8.33,
+            "nifty_next1d_ann_vol_pct": 13.82
+          }
+        }
+      },
+      "full": {
+        "days": 1206,
+        "transitions": 68,
+        "transitions_per_year": 14.21,
+        "avg_regime_duration_days": 17.5,
+        "short_false_flips_le_2d": 0,
+        "false_flip_rate_pct": 0.0,
+        "regime_distribution": {
+          "SIDEWAYS_CHOP": {
+            "days": 219,
+            "pct_of_time": 18.2,
+            "nifty_next1d_ann_ret_pct": -4.85,
+            "nifty_next1d_ann_vol_pct": 12.2
+          },
+          "STRESS_BEAR": {
+            "days": 261,
+            "pct_of_time": 21.6,
+            "nifty_next1d_ann_ret_pct": 31.33,
+            "nifty_next1d_ann_vol_pct": 17.55
+          },
+          "STRONG_BULL": {
+            "days": 285,
+            "pct_of_time": 23.6,
+            "nifty_next1d_ann_ret_pct": 1.31,
+            "nifty_next1d_ann_vol_pct": 12.08
+          },
+          "WEAK_BEAR": {
+            "days": 30,
+            "pct_of_time": 2.5,
+            "nifty_next1d_ann_ret_pct": -32.75,
+            "nifty_next1d_ann_vol_pct": 19.96
+          },
+          "WEAK_BULL": {
+            "days": 410,
+            "pct_of_time": 34.0,
+            "nifty_next1d_ann_ret_pct": 9.67,
+            "nifty_next1d_ann_vol_pct": 12.4
+          }
+        }
+      },
+      "oos_only": {
+        "days": 405,
+        "transitions": 19,
+        "transitions_per_year": 11.82,
+        "avg_regime_duration_days": 20.2,
+        "short_false_flips_le_2d": 0,
+        "false_flip_rate_pct": 0.0,
+        "regime_distribution": {
+          "SIDEWAYS_CHOP": {
+            "days": 141,
+            "pct_of_time": 34.8,
+            "nifty_next1d_ann_ret_pct": -8.37,
+            "nifty_next1d_ann_vol_pct": 11.68
+          },
+          "STRESS_BEAR": {
+            "days": 90,
+            "pct_of_time": 22.2,
+            "nifty_next1d_ann_ret_pct": 36.49,
+            "nifty_next1d_ann_vol_pct": 20.11
+          },
+          "STRONG_BULL": {
+            "days": 37,
+            "pct_of_time": 9.1,
+            "nifty_next1d_ann_ret_pct": -25.85,
+            "nifty_next1d_ann_vol_pct": 8.76
+          },
+          "WEAK_BEAR": {
+            "days": 7,
+            "pct_of_time": 1.7,
+            "nifty_next1d_ann_ret_pct": 3.97,
+            "nifty_next1d_ann_vol_pct": 31.22
+          },
+          "WEAK_BULL": {
+            "days": 129,
+            "pct_of_time": 31.9,
+            "nifty_next1d_ann_ret_pct": 12.61,
+            "nifty_next1d_ann_vol_pct": 8.57
+          }
+        }
+      }
+    },
+    "RULE_9FINE": {
+      "in_sample": {
+        "days": 801,
+        "transitions": 164,
+        "transitions_per_year": 51.6,
+        "avg_regime_duration_days": 4.9,
+        "short_false_flips_le_2d": 89,
+        "false_flip_rate_pct": 54.3,
+        "regime_distribution": {
+          "HIGH_VOLATILITY": {
+            "days": 26,
+            "pct_of_time": 3.2,
+            "nifty_next1d_ann_ret_pct": -3.66,
+            "nifty_next1d_ann_vol_pct": 22.29
+          },
+          "LOW_VOLATILITY": {
+            "days": 9,
+            "pct_of_time": 1.1,
+            "nifty_next1d_ann_ret_pct": -70.19,
+            "nifty_next1d_ann_vol_pct": 14.29
+          },
+          "LOW_VOL_BULL": {
+            "days": 108,
+            "pct_of_time": 13.5,
+            "nifty_next1d_ann_ret_pct": 13.68,
+            "nifty_next1d_ann_vol_pct": 10.32
+          },
+          "MARKET_STRESS": {
+            "days": 105,
+            "pct_of_time": 13.1,
+            "nifty_next1d_ann_ret_pct": 50.39,
+            "nifty_next1d_ann_vol_pct": 17.23
+          },
+          "SIDEWAYS": {
+            "days": 83,
+            "pct_of_time": 10.4,
+            "nifty_next1d_ann_ret_pct": 42.28,
+            "nifty_next1d_ann_vol_pct": 14.91
+          },
+          "STRONG_BEARISH": {
+            "days": 28,
+            "pct_of_time": 3.5,
+            "nifty_next1d_ann_ret_pct": 6.26,
+            "nifty_next1d_ann_vol_pct": 12.56
+          },
+          "STRONG_BULLISH": {
+            "days": 246,
+            "pct_of_time": 30.7,
+            "nifty_next1d_ann_ret_pct": -4.35,
+            "nifty_next1d_ann_vol_pct": 12.44
+          },
+          "WEAK_BEARISH": {
+            "days": 33,
+            "pct_of_time": 4.1,
+            "nifty_next1d_ann_ret_pct": 4.97,
+            "nifty_next1d_ann_vol_pct": 12.9
+          },
+          "WEAK_BULLISH": {
+            "days": 162,
+            "pct_of_time": 20.2,
+            "nifty_next1d_ann_ret_pct": -4.75,
+            "nifty_next1d_ann_vol_pct": 13.95
+          }
+        }
+      },
+      "full": {
+        "days": 1206,
+        "transitions": 232,
+        "transitions_per_year": 48.48,
+        "avg_regime_duration_days": 5.2,
+        "short_false_flips_le_2d": 128,
+        "false_flip_rate_pct": 55.2,
+        "regime_distribution": {
+          "HIGH_VOLATILITY": {
+            "days": 50,
+            "pct_of_time": 4.1,
+            "nifty_next1d_ann_ret_pct": 7.31,
+            "nifty_next1d_ann_vol_pct": 18.91
+          },
+          "LOW_VOLATILITY": {
+            "days": 63,
+            "pct_of_time": 5.2,
+            "nifty_next1d_ann_ret_pct": -39.87,
+            "nifty_next1d_ann_vol_pct": 10.21
+          },
+          "LOW_VOL_BULL": {
+            "days": 216,
+            "pct_of_time": 17.9,
+            "nifty_next1d_ann_ret_pct": 12.35,
+            "nifty_next1d_ann_vol_pct": 9.24
+          },
+          "MARKET_STRESS": {
+            "days": 160,
+            "pct_of_time": 13.3,
+            "nifty_next1d_ann_ret_pct": 54.94,
+            "nifty_next1d_ann_vol_pct": 18.48
+          },
+          "SIDEWAYS": {
+            "days": 160,
+            "pct_of_time": 13.3,
+            "nifty_next1d_ann_ret_pct": 25.56,
+            "nifty_next1d_ann_vol_pct": 14.17
+          },
+          "STRONG_BEARISH": {
+            "days": 38,
+            "pct_of_time": 3.2,
+            "nifty_next1d_ann_ret_pct": -43.14,
+            "nifty_next1d_ann_vol_pct": 17.0
+          },
+          "STRONG_BULLISH": {
+            "days": 283,
+            "pct_of_time": 23.5,
+            "nifty_next1d_ann_ret_pct": -7.46,
+            "nifty_next1d_ann_vol_pct": 12.04
+          },
+          "VOL_TRANSITION": {
+            "days": 6,
+            "pct_of_time": 0.5,
+            "nifty_next1d_ann_ret_pct": -62.11,
+            "nifty_next1d_ann_vol_pct": 14.38
+          },
+          "WEAK_BEARISH": {
+            "days": 42,
+            "pct_of_time": 3.5,
+            "nifty_next1d_ann_ret_pct": 48.51,
+            "nifty_next1d_ann_vol_pct": 15.27
+          },
+          "WEAK_BULLISH": {
+            "days": 187,
+            "pct_of_time": 15.5,
+            "nifty_next1d_ann_ret_pct": -4.51,
+            "nifty_next1d_ann_vol_pct": 13.77
+          }
+        }
+      },
+      "oos_only": {
+        "days": 405,
+        "transitions": 68,
+        "transitions_per_year": 42.31,
+        "avg_regime_duration_days": 5.9,
+        "short_false_flips_le_2d": 40,
+        "false_flip_rate_pct": 58.8,
+        "regime_distribution": {
+          "HIGH_VOLATILITY": {
+            "days": 24,
+            "pct_of_time": 5.9,
+            "nifty_next1d_ann_ret_pct": 19.18,
+            "nifty_next1d_ann_vol_pct": 14.85
+          },
+          "LOW_VOLATILITY": {
+            "days": 54,
+            "pct_of_time": 13.3,
+            "nifty_next1d_ann_ret_pct": -34.82,
+            "nifty_next1d_ann_vol_pct": 9.51
+          },
+          "LOW_VOL_BULL": {
+            "days": 108,
+            "pct_of_time": 26.7,
+            "nifty_next1d_ann_ret_pct": 11.03,
+            "nifty_next1d_ann_vol_pct": 8.07
+          },
+          "MARKET_STRESS": {
+            "days": 55,
+            "pct_of_time": 13.6,
+            "nifty_next1d_ann_ret_pct": 63.64,
+            "nifty_next1d_ann_vol_pct": 20.8
+          },
+          "SIDEWAYS": {
+            "days": 77,
+            "pct_of_time": 19.0,
+            "nifty_next1d_ann_ret_pct": 7.53,
+            "nifty_next1d_ann_vol_pct": 13.33
+          },
+          "STRONG_BEARISH": {
+            "days": 10,
+            "pct_of_time": 2.5,
+            "nifty_next1d_ann_ret_pct": -181.47,
+            "nifty_next1d_ann_vol_pct": 24.49
+          },
+          "STRONG_BULLISH": {
+            "days": 37,
+            "pct_of_time": 9.1,
+            "nifty_next1d_ann_ret_pct": -28.15,
+            "nifty_next1d_ann_vol_pct": 8.99
+          },
+          "VOL_TRANSITION": {
+            "days": 6,
+            "pct_of_time": 1.5,
+            "nifty_next1d_ann_ret_pct": -62.11,
+            "nifty_next1d_ann_vol_pct": 14.38
+          },
+          "WEAK_BEARISH": {
+            "days": 8,
+            "pct_of_time": 2.0,
+            "nifty_next1d_ann_ret_pct": 281.56,
+            "nifty_next1d_ann_vol_pct": 14.82
+          },
+          "WEAK_BULLISH": {
+            "days": 25,
+            "pct_of_time": 6.2,
+            "nifty_next1d_ann_ret_pct": -2.94,
+            "nifty_next1d_ann_vol_pct": 12.78
+          }
+        }
+      }
+    },
+    "KMEANS_4": {
+      "in_sample": {
+        "days": 801,
+        "transitions": 114,
+        "transitions_per_year": 35.87,
+        "avg_regime_duration_days": 7.0,
+        "short_false_flips_le_2d": 45,
+        "false_flip_rate_pct": 39.5,
+        "regime_distribution": {
+          "KM_BEAR_STRESS": {
+            "days": 170,
+            "pct_of_time": 21.2,
+            "nifty_next1d_ann_ret_pct": 17.64,
+            "nifty_next1d_ann_vol_pct": 17.59
+          },
+          "KM_BULL_EXPANSION": {
+            "days": 353,
+            "pct_of_time": 44.1,
+            "nifty_next1d_ann_ret_pct": 10.59,
+            "nifty_next1d_ann_vol_pct": 12.08
+          },
+          "KM_MILD_BULL": {
+            "days": 159,
+            "pct_of_time": 19.9,
+            "nifty_next1d_ann_ret_pct": 5.4,
+            "nifty_next1d_ann_vol_pct": 12.78
+          },
+          "KM_SIDEWAYS_MIX": {
+            "days": 118,
+            "pct_of_time": 14.7,
+            "nifty_next1d_ann_ret_pct": 3.84,
+            "nifty_next1d_ann_vol_pct": 14.77
+          }
+        }
+      },
+      "full": {
+        "days": 1206,
+        "transitions": 171,
+        "transitions_per_year": 35.73,
+        "avg_regime_duration_days": 7.0,
+        "short_false_flips_le_2d": 72,
+        "false_flip_rate_pct": 42.1,
+        "regime_distribution": {
+          "KM_BEAR_STRESS": {
+            "days": 248,
+            "pct_of_time": 20.6,
+            "nifty_next1d_ann_ret_pct": 18.56,
+            "nifty_next1d_ann_vol_pct": 18.25
+          },
+          "KM_BULL_EXPANSION": {
+            "days": 412,
+            "pct_of_time": 34.2,
+            "nifty_next1d_ann_ret_pct": 7.16,
+            "nifty_next1d_ann_vol_pct": 11.74
+          },
+          "KM_MILD_BULL": {
+            "days": 290,
+            "pct_of_time": 24.0,
+            "nifty_next1d_ann_ret_pct": 3.12,
+            "nifty_next1d_ann_vol_pct": 11.16
+          },
+          "KM_SIDEWAYS_MIX": {
+            "days": 255,
+            "pct_of_time": 21.1,
+            "nifty_next1d_ann_ret_pct": 7.9,
+            "nifty_next1d_ann_vol_pct": 14.63
+          }
+        }
+      },
+      "oos_only": {
+        "days": 405,
+        "transitions": 57,
+        "transitions_per_year": 35.47,
+        "avg_regime_duration_days": 7.0,
+        "short_false_flips_le_2d": 27,
+        "false_flip_rate_pct": 47.4,
+        "regime_distribution": {
+          "KM_BEAR_STRESS": {
+            "days": 78,
+            "pct_of_time": 19.3,
+            "nifty_next1d_ann_ret_pct": 20.54,
+            "nifty_next1d_ann_vol_pct": 19.74
+          },
+          "KM_BULL_EXPANSION": {
+            "days": 59,
+            "pct_of_time": 14.6,
+            "nifty_next1d_ann_ret_pct": -13.35,
+            "nifty_next1d_ann_vol_pct": 9.36
+          },
+          "KM_MILD_BULL": {
+            "days": 131,
+            "pct_of_time": 32.3,
+            "nifty_next1d_ann_ret_pct": 0.36,
+            "nifty_next1d_ann_vol_pct": 8.85
+          },
+          "KM_SIDEWAYS_MIX": {
+            "days": 136,
+            "pct_of_time": 33.6,
+            "nifty_next1d_ann_ret_pct": 14.27,
+            "nifty_next1d_ann_vol_pct": 14.46
+          }
+        }
+      }
+    },
+    "HMM_3_CAUSAL": {
+      "in_sample": {
+        "days": 801,
+        "transitions": 38,
+        "transitions_per_year": 11.96,
+        "avg_regime_duration_days": 20.5,
+        "short_false_flips_le_2d": 3,
+        "false_flip_rate_pct": 7.9,
+        "regime_distribution": {
+          "HMM_BULL_EXPANSION": {
+            "days": 295,
+            "pct_of_time": 36.8,
+            "nifty_next1d_ann_ret_pct": 7.98,
+            "nifty_next1d_ann_vol_pct": 11.22
+          },
+          "HMM_CHOP_TRANSITION": {
+            "days": 320,
+            "pct_of_time": 40.0,
+            "nifty_next1d_ann_ret_pct": 10.84,
+            "nifty_next1d_ann_vol_pct": 14.37
+          },
+          "HMM_STRESS_BEAR": {
+            "days": 185,
+            "pct_of_time": 23.1,
+            "nifty_next1d_ann_ret_pct": 12.03,
+            "nifty_next1d_ann_vol_pct": 16.83
+          }
+        }
+      },
+      "full": {
+        "days": 1206,
+        "transitions": 56,
+        "transitions_per_year": 11.7,
+        "avg_regime_duration_days": 21.2,
+        "short_false_flips_le_2d": 3,
+        "false_flip_rate_pct": 5.4,
+        "regime_distribution": {
+          "HMM_BULL_EXPANSION": {
+            "days": 355,
+            "pct_of_time": 29.4,
+            "nifty_next1d_ann_ret_pct": 3.78,
+            "nifty_next1d_ann_vol_pct": 10.69
+          },
+          "HMM_CHOP_TRANSITION": {
+            "days": 585,
+            "pct_of_time": 48.5,
+            "nifty_next1d_ann_ret_pct": 6.98,
+            "nifty_next1d_ann_vol_pct": 13.38
+          },
+          "HMM_STRESS_BEAR": {
+            "days": 265,
+            "pct_of_time": 22.0,
+            "nifty_next1d_ann_ret_pct": 19.05,
+            "nifty_next1d_ann_vol_pct": 17.85
+          }
+        }
+      },
+      "oos_only": {
+        "days": 405,
+        "transitions": 18,
+        "transitions_per_year": 11.2,
+        "avg_regime_duration_days": 21.3,
+        "short_false_flips_le_2d": 0,
+        "false_flip_rate_pct": 0.0,
+        "regime_distribution": {
+          "HMM_BULL_EXPANSION": {
+            "days": 60,
+            "pct_of_time": 14.8,
+            "nifty_next1d_ann_ret_pct": -16.88,
+            "nifty_next1d_ann_vol_pct": 7.55
+          },
+          "HMM_CHOP_TRANSITION": {
+            "days": 264,
+            "pct_of_time": 65.2,
+            "nifty_next1d_ann_ret_pct": 3.76,
+            "nifty_next1d_ann_vol_pct": 12.03
+          },
+          "HMM_STRESS_BEAR": {
+            "days": 80,
+            "pct_of_time": 19.8,
+            "nifty_next1d_ann_ret_pct": 35.28,
+            "nifty_next1d_ann_vol_pct": 20.08
+          }
+        }
+      }
+    },
+    "CUSUM_CP": {
+      "in_sample": {
+        "days": 801,
+        "transitions": 11,
+        "transitions_per_year": 3.46,
+        "avg_regime_duration_days": 66.8,
+        "short_false_flips_le_2d": 1,
+        "false_flip_rate_pct": 9.1,
+        "regime_distribution": {
+          "CP_BULL_TREND": {
+            "days": 273,
+            "pct_of_time": 34.1,
+            "nifty_next1d_ann_ret_pct": 9.54,
+            "nifty_next1d_ann_vol_pct": 11.89
+          },
+          "CP_DOWNTURN_BREAK": {
+            "days": 527,
+            "pct_of_time": 65.8,
+            "nifty_next1d_ann_ret_pct": 10.33,
+            "nifty_next1d_ann_vol_pct": 14.89
+          }
+        }
+      },
+      "full": {
+        "days": 1206,
+        "transitions": 19,
+        "transitions_per_year": 3.97,
+        "avg_regime_duration_days": 60.3,
+        "short_false_flips_le_2d": 1,
+        "false_flip_rate_pct": 5.3,
+        "regime_distribution": {
+          "CP_BULL_TREND": {
+            "days": 632,
+            "pct_of_time": 52.4,
+            "nifty_next1d_ann_ret_pct": 4.81,
+            "nifty_next1d_ann_vol_pct": 11.73
+          },
+          "CP_DOWNTURN_BREAK": {
+            "days": 573,
+            "pct_of_time": 47.5,
+            "nifty_next1d_ann_ret_pct": 12.97,
+            "nifty_next1d_ann_vol_pct": 15.78
+          }
+        }
+      },
+      "oos_only": {
+        "days": 405,
+        "transitions": 8,
+        "transitions_per_year": 4.98,
+        "avg_regime_duration_days": 45.0,
+        "short_false_flips_le_2d": 0,
+        "false_flip_rate_pct": 0.0,
+        "regime_distribution": {
+          "CP_BULL_TREND": {
+            "days": 358,
+            "pct_of_time": 88.4,
+            "nifty_next1d_ann_ret_pct": 2.27,
+            "nifty_next1d_ann_vol_pct": 11.57
+          },
+          "CP_DOWNTURN_BREAK": {
+            "days": 46,
+            "pct_of_time": 11.4,
+            "nifty_next1d_ann_ret_pct": 43.24,
+            "nifty_next1d_ann_vol_pct": 23.86
+          }
+        }
+      }
+    },
+    "VOL_STATE": {
+      "in_sample": {
+        "days": 801,
+        "transitions": 50,
+        "transitions_per_year": 15.73,
+        "avg_regime_duration_days": 15.7,
+        "short_false_flips_le_2d": 10,
+        "false_flip_rate_pct": 20.0,
+        "regime_distribution": {
+          "VOL_LOW": {
+            "days": 289,
+            "pct_of_time": 36.1,
+            "nifty_next1d_ann_ret_pct": 8.93,
+            "nifty_next1d_ann_vol_pct": 10.99
+          },
+          "VOL_NORMAL": {
+            "days": 437,
+            "pct_of_time": 54.6,
+            "nifty_next1d_ann_ret_pct": 7.57,
+            "nifty_next1d_ann_vol_pct": 14.19
+          },
+          "VOL_STRESS": {
+            "days": 74,
+            "pct_of_time": 9.2,
+            "nifty_next1d_ann_ret_pct": 29.17,
+            "nifty_next1d_ann_vol_pct": 21.07
+          }
+        }
+      },
+      "full": {
+        "days": 1206,
+        "transitions": 80,
+        "transitions_per_year": 16.72,
+        "avg_regime_duration_days": 14.9,
+        "short_false_flips_le_2d": 25,
+        "false_flip_rate_pct": 31.2,
+        "regime_distribution": {
+          "VOL_LOW": {
+            "days": 488,
+            "pct_of_time": 40.5,
+            "nifty_next1d_ann_ret_pct": 3.62,
+            "nifty_next1d_ann_vol_pct": 10.34
+          },
+          "VOL_NORMAL": {
+            "days": 579,
+            "pct_of_time": 48.0,
+            "nifty_next1d_ann_ret_pct": 6.07,
+            "nifty_next1d_ann_vol_pct": 14.71
+          },
+          "VOL_STRESS": {
+            "days": 115,
+            "pct_of_time": 9.5,
+            "nifty_next1d_ann_ret_pct": 37.41,
+            "nifty_next1d_ann_vol_pct": 20.34
+          },
+          "VOL_TRANSITION": {
+            "days": 23,
+            "pct_of_time": 1.9,
+            "nifty_next1d_ann_ret_pct": 38.65,
+            "nifty_next1d_ann_vol_pct": 14.55
+          }
+        }
+      },
+      "oos_only": {
+        "days": 405,
+        "transitions": 30,
+        "transitions_per_year": 18.67,
+        "avg_regime_duration_days": 13.1,
+        "short_false_flips_le_2d": 15,
+        "false_flip_rate_pct": 50.0,
+        "regime_distribution": {
+          "VOL_LOW": {
+            "days": 199,
+            "pct_of_time": 49.1,
+            "nifty_next1d_ann_ret_pct": -4.09,
+            "nifty_next1d_ann_vol_pct": 9.31
+          },
+          "VOL_NORMAL": {
+            "days": 141,
+            "pct_of_time": 34.8,
+            "nifty_next1d_ann_ret_pct": 4.13,
+            "nifty_next1d_ann_vol_pct": 16.19
+          },
+          "VOL_STRESS": {
+            "days": 41,
+            "pct_of_time": 10.1,
+            "nifty_next1d_ann_ret_pct": 52.29,
+            "nifty_next1d_ann_vol_pct": 19.16
+          },
+          "VOL_TRANSITION": {
+            "days": 23,
+            "pct_of_time": 5.7,
+            "nifty_next1d_ann_ret_pct": 38.65,
+            "nifty_next1d_ann_vol_pct": 14.55
+          }
+        }
+      }
+    }
+  },
+  "timeline_count": 1206,
+  "latest_regime_snapshot": {
+    "date": "2026-11-19",
+    "n50_close": 25514.3,
+    "pct_ab50": 48.0,
+    "ad_5d": 40.2,
+    "vol20": 13.99,
+    "dd252": -3.09,
+    "rule5": "WEAK_BULL",
+    "fine9": "WEAK_BULLISH",
+    "hmm3": "HMM_CHOP_TRANSITION",
+    "kmeans4": "KM_BULL_EXPANSION",
+    "cusum": "CP_BULL_TREND",
+    "hmm_bull_prob": 0.0
+  }
+}

@@ -1,0 +1,1092 @@
+{
+  "schema_version": "m3_1_prospective_universe_v1",
+  "snapshot_cutoff_date": "2026-11-19",
+  "source": "data/m3_universe/nse_pit_universe.db + 4-tier sector_hierarchy",
+  "count": 120,
+  "etf_tickers": {
+    "NIFTYBEES": "NIFTYBEES.NS",
+    "LIQUIDBEES": "LIQUIDBEES.NS"
+  },
+  "equities": [
+    {
+      "sec_id": "INE0BJO01010",
+      "symbol": "JPL",
+      "yf_ticker": "JPL.NS",
+      "sector": "UNKNOWN_SECTOR",
+      "industry": "UNKNOWN_INDUSTRY",
+      "is_unknown_sector": true,
+      "adv_20d_inr_as_of_cutoff": 30431474750.0
+    },
+    {
+      "sec_id": "INE040A01034",
+      "symbol": "HDFCBANK",
+      "yf_ticker": "HDFCBANK.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 28929553250.0
+    },
+    {
+      "sec_id": "INE002A01018",
+      "symbol": "RELIANCE",
+      "yf_ticker": "RELIANCE.NS",
+      "sector": "Oil Gas & Consumable Fuels",
+      "industry": "Oil Gas & Consumable Fuels",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 26794108450.0
+    },
+    {
+      "sec_id": "INE090A01021",
+      "symbol": "ICICIBANK",
+      "yf_ticker": "ICICIBANK.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 24815013050.0
+    },
+    {
+      "sec_id": "INE397D01024",
+      "symbol": "BHARTIARTL",
+      "yf_ticker": "BHARTIARTL.NS",
+      "sector": "Telecommunication",
+      "industry": "Telecommunication",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 18892938000.0
+    },
+    {
+      "sec_id": "INE062A01020",
+      "symbol": "SBIN",
+      "yf_ticker": "SBIN.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 17694263000.0
+    },
+    {
+      "sec_id": "INE009A01021",
+      "symbol": "INFY",
+      "yf_ticker": "INFY.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 14861494900.0
+    },
+    {
+      "sec_id": "INE118H01025",
+      "symbol": "BSE",
+      "yf_ticker": "BSE.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 14143297000.0
+    },
+    {
+      "sec_id": "INE237A01036",
+      "symbol": "KOTAKBANK",
+      "yf_ticker": "KOTAKBANK.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 10166519550.0
+    },
+    {
+      "sec_id": "INE758T01015",
+      "symbol": "ETERNAL",
+      "yf_ticker": "ETERNAL.NS",
+      "sector": "Consumer Services",
+      "industry": "Consumer Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 10009356600.0
+    },
+    {
+      "sec_id": "INE296A01032",
+      "symbol": "BAJFINANCE",
+      "yf_ticker": "BAJFINANCE.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 9775240750.0
+    },
+    {
+      "sec_id": "INE101A01026",
+      "symbol": "M&M",
+      "yf_ticker": "M&M.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 9702779600.0
+    },
+    {
+      "sec_id": "INE018A01030",
+      "symbol": "LT",
+      "yf_ticker": "LT.NS",
+      "sector": "Construction",
+      "industry": "Construction",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 9397702750.0
+    },
+    {
+      "sec_id": "INE303R01014",
+      "symbol": "KALYANKJIL",
+      "yf_ticker": "KALYANKJIL.NS",
+      "sector": "Consumer Durables",
+      "industry": "Consumer Durables",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 9258638050.0
+    },
+    {
+      "sec_id": "INE361B01024",
+      "symbol": "DIVISLAB",
+      "yf_ticker": "DIVISLAB.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 8977591650.0
+    },
+    {
+      "sec_id": "INE467B01029",
+      "symbol": "TCS",
+      "yf_ticker": "TCS.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 8798550550.0
+    },
+    {
+      "sec_id": "INE238A01034",
+      "symbol": "AXISBANK",
+      "yf_ticker": "AXISBANK.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 8521636400.0
+    },
+    {
+      "sec_id": "INE0HOQ01053",
+      "symbol": "GROWW",
+      "yf_ticker": "GROWW.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 8408278700.0
+    },
+    {
+      "sec_id": "INE745G01043",
+      "symbol": "MCX",
+      "yf_ticker": "MCX.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 8150809450.0
+    },
+    {
+      "sec_id": "INE0ZCQ01019",
+      "symbol": "BLSPOLY",
+      "yf_ticker": "BLSPOLY.NS",
+      "sector": "Chemicals",
+      "industry": "Specialty & Commodity Chemicals",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 7795850666.67
+    },
+    {
+      "sec_id": "INE585B01010",
+      "symbol": "MARUTI",
+      "yf_ticker": "MARUTI.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 7710499250.0
+    },
+    {
+      "sec_id": "INE982J01020",
+      "symbol": "PAYTM",
+      "yf_ticker": "PAYTM.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 7323509300.0
+    },
+    {
+      "sec_id": "INE947Q01028",
+      "symbol": "LAURUSLABS",
+      "yf_ticker": "LAURUSLABS.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 7105259150.0
+    },
+    {
+      "sec_id": "INE0LDG01026",
+      "symbol": "TONBO",
+      "yf_ticker": "TONBO.NS",
+      "sector": "UNKNOWN_SECTOR",
+      "industry": "UNKNOWN_INDUSTRY",
+      "is_unknown_sector": true,
+      "adv_20d_inr_as_of_cutoff": 6717517947.37
+    },
+    {
+      "sec_id": "INE0LEZ01016",
+      "symbol": "ATHERENERG",
+      "yf_ticker": "ATHERENERG.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 6373341950.0
+    },
+    {
+      "sec_id": "INE713T01028",
+      "symbol": "APOLLO",
+      "yf_ticker": "APOLLO.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 6337805100.0
+    },
+    {
+      "sec_id": "INE038A01020",
+      "symbol": "HINDALCO",
+      "yf_ticker": "HINDALCO.NS",
+      "sector": "Metals & Mining",
+      "industry": "Metals & Mining",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 6275130200.0
+    },
+    {
+      "sec_id": "INE0NT901020",
+      "symbol": "NETWEB",
+      "yf_ticker": "NETWEB.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 6213901700.0
+    },
+    {
+      "sec_id": "INE154A01025",
+      "symbol": "ITC",
+      "yf_ticker": "ITC.NS",
+      "sector": "Fast Moving Consumer Goods",
+      "industry": "Fast Moving Consumer Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 6026364850.0
+    },
+    {
+      "sec_id": "INE07Y701011",
+      "symbol": "POWERINDIA",
+      "yf_ticker": "POWERINDIA.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 5875492950.0
+    },
+    {
+      "sec_id": "INE721A01047",
+      "symbol": "SHRIRAMFIN",
+      "yf_ticker": "SHRIRAMFIN.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 5806497800.0
+    },
+    {
+      "sec_id": "INE591G01025",
+      "symbol": "COFORGE",
+      "yf_ticker": "COFORGE.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 5336575950.0
+    },
+    {
+      "sec_id": "INE053A01029",
+      "symbol": "INDHOTEL",
+      "yf_ticker": "INDHOTEL.NS",
+      "sector": "Consumer Services",
+      "industry": "Consumer Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 5330585250.0
+    },
+    {
+      "sec_id": "INE419M01035",
+      "symbol": "TDPOWERSYS",
+      "yf_ticker": "TDPOWERSYS.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 5273230050.0
+    },
+    {
+      "sec_id": "INE00H001014",
+      "symbol": "SWIGGY",
+      "yf_ticker": "SWIGGY.NS",
+      "sector": "Consumer Services",
+      "industry": "Consumer Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 5109507750.0
+    },
+    {
+      "sec_id": "INE742F01042",
+      "symbol": "ADANIPORTS",
+      "yf_ticker": "ADANIPORTS.NS",
+      "sector": "Services",
+      "industry": "Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 5049226450.0
+    },
+    {
+      "sec_id": "INE160A01022",
+      "symbol": "PNB",
+      "yf_ticker": "PNB.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4912951500.0
+    },
+    {
+      "sec_id": "INE280A01028",
+      "symbol": "TITAN",
+      "yf_ticker": "TITAN.NS",
+      "sector": "Consumer Durables",
+      "industry": "Consumer Durables",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4868781700.0
+    },
+    {
+      "sec_id": "INE646L01027",
+      "symbol": "INDIGO",
+      "yf_ticker": "INDIGO.NS",
+      "sector": "Services",
+      "industry": "Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4847137550.0
+    },
+    {
+      "sec_id": "INE509F01029",
+      "symbol": "CUPID",
+      "yf_ticker": "CUPID.NS",
+      "sector": "Fast Moving Consumer Goods",
+      "industry": "Fast Moving Consumer Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4784865750.0
+    },
+    {
+      "sec_id": "INE298A01020",
+      "symbol": "CUMMINSIND",
+      "yf_ticker": "CUMMINSIND.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4655918850.0
+    },
+    {
+      "sec_id": "INE935N01020",
+      "symbol": "DIXON",
+      "yf_ticker": "DIXON.NS",
+      "sector": "Consumer Durables",
+      "industry": "Consumer Durables",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4499799300.0
+    },
+    {
+      "sec_id": "INE918Z01012",
+      "symbol": "KAYNES",
+      "yf_ticker": "KAYNES.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4408810750.0
+    },
+    {
+      "sec_id": "INE437A01024",
+      "symbol": "APOLLOHOSP",
+      "yf_ticker": "APOLLOHOSP.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4385110100.0
+    },
+    {
+      "sec_id": "INE860A01027",
+      "symbol": "HCLTECH",
+      "yf_ticker": "HCLTECH.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4359838300.0
+    },
+    {
+      "sec_id": "INE0PTN01011",
+      "symbol": "MONEYVIEW",
+      "yf_ticker": "MONEYVIEW.NS",
+      "sector": "UNKNOWN_SECTOR",
+      "industry": "UNKNOWN_INDUSTRY",
+      "is_unknown_sector": true,
+      "adv_20d_inr_as_of_cutoff": 4337598550.0
+    },
+    {
+      "sec_id": "INE669C01036",
+      "symbol": "TECHM",
+      "yf_ticker": "TECHM.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4311453200.0
+    },
+    {
+      "sec_id": "INE066A01021",
+      "symbol": "EICHERMOT",
+      "yf_ticker": "EICHERMOT.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4291892050.0
+    },
+    {
+      "sec_id": "INE044A01036",
+      "symbol": "SUNPHARMA",
+      "yf_ticker": "SUNPHARMA.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4274516650.0
+    },
+    {
+      "sec_id": "INE066F01020",
+      "symbol": "HAL",
+      "yf_ticker": "HAL.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4160014400.0
+    },
+    {
+      "sec_id": "INE263A01024",
+      "symbol": "BEL",
+      "yf_ticker": "BEL.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4148255650.0
+    },
+    {
+      "sec_id": "INE081A01020",
+      "symbol": "TATASTEEL",
+      "yf_ticker": "TATASTEEL.NS",
+      "sector": "Metals & Mining",
+      "industry": "Metals & Mining",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4094946900.0
+    },
+    {
+      "sec_id": "INE956O01016",
+      "symbol": "LENSKART",
+      "yf_ticker": "LENSKART.NS",
+      "sector": "Consumer Services",
+      "industry": "Consumer Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4062825850.0
+    },
+    {
+      "sec_id": "INE530B01024",
+      "symbol": "IIFL",
+      "yf_ticker": "IIFL.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 4044298050.0
+    },
+    {
+      "sec_id": "INE917I01010",
+      "symbol": "BAJAJ-AUTO",
+      "yf_ticker": "BAJAJ-AUTO.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3992258250.0
+    },
+    {
+      "sec_id": "INE257A01026",
+      "symbol": "BHEL",
+      "yf_ticker": "BHEL.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3953561400.0
+    },
+    {
+      "sec_id": "INE945H01021",
+      "symbol": "V2RETAIL",
+      "yf_ticker": "V2RETAIL.NS",
+      "sector": "Consumer Services",
+      "industry": "Consumer Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3911029650.0
+    },
+    {
+      "sec_id": "INE208A01029",
+      "symbol": "ASHOKLEY",
+      "yf_ticker": "ASHOKLEY.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3889370400.0
+    },
+    {
+      "sec_id": "INE522F01014",
+      "symbol": "COALINDIA",
+      "yf_ticker": "COALINDIA.NS",
+      "sector": "Oil Gas & Consumable Fuels",
+      "industry": "Oil Gas & Consumable Fuels",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3814894000.0
+    },
+    {
+      "sec_id": "INE494B01023",
+      "symbol": "TVSMOTOR",
+      "yf_ticker": "TVSMOTOR.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3781086000.0
+    },
+    {
+      "sec_id": "INE027H01010",
+      "symbol": "MAXHEALTH",
+      "yf_ticker": "MAXHEALTH.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3727427050.0
+    },
+    {
+      "sec_id": "INE0J1Y01017",
+      "symbol": "LICI",
+      "yf_ticker": "LICI.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3591707500.0
+    },
+    {
+      "sec_id": "INE423A01024",
+      "symbol": "ADANIENT",
+      "yf_ticker": "ADANIENT.NS",
+      "sector": "Metals & Mining",
+      "industry": "Metals & Mining",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3582208700.0
+    },
+    {
+      "sec_id": "INE732I01021",
+      "symbol": "ANGELONE",
+      "yf_ticker": "ANGELONE.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3545005100.0
+    },
+    {
+      "sec_id": "INE00FF01025",
+      "symbol": "ACUTAAS",
+      "yf_ticker": "ACUTAAS.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3532706150.0
+    },
+    {
+      "sec_id": "INE200A01026",
+      "symbol": "GVT&D",
+      "yf_ticker": "GVT&D.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3508620550.0
+    },
+    {
+      "sec_id": "INE1TAE01010",
+      "symbol": "TMCV",
+      "yf_ticker": "TMCV.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3503955700.0
+    },
+    {
+      "sec_id": "INE570L01029",
+      "symbol": "SAILIFE",
+      "yf_ticker": "SAILIFE.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3496879100.0
+    },
+    {
+      "sec_id": "INE814H01029",
+      "symbol": "ADANIPOWER",
+      "yf_ticker": "ADANIPOWER.NS",
+      "sector": "Power",
+      "industry": "Power",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3470619800.0
+    },
+    {
+      "sec_id": "INE476A01022",
+      "symbol": "CANBK",
+      "yf_ticker": "CANBK.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3433989750.0
+    },
+    {
+      "sec_id": "INE121A01024",
+      "symbol": "CHOLAFIN",
+      "yf_ticker": "CHOLAFIN.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3399781300.0
+    },
+    {
+      "sec_id": "INE417T01026",
+      "symbol": "POLICYBZR",
+      "yf_ticker": "POLICYBZR.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3379223900.0
+    },
+    {
+      "sec_id": "INE0VDM01015",
+      "symbol": "MEESHO",
+      "yf_ticker": "MEESHO.NS",
+      "sector": "Consumer Services",
+      "industry": "Consumer Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3348598850.0
+    },
+    {
+      "sec_id": "INE028A01039",
+      "symbol": "BANKBARODA",
+      "yf_ticker": "BANKBARODA.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3314639550.0
+    },
+    {
+      "sec_id": "INE262H01021",
+      "symbol": "PERSISTENT",
+      "yf_ticker": "PERSISTENT.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3274392500.0
+    },
+    {
+      "sec_id": "INE158A01026",
+      "symbol": "HEROMOTOCO",
+      "yf_ticker": "HEROMOTOCO.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3270045800.0
+    },
+    {
+      "sec_id": "INE155A01022",
+      "symbol": "TMPV",
+      "yf_ticker": "TMPV.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3182989400.0
+    },
+    {
+      "sec_id": "INE030A01027",
+      "symbol": "HINDUNILVR",
+      "yf_ticker": "HINDUNILVR.NS",
+      "sector": "Fast Moving Consumer Goods",
+      "industry": "Fast Moving Consumer Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3157776400.0
+    },
+    {
+      "sec_id": "INE849A01020",
+      "symbol": "TRENT",
+      "yf_ticker": "TRENT.NS",
+      "sector": "Consumer Services",
+      "industry": "Consumer Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3117319250.0
+    },
+    {
+      "sec_id": "INE758E01017",
+      "symbol": "JIOFIN",
+      "yf_ticker": "JIOFIN.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3109835350.0
+    },
+    {
+      "sec_id": "INE0W2G01015",
+      "symbol": "SAGILITY",
+      "yf_ticker": "SAGILITY.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3092839250.0
+    },
+    {
+      "sec_id": "INE0LXG01040",
+      "symbol": "OLAELEC",
+      "yf_ticker": "OLAELEC.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3026434350.0
+    },
+    {
+      "sec_id": "INE040H01021",
+      "symbol": "SUZLON",
+      "yf_ticker": "SUZLON.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3016281200.0
+    },
+    {
+      "sec_id": "INE0IX101010",
+      "symbol": "DATAPATTNS",
+      "yf_ticker": "DATAPATTNS.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 3005455300.0
+    },
+    {
+      "sec_id": "INE692A01016",
+      "symbol": "UNIONBANK",
+      "yf_ticker": "UNIONBANK.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2987737550.0
+    },
+    {
+      "sec_id": "INE067A01029",
+      "symbol": "CGPOWER",
+      "yf_ticker": "CGPOWER.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2985450600.0
+    },
+    {
+      "sec_id": "INE455K01017",
+      "symbol": "POLYCAB",
+      "yf_ticker": "POLYCAB.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2980999300.0
+    },
+    {
+      "sec_id": "INE213A01029",
+      "symbol": "ONGC",
+      "yf_ticker": "ONGC.NS",
+      "sector": "Oil Gas & Consumable Fuels",
+      "industry": "Oil Gas & Consumable Fuels",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2980974300.0
+    },
+    {
+      "sec_id": "INF0R8F01034",
+      "symbol": "LIQUIDCASE",
+      "yf_ticker": "LIQUIDCASE.NS",
+      "sector": "Zerodha Nifty 1D Rate Liquid ETF",
+      "industry": "Zerodha Nifty 1D Rate Liquid ETF",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2970934600.0
+    },
+    {
+      "sec_id": "INE481G01011",
+      "symbol": "ULTRACEMCO",
+      "yf_ticker": "ULTRACEMCO.NS",
+      "sector": "Construction Materials",
+      "industry": "Construction Materials",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2970508400.0
+    },
+    {
+      "sec_id": "INE075A01022",
+      "symbol": "WIPRO",
+      "yf_ticker": "WIPRO.NS",
+      "sector": "Information Technology",
+      "industry": "Information Technology",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2951009750.0
+    },
+    {
+      "sec_id": "INE775A01035",
+      "symbol": "MOTHERSON",
+      "yf_ticker": "MOTHERSON.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2922846550.0
+    },
+    {
+      "sec_id": "INE733E01010",
+      "symbol": "NTPC",
+      "yf_ticker": "NTPC.NS",
+      "sector": "Power",
+      "industry": "Power",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2908299500.0
+    },
+    {
+      "sec_id": "INE178A01016",
+      "symbol": "CHENNPETRO",
+      "yf_ticker": "CHENNPETRO.NS",
+      "sector": "Oil Gas & Consumable Fuels",
+      "industry": "Oil Gas & Consumable Fuels",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2895845200.0
+    },
+    {
+      "sec_id": "INE089A01031",
+      "symbol": "DRREDDY",
+      "yf_ticker": "DRREDDY.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2847809550.0
+    },
+    {
+      "sec_id": "INE019A01038",
+      "symbol": "JSWSTEEL",
+      "yf_ticker": "JSWSTEEL.NS",
+      "sector": "Metals & Mining",
+      "industry": "Metals & Mining",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2847176550.0
+    },
+    {
+      "sec_id": "INE371P01015",
+      "symbol": "AMBER",
+      "yf_ticker": "AMBER.NS",
+      "sector": "Consumer Durables",
+      "industry": "Consumer Durables",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2838569500.0
+    },
+    {
+      "sec_id": "INE0DK501011",
+      "symbol": "PPLPHARMA",
+      "yf_ticker": "PPLPHARMA.NS",
+      "sector": "Healthcare",
+      "industry": "Healthcare",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2830601650.0
+    },
+    {
+      "sec_id": "INE372A01015",
+      "symbol": "APARINDS",
+      "yf_ticker": "APARINDS.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2827413250.0
+    },
+    {
+      "sec_id": "INE095A01012",
+      "symbol": "INDUSINDBK",
+      "yf_ticker": "INDUSINDBK.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2818884500.0
+    },
+    {
+      "sec_id": "INE021A01026",
+      "symbol": "ASIANPAINT",
+      "yf_ticker": "ASIANPAINT.NS",
+      "sector": "Consumer Durables",
+      "industry": "Consumer Durables",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2801318200.0
+    },
+    {
+      "sec_id": "INE114A01011",
+      "symbol": "SAIL",
+      "yf_ticker": "SAIL.NS",
+      "sector": "Metals & Mining",
+      "industry": "Metals & Mining",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2795904700.0
+    },
+    {
+      "sec_id": "INE073K01018",
+      "symbol": "SONACOMS",
+      "yf_ticker": "SONACOMS.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2764925400.0
+    },
+    {
+      "sec_id": "INE343H01029",
+      "symbol": "SOLARINDS",
+      "yf_ticker": "SOLARINDS.NS",
+      "sector": "Chemicals",
+      "industry": "Chemicals",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2752591750.0
+    },
+    {
+      "sec_id": "INE192B01031",
+      "symbol": "WELSPUNLIV",
+      "yf_ticker": "WELSPUNLIV.NS",
+      "sector": "Textiles",
+      "industry": "Textiles",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2681028700.0
+    },
+    {
+      "sec_id": "INE364U01010",
+      "symbol": "ADANIGREEN",
+      "yf_ticker": "ADANIGREEN.NS",
+      "sector": "Power",
+      "industry": "Power",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2664795550.0
+    },
+    {
+      "sec_id": "INE752E01010",
+      "symbol": "POWERGRID",
+      "yf_ticker": "POWERGRID.NS",
+      "sector": "Power",
+      "industry": "Power",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2645308050.0
+    },
+    {
+      "sec_id": "INE024001021",
+      "symbol": "AEROFLEX",
+      "yf_ticker": "AEROFLEX.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2644356400.0
+    },
+    {
+      "sec_id": "INE191B01025",
+      "symbol": "WELCORP",
+      "yf_ticker": "WELCORP.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2635451500.0
+    },
+    {
+      "sec_id": "INE103A01014",
+      "symbol": "MRPL",
+      "yf_ticker": "MRPL.NS",
+      "sector": "Oil Gas & Consumable Fuels",
+      "industry": "Oil Gas & Consumable Fuels",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2629299750.0
+    },
+    {
+      "sec_id": "INE205A01025",
+      "symbol": "VEDL",
+      "yf_ticker": "VEDL.NS",
+      "sector": "Metals & Mining",
+      "industry": "Metals & Mining",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2622303400.0
+    },
+    {
+      "sec_id": "INE09PO01019",
+      "symbol": "ZETWERK",
+      "yf_ticker": "ZETWERK.NS",
+      "sector": "UNKNOWN_SECTOR",
+      "industry": "UNKNOWN_INDUSTRY",
+      "is_unknown_sector": true,
+      "adv_20d_inr_as_of_cutoff": 2597814210.53
+    },
+    {
+      "sec_id": "INE414G01012",
+      "symbol": "MUTHOOTFIN",
+      "yf_ticker": "MUTHOOTFIN.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2575879500.0
+    },
+    {
+      "sec_id": "INE465A01025",
+      "symbol": "BHARATFORG",
+      "yf_ticker": "BHARATFORG.NS",
+      "sector": "Automobile and Auto Components",
+      "industry": "Automobile and Auto Components",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2571104800.0
+    },
+    {
+      "sec_id": "INE878B01027",
+      "symbol": "KEI",
+      "yf_ticker": "KEI.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2562344550.0
+    },
+    {
+      "sec_id": "INE0DYJ01015",
+      "symbol": "SYRMA",
+      "yf_ticker": "SYRMA.NS",
+      "sector": "Capital Goods",
+      "industry": "Capital Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2559978600.0
+    },
+    {
+      "sec_id": "INE245A01021",
+      "symbol": "TATAPOWER",
+      "yf_ticker": "TATAPOWER.NS",
+      "sector": "Power",
+      "industry": "Power",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2540139900.0
+    },
+    {
+      "sec_id": "INE134E01011",
+      "symbol": "PFC",
+      "yf_ticker": "PFC.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2462586350.0
+    },
+    {
+      "sec_id": "INE15B701018",
+      "symbol": "PINELABS",
+      "yf_ticker": "PINELABS.NS",
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2457841450.0
+    },
+    {
+      "sec_id": "INE196A01026",
+      "symbol": "MARICO",
+      "yf_ticker": "MARICO.NS",
+      "sector": "Fast Moving Consumer Goods",
+      "industry": "Fast Moving Consumer Goods",
+      "is_unknown_sector": false,
+      "adv_20d_inr_as_of_cutoff": 2450937950.0
+    }
+  ]
+}

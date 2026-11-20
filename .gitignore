@@ -9,9 +9,15 @@ secrets.env
 token.txt
 .kite_token.json
 *.db
+!data/m3_1_paper_trading/prospective_paper_ledger.db
 .DS_Store
 *.log
 data/*_cache.json*
+data/m3_universe/raw_cache
+data/m3_universe/raw_cache/
+*.npz
 tmp/
 .pytest_cache/
+
+
 

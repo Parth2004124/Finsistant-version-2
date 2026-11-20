@@ -1,0 +1,206 @@
+{
+  "schema_version": "m3_1_prospective_launch_manifest_v1",
+  "verdict": "PAPER TRADING ACTIVATED WITH NON-CRITICAL WARNINGS",
+  "deployment_timestamp_utc": "2026-11-20T09:17:53.037877+00:00",
+  "software_version": "3.1.0-rc1",
+  "git_commit_sha": "e6af98fa70a83bc2d9bdfddde4bb3142a1e1ed3b",
+  "historical_cutoff_date": "2026-11-19",
+  "prospective_start_date": "2026-11-19",
+  "first_eligible_prospective_session": "2026-11-20",
+  "database_identifier": "M31-PAPER-DB-27F0B1A4E468",
+  "database_path": "/home/antigravity/Parth2004124/Finsistant-version-2/data/m3_1_paper_trading/prospective_paper_ledger.db",
+  "configuration_hashes": {
+    "canonical_payload_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
+    "raw_file_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
+    "expected_prefix": "47a30f4bbd004c5f",
+    "verified": true
+  },
+  "safety_posture": {
+    "paper_trading_only": true,
+    "live_trading_enabled": false,
+    "broker_order_placement_enabled": false,
+    "automatic_capital_deployment_enabled": false,
+    "banner_text": "PAPER TRADING ONLY \u2014 LIVE TRADING DISABLED",
+    "live_broker_adapter_loaded": false
+  },
+  "engine_status": "RUNNING",
+  "scheduler_status": {
+    "status": "WAITING_FOR_DATA",
+    "last_checked_date": "2026-11-20",
+    "last_completed_date": "",
+    "last_reason": "Daily market data for 2026-11-20 not yet available; waiting.",
+    "missed_sessions": [],
+    "updated_at_utc": "2026-11-20T09:17:53.056827+00:00",
+    "live_trading_enabled": false
+  },
+  "prospective_validation": {
+    "prospective_start_date": "2026-11-19",
+    "completed_unseen_sessions": 0,
+    "minimum_required_sessions": 60,
+    "target_sessions": 120,
+    "progress_to_min_pct": 0.0,
+    "progress_to_target_pct": 0.0,
+    "validation_complete": false,
+    "status_label": "AWAITING_FIRST_PROSPECTIVE_SESSION",
+    "prospective_paper_trades": 0,
+    "prospective_rejected_orders": 0
+  },
+  "portfolio_overview": {
+    "initial_capital_inr": 100000.0,
+    "current_nav_inr": 100000.0,
+    "total_return_pct": 0.0,
+    "today_pnl_inr": 0.0,
+    "available_cash_inr": 100000.0,
+    "pending_settlements_inr": 0.0,
+    "invested_capital_inr": 0.0,
+    "open_positions_count": 0,
+    "open_tactical_positions_count": 0
+  },
+  "benchmark_monitoring": {
+    "methodology_frozen": true,
+    "prospective_sessions_observed": 0,
+    "benchmarks": [
+      {
+        "benchmark_id": "BENCH_100_NIFTYBEES",
+        "benchmark_name": "100% NIFTYBEES (Executable)",
+        "weights": "100% NIFTYBEES",
+        "initial_capital_inr": 100000.0,
+        "prospective_start_date": "2026-11-19",
+        "current_nav_inr": 100000.0,
+        "absolute_return_pct": 0.0,
+        "portfolio_relative_return_pp": 0.0,
+        "cagr_pct": null,
+        "cagr_status": "INSUFFICIENT_SAMPLE (0/60 sessions)",
+        "max_drawdown_pct": 0.0,
+        "annualized_volatility_pct": null,
+        "sharpe_ratio": null,
+        "ratios_status": "INSUFFICIENT_SAMPLE (0/20 sessions)",
+        "estimated_entry_transaction_cost_inr": 49.32,
+        "status": "INITIALIZED_AWAITING_FIRST_PROSPECTIVE_SESSION"
+      },
+      {
+        "benchmark_id": "BENCH_45_55_ETF",
+        "benchmark_name": "45% NIFTYBEES / 55% LIQUIDBEES (Executable)",
+        "weights": "45% NIFTYBEES / 55% LIQUIDBEES",
+        "initial_capital_inr": 100000.0,
+        "prospective_start_date": "2026-11-19",
+        "current_nav_inr": 100000.0,
+        "absolute_return_pct": 0.0,
+        "portfolio_relative_return_pp": 0.0,
+        "cagr_pct": null,
+        "cagr_status": "INSUFFICIENT_SAMPLE (0/60 sessions)",
+        "max_drawdown_pct": 0.0,
+        "annualized_volatility_pct": null,
+        "sharpe_ratio": null,
+        "ratios_status": "INSUFFICIENT_SAMPLE (0/20 sessions)",
+        "estimated_entry_transaction_cost_inr": 33.04,
+        "status": "INITIALIZED_AWAITING_FIRST_PROSPECTIVE_SESSION"
+      }
+    ]
+  },
+  "reconciliation": {
+    "passed": true,
+    "as_of_date": "2026-11-19",
+    "nav_from_assets_inr": 100000.0,
+    "nav_from_equity_inr": 100000.0,
+    "reconciliation_diff_inr": 0.0,
+    "nav_diff_inr": 0.0,
+    "settlement_diff_inr": 0.0,
+    "cost_ledger_diff_inr": 0.0,
+    "dividend_ledger_diff_inr": 0.0,
+    "settled_cash_inr": 100000.0,
+    "unsettled_cash_inr": 0.0,
+    "core_value_inr": 0.0,
+    "tactical_value_inr": 0,
+    "liquid_value_inr": 0.0,
+    "realized_pnl_inr": 0.0,
+    "unrealized_pnl_inr": 0.0,
+    "cum_dividends_inr": 0.0,
+    "cum_liquid_yield_inr": 0.0,
+    "cum_costs_inr": 0.0,
+    "incomplete_checkpoints": [],
+    "failure_reasons": []
+  },
+  "non_critical_warnings": [
+    "daily_index_bars (India VIX, Nifty GS 10Yr, sector indices) ends 2025-10-10; diagnostic-only post-Oct-2025 (never fabricated).",
+    "First eligible unseen NSE session (2026-11-20) is awaiting completed post-close daily OHLCV bars; prospective counter remains strictly 0/60 (0/120 target).",
+    "Initial INR 100,000.00 capital is held cleanly in simulated settled cash (recorded as cash deposit, not profit) until the first completed prospective daily session executes."
+  ],
+  "report_paths": {
+    "paper_trading_daily_report_json": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/paper_trading_daily_report.json",
+    "paper_trading_daily_report_csv": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/paper_trading_daily_report.csv",
+    "portfolio_snapshot_json": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/portfolio_snapshot.json",
+    "open_positions_csv": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/open_positions.csv",
+    "simulated_orders_csv": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/simulated_orders.csv",
+    "transaction_cost_ledger_csv": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/transaction_cost_ledger.csv",
+    "dividend_ledger_csv": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/dividend_ledger.csv",
+    "settlement_ledger_csv": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/settlement_ledger.csv",
+    "risk_alerts_json": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/risk_alerts.json",
+    "data_quality_report_json": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/data_quality_report.json",
+    "configuration_integrity_json": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/configuration_integrity.json",
+    "prospective_validation_progress_json": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/prospective_validation_progress.json",
+    "daily_audit_trail_jsonl": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/prospective_paper_trading/daily_audit_trail.jsonl"
+  },
+  "prelaunch_checks": {
+    "verified_at_utc": "2026-11-20T09:17:53.031208+00:00",
+    "all_prelaunch_checks_passed": true,
+    "checks": {
+      "1_frozen_config_hashes": {
+        "passed": true,
+        "canonical_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
+        "raw_file_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068"
+      },
+      "2_seven_layer_safety_flags": {
+        "passed": true,
+        "ui_banner_verified": true
+      },
+      "3_broker_execution_pathway_blocked": {
+        "passed": true,
+        "broker_credentials_used": false
+      },
+      "4_database_initialized": {
+        "passed": true,
+        "db_path": "/home/antigravity/Parth2004124/Finsistant-version-2/data/m3_1_paper_trading/prospective_paper_ledger.db",
+        "reconciliation_diff_inr": 0.0
+      },
+      "5_initial_capital_reconciled": {
+        "passed": true,
+        "initial_capital_inr": 100000.0
+      },
+      "6_initial_nav_verified": {
+        "passed": true,
+        "current_nav_inr": 100000.0
+      },
+      "7_historical_prospective_isolation": {
+        "passed": true,
+        "historical_cutoff": "2026-11-19",
+        "prospective_sessions": 0
+      },
+      "8_duplicate_execution_protection": {
+        "passed": true
+      },
+      "9_restart_recovery_verified": {
+        "passed": true
+      },
+      "10_dashboard_api_and_403_guard": {
+        "passed": true
+      },
+      "11_risk_monitoring_active": {
+        "passed": true,
+        "overall_health": "HEALTHY",
+        "alert_counts": {
+          "CRITICAL": 0,
+          "WARNING": 0,
+          "INFO": 1
+        }
+      },
+      "12_benchmark_portfolios_initialized": {
+        "passed": true,
+        "benchmarks": [
+          "BENCH_100_NIFTYBEES",
+          "BENCH_45_55_ETF"
+        ]
+      }
+    }
+  }
+}

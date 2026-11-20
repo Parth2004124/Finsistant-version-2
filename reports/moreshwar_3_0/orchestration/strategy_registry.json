@@ -1,0 +1,303 @@
+[
+  {
+    "strategy_id": "STRAT_A_CS_MOMENTUM",
+    "version": "3.0.0-p3",
+    "name": "Family A: Cross-Sectional 52W-High & Validated Factor Momentum",
+    "family": "A_CS_MOMENTUM",
+    "source_prompt": "PROMPT_3",
+    "required_data": [
+      "daily_bars_adj_ohlcv",
+      "daily_liquidity_pit",
+      "factors:DIST_252D_HIGH,MOM_DETERIORATION_60D,VOL_ADJ_MOM_60D,AMIHUD_LIQUIDITY_20D"
+    ],
+    "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+    "min_capital_inr": 100000.0,
+    "requires_slbm_or_futures": false,
+    "validated_regimes": [
+      "STRONG_BULL",
+      "WEAK_BULL",
+      "SIDEWAYS_CHOP"
+    ],
+    "max_allowed_sleeve_dd_pct": 21.0,
+    "throttle_dd_pct": 14.0,
+    "recovery_dd_pct": 11.0,
+    "target_sleeve_vol_pct": 15.0,
+    "is_historical_return_pct": -3.85,
+    "is_historical_max_dd_pct": 24.89,
+    "is_historical_profit_factor": 1.01,
+    "execution_requirements": {
+      "order_mode": "NEXT_OPEN_CNC",
+      "min_adv_20d_inr": 50000000,
+      "rebalance_days": 25,
+      "settlement_lag_days": 1
+    },
+    "validation_status": "VALIDATED_CORE_LONG"
+  },
+  {
+    "strategy_id": "STRAT_B_VCP_BREAKOUT",
+    "version": "3.0.0-p3",
+    "name": "Family B: Volatility-Contraction & Volume/Delivery Breakout",
+    "family": "B_VCP_BREAKOUT",
+    "source_prompt": "PROMPT_3",
+    "required_data": [
+      "daily_bars_adj_ohlcv",
+      "daily_liquidity_pit",
+      "delivery_pct",
+      "factors:BREAKOUT_QUALITY_20D,VOL_CONTRACTION_10V60,REL_VOL_5V20,DELIVERY_SURGE_5V20"
+    ],
+    "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+    "min_capital_inr": 100000.0,
+    "requires_slbm_or_futures": false,
+    "validated_regimes": [
+      "STRONG_BULL",
+      "WEAK_BULL"
+    ],
+    "max_allowed_sleeve_dd_pct": 20.0,
+    "throttle_dd_pct": 13.5,
+    "recovery_dd_pct": 10.5,
+    "target_sleeve_vol_pct": 16.0,
+    "is_historical_return_pct": 4.61,
+    "is_historical_max_dd_pct": 25.51,
+    "is_historical_profit_factor": 1.07,
+    "execution_requirements": {
+      "order_mode": "NEXT_OPEN_CNC",
+      "min_adv_20d_inr": 50000000,
+      "rebalance_days": 5,
+      "settlement_lag_days": 1
+    },
+    "validation_status": "VALIDATED_CORE_LONG"
+  },
+  {
+    "strategy_id": "STRAT_C_TREND_PULLBACK",
+    "version": "3.0.0-p3",
+    "name": "Family C: Primary-Uptrend ATR Pullback Mean-Reversion",
+    "family": "C_TREND_PULLBACK",
+    "source_prompt": "PROMPT_3",
+    "required_data": [
+      "daily_bars_adj_ohlcv",
+      "daily_liquidity_pit",
+      "delivery_pct",
+      "factors:PULLBACK_DEPTH_SMA50,MOM_120_SKIP10,DELIVERY_PCT_20D"
+    ],
+    "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+    "min_capital_inr": 100000.0,
+    "requires_slbm_or_futures": false,
+    "validated_regimes": [
+      "WEAK_BULL",
+      "SIDEWAYS_CHOP"
+    ],
+    "max_allowed_sleeve_dd_pct": 16.0,
+    "throttle_dd_pct": 10.0,
+    "recovery_dd_pct": 7.5,
+    "target_sleeve_vol_pct": 14.0,
+    "is_historical_return_pct": -14.46,
+    "is_historical_max_dd_pct": 38.64,
+    "is_historical_profit_factor": 0.89,
+    "execution_requirements": {
+      "order_mode": "NEXT_OPEN_CNC",
+      "min_adv_20d_inr": 50000000,
+      "rebalance_days": 5,
+      "settlement_lag_days": 1
+    },
+    "validation_status": "CONDITIONAL_MEAN_REV_LONG"
+  },
+  {
+    "strategy_id": "STRAT_D_SECTOR_ROTATION",
+    "version": "3.0.0-p3",
+    "name": "Family D: Causal PIT Sector-First Leadership Rotation",
+    "family": "D_SECTOR_ROTATION",
+    "source_prompt": "PROMPT_3",
+    "required_data": [
+      "daily_bars_adj_ohlcv",
+      "daily_liquidity_pit",
+      "security_master_sector",
+      "factors:SECTOR_BREADTH_SMA50,SECTOR_RS_60D,STOCK_VS_SECTOR_20D"
+    ],
+    "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+    "min_capital_inr": 100000.0,
+    "requires_slbm_or_futures": false,
+    "validated_regimes": [
+      "STRONG_BULL",
+      "WEAK_BULL",
+      "SIDEWAYS_CHOP"
+    ],
+    "max_allowed_sleeve_dd_pct": 21.0,
+    "throttle_dd_pct": 14.0,
+    "recovery_dd_pct": 11.0,
+    "target_sleeve_vol_pct": 15.0,
+    "is_historical_return_pct": 4.74,
+    "is_historical_max_dd_pct": 36.69,
+    "is_historical_profit_factor": 1.05,
+    "execution_requirements": {
+      "order_mode": "NEXT_OPEN_CNC",
+      "min_adv_20d_inr": 50000000,
+      "rebalance_days": 20,
+      "settlement_lag_days": 1
+    },
+    "validation_status": "VALIDATED_CORE_LONG"
+  },
+  {
+    "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+    "version": "3.0.0-p3",
+    "name": "Family E: Defensive PIT Dividend-Yield & Low-Volatility Compounder",
+    "family": "E_DEFENSIVE_YIELD_LOWVOL",
+    "source_prompt": "PROMPT_3",
+    "required_data": [
+      "daily_bars_adj_ohlcv",
+      "daily_liquidity_pit",
+      "corporate_actions_div_ex",
+      "factors:DIV_YIELD_TTM_PIT,LOW_VOL_20D,IDIO_VOL_20D"
+    ],
+    "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+    "min_capital_inr": 100000.0,
+    "requires_slbm_or_futures": false,
+    "validated_regimes": [
+      "STRONG_BULL",
+      "WEAK_BULL",
+      "SIDEWAYS_CHOP",
+      "WEAK_BEAR",
+      "STRESS_BEAR"
+    ],
+    "max_allowed_sleeve_dd_pct": 18.5,
+    "throttle_dd_pct": 12.5,
+    "recovery_dd_pct": 9.5,
+    "target_sleeve_vol_pct": 12.5,
+    "is_historical_return_pct": 11.33,
+    "is_historical_max_dd_pct": 22.58,
+    "is_historical_profit_factor": 1.18,
+    "execution_requirements": {
+      "order_mode": "NEXT_OPEN_CNC",
+      "min_adv_20d_inr": 50000000,
+      "rebalance_days": 30,
+      "settlement_lag_days": 1
+    },
+    "validation_status": "VALIDATED_CORE_LONG"
+  },
+  {
+    "strategy_id": "STRAT_RV1_COINT_PAIRS",
+    "version": "3.0.0-p6",
+    "name": "Prompt 6 Branch 1A: Engle-Granger Cointegrated Pairs Trading",
+    "family": "RV_COINT_PAIRS",
+    "source_prompt": "PROMPT_6",
+    "required_data": [
+      "daily_bars_adj_ohlcv",
+      "slbm_borrow_feed",
+      "corporate_actions_div_ex"
+    ],
+    "market_eligibility": "NSE_SLBM_SHORT_OR_SSF",
+    "min_capital_inr": 2500000.0,
+    "requires_slbm_or_futures": true,
+    "validated_regimes": [
+      "SIDEWAYS_CHOP",
+      "WEAK_BEAR"
+    ],
+    "max_allowed_sleeve_dd_pct": 12.0,
+    "throttle_dd_pct": 8.0,
+    "recovery_dd_pct": 5.0,
+    "target_sleeve_vol_pct": 8.0,
+    "is_historical_return_pct": -17.67,
+    "is_historical_max_dd_pct": 19.8,
+    "is_historical_profit_factor": 0.74,
+    "execution_requirements": {
+      "order_mode": "TWO_LEG_SLBM",
+      "slb_fee_pct_pa": 10.0
+    },
+    "validation_status": "REJECTED_SLBM_DRAG"
+  },
+  {
+    "strategy_id": "STRAT_RV2A_SECTOR_REL_MOM",
+    "version": "3.0.0-p6",
+    "name": "Prompt 6 Branch 2A: Intra-Sector Leadership Long-Short",
+    "family": "RV_SECTOR_LS",
+    "source_prompt": "PROMPT_6",
+    "required_data": [
+      "daily_bars_adj_ohlcv",
+      "slbm_borrow_feed",
+      "security_master_sector"
+    ],
+    "market_eligibility": "NSE_SLBM_SHORT_OR_SSF",
+    "min_capital_inr": 2500000.0,
+    "requires_slbm_or_futures": true,
+    "validated_regimes": [
+      "STRONG_BULL",
+      "WEAK_BULL",
+      "SIDEWAYS_CHOP"
+    ],
+    "max_allowed_sleeve_dd_pct": 15.0,
+    "throttle_dd_pct": 10.0,
+    "recovery_dd_pct": 7.0,
+    "target_sleeve_vol_pct": 10.0,
+    "is_historical_return_pct": 19.02,
+    "is_historical_max_dd_pct": 14.12,
+    "is_historical_profit_factor": 1.15,
+    "execution_requirements": {
+      "order_mode": "TWO_LEG_SLBM",
+      "slb_fee_pct_pa": 10.5
+    },
+    "validation_status": "REJECTED_SLBM_DRAG"
+  },
+  {
+    "strategy_id": "STRAT_RV3_MARKET_NEUTRAL_LS",
+    "version": "3.0.0-p6",
+    "name": "Prompt 6 Branch 3: Cross-Sectional Beta-Neutral Factor Long-Short",
+    "family": "RV_MARKET_NEUTRAL",
+    "source_prompt": "PROMPT_6",
+    "required_data": [
+      "daily_bars_adj_ohlcv",
+      "slbm_borrow_feed",
+      "validated_factors"
+    ],
+    "market_eligibility": "NSE_SLBM_SHORT_OR_SSF",
+    "min_capital_inr": 2500000.0,
+    "requires_slbm_or_futures": true,
+    "validated_regimes": [
+      "SIDEWAYS_CHOP",
+      "WEAK_BEAR",
+      "STRESS_BEAR"
+    ],
+    "max_allowed_sleeve_dd_pct": 15.0,
+    "throttle_dd_pct": 10.0,
+    "recovery_dd_pct": 7.0,
+    "target_sleeve_vol_pct": 9.0,
+    "is_historical_return_pct": -9.45,
+    "is_historical_max_dd_pct": 31.4,
+    "is_historical_profit_factor": 0.88,
+    "execution_requirements": {
+      "order_mode": "TWO_LEG_SLBM",
+      "slb_fee_pct_pa": 10.5
+    },
+    "validation_status": "REJECTED_SLBM_DRAG"
+  },
+  {
+    "strategy_id": "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT",
+    "version": "3.0.0-p6",
+    "name": "Prompt 6 Branch 4A: Nifty 50 Index Futures Regime Hedge Overlay (25L+ Capital)",
+    "family": "RV_INDEX_FUTURES_HEDGE",
+    "source_prompt": "PROMPT_6",
+    "required_data": [
+      "nifty50_ohlc",
+      "regime_intelligence_state"
+    ],
+    "market_eligibility": "NSE_FNO_INDEX_FUTURES_25L",
+    "min_capital_inr": 2500000.0,
+    "requires_slbm_or_futures": true,
+    "validated_regimes": [
+      "SIDEWAYS_CHOP",
+      "WEAK_BEAR",
+      "STRESS_BEAR"
+    ],
+    "max_allowed_sleeve_dd_pct": 15.0,
+    "throttle_dd_pct": 10.0,
+    "recovery_dd_pct": 7.0,
+    "target_sleeve_vol_pct": 12.0,
+    "is_historical_return_pct": 12.18,
+    "is_historical_max_dd_pct": 14.36,
+    "is_historical_profit_factor": 1.14,
+    "execution_requirements": {
+      "order_mode": "NSE_FNO_NRML_LOT_75",
+      "span_exposure_margin_pct": 22.0,
+      "rolls_per_year": 12
+    },
+    "validation_status": "ISOLATED_25L_FUTURES_HEDGE"
+  }
+]

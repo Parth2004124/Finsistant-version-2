@@ -1,0 +1,1 @@
+cost_id,order_id,trading_date,instrument_class,symbol,side,gross_value_inr,brokerage_inr,stt_inr,exchange_fee_inr,sebi_fee_inr,gst_inr,stamp_duty_inr,dp_charge_inr,slippage_inr,regulatory_total_inr,total_cost_inr,observation_mode

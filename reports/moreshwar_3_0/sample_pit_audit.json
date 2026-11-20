@@ -1,0 +1,477 @@
+{
+  "periods": [
+    {
+      "as_of_date": "2021-03-15",
+      "total_nse_equities_trading_that_day": 1852,
+      "pit_eligible_broad_adv_5cr": 619,
+      "pit_eligible_core_adv_50cr": 212,
+      "subsequently_delisted_or_merged_present_pit": 32,
+      "delisted_merged_examples": [
+        "HDFC",
+        "PEL",
+        "MINDTREE",
+        "IDFC",
+        "TATAMTRDVR",
+        "MEGH",
+        "GSPL",
+        "DHANI",
+        "TV18BRDCST",
+        "PHILIPCARB",
+        "TATASTLBSL",
+        "TATACOFFEE",
+        "SPICEJET",
+        "EQUITAS",
+        "BURGERKING"
+      ],
+      "top5_by_adv": [
+        {
+          "symbol": "TATAMOTORS",
+          "sec_id": "INE155A01022",
+          "adv_20d_cr": 2389.07
+        },
+        {
+          "symbol": "RELIANCE",
+          "sec_id": "INE002A01018",
+          "adv_20d_cr": 2090.95
+        },
+        {
+          "symbol": "SBIN",
+          "sec_id": "INE062A01020",
+          "adv_20d_cr": 1962.47
+        },
+        {
+          "symbol": "ICICIBANK",
+          "sec_id": "INE090A01021",
+          "adv_20d_cr": 1600.53
+        },
+        {
+          "symbol": "BHARTIARTL",
+          "sec_id": "INE397D01024",
+          "adv_20d_cr": 1585.22
+        }
+      ]
+    },
+    {
+      "as_of_date": "2022-03-15",
+      "total_nse_equities_trading_that_day": 1957,
+      "pit_eligible_broad_adv_5cr": 673,
+      "pit_eligible_core_adv_50cr": 202,
+      "subsequently_delisted_or_merged_present_pit": 31,
+      "delisted_merged_examples": [
+        "HDFC",
+        "MINDTREE",
+        "PEL",
+        "DHANI",
+        "TV18BRDCST",
+        "TATAMTRDVR",
+        "IDFC",
+        "GSPL",
+        "SPICEJET",
+        "INOXLEISUR",
+        "ISEC",
+        "SETFNIF50",
+        "FRETAIL",
+        "TINPLATE",
+        "UJJIVAN"
+      ],
+      "top5_by_adv": [
+        {
+          "symbol": "TATAMOTORS",
+          "sec_id": "INE155A01022",
+          "adv_20d_cr": 1632.06
+        },
+        {
+          "symbol": "RELIANCE",
+          "sec_id": "INE002A01018",
+          "adv_20d_cr": 1573.69
+        },
+        {
+          "symbol": "ICICIBANK",
+          "sec_id": "INE090A01021",
+          "adv_20d_cr": 1484.08
+        },
+        {
+          "symbol": "INFY",
+          "sec_id": "INE009A01021",
+          "adv_20d_cr": 1402.12
+        },
+        {
+          "symbol": "HDFCBANK",
+          "sec_id": "INE040A01034",
+          "adv_20d_cr": 1331.72
+        }
+      ]
+    },
+    {
+      "as_of_date": "2023-03-15",
+      "total_nse_equities_trading_that_day": 2114,
+      "pit_eligible_broad_adv_5cr": 613,
+      "pit_eligible_core_adv_50cr": 193,
+      "subsequently_delisted_or_merged_present_pit": 16,
+      "delisted_merged_examples": [
+        "HDFC",
+        "PEL",
+        "IDFC",
+        "TATAMTRDVR",
+        "GSPL",
+        "TCNSBRANDS",
+        "SPICEJET",
+        "ISMTLTD",
+        "TV18BRDCST",
+        "CIGNITITEC",
+        "SETFNIF50",
+        "ICICINIFTY",
+        "UJJIVAN",
+        "ISEC",
+        "JBCHEPHARM"
+      ],
+      "top5_by_adv": [
+        {
+          "symbol": "ADANIENT",
+          "sec_id": "INE423A01024",
+          "adv_20d_cr": 2236.37
+        },
+        {
+          "symbol": "RELIANCE",
+          "sec_id": "INE002A01018",
+          "adv_20d_cr": 1584.54
+        },
+        {
+          "symbol": "HDFCBANK",
+          "sec_id": "INE040A01034",
+          "adv_20d_cr": 1509.78
+        },
+        {
+          "symbol": "ICICIBANK",
+          "sec_id": "INE090A01021",
+          "adv_20d_cr": 1109.36
+        },
+        {
+          "symbol": "ADANIPORTS",
+          "sec_id": "INE742F01042",
+          "adv_20d_cr": 1027.51
+        }
+      ]
+    },
+    {
+      "as_of_date": "2024-03-15",
+      "total_nse_equities_trading_that_day": 2393,
+      "pit_eligible_broad_adv_5cr": 1004,
+      "pit_eligible_core_adv_50cr": 363,
+      "subsequently_delisted_or_merged_present_pit": 20,
+      "delisted_merged_examples": [
+        "TATAMTRDVR",
+        "PEL",
+        "JPASSOCIAT",
+        "IDFC",
+        "ISEC",
+        "GSPL",
+        "UJJIVAN",
+        "SETFNIF50",
+        "TV18BRDCST",
+        "CIGNITITEC",
+        "JBCHEPHARM",
+        "HERCULES",
+        "DHANI",
+        "SETFNIFBK",
+        "MANGCHEFER"
+      ],
+      "top5_by_adv": [
+        {
+          "symbol": "HDFCBANK",
+          "sec_id": "INE040A01034",
+          "adv_20d_cr": 3444.19
+        },
+        {
+          "symbol": "JIOFIN",
+          "sec_id": "INE758E01017",
+          "adv_20d_cr": 2333.16
+        },
+        {
+          "symbol": "ICICIBANK",
+          "sec_id": "INE090A01021",
+          "adv_20d_cr": 1743.8
+        },
+        {
+          "symbol": "RELIANCE",
+          "sec_id": "INE002A01018",
+          "adv_20d_cr": 1742.49
+        },
+        {
+          "symbol": "SBIN",
+          "sec_id": "INE062A01020",
+          "adv_20d_cr": 1398.28
+        }
+      ]
+    },
+    {
+      "as_of_date": "2025-03-17",
+      "total_nse_equities_trading_that_day": 2750,
+      "pit_eligible_broad_adv_5cr": 913,
+      "pit_eligible_core_adv_50cr": 334,
+      "subsequently_delisted_or_merged_present_pit": 9,
+      "delisted_merged_examples": [
+        "PEL",
+        "GSPL",
+        "ISEC",
+        "SETFGOLD",
+        "JBCHEPHARM",
+        "DHANI",
+        "SETFNIF50",
+        "CIGNITITEC",
+        "IWEL"
+      ],
+      "top5_by_adv": [
+        {
+          "symbol": "BSE",
+          "sec_id": "INE118H01025",
+          "adv_20d_cr": 2004.61
+        },
+        {
+          "symbol": "HDFCBANK",
+          "sec_id": "INE040A01034",
+          "adv_20d_cr": 1854.87
+        },
+        {
+          "symbol": "INDUSINDBK",
+          "sec_id": "INE095A01012",
+          "adv_20d_cr": 1519.33
+        },
+        {
+          "symbol": "RELIANCE",
+          "sec_id": "INE002A01018",
+          "adv_20d_cr": 1389.45
+        },
+        {
+          "symbol": "ICICIBANK",
+          "sec_id": "INE090A01021",
+          "adv_20d_cr": 1250.3
+        }
+      ]
+    },
+    {
+      "as_of_date": "2026-11-18",
+      "total_nse_equities_trading_that_day": 3440,
+      "pit_eligible_broad_adv_5cr": 1181,
+      "pit_eligible_core_adv_50cr": 429,
+      "subsequently_delisted_or_merged_present_pit": 0,
+      "delisted_merged_examples": [],
+      "top5_by_adv": [
+        {
+          "symbol": "HDFCBANK",
+          "sec_id": "INE040A01034",
+          "adv_20d_cr": 2888.74
+        },
+        {
+          "symbol": "RELIANCE",
+          "sec_id": "INE002A01018",
+          "adv_20d_cr": 2687.43
+        },
+        {
+          "symbol": "ICICIBANK",
+          "sec_id": "INE090A01021",
+          "adv_20d_cr": 2514.1
+        },
+        {
+          "symbol": "BHARTIARTL",
+          "sec_id": "INE397D01024",
+          "adv_20d_cr": 1909.25
+        },
+        {
+          "symbol": "SBIN",
+          "sec_id": "INE062A01020",
+          "adv_20d_cr": 1666.99
+        }
+      ]
+    }
+  ],
+  "case_studies": {
+    "HDFC": {
+      "master": {
+        "sec_id": "INE001A01028",
+        "current_symbol": "HDFC",
+        "status": "INACTIVE_OR_DELISTED_MERGED",
+        "listing_date": null,
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2023-07-12",
+        "total_sessions_observed": 626
+      },
+      "observed_as_symbol_bars": {
+        "n": 626,
+        "mn": "2021-01-01",
+        "mx": "2023-07-12"
+      }
+    },
+    "MINDTREE": {
+      "master": {
+        "sec_id": "INE018I01017",
+        "current_symbol": "MINDTREE",
+        "status": "INACTIVE_OR_DELISTED_MERGED",
+        "listing_date": null,
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2022-11-22",
+        "total_sessions_observed": 468
+      },
+      "observed_as_symbol_bars": {
+        "n": 468,
+        "mn": "2021-01-01",
+        "mx": "2022-11-22"
+      }
+    },
+    "CADILAHC": {
+      "master": {
+        "sec_id": "INE010B01027",
+        "current_symbol": "ZYDUSLIFE",
+        "status": "ACTIVE",
+        "listing_date": "2000-04-18",
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2026-11-19",
+        "total_sessions_observed": 1454
+      },
+      "observed_as_symbol_bars": {
+        "n": 291,
+        "mn": "2021-01-01",
+        "mx": "2022-03-04"
+      }
+    },
+    "ZYDUSLIFE": {
+      "master": {
+        "sec_id": "INE010B01027",
+        "current_symbol": "ZYDUSLIFE",
+        "status": "ACTIVE",
+        "listing_date": "2000-04-18",
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2026-11-19",
+        "total_sessions_observed": 1454
+      },
+      "observed_as_symbol_bars": {
+        "n": 1163,
+        "mn": "2022-03-07",
+        "mx": "2026-11-19"
+      }
+    },
+    "MOTHERSUMI": {
+      "master": {
+        "sec_id": "INE775A01035",
+        "current_symbol": "MOTHERSON",
+        "status": "ACTIVE",
+        "listing_date": "1996-08-14",
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2026-11-19",
+        "total_sessions_observed": 1454
+      },
+      "observed_as_symbol_bars": {
+        "n": 355,
+        "mn": "2021-01-01",
+        "mx": "2022-06-08"
+      }
+    },
+    "MOTHERSON": {
+      "master": {
+        "sec_id": "INE775A01035",
+        "current_symbol": "MOTHERSON",
+        "status": "ACTIVE",
+        "listing_date": "1996-08-14",
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2026-11-19",
+        "total_sessions_observed": 1454
+      },
+      "observed_as_symbol_bars": {
+        "n": 1099,
+        "mn": "2022-06-09",
+        "mx": "2026-11-19"
+      }
+    },
+    "IRCTC": {
+      "master": {
+        "sec_id": "INE335Y01020",
+        "current_symbol": "IRCTC",
+        "status": "ACTIVE",
+        "listing_date": "2019-10-14",
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2026-11-19",
+        "total_sessions_observed": 1454
+      },
+      "observed_as_symbol_bars": {
+        "n": 1454,
+        "mn": "2021-01-01",
+        "mx": "2026-11-19"
+      }
+    },
+    "IEX": {
+      "master": {
+        "sec_id": "INE022Q01020",
+        "current_symbol": "IEX",
+        "status": "ACTIVE",
+        "listing_date": "2017-10-23",
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2026-11-19",
+        "total_sessions_observed": 1454
+      },
+      "observed_as_symbol_bars": {
+        "n": 1454,
+        "mn": "2021-01-01",
+        "mx": "2026-11-19"
+      }
+    },
+    "JETAIRWAYS": {
+      "master": {
+        "sec_id": "INE802G01018",
+        "current_symbol": "JETAIRWAYS",
+        "status": "INACTIVE_OR_DELISTED_MERGED",
+        "listing_date": null,
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2024-11-07",
+        "total_sessions_observed": 936
+      },
+      "observed_as_symbol_bars": {
+        "n": 936,
+        "mn": "2021-01-01",
+        "mx": "2024-11-07"
+      }
+    },
+    "SUZLON": {
+      "master": {
+        "sec_id": "INE040H01021",
+        "current_symbol": "SUZLON",
+        "status": "ACTIVE",
+        "listing_date": "2005-10-19",
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2026-11-19",
+        "total_sessions_observed": 1454
+      },
+      "observed_as_symbol_bars": {
+        "n": 1454,
+        "mn": "2021-01-01",
+        "mx": "2026-11-19"
+      }
+    },
+    "YESBANK": {
+      "master": {
+        "sec_id": "INE528G01035",
+        "current_symbol": "YESBANK",
+        "status": "ACTIVE",
+        "listing_date": "2005-07-12",
+        "delisting_date": null,
+        "first_seen_date": "2021-01-01",
+        "last_seen_date": "2026-11-19",
+        "total_sessions_observed": 1454
+      },
+      "observed_as_symbol_bars": {
+        "n": 1454,
+        "mn": "2021-01-01",
+        "mx": "2026-11-19"
+      }
+    }
+  }
+}

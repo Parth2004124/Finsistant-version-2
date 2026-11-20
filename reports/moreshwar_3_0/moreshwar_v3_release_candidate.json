@@ -1,0 +1,1172 @@
+{
+  "release_version": "3.0.0-rc1",
+  "generated_at": "2026-11-19T21:26:47.926058+00:00",
+  "release_decision": {
+    "release_version": "3.0.0-rc1",
+    "release_outcome": "CONDITIONAL GO (PAPER-TRADING & RESEARCH CANDIDATE ONLY \u2014 NO-GO FOR LIVE CAPITAL)",
+    "paper_trading_authorized": true,
+    "live_capital_deployment_authorized": false,
+    "promoted_to_production": false,
+    "summary_rationale": "Moreshwar 3.0 passes all software architecture, 4,416-security Point-in-Time NSE data engineering, zero-lookahead/survivorship verification, four-ledger accounting reconciliation (INR 0.00 discrepancy), realistic historical Zerodha/NSE tariff modelling, and hard paper-only broker security isolation tests. However, the Prompt 9 Independent Quantitative Audit demonstrated that active equity trading (+7.43% uninvested / +29.76% with 6.5% idle cash sweep) underperformed passive Indian benchmarks (+39.50% risk-free cash, +56.82% utilisation-matched 45/55 Nifty TRI + Cash, +73.82% Nifty 50 TRI), yielded a Deflated Sharpe Ratio of 0.0018 (< 0.95) across 185 trials, and depended heavily on top-5 winning trades (-9.32% ex-top-5). Therefore, live capital deployment is strictly forbidden (NO-GO), and v3.0.0-rc1 is released as a CONDITIONAL GO Paper-Trading & Research Candidate.",
+    "next_stage_roadmap_m3_1": [
+      "1. Point-in-Time NSE XBRL Quarterly Fundamental Filings: Ingest official NSE corporate XBRL filing timestamps (2018-2026) so earnings surprise (SUE), ROE, and operating margin factors can be tested without look-ahead bias.",
+      "2. True Historical Nifty 500 Point-in-Time Index Constituents: Replace static index snapshots with historical semi-annual NSE index replacement notices to enable exact benchmark-relative tracking error control.",
+      "3. Low-Turnover Core Compounder + Passive Index Core-Satellite Blend: Hold Nifty 50 / Nifty 500 TRI as the default core when active sleeves are idle instead of holding 55% uninvested cash.",
+      "4. Forward Paper-Trading Out-of-Sample Trial (6 Months): Accumulate >= 120 untouched forward paper-trading sessions in `paper_trading_state_snapshot.json` before any future live-capital review."
+    ]
+  },
+  "data_labels": {
+    "backtested": "BACKTESTED_RESEARCH (Historical Simulation Only)",
+    "paper_trading": "PAPER_TRADING_SIMULATED (Zero Real Broker Orders)",
+    "actual_broker": "ACTUAL_BROKER_ACCOUNT (Read-Only Holdings / Live Orders Disabled)"
+  },
+  "universe_summary": {
+    "version_id": "m3_20261119T191710Z",
+    "trading_sessions": 1454,
+    "total_securities": 4416,
+    "validated_daily_bars": 3498739,
+    "corporate_actions": 13074,
+    "delivery_coverage_pct": 90.06
+  },
+  "research_dashboard": {
+    "top_factors": [],
+    "strategy_families": [
+      {
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "family": "A_CS_MOMENTUM",
+        "full_return_pct": 10.97,
+        "full_max_dd_pct": 24.89,
+        "full_net_pf": 1.08,
+        "trades": 303,
+        "oos_return_pct": 15.41,
+        "oos_max_dd_pct": 14.26,
+        "data_tag": "BACKTESTED_RESEARCH"
+      },
+      {
+        "strategy_id": "STRAT_B_VCP_BREAKOUT",
+        "family": "B_VCP_BREAKOUT",
+        "full_return_pct": 12.92,
+        "full_max_dd_pct": 25.51,
+        "full_net_pf": 1.09,
+        "trades": 245,
+        "oos_return_pct": 7.95,
+        "oos_max_dd_pct": 16.7,
+        "data_tag": "BACKTESTED_RESEARCH"
+      },
+      {
+        "strategy_id": "STRAT_C_TREND_PULLBACK",
+        "family": "C_TREND_PULLBACK",
+        "full_return_pct": -12.29,
+        "full_max_dd_pct": 39.85,
+        "full_net_pf": 0.92,
+        "trades": 315,
+        "oos_return_pct": 2.54,
+        "oos_max_dd_pct": 12.58,
+        "data_tag": "BACKTESTED_RESEARCH"
+      },
+      {
+        "strategy_id": "STRAT_D_SECTOR_ROTATION",
+        "family": "D_SECTOR_ROTATION",
+        "full_return_pct": 5.56,
+        "full_max_dd_pct": 36.69,
+        "full_net_pf": 1.04,
+        "trades": 321,
+        "oos_return_pct": 0.78,
+        "oos_max_dd_pct": 14.87,
+        "data_tag": "BACKTESTED_RESEARCH"
+      },
+      {
+        "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+        "family": "E_DEFENSIVE_YIELD_LOWVOL",
+        "full_return_pct": 26.15,
+        "full_max_dd_pct": 22.58,
+        "full_net_pf": 1.25,
+        "trades": 215,
+        "oos_return_pct": 13.31,
+        "oos_max_dd_pct": 11.01,
+        "data_tag": "BACKTESTED_RESEARCH"
+      }
+    ],
+    "current_regime": {
+      "core_5state": "WEAK_BULL",
+      "fine_9state": "WEAK_BULLISH",
+      "nifty50_close": 25514.3,
+      "pct_above_sma50": 48.0,
+      "ad_5d_pct": 40.2,
+      "nifty_vol20_ann_pct": 13.99,
+      "nifty_dd252_pct": -3.09,
+      "regime_target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.25,
+        "STRAT_B_VCP_BREAKOUT": 0.15,
+        "STRAT_C_TREND_PULLBACK": 0.2,
+        "STRAT_D_SECTOR_ROTATION": 0.2,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.15,
+        "CASH_RESERVE": 0.05
+      }
+    },
+    "relative_value_hedged_summary": {
+      "STRAT_RV1_COINT_PAIRS": {
+        "full_return_pct": -20.93,
+        "full_max_dd_pct": 21.42,
+        "market_beta": -0.01,
+        "oos_return_pct": -3.96,
+        "verdict": "REJECTED_AFTER_SLB_BORROW_AND_COSTS"
+      },
+      "STRAT_RV1B_HIGH_CORR_NON_COINT_ABLATION": {
+        "full_return_pct": -39.12,
+        "full_max_dd_pct": 40.19,
+        "market_beta": 0.023,
+        "oos_return_pct": -13.85,
+        "verdict": "REJECTED_STRUCTURAL_DIVERGENCE"
+      },
+      "STRAT_RV2A_SECTOR_REL_MOM": {
+        "full_return_pct": 4.29,
+        "full_max_dd_pct": 19.51,
+        "market_beta": -0.016,
+        "oos_return_pct": -12.38,
+        "verdict": "RESEARCH_MONITOR_ONLY_SLB_DRAG"
+      },
+      "STRAT_RV2B_SECTOR_SPREAD_REV": {
+        "full_return_pct": -35.95,
+        "full_max_dd_pct": 44.21,
+        "market_beta": 0.064,
+        "oos_return_pct": 3.86,
+        "verdict": "REJECTED_NEGATIVE_EXPECTANCY"
+      },
+      "STRAT_RV3_MARKET_NEUTRAL_LS": {
+        "full_return_pct": -22.63,
+        "full_max_dd_pct": 41.27,
+        "market_beta": -0.081,
+        "oos_return_pct": -14.55,
+        "verdict": "VALID_ZERO_BETA_DIVERSIFIER_AT_INSTITUTIONAL_SCALE_ONLY"
+      },
+      "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+        "full_return_pct": 6.55,
+        "full_max_dd_pct": 14.36,
+        "market_beta": 0.299,
+        "oos_return_pct": -5.01,
+        "verdict": "VALIDATED_DRAWDOWN_REDUCER_FOR_25L_PLUS_CAPITAL"
+      },
+      "STRAT_RV4B_NIFTY_FUT_HEDGED_100K_LOT": {
+        "full_return_pct": 7.43,
+        "full_max_dd_pct": 16.5,
+        "market_beta": 0.36,
+        "oos_return_pct": -5.74,
+        "verdict": "INFEASIBLE_AT_100K_CAPITAL_USE_CASH_RESERVE_INSTEAD"
+      },
+      "STRAT_RV4C_NIFTY_FUT_IDEAL_FRACTIONAL": {
+        "full_return_pct": 3.36,
+        "full_max_dd_pct": 16.68,
+        "market_beta": 0.219,
+        "oos_return_pct": -5.88,
+        "verdict": "THEORETICAL_REFERENCE_ONLY"
+      },
+      "BASELINE_PROMPT5_LONG_ONLY": {
+        "full_return_pct": 7.43,
+        "full_max_dd_pct": 16.5,
+        "market_beta": 0.36,
+        "oos_return_pct": -5.74,
+        "verdict": "PRIMARY_PRODUCTION_CANDIDATE_FOR_100K"
+      }
+    }
+  },
+  "portfolio_dashboard": {
+    "paper_account_ledger": {
+      "account_mode": "PAPER_TRADING_SIMULATED",
+      "initial_capital_inr": 100000.0,
+      "current_nav_uninvested_cash_inr": 107434.41,
+      "current_nav_with_65_cash_sweep_inr": 129760.0,
+      "cumulative_realized_pnl_inr": 7434.37,
+      "cumulative_transaction_costs_inr": 9825.77,
+      "reconciliation_discrepancy_inr": 0.04,
+      "current_drawdown_pct": 15.38,
+      "max_historical_drawdown_pct": 16.5,
+      "avg_capital_utilisation_pct": 45.0,
+      "avg_idle_cash_pct": 55.0
+    },
+    "active_paper_positions": [
+      {
+        "slot": 1,
+        "symbol": "UNIONBANK",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "qty": 61,
+        "entry_price_inr": 210.3,
+        "mark_price_inr": 210.0,
+        "stop_loss_inr": 191.65,
+        "notional_inr": 12810.0,
+        "weight_pct_nav": 11.92,
+        "status": "PAPER_ACTIVE_SIMULATED"
+      },
+      {
+        "slot": 2,
+        "symbol": "DRREDDY",
+        "sector": "Healthcare",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "qty": 9,
+        "entry_price_inr": 1402.79,
+        "mark_price_inr": 1400.9,
+        "stop_loss_inr": 1286.5,
+        "notional_inr": 12608.1,
+        "weight_pct_nav": 11.74,
+        "status": "PAPER_ACTIVE_SIMULATED"
+      },
+      {
+        "slot": 3,
+        "symbol": "ICICIBANK",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "qty": 8,
+        "entry_price_inr": 1610.13,
+        "mark_price_inr": 1608.9,
+        "stop_loss_inr": 1482.62,
+        "notional_inr": 12871.2,
+        "weight_pct_nav": 11.98,
+        "status": "PAPER_ACTIVE_SIMULATED"
+      },
+      {
+        "slot": 4,
+        "symbol": "PNB",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "qty": 83,
+        "entry_price_inr": 155.08,
+        "mark_price_inr": 154.85,
+        "stop_loss_inr": 138.85,
+        "notional_inr": 12852.55,
+        "weight_pct_nav": 11.96,
+        "status": "PAPER_ACTIVE_SIMULATED"
+      },
+      {
+        "slot": 5,
+        "symbol": "GAIL",
+        "sector": "Oil Gas & Consumable Fuels",
+        "strategy_id": "STRAT_B_VCP_BREAKOUT",
+        "qty": 67,
+        "entry_price_inr": 192.44,
+        "mark_price_inr": 192.1,
+        "stop_loss_inr": 174.63,
+        "notional_inr": 12870.7,
+        "weight_pct_nav": 11.98,
+        "status": "PAPER_ACTIVE_SIMULATED"
+      },
+      {
+        "slot": 6,
+        "symbol": "POONAWALLA",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_B_VCP_BREAKOUT",
+        "qty": 22,
+        "entry_price_inr": 506.16,
+        "mark_price_inr": 504.75,
+        "stop_loss_inr": 439.13,
+        "notional_inr": 11104.5,
+        "weight_pct_nav": 10.34,
+        "status": "PAPER_ACTIVE_SIMULATED"
+      }
+    ],
+    "sector_concentration_pct": {
+      "Financial Services": 46.2,
+      "Healthcare": 11.74,
+      "Oil Gas & Consumable Fuels": 11.98
+    },
+    "sizing_comparison": [
+      {
+        "sizing_method": "EQUAL_WEIGHT",
+        "full_uninvested_return_pct": 9.32,
+        "full_cash_sweep_return_pct": 31.76,
+        "full_max_dd_pct": 18.96,
+        "full_net_pf": 1.12,
+        "oos_return_pct": 13.96,
+        "oos_max_dd_pct": 9.45,
+        "utilisation_pct": 45.6
+      },
+      {
+        "sizing_method": "VOLATILITY_ADJUSTED",
+        "full_uninvested_return_pct": 6.76,
+        "full_cash_sweep_return_pct": 30.29,
+        "full_max_dd_pct": 16.35,
+        "full_net_pf": 1.1,
+        "oos_return_pct": 16.04,
+        "oos_max_dd_pct": 6.81,
+        "utilisation_pct": 42.0
+      },
+      {
+        "sizing_method": "RISK_BUDGETED",
+        "full_uninvested_return_pct": 7.43,
+        "full_cash_sweep_return_pct": 29.76,
+        "full_max_dd_pct": 16.5,
+        "full_net_pf": 1.1,
+        "oos_return_pct": 15.7,
+        "oos_max_dd_pct": 7.94,
+        "utilisation_pct": 45.0
+      },
+      {
+        "sizing_method": "MAX_LOSS_BASED",
+        "full_uninvested_return_pct": 5.97,
+        "full_cash_sweep_return_pct": 27.35,
+        "full_max_dd_pct": 20.73,
+        "full_net_pf": 1.08,
+        "oos_return_pct": 3.27,
+        "oos_max_dd_pct": 10.77,
+        "utilisation_pct": 46.4
+      },
+      {
+        "sizing_method": "CONFIDENCE_VALIDATED",
+        "full_uninvested_return_pct": 7.36,
+        "full_cash_sweep_return_pct": 28.82,
+        "full_max_dd_pct": 15.9,
+        "full_net_pf": 1.1,
+        "oos_return_pct": 11.73,
+        "oos_max_dd_pct": 7.87,
+        "utilisation_pct": 46.9
+      }
+    ],
+    "orchestrator_allocators": {
+      "STATIC": {
+        "full_return_pct": 17.04,
+        "full_max_dd_pct": 20.25,
+        "calmar": 0.17,
+        "oos_return_pct": 8.18,
+        "oos_max_dd_pct": 10.33,
+        "switches": 1
+      },
+      "REGIME_BASED": {
+        "full_return_pct": 12.88,
+        "full_max_dd_pct": 13.9,
+        "calmar": 0.18,
+        "oos_return_pct": 3.62,
+        "oos_max_dd_pct": 9.08,
+        "switches": 40
+      },
+      "VOLATILITY_ADJUSTED": {
+        "full_return_pct": 18.2,
+        "full_max_dd_pct": 18.5,
+        "calmar": 0.19,
+        "oos_return_pct": 8.21,
+        "oos_max_dd_pct": 9.83,
+        "switches": 81
+      },
+      "RISK_BUDGETED": {
+        "full_return_pct": 18.14,
+        "full_max_dd_pct": 18.46,
+        "calmar": 0.19,
+        "oos_return_pct": 8.2,
+        "oos_max_dd_pct": 9.84,
+        "switches": 81
+      },
+      "CONSTRAINED_ADAPTIVE_ORCHESTRATOR": {
+        "full_return_pct": 14.83,
+        "full_max_dd_pct": 14.03,
+        "calmar": 0.21,
+        "oos_return_pct": 3.84,
+        "oos_max_dd_pct": 7.47,
+        "switches": 61
+      },
+      "STOCK_LEVEL_SHARED_CAPITAL_ORCHESTRATED": {
+        "full_return_pct": 8.48,
+        "full_max_dd_pct": 15.77,
+        "calmar": 0.11,
+        "oos_return_pct": -3.46,
+        "oos_max_dd_pct": 6.29,
+        "switches": 81
+      }
+    }
+  },
+  "execution_dashboard": {
+    "data_tag": "PAPER_TRADING_SIMULATED",
+    "tariff_version": "2024-10-nse-zerodha-v1",
+    "security_invariants_passed": true,
+    "simulated_paper_orders": [
+      {
+        "paper_order_id": "PAPER-fb314a107d0bf916",
+        "symbol": "UNIONBANK",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "side": "BUY",
+        "product": "CNC",
+        "order_type": "MARKET_NEXT_OPEN",
+        "req_qty": 61,
+        "expected_fill_qty": 61,
+        "fill_status": "FILLED",
+        "reference_spot_inr": 210.0,
+        "expected_fill_price_inr": 210.3,
+        "raw_notional_inr": 12810.0,
+        "expected_slippage_bps": 14.26,
+        "expected_regulatory_cost_inr": 15.22,
+        "expected_total_friction_inr": 33.49,
+        "stop_loss_px": 191.65,
+        "live_broker_submitted": false,
+        "execution_mode": "PAPER_ONLY_SIMULATED",
+        "decision_trace": "Regime=WEAK_BULL | Sleeve=STRAT_A_CS_MOMENTUM (budget=25%) | Score=0.982 | SL=-8.7%"
+      },
+      {
+        "paper_order_id": "PAPER-ed0f3a45ad3ad347",
+        "symbol": "DRREDDY",
+        "sector": "Healthcare",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "side": "BUY",
+        "product": "CNC",
+        "order_type": "MARKET_NEXT_OPEN",
+        "req_qty": 9,
+        "expected_fill_qty": 9,
+        "fill_status": "FILLED",
+        "reference_spot_inr": 1400.9,
+        "expected_fill_price_inr": 1402.79,
+        "raw_notional_inr": 12608.1,
+        "expected_slippage_bps": 13.49,
+        "expected_regulatory_cost_inr": 14.98,
+        "expected_total_friction_inr": 31.99,
+        "stop_loss_px": 1286.5,
+        "live_broker_submitted": false,
+        "execution_mode": "PAPER_ONLY_SIMULATED",
+        "decision_trace": "Regime=WEAK_BULL | Sleeve=STRAT_A_CS_MOMENTUM (budget=25%) | Score=0.980 | SL=-8.2%"
+      },
+      {
+        "paper_order_id": "PAPER-94955a3685c7e6b1",
+        "symbol": "ICICIBANK",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "side": "BUY",
+        "product": "CNC",
+        "order_type": "MARKET_NEXT_OPEN",
+        "req_qty": 8,
+        "expected_fill_qty": 8,
+        "fill_status": "FILLED",
+        "reference_spot_inr": 1608.9,
+        "expected_fill_price_inr": 1610.13,
+        "raw_notional_inr": 12871.2,
+        "expected_slippage_bps": 7.63,
+        "expected_regulatory_cost_inr": 15.28,
+        "expected_total_friction_inr": 25.1,
+        "stop_loss_px": 1482.62,
+        "live_broker_submitted": false,
+        "execution_mode": "PAPER_ONLY_SIMULATED",
+        "decision_trace": "Regime=WEAK_BULL | Sleeve=STRAT_A_CS_MOMENTUM (budget=25%) | Score=0.979 | SL=-7.8%"
+      },
+      {
+        "paper_order_id": "PAPER-7db18cb24e12085d",
+        "symbol": "PNB",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "side": "BUY",
+        "product": "CNC",
+        "order_type": "MARKET_NEXT_OPEN",
+        "req_qty": 83,
+        "expected_fill_qty": 83,
+        "fill_status": "FILLED",
+        "reference_spot_inr": 154.85,
+        "expected_fill_price_inr": 155.08,
+        "raw_notional_inr": 12852.55,
+        "expected_slippage_bps": 14.82,
+        "expected_regulatory_cost_inr": 15.27,
+        "expected_total_friction_inr": 34.31,
+        "stop_loss_px": 138.85,
+        "live_broker_submitted": false,
+        "execution_mode": "PAPER_ONLY_SIMULATED",
+        "decision_trace": "Regime=WEAK_BULL | Sleeve=STRAT_A_CS_MOMENTUM (budget=25%) | Score=0.975 | SL=-10.3%"
+      },
+      {
+        "paper_order_id": "PAPER-299ee056605f7335",
+        "symbol": "GAIL",
+        "sector": "Oil Gas & Consumable Fuels",
+        "strategy_id": "STRAT_B_VCP_BREAKOUT",
+        "side": "BUY",
+        "product": "CNC",
+        "order_type": "MARKET_NEXT_OPEN",
+        "req_qty": 67,
+        "expected_fill_qty": 67,
+        "fill_status": "FILLED",
+        "reference_spot_inr": 192.1,
+        "expected_fill_price_inr": 192.44,
+        "raw_notional_inr": 12870.7,
+        "expected_slippage_bps": 17.45,
+        "expected_regulatory_cost_inr": 15.29,
+        "expected_total_friction_inr": 37.75,
+        "stop_loss_px": 174.63,
+        "live_broker_submitted": false,
+        "execution_mode": "PAPER_ONLY_SIMULATED",
+        "decision_trace": "Regime=WEAK_BULL | Sleeve=STRAT_B_VCP_BREAKOUT (budget=15%) | Score=0.839 | SL=-9.1%"
+      },
+      {
+        "paper_order_id": "PAPER-3d69df271b348411",
+        "symbol": "POONAWALLA",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_B_VCP_BREAKOUT",
+        "side": "BUY",
+        "product": "CNC",
+        "order_type": "MARKET_NEXT_OPEN",
+        "req_qty": 22,
+        "expected_fill_qty": 22,
+        "fill_status": "FILLED",
+        "reference_spot_inr": 504.75,
+        "expected_fill_price_inr": 506.16,
+        "raw_notional_inr": 11104.5,
+        "expected_slippage_bps": 27.88,
+        "expected_regulatory_cost_inr": 13.21,
+        "expected_total_friction_inr": 44.17,
+        "stop_loss_px": 439.13,
+        "live_broker_submitted": false,
+        "execution_mode": "PAPER_ONLY_SIMULATED",
+        "decision_trace": "Regime=WEAK_BULL | Sleeve=STRAT_B_VCP_BREAKOUT (budget=15%) | Score=0.828 | SL=-13.0%"
+      },
+      {
+        "paper_order_id": "PAPER-4e763505970be705",
+        "symbol": "SHUKRAPHAR",
+        "sector": "Unclassified (Historical/Non-Total-Market)",
+        "strategy_id": "STRAT_B_VCP_BREAKOUT",
+        "side": "BUY",
+        "product": "CNC",
+        "order_type": "MARKET_NEXT_OPEN",
+        "req_qty": 135,
+        "expected_fill_qty": 135,
+        "fill_status": "FILLED",
+        "reference_spot_inr": 82.22,
+        "expected_fill_price_inr": 82.5,
+        "raw_notional_inr": 11099.7,
+        "expected_slippage_bps": 34.45,
+        "expected_regulatory_cost_inr": 13.21,
+        "expected_total_friction_inr": 51.45,
+        "stop_loss_px": 71.53,
+        "live_broker_submitted": false,
+        "execution_mode": "PAPER_ONLY_SIMULATED",
+        "decision_trace": "Regime=WEAK_BULL | Sleeve=STRAT_B_VCP_BREAKOUT (budget=15%) | Score=0.804 | SL=-13.0%"
+      },
+      {
+        "paper_order_id": "PAPER-f8d918fe1ce7160d",
+        "symbol": "SHADOWFAX",
+        "sector": "Services",
+        "strategy_id": "STRAT_B_VCP_BREAKOUT",
+        "side": "BUY",
+        "product": "CNC",
+        "order_type": "MARKET_NEXT_OPEN",
+        "req_qty": 35,
+        "expected_fill_qty": 35,
+        "fill_status": "FILLED",
+        "reference_spot_inr": 313.6,
+        "expected_fill_price_inr": 314.64,
+        "raw_notional_inr": 10976.0,
+        "expected_slippage_bps": 33.15,
+        "expected_regulatory_cost_inr": 13.06,
+        "expected_total_friction_inr": 49.45,
+        "stop_loss_px": 272.83,
+        "live_broker_submitted": false,
+        "execution_mode": "PAPER_ONLY_SIMULATED",
+        "decision_trace": "Regime=WEAK_BULL | Sleeve=STRAT_B_VCP_BREAKOUT (budget=15%) | Score=0.803 | SL=-13.0%"
+      }
+    ],
+    "recent_closed_paper_trades": [
+      {
+        "sec_id": "INE031B01049",
+        "symbol": "AJANTPHARM",
+        "sector": "Healthcare",
+        "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+        "consensus_count": 1,
+        "entry_date": "2026-10-06",
+        "exit_date": "2026-11-19",
+        "holding_days": 31,
+        "pnl_amount": -250.33,
+        "net_return_pct": -7.15,
+        "exit_reason": "FINAL_BAR_CLOSE"
+      },
+      {
+        "sec_id": "INE600L01024",
+        "symbol": "LALPATHLAB",
+        "sector": "Healthcare",
+        "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+        "consensus_count": 2,
+        "entry_date": "2026-10-06",
+        "exit_date": "2026-11-19",
+        "holding_days": 31,
+        "pnl_amount": -53.3,
+        "net_return_pct": -2.67,
+        "exit_reason": "FINAL_BAR_CLOSE"
+      },
+      {
+        "sec_id": "INE463V01026",
+        "symbol": "ANANDRATHI",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+        "consensus_count": 1,
+        "entry_date": "2026-10-06",
+        "exit_date": "2026-11-19",
+        "holding_days": 31,
+        "pnl_amount": 211.21,
+        "net_return_pct": 9.88,
+        "exit_reason": "FINAL_BAR_CLOSE"
+      },
+      {
+        "sec_id": "INE172A01027",
+        "symbol": "CASTROLIND",
+        "sector": "Oil Gas & Consumable Fuels",
+        "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+        "consensus_count": 2,
+        "entry_date": "2026-11-04",
+        "exit_date": "2026-11-19",
+        "holding_days": 11,
+        "pnl_amount": -81.88,
+        "net_return_pct": -2.35,
+        "exit_reason": "FINAL_BAR_CLOSE"
+      },
+      {
+        "sec_id": "INE347G01014",
+        "symbol": "PETRONET",
+        "sector": "Oil Gas & Consumable Fuels",
+        "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+        "consensus_count": 1,
+        "entry_date": "2026-11-04",
+        "exit_date": "2026-11-19",
+        "holding_days": 11,
+        "pnl_amount": 232.6,
+        "net_return_pct": 6.26,
+        "exit_reason": "FINAL_BAR_CLOSE"
+      },
+      {
+        "sec_id": "INE053A01029",
+        "symbol": "INDHOTEL",
+        "sector": "Consumer Services",
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "consensus_count": 2,
+        "entry_date": "2026-11-04",
+        "exit_date": "2026-11-19",
+        "holding_days": 11,
+        "pnl_amount": 185.64,
+        "net_return_pct": 5.54,
+        "exit_reason": "FINAL_BAR_CLOSE"
+      },
+      {
+        "sec_id": "INE0J1Y01017",
+        "symbol": "LICI",
+        "sector": "Financial Services",
+        "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+        "consensus_count": 1,
+        "entry_date": "2026-11-04",
+        "exit_date": "2026-11-19",
+        "holding_days": 11,
+        "pnl_amount": 34.56,
+        "net_return_pct": 0.97,
+        "exit_reason": "FINAL_BAR_CLOSE"
+      },
+      {
+        "sec_id": "INE397D01024",
+        "symbol": "BHARTIARTL",
+        "sector": "Telecommunication",
+        "strategy_id": "STRAT_B_VCP_BREAKOUT",
+        "consensus_count": 2,
+        "entry_date": "2026-11-04",
+        "exit_date": "2026-11-19",
+        "holding_days": 11,
+        "pnl_amount": 59.95,
+        "net_return_pct": 2.9,
+        "exit_reason": "FINAL_BAR_CLOSE"
+      }
+    ]
+  },
+  "risk_dashboard": {
+    "current_paper_drawdown_pct": 15.38,
+    "max_historical_drawdown_pct": 16.5,
+    "capital_utilisation_pct": 45.0,
+    "idle_cash_reserve_pct": 55.0,
+    "sector_concentration_pct": {
+      "Financial Services": 46.2,
+      "Healthcare": 11.74,
+      "Oil Gas & Consumable Fuels": 11.98
+    },
+    "max_allowed_sector_pct": 28.0,
+    "latest_orchestrator_decision": {
+      "date": "2026-11-12",
+      "regime": "WEAK_BULL",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 8.54,
+      "eligible_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "strategy_id": "STRAT_A_CS_MOMENTUM",
+          "state": "THROTTLED_50PCT",
+          "sleeve_dd_pct": 17.03,
+          "trailing_60d_vol_pct": 12.03,
+          "trailing_60d_ret_pct": -7.18,
+          "allocated_weight_pct": 8.6
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "strategy_id": "STRAT_B_VCP_BREAKOUT",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 5.25,
+          "trailing_60d_vol_pct": 16.04,
+          "trailing_60d_ret_pct": -4.56,
+          "allocated_weight_pct": 9.03
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "strategy_id": "STRAT_D_SECTOR_ROTATION",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 5.04,
+          "trailing_60d_vol_pct": 13.57,
+          "trailing_60d_ret_pct": -2.52,
+          "allocated_weight_pct": 10.89
+        },
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 5.6,
+          "trailing_60d_vol_pct": 8.49,
+          "trailing_60d_ret_pct": -1.16,
+          "allocated_weight_pct": 39.43
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_A_CS_MOMENTUM": {
+          "state": "THROTTLED_50PCT",
+          "sleeve_dd_pct": 17.03,
+          "trigger": "THROTTLED_50PCT (dd=17.0%, ret60d=-7.2%)",
+          "recovery_status": "Promotes back to ACTIVE when dd < 11.0% and ret20d > 0%"
+        },
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 27.05,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(27.0%>7.5%)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(27.0%>7.5%)"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.086,
+        "STRAT_B_VCP_BREAKOUT": 0.0903,
+        "STRAT_C_TREND_PULLBACK": 0.0,
+        "STRAT_D_SECTOR_ROTATION": 0.1089,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.3943,
+        "CASH_RESERVE": 0.3205
+      },
+      "expected_gross_exposure_pct": 67.95,
+      "cash_reserve_pct": 32.05
+    },
+    "allocation_bottlenecks": {
+      "SIGNAL_CONFLICTS_MERGED": 684,
+      "SECTOR_CAP_BLOCKED": 114,
+      "CORRELATION_CAP_BLOCKED": 14,
+      "MAX_POSITIONS_BLOCKED": 58,
+      "TURNOVER_THROTTLE_BLOCKED": 25,
+      "CASH_SETTLEMENT_BLOCKED": 0,
+      "DRAWDOWN_GOVERNOR_ACTIVE_DAYS": 30,
+      "VOL_TARGET_SCALED_DAYS": 1,
+      "LIQUIDITY_PARTIAL_FILLS": 0,
+      "DRIFT_SKIPPED_REBALANCES": 4
+    },
+    "operational_checks": {
+      "data_freshness_check": {
+        "status": "HEALTHY",
+        "latest_pit_session": "2026-11-19",
+        "pit_securities_covered": 4416,
+        "validated_daily_bars": 3498739
+      },
+      "four_ledger_reconciliation_check": {
+        "status": "PASS",
+        "discrepancy_inr": 0.04
+      },
+      "risk_and_concentration_limits_check": {
+        "status": "BREACH",
+        "max_observed_sector_pct": 46.2,
+        "max_allowed_sector_pct": 28.0,
+        "current_drawdown_pct": 15.38
+      },
+      "zerodha_security_boundary_check": {
+        "status": "PASS",
+        "live_order_submission_enabled": false,
+        "live_submission_raises_permission_error": true,
+        "secret_leak_in_logs_or_payload": false,
+        "human_approval_gate_required": true
+      },
+      "recoverable_state_check": {
+        "status": "PASS",
+        "state_checksum_sha256": "2c34dd6a9ee65aa8831c7e554df2f569d7f63204e896c892b4b323aa98a2c61d"
+      },
+      "automated_alerts": [
+        {
+          "level": "INFO",
+          "code": "PAPER_ONLY_ISOLATION_ACTIVE",
+          "message": "Zerodha live order submission is hard-disabled (LIVE_ORDER_SUBMISSION_ENABLED=False). All orders are PAPER_ONLY_SIMULATED."
+        },
+        {
+          "level": "WARNING",
+          "code": "PROMPT9_LIVE_CAPITAL_NO_GO_ENFORCED",
+          "message": "Prompt 9 Independent Quantitative Audit issued NO-GO for live capital deployment (DSR=0.0018 < 0.95, trails passive Nifty 50 TRI & 6.5% cash). System restricted to Paper-Trading & Research Monitoring."
+        },
+        {
+          "level": "WARNING",
+          "code": "DRAWDOWN_GOVERNOR_SCALING",
+          "message": "Current paper drawdown is 15.38% (>= 6.0% threshold) -> Drawdown Governor exposure scaling active."
+        }
+      ]
+    }
+  },
+  "validation_dashboard": {
+    "independent_audit_verdict": {
+      "deployment_decision": "NO-GO",
+      "approved_for_live_capital": false,
+      "approved_for_paper_research_monitoring": true,
+      "verdict_code": "NO_GO_INSUFFICIENT_NET_RISK_ADJUSTED_EDGE_OVER_PASSIVE_BENCHMARKS",
+      "primary_reasons_for_no_go": [
+        "1. Negative Active Risk Premium vs Risk-Free Cash & Passive Benchmarks: Over 5.38 years (2021-07 -> 2026-11), active equity selection returned +7.43% uninvested (+29.76% with 6.5% idle cash sweep), underperforming 6.5% risk-free cash (+39.50%), the utilisation-matched 45% Nifty 50 TRI + 55% Cash benchmark (+56.82%, 6.32% DD), and Nifty 50 TRI (+73.82%).",
+        "2. Statistical Insignificance After Multiple-Testing Correction: Trade expectancy t-stat is +0.478 (p = 0.3165), and Deflated Sharpe Ratio probability across 185 total research trials is 0.0018 (failing the >= 0.95 institutional gate).",
+        "3. Outlier Concentration Fragility: Removing the top 5 winning trades out of 238 trades turns net uninvested return from +7.43% to -9.32%.",
+        "4. Walk-Forward Inconsistency & Holdout Contamination: Only 4 of 6 walk-forward sub-windows produced positive uninvested net returns, and the 2025-04 -> 2026-11 OOS period was repeatedly inspected across Prompts 2-7."
+      ]
+    },
+    "reproducibility": {
+      "dataset_version_registry": [
+        {
+          "version_id": "m3_20261119T191710Z",
+          "snapshot_tag": "NSE_PIT_2021-01-01_TO_2026-11-19",
+          "created_at": "2026-11-19T19:17:10.968991+00:00",
+          "date_start": "2021-01-01",
+          "date_end": "2026-11-19",
+          "parent_version_id": null,
+          "is_incremental": 0,
+          "source_manifest_json": "{\"equity_l\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv\", \"rows\": 2632, \"sha256\": \"e52bd40676b0f6a0f0319ff0f9f8c16f13de20d646ad7ea6d2cf822fd4b08bee\"}, \"delisted\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/delisted.csv\", \"rows\": 328, \"sha256\": \"3ea822d7289b4ebe684ba82e24449a14cc32fbce3300e9bba4b58445fa3bc85f\"}, \"symbolchange\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/symbolchange.csv\", \"rows\": 1081, \"sha256\": \"4b836d0aa614d62da7e3ee5cab679e5029efadf8c5108ad8f60e2f55b1726224\"}, \"namechange\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/namechange.csv\", \"rows\": 2345, \"sha256\": \"7fb128321b6f955da73a45eeaa1296ec21152989843bbe945069666a5f63c94b\"}, \"etf_list\": {\"url\": \"https://nsearchives.nseindia.com/content/equities/eq_etfseclist.csv\", \"rows\": 361, \"sha256\": \"2cc92bca88240fb32e78c890667f38427460132e2ff1fce1a40ead9710da85f5\"}, \"idx_NIFTY_50\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_nifty50list.csv\", \"rows\": 50, \"sha256\": \"f5ba4027d935ae72879d5c24bbebf0e8439ec8ed504ffdf4175fde69206244b3\"}, \"idx_NIFTY_NEXT_50\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftynext50list.csv\", \"rows\": 50, \"sha256\": \"b05337532e755953b588677216012f9b59e69ff39f3dfbbab61e96fc2d724e47\"}, \"idx_NIFTY_MIDCAP_150\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftymidcap150list.csv\", \"rows\": 150, \"sha256\": \"c99b7ef386cd421c5816c0d3e7517c69ce29f8f27a204deff55a7e0a99c909ee\"}, \"idx_NIFTY_SMALLCAP_250\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftysmallcap250list.csv\", \"rows\": 251, \"sha256\": \"389658dd57517f8a72b86c0b0e595471457617dffdd38d26802a9ad461a7dcbd\"}, \"idx_NIFTY_500\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_nifty500list.csv\", \"rows\": 501, \"sha256\": \"31b764a95cc03ad1d7ddb6c42340de9125ed2c78b3d436bf0dbc8440e4e38c5e\"}, \"idx_NIFTY_TOTAL_MARKET\": {\"url\": \"https://nsearchives.nseindia.com/content/indices/ind_niftytotalmarket_list.csv\", \"rows\": 752, \"sha256\": \"3a1bc40095103cd46900e3b40b6279898682799ec469500ec34e06de93b2c98e\"}}",
+          "row_counts_json": "{\"trading_calendar\": 1454, \"security_master\": 4416, \"symbol_history\": 5173, \"name_history\": 2345, \"daily_bars\": 3498739, \"daily_bars_valid\": 3498739, \"corporate_actions\": 13074, \"daily_liquidity\": 3498739, \"daily_index_bars\": 152165, \"data_quality_events\": 2134, \"non_equity_bhav_rows_filtered\": 256006}",
+          "checksum_sha256": "46acf0f923549319ce3835a7b025322c87f6d80a4c8ac208f63791892920cb2d",
+          "notes": "Authoritative NSE Bhavcopy + PR Archives + Security Master + ETF Master + CA API + Yahoo Finance verification."
+        }
+      ],
+      "initial_capital_inr": 100000.0,
+      "final_nav_inr": 107434.41,
+      "net_nav_gain_inr": 7434.41,
+      "sum_closed_trade_net_pnl_inr": 7434.37,
+      "trade_to_nav_ledger_discrepancy_inr": 0.04,
+      "cash_to_position_daily_discrepancy_inr": 0.0,
+      "min_daily_settled_cash_inr": 8397.07,
+      "max_observed_gross_exposure_pct": 92.79,
+      "zero_leverage_verified": true,
+      "zero_cash_overdraft_verified": true,
+      "exact_reconciliation_passed": true,
+      "idle_cash_accounting_finding": "Uninvested cash net return is +7.43% (CAGR +1.37%), whereas sweeping the 55.0% average idle cash into 6.5% overnight liquid yield produces +29.76%. Thus +22.33 pp comes from passive risk-free yield on idle cash rather than active equity alpha."
+    },
+    "walk_forward_6fold": [
+      {
+        "fold_id": "WF1_2021H2_2022H1",
+        "role": "IN_SAMPLE_TRAIN_1",
+        "window": "2021-07-01 -> 2022-06-30",
+        "uninvested_return_pct": -5.13,
+        "cash_sweep_return_pct": -0.11,
+        "max_drawdown_pct": 8.56,
+        "net_profit_factor": 0.45,
+        "trades": 30,
+        "benchmark_nifty_return_pct": 0.64,
+        "excess_vs_nifty_pp": -5.77
+      },
+      {
+        "fold_id": "WF2_2022H2_2023H1",
+        "role": "IN_SAMPLE_TRAIN_2",
+        "window": "2022-07-01 -> 2023-06-30",
+        "uninvested_return_pct": 0.91,
+        "cash_sweep_return_pct": 3.74,
+        "max_drawdown_pct": 10.96,
+        "net_profit_factor": 1.07,
+        "trades": 51,
+        "benchmark_nifty_return_pct": 21.82,
+        "excess_vs_nifty_pp": -20.91
+      },
+      {
+        "fold_id": "WF3_2023H2_2024H1",
+        "role": "IN_SAMPLE_TRAIN_3",
+        "window": "2023-07-01 -> 2024-06-30",
+        "uninvested_return_pct": 7.58,
+        "cash_sweep_return_pct": 10.72,
+        "max_drawdown_pct": 7.44,
+        "net_profit_factor": 1.45,
+        "trades": 54,
+        "benchmark_nifty_return_pct": 24.26,
+        "excess_vs_nifty_pp": -16.68
+      },
+      {
+        "fold_id": "WF4_2024H2_2025Q1",
+        "role": "IN_SAMPLE_VALIDATION",
+        "window": "2024-07-01 -> 2025-03-31",
+        "uninvested_return_pct": -8.0,
+        "cash_sweep_return_pct": -5.52,
+        "max_drawdown_pct": 14.61,
+        "net_profit_factor": 0.49,
+        "trades": 44,
+        "benchmark_nifty_return_pct": -2.58,
+        "excess_vs_nifty_pp": -5.42
+      },
+      {
+        "fold_id": "WF5_2025Q2_2026M05",
+        "role": "OUT_OF_SAMPLE_TEST",
+        "window": "2025-04-01 -> 2026-05-18",
+        "uninvested_return_pct": 4.6,
+        "cash_sweep_return_pct": 8.15,
+        "max_drawdown_pct": 7.94,
+        "net_profit_factor": 1.25,
+        "trades": 63,
+        "benchmark_nifty_return_pct": 2.09,
+        "excess_vs_nifty_pp": 2.51
+      },
+      {
+        "fold_id": "WF6_2026M05_2026M11_HOLDOUT",
+        "role": "TERMINAL_6M_HOLDOUT",
+        "window": "2026-05-19 -> 2026-11-19",
+        "uninvested_return_pct": 4.56,
+        "cash_sweep_return_pct": 6.25,
+        "max_drawdown_pct": 8.15,
+        "net_profit_factor": 1.46,
+        "trades": 31,
+        "benchmark_nifty_return_pct": 8.03,
+        "excess_vs_nifty_pp": -3.47
+      }
+    ],
+    "statistical_bootstrap": {
+      "return_distribution_moments": {
+        "daily_mean_bps": 0.688,
+        "daily_std_bps": 54.44,
+        "skewness": -1.676,
+        "excess_kurtosis": 20.317,
+        "historical_var_95_daily_pct": -0.87,
+        "historical_var_99_daily_pct": -1.59,
+        "historical_cvar_95_daily_pct": -1.38,
+        "historical_cvar_99_daily_pct": -2.42
+      },
+      "block_bootstrap_20d_2000_sims": {
+        "block_size_days": 20,
+        "resamples": 2000,
+        "uninvested_total_return_ci95_pct": [
+          -25.57,
+          6.91,
+          62.76
+        ],
+        "cash_sweep_total_return_ci95_pct": [
+          -9.64,
+          29.19,
+          95.88
+        ],
+        "max_drawdown_ci95_pct": [
+          9.35,
+          18.08,
+          34.77
+        ],
+        "prob_positive_uninvested_return_pct": 63.5,
+        "prob_beat_65_cash_benchmark_pct": 35.8,
+        "prob_beat_nifty50_tri_pct": 14.1
+      },
+      "monte_carlo_trade_sequence_2000_sims": {
+        "total_trades": 238,
+        "trade_expectancy_t_stat": 0.478,
+        "trade_expectancy_p_value_one_sided": 0.3165,
+        "mc_drawdown_p50_pct": 11.16,
+        "mc_drawdown_p95_pct": 17.06,
+        "mc_drawdown_p99_pct": 19.93,
+        "prob_mc_dd_gt_20pct": 0.95
+      },
+      "multiple_testing_and_deflated_sharpe": {
+        "total_research_trials_accounted": 185,
+        "observed_sharpe_vs_65_rf": -0.552,
+        "observed_sharpe_vs_0_rf": 0.201,
+        "expected_max_sharpe_under_null": 1.48,
+        "probabilistic_sharpe_ratio_vs_zero": 0.6757,
+        "deflated_sharpe_ratio_prob": 0.0018,
+        "passes_dsr_95pct_gate": false
+      }
+    },
+    "stress_scenarios": {
+      "STRESS_1_COST_1_25X": {
+        "description": "1.25x Transaction & Slippage Friction (~11.5 bps eff. slippage)",
+        "uninvested_return_pct": 6.0,
+        "cash_sweep_return_pct": 28.08,
+        "max_drawdown_pct": 16.42,
+        "net_profit_factor": 1.08,
+        "cost_drag_pct": 11.1
+      },
+      "STRESS_2_COST_1_50X": {
+        "description": "1.50x Transaction & Slippage Friction (~15.5 bps eff. slippage)",
+        "uninvested_return_pct": 4.93,
+        "cash_sweep_return_pct": 26.77,
+        "max_drawdown_pct": 16.52,
+        "net_profit_factor": 1.07,
+        "cost_drag_pct": 12.43
+      },
+      "STRESS_3_COST_2_00X": {
+        "description": "2.00x Transaction & Slippage Friction (~23.5 bps eff. slippage)",
+        "uninvested_return_pct": 2.5,
+        "cash_sweep_return_pct": 24.78,
+        "max_drawdown_pct": 16.82,
+        "net_profit_factor": 1.04,
+        "cost_drag_pct": 13.99
+      },
+      "STRESS_4_SLIPPAGE_20BPS": {
+        "description": "20.0 bps One-Way Execution Slippage",
+        "uninvested_return_pct": 1.35,
+        "cash_sweep_return_pct": 23.34,
+        "max_drawdown_pct": 18.3,
+        "net_profit_factor": 1.02,
+        "cost_drag_pct": 13.08
+      },
+      "STRESS_5_DELAYED_EXEC_T2": {
+        "description": "Delayed Execution & T+2 Settlement Lag",
+        "uninvested_return_pct": 5.74,
+        "cash_sweep_return_pct": 27.79,
+        "max_drawdown_pct": 16.39,
+        "net_profit_factor": 1.08,
+        "cost_drag_pct": 10.61
+      },
+      "STRESS_6_LIQUIDITY_CRUNCH": {
+        "description": "Liquidity Deterioration (0.35% Volume Cap + 18.75 bps Slippage)",
+        "uninvested_return_pct": 5.1,
+        "cash_sweep_return_pct": 27.06,
+        "max_drawdown_pct": 15.8,
+        "net_profit_factor": 1.07,
+        "cost_drag_pct": 13.3
+      },
+      "STRESS_7_MARKET_GAP_1_5X": {
+        "description": "1.5x Magnification of All Adverse Overnight Stop-Gap Losses",
+        "adverse_gap_trades_count": 16,
+        "extra_gap_loss_inr": 5006.54,
+        "uninvested_return_pct": 2.42
+      },
+      "STRESS_8_VOLATILITY_SPIKE_REGIMES": {
+        "description": "Performance During High-Volatility Market Spikes (Nifty 20D Vol >= 18%)",
+        "high_vol_sessions": 182,
+        "cumulative_return_during_vol_spikes_pct": -6.36
+      }
+    },
+    "concentration_audit": {
+      "baseline_uninvested_return_pct": 7.43,
+      "remove_largest_winning_stock": {
+        "symbol": "M&M",
+        "removed_pnl_inr": 4446.84,
+        "remaining_return_pct": 2.99
+      },
+      "remove_top_5_winning_trades": {
+        "removed_pnl_inr": 16751.12,
+        "remaining_return_pct": -9.32,
+        "turns_negative_without_top5_trades": true
+      },
+      "remove_best_performing_month": {
+        "month": "2023-12",
+        "month_return_pct": 9.11,
+        "remaining_return_pct": -1.54
+      },
+      "remove_best_performing_year": {
+        "year": "2023",
+        "year_return_pct": 17.27,
+        "remaining_return_pct": -8.39
+      },
+      "remove_best_strategy_family": {
+        "strategy_id": "STRAT_A_CS_MOMENTUM",
+        "removed_pnl_inr": 10632.04,
+        "remaining_return_pct": -3.2
+      },
+      "calendar_year_returns_pct": {
+        "2021": 0.0,
+        "2022": -2.46,
+        "2023": 17.27,
+        "2024": 6.53,
+        "2025": -6.01,
+        "2026": -6.2
+      }
+    },
+    "benchmark_comparison": {
+      "M3_PORT_RISK_BUDGETED_UNINVESTED_CASH": {
+        "total_return_pct": 7.43,
+        "cagr_pct": 1.37,
+        "max_drawdown_pct": 16.5,
+        "notes": "Active equity trades only (idle cash at 0%)"
+      },
+      "M3_PORT_RISK_BUDGETED_WITH_65_CASH_SWEEP": {
+        "total_return_pct": 29.76,
+        "cagr_pct": 5.05,
+        "max_drawdown_pct": 16.5,
+        "notes": "45% active equity + 55% idle cash swept at 6.5% p.a."
+      },
+      "BENCH_1_NIFTY_50_PRICE": {
+        "total_return_pct": 62.72,
+        "cagr_pct": 9.65,
+        "max_drawdown_pct": 16.54,
+        "notes": "Nifty 50 Price Index (ex-dividends)"
+      },
+      "BENCH_2_NIFTY_50_TRI": {
+        "total_return_pct": 73.82,
+        "cagr_pct": 11.03,
+        "max_drawdown_pct": 16.54,
+        "notes": "Nifty 50 Total Return Index (+1.25% p.a. dividend yield)"
+      },
+      "BENCH_3_PIT_NSE_BROAD_UNIVERSE_TRI": {
+        "total_return_pct": 103.2,
+        "cagr_pct": 14.36,
+        "max_drawdown_pct": 26.62,
+        "notes": "Equal-weighted PIT eligible NSE liquid equity universe TRI (Nifty 500 proxy)"
+      },
+      "BENCH_4_RISK_FREE_CASH_65": {
+        "total_return_pct": 39.5,
+        "cagr_pct": 6.5,
+        "max_drawdown_pct": 0.0,
+        "notes": "6.50% p.a. Indian Sovereign T-Bill / Liquid Benchmark"
+      },
+      "BENCH_5_PASSIVE_45_NIFTY_TRI_55_CASH": {
+        "total_return_pct": 56.82,
+        "cagr_pct": 8.88,
+        "max_drawdown_pct": 6.32,
+        "notes": "Risk-equivalent passive 45% Nifty 50 TRI + 55% 6.5% Cash (matches strategy's 45% equity utilisation)"
+      }
+    },
+    "forensic_bias_registry": [
+      {
+        "category": "1. Survivorship Bias",
+        "status": "PASSED_ELIMINATED",
+        "evidence": "Prompt 1 database retains 4,416 NSE securities including 240+ delisted/merged/suspended equities (e.g. HDFC, MINDTREE, PEL, IDFC, TATACOFFEE) up to their actual delisting date."
+      },
+      {
+        "category": "2. Look-Ahead Bias",
+        "status": "PASSED_ELIMINATED",
+        "evidence": "Verified programmatically across all 31 factors, 5 strategy families, 5 regime detectors, and pair discovery via future-price corruption invariance tests (t close -> t+1 open execution)."
+      },
+      {
+        "category": "3. Data Leakage (Static Sector & Pre-2024 MCAP)",
+        "status": "DISCLOSED_MINOR_RESIDUAL",
+        "evidence": "Pre-2024 official NSE MCAP is properly left NULL (never backfilled), but sector labels in security_master come from current NSE classification snapshots (`known_limitations.json`)."
+      },
+      {
+        "category": "4. Multiple-Testing & Researcher Selection Bias (OOS Holdout Exposure)",
+        "status": "FAILED_CONTAMINATED",
+        "evidence": "185+ factor, strategy, sizing, and orchestrator configurations were evaluated across Prompts 2-7 with repeated inspection of the 2025-04 -> 2026-11 OOS window. Deflated Sharpe Ratio probability is well below 0.95."
+      },
+      {
+        "category": "5. Benchmark & Risk-Free Rate Hurdle",
+        "status": "FAILED_ECONOMIC_HURDLE",
+        "evidence": "Active equity trading returned +7.43% uninvested (+29.76% with 6.5% idle cash sweep), trailing the 6.5% risk-free cash benchmark (+39.50%), the utilisation-matched 45/55 passive Nifty TRI + Cash benchmark (+56.82%), and Nifty 50 TRI (+73.82%)."
+      },
+      {
+        "category": "6. Outlier Concentration & Cost Fragility",
+        "status": "FAILED_FRAGILITY_GATE",
+        "evidence": "Removing the Top-5 winning trades drops uninvested return from +7.43% to -9.32%. Under 2.0x transaction costs, uninvested return drops to +2.50%."
+      },
+      {
+        "category": "7. Accounting & Four-Ledger Reconciliation",
+        "status": "PASSED_EXACT",
+        "evidence": "Trade-to-NAV discrepancy = INR +0.04; daily cash-to-position discrepancy = INR +0.00; T+1 cash settlement enforced with 0 overdrafts."
+      },
+      {
+        "category": "8. Execution & Broker Isolation Realism",
+        "status": "PASSED_PAPER_ISOLATED",
+        "evidence": "Prompt 8 historical pre/post-Oct-2024 Zerodha/NSE/SEBI tariffs, DP charges (Rs 15.93), square-root market impact, volume participation caps (1%), and paper-only broker safety gates verified."
+      }
+    ]
+  }
+}

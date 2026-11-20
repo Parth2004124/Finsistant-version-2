@@ -1,0 +1,7 @@
+regime,eligible_trading_days,num_trades_entered,win_rate_pct,avg_win_inr,avg_loss_inr,profit_factor,gross_profit_inr,net_profit_inr,avg_holding_days,avg_mae_pct,avg_mfe_pct,regime_drawdown_pct,regime_turnover_x,regime_txn_costs_inr,portfolio_cum_ret_pct,niftybees_cum_ret_pct,benchmark_rel_ret_pp
+BULL_BROAD,484,31,45.2,2312.63,-696.32,2.74,22242.56,20539.45,59.1,-5.74,17.06,6.86,6.34,1703.12,34.22,26.05,8.17
+BULL_NARROW,127,6,50.0,1908.55,-764.63,2.5,3757.27,3431.76,76.3,-6.07,17.45,5.22,1.36,325.53,10.76,14.53,-3.78
+SIDEWAYS_RANGE,258,16,37.5,1698.84,-805.8,1.26,2991.65,2135.02,53.4,-7.85,14.14,6.38,3.22,856.64,1.93,-11.42,13.35
+BEAR_DETERIORATING,78,1,0.0,0.0,-1006.91,0.0,-943.92,-1006.91,54.0,-9.01,2.99,9.74,0.23,62.99,-3.7,-1.28,-2.42
+HIGH_VOL_STRESS,285,20,35.0,1613.99,-715.01,1.22,2934.89,2002.86,59.8,-7.58,13.89,6.9,3.44,932.03,21.29,25.81,-4.52
+RECOVERY_IMPROVING,99,1,100.0,1953.1,0.0,99.0,1992.47,1953.1,117.0,-0.51,38.32,4.52,0.15,39.38,10.09,8.32,1.77

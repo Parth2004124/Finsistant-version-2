@@ -1,0 +1,1237 @@
+{
+  "generated_at": "2026-11-19T21:09:22.703792+00:00",
+  "evaluation_windows": {
+    "full": "2022-01-03 -> 2026-11-19 (1206d)",
+    "in_sample": "2022-01-03 -> 2025-03-31",
+    "out_of_sample": "2025-04-01 -> 2026-11-19"
+  },
+  "recommended_orchestrator": "CONSTRAINED_ADAPTIVE_ORCHESTRATOR",
+  "strategy_registry_count": 9,
+  "strategy_registry": [
+    {
+      "strategy_id": "STRAT_A_CS_MOMENTUM",
+      "version": "3.0.0-p3",
+      "name": "Family A: Cross-Sectional 52W-High & Validated Factor Momentum",
+      "family": "A_CS_MOMENTUM",
+      "source_prompt": "PROMPT_3",
+      "required_data": [
+        "daily_bars_adj_ohlcv",
+        "daily_liquidity_pit",
+        "factors:DIST_252D_HIGH,MOM_DETERIORATION_60D,VOL_ADJ_MOM_60D,AMIHUD_LIQUIDITY_20D"
+      ],
+      "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+      "min_capital_inr": 100000.0,
+      "requires_slbm_or_futures": false,
+      "validated_regimes": [
+        "STRONG_BULL",
+        "WEAK_BULL",
+        "SIDEWAYS_CHOP"
+      ],
+      "max_allowed_sleeve_dd_pct": 21.0,
+      "throttle_dd_pct": 14.0,
+      "recovery_dd_pct": 11.0,
+      "target_sleeve_vol_pct": 15.0,
+      "is_historical_return_pct": -3.85,
+      "is_historical_max_dd_pct": 24.89,
+      "is_historical_profit_factor": 1.01,
+      "execution_requirements": {
+        "order_mode": "NEXT_OPEN_CNC",
+        "min_adv_20d_inr": 50000000,
+        "rebalance_days": 25,
+        "settlement_lag_days": 1
+      },
+      "validation_status": "VALIDATED_CORE_LONG"
+    },
+    {
+      "strategy_id": "STRAT_B_VCP_BREAKOUT",
+      "version": "3.0.0-p3",
+      "name": "Family B: Volatility-Contraction & Volume/Delivery Breakout",
+      "family": "B_VCP_BREAKOUT",
+      "source_prompt": "PROMPT_3",
+      "required_data": [
+        "daily_bars_adj_ohlcv",
+        "daily_liquidity_pit",
+        "delivery_pct",
+        "factors:BREAKOUT_QUALITY_20D,VOL_CONTRACTION_10V60,REL_VOL_5V20,DELIVERY_SURGE_5V20"
+      ],
+      "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+      "min_capital_inr": 100000.0,
+      "requires_slbm_or_futures": false,
+      "validated_regimes": [
+        "STRONG_BULL",
+        "WEAK_BULL"
+      ],
+      "max_allowed_sleeve_dd_pct": 20.0,
+      "throttle_dd_pct": 13.5,
+      "recovery_dd_pct": 10.5,
+      "target_sleeve_vol_pct": 16.0,
+      "is_historical_return_pct": 4.61,
+      "is_historical_max_dd_pct": 25.51,
+      "is_historical_profit_factor": 1.07,
+      "execution_requirements": {
+        "order_mode": "NEXT_OPEN_CNC",
+        "min_adv_20d_inr": 50000000,
+        "rebalance_days": 5,
+        "settlement_lag_days": 1
+      },
+      "validation_status": "VALIDATED_CORE_LONG"
+    },
+    {
+      "strategy_id": "STRAT_C_TREND_PULLBACK",
+      "version": "3.0.0-p3",
+      "name": "Family C: Primary-Uptrend ATR Pullback Mean-Reversion",
+      "family": "C_TREND_PULLBACK",
+      "source_prompt": "PROMPT_3",
+      "required_data": [
+        "daily_bars_adj_ohlcv",
+        "daily_liquidity_pit",
+        "delivery_pct",
+        "factors:PULLBACK_DEPTH_SMA50,MOM_120_SKIP10,DELIVERY_PCT_20D"
+      ],
+      "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+      "min_capital_inr": 100000.0,
+      "requires_slbm_or_futures": false,
+      "validated_regimes": [
+        "WEAK_BULL",
+        "SIDEWAYS_CHOP"
+      ],
+      "max_allowed_sleeve_dd_pct": 16.0,
+      "throttle_dd_pct": 10.0,
+      "recovery_dd_pct": 7.5,
+      "target_sleeve_vol_pct": 14.0,
+      "is_historical_return_pct": -14.46,
+      "is_historical_max_dd_pct": 38.64,
+      "is_historical_profit_factor": 0.89,
+      "execution_requirements": {
+        "order_mode": "NEXT_OPEN_CNC",
+        "min_adv_20d_inr": 50000000,
+        "rebalance_days": 5,
+        "settlement_lag_days": 1
+      },
+      "validation_status": "CONDITIONAL_MEAN_REV_LONG"
+    },
+    {
+      "strategy_id": "STRAT_D_SECTOR_ROTATION",
+      "version": "3.0.0-p3",
+      "name": "Family D: Causal PIT Sector-First Leadership Rotation",
+      "family": "D_SECTOR_ROTATION",
+      "source_prompt": "PROMPT_3",
+      "required_data": [
+        "daily_bars_adj_ohlcv",
+        "daily_liquidity_pit",
+        "security_master_sector",
+        "factors:SECTOR_BREADTH_SMA50,SECTOR_RS_60D,STOCK_VS_SECTOR_20D"
+      ],
+      "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+      "min_capital_inr": 100000.0,
+      "requires_slbm_or_futures": false,
+      "validated_regimes": [
+        "STRONG_BULL",
+        "WEAK_BULL",
+        "SIDEWAYS_CHOP"
+      ],
+      "max_allowed_sleeve_dd_pct": 21.0,
+      "throttle_dd_pct": 14.0,
+      "recovery_dd_pct": 11.0,
+      "target_sleeve_vol_pct": 15.0,
+      "is_historical_return_pct": 4.74,
+      "is_historical_max_dd_pct": 36.69,
+      "is_historical_profit_factor": 1.05,
+      "execution_requirements": {
+        "order_mode": "NEXT_OPEN_CNC",
+        "min_adv_20d_inr": 50000000,
+        "rebalance_days": 20,
+        "settlement_lag_days": 1
+      },
+      "validation_status": "VALIDATED_CORE_LONG"
+    },
+    {
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "version": "3.0.0-p3",
+      "name": "Family E: Defensive PIT Dividend-Yield & Low-Volatility Compounder",
+      "family": "E_DEFENSIVE_YIELD_LOWVOL",
+      "source_prompt": "PROMPT_3",
+      "required_data": [
+        "daily_bars_adj_ohlcv",
+        "daily_liquidity_pit",
+        "corporate_actions_div_ex",
+        "factors:DIV_YIELD_TTM_PIT,LOW_VOL_20D,IDIO_VOL_20D"
+      ],
+      "market_eligibility": "NSE_CASH_EQUITY_CNC_LONG_ONLY",
+      "min_capital_inr": 100000.0,
+      "requires_slbm_or_futures": false,
+      "validated_regimes": [
+        "STRONG_BULL",
+        "WEAK_BULL",
+        "SIDEWAYS_CHOP",
+        "WEAK_BEAR",
+        "STRESS_BEAR"
+      ],
+      "max_allowed_sleeve_dd_pct": 18.5,
+      "throttle_dd_pct": 12.5,
+      "recovery_dd_pct": 9.5,
+      "target_sleeve_vol_pct": 12.5,
+      "is_historical_return_pct": 11.33,
+      "is_historical_max_dd_pct": 22.58,
+      "is_historical_profit_factor": 1.18,
+      "execution_requirements": {
+        "order_mode": "NEXT_OPEN_CNC",
+        "min_adv_20d_inr": 50000000,
+        "rebalance_days": 30,
+        "settlement_lag_days": 1
+      },
+      "validation_status": "VALIDATED_CORE_LONG"
+    },
+    {
+      "strategy_id": "STRAT_RV1_COINT_PAIRS",
+      "version": "3.0.0-p6",
+      "name": "Prompt 6 Branch 1A: Engle-Granger Cointegrated Pairs Trading",
+      "family": "RV_COINT_PAIRS",
+      "source_prompt": "PROMPT_6",
+      "required_data": [
+        "daily_bars_adj_ohlcv",
+        "slbm_borrow_feed",
+        "corporate_actions_div_ex"
+      ],
+      "market_eligibility": "NSE_SLBM_SHORT_OR_SSF",
+      "min_capital_inr": 2500000.0,
+      "requires_slbm_or_futures": true,
+      "validated_regimes": [
+        "SIDEWAYS_CHOP",
+        "WEAK_BEAR"
+      ],
+      "max_allowed_sleeve_dd_pct": 12.0,
+      "throttle_dd_pct": 8.0,
+      "recovery_dd_pct": 5.0,
+      "target_sleeve_vol_pct": 8.0,
+      "is_historical_return_pct": -17.67,
+      "is_historical_max_dd_pct": 19.8,
+      "is_historical_profit_factor": 0.74,
+      "execution_requirements": {
+        "order_mode": "TWO_LEG_SLBM",
+        "slb_fee_pct_pa": 10.0
+      },
+      "validation_status": "REJECTED_SLBM_DRAG"
+    },
+    {
+      "strategy_id": "STRAT_RV2A_SECTOR_REL_MOM",
+      "version": "3.0.0-p6",
+      "name": "Prompt 6 Branch 2A: Intra-Sector Leadership Long-Short",
+      "family": "RV_SECTOR_LS",
+      "source_prompt": "PROMPT_6",
+      "required_data": [
+        "daily_bars_adj_ohlcv",
+        "slbm_borrow_feed",
+        "security_master_sector"
+      ],
+      "market_eligibility": "NSE_SLBM_SHORT_OR_SSF",
+      "min_capital_inr": 2500000.0,
+      "requires_slbm_or_futures": true,
+      "validated_regimes": [
+        "STRONG_BULL",
+        "WEAK_BULL",
+        "SIDEWAYS_CHOP"
+      ],
+      "max_allowed_sleeve_dd_pct": 15.0,
+      "throttle_dd_pct": 10.0,
+      "recovery_dd_pct": 7.0,
+      "target_sleeve_vol_pct": 10.0,
+      "is_historical_return_pct": 19.02,
+      "is_historical_max_dd_pct": 14.12,
+      "is_historical_profit_factor": 1.15,
+      "execution_requirements": {
+        "order_mode": "TWO_LEG_SLBM",
+        "slb_fee_pct_pa": 10.5
+      },
+      "validation_status": "REJECTED_SLBM_DRAG"
+    },
+    {
+      "strategy_id": "STRAT_RV3_MARKET_NEUTRAL_LS",
+      "version": "3.0.0-p6",
+      "name": "Prompt 6 Branch 3: Cross-Sectional Beta-Neutral Factor Long-Short",
+      "family": "RV_MARKET_NEUTRAL",
+      "source_prompt": "PROMPT_6",
+      "required_data": [
+        "daily_bars_adj_ohlcv",
+        "slbm_borrow_feed",
+        "validated_factors"
+      ],
+      "market_eligibility": "NSE_SLBM_SHORT_OR_SSF",
+      "min_capital_inr": 2500000.0,
+      "requires_slbm_or_futures": true,
+      "validated_regimes": [
+        "SIDEWAYS_CHOP",
+        "WEAK_BEAR",
+        "STRESS_BEAR"
+      ],
+      "max_allowed_sleeve_dd_pct": 15.0,
+      "throttle_dd_pct": 10.0,
+      "recovery_dd_pct": 7.0,
+      "target_sleeve_vol_pct": 9.0,
+      "is_historical_return_pct": -9.45,
+      "is_historical_max_dd_pct": 31.4,
+      "is_historical_profit_factor": 0.88,
+      "execution_requirements": {
+        "order_mode": "TWO_LEG_SLBM",
+        "slb_fee_pct_pa": 10.5
+      },
+      "validation_status": "REJECTED_SLBM_DRAG"
+    },
+    {
+      "strategy_id": "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT",
+      "version": "3.0.0-p6",
+      "name": "Prompt 6 Branch 4A: Nifty 50 Index Futures Regime Hedge Overlay (25L+ Capital)",
+      "family": "RV_INDEX_FUTURES_HEDGE",
+      "source_prompt": "PROMPT_6",
+      "required_data": [
+        "nifty50_ohlc",
+        "regime_intelligence_state"
+      ],
+      "market_eligibility": "NSE_FNO_INDEX_FUTURES_25L",
+      "min_capital_inr": 2500000.0,
+      "requires_slbm_or_futures": true,
+      "validated_regimes": [
+        "SIDEWAYS_CHOP",
+        "WEAK_BEAR",
+        "STRESS_BEAR"
+      ],
+      "max_allowed_sleeve_dd_pct": 15.0,
+      "throttle_dd_pct": 10.0,
+      "recovery_dd_pct": 7.0,
+      "target_sleeve_vol_pct": 12.0,
+      "is_historical_return_pct": 12.18,
+      "is_historical_max_dd_pct": 14.36,
+      "is_historical_profit_factor": 1.14,
+      "execution_requirements": {
+        "order_mode": "NSE_FNO_NRML_LOT_75",
+        "span_exposure_margin_pct": 22.0,
+        "rolls_per_year": 12
+      },
+      "validation_status": "ISOLATED_25L_FUTURES_HEDGE"
+    }
+  ],
+  "allocators_comparison": {
+    "STATIC": {
+      "full_metrics": {
+        "allocator_id": "STATIC",
+        "window": "2022-01-03 -> 2026-11-19 (1206d)",
+        "total_return_pct": 17.04,
+        "cagr_pct": 3.34,
+        "max_drawdown_pct": 20.25,
+        "calmar_ratio": 0.17,
+        "sharpe_ratio": -0.28,
+        "sortino_ratio": -0.24,
+        "annualised_vol_pct": 9.82,
+        "benchmark_return_pct": 47.02,
+        "excess_vs_nifty_pp": -29.98,
+        "switch_events": 1,
+        "total_switch_cost_drag_pct": 0.033,
+        "suspension_triggers_count": 11,
+        "documented_recoveries_count": 11,
+        "avg_deployed_exposure_pct": 95.0
+      },
+      "is_metrics": {
+        "allocator_id": "STATIC",
+        "window": "2022-01-03 -> 2025-03-28 (801d)",
+        "total_return_pct": 8.2,
+        "cagr_pct": 2.51,
+        "max_drawdown_pct": 19.51,
+        "calmar_ratio": 0.13,
+        "sharpe_ratio": -0.34,
+        "sortino_ratio": -0.28,
+        "annualised_vol_pct": 10.34,
+        "benchmark_return_pct": 35.53,
+        "excess_vs_nifty_pp": -27.33
+      },
+      "oos_metrics": {
+        "allocator_id": "STATIC",
+        "window": "2025-04-01 -> 2026-11-19 (405d)",
+        "total_return_pct": 8.18,
+        "cagr_pct": 5.01,
+        "max_drawdown_pct": 10.33,
+        "calmar_ratio": 0.49,
+        "sharpe_ratio": -0.14,
+        "sortino_ratio": -0.13,
+        "annualised_vol_pct": 8.7,
+        "benchmark_return_pct": 8.48,
+        "excess_vs_nifty_pp": -0.3
+      }
+    },
+    "REGIME_BASED": {
+      "full_metrics": {
+        "allocator_id": "REGIME_BASED",
+        "window": "2022-01-03 -> 2026-11-19 (1206d)",
+        "total_return_pct": 12.88,
+        "cagr_pct": 2.56,
+        "max_drawdown_pct": 13.9,
+        "calmar_ratio": 0.18,
+        "sharpe_ratio": -0.41,
+        "sortino_ratio": -0.35,
+        "annualised_vol_pct": 8.8,
+        "benchmark_return_pct": 47.02,
+        "excess_vs_nifty_pp": -34.14,
+        "switch_events": 40,
+        "total_switch_cost_drag_pct": 2.072,
+        "suspension_triggers_count": 11,
+        "documented_recoveries_count": 11,
+        "avg_deployed_exposure_pct": 78.6
+      },
+      "is_metrics": {
+        "allocator_id": "REGIME_BASED",
+        "window": "2022-01-03 -> 2025-03-28 (801d)",
+        "total_return_pct": 8.94,
+        "cagr_pct": 2.73,
+        "max_drawdown_pct": 13.9,
+        "calmar_ratio": 0.2,
+        "sharpe_ratio": -0.35,
+        "sortino_ratio": -0.3,
+        "annualised_vol_pct": 9.59,
+        "benchmark_return_pct": 35.53,
+        "excess_vs_nifty_pp": -26.59
+      },
+      "oos_metrics": {
+        "allocator_id": "REGIME_BASED",
+        "window": "2025-04-01 -> 2026-11-19 (405d)",
+        "total_return_pct": 3.62,
+        "cagr_pct": 2.24,
+        "max_drawdown_pct": 9.08,
+        "calmar_ratio": 0.25,
+        "sharpe_ratio": -0.58,
+        "sortino_ratio": -0.5,
+        "annualised_vol_pct": 6.99,
+        "benchmark_return_pct": 8.48,
+        "excess_vs_nifty_pp": -4.87
+      }
+    },
+    "VOLATILITY_ADJUSTED": {
+      "full_metrics": {
+        "allocator_id": "VOLATILITY_ADJUSTED",
+        "window": "2022-01-03 -> 2026-11-19 (1206d)",
+        "total_return_pct": 18.2,
+        "cagr_pct": 3.56,
+        "max_drawdown_pct": 18.5,
+        "calmar_ratio": 0.19,
+        "sharpe_ratio": -0.28,
+        "sortino_ratio": -0.24,
+        "annualised_vol_pct": 9.18,
+        "benchmark_return_pct": 47.02,
+        "excess_vs_nifty_pp": -28.82,
+        "switch_events": 81,
+        "total_switch_cost_drag_pct": 0.41,
+        "suspension_triggers_count": 11,
+        "documented_recoveries_count": 11,
+        "avg_deployed_exposure_pct": 90.0
+      },
+      "is_metrics": {
+        "allocator_id": "VOLATILITY_ADJUSTED",
+        "window": "2022-01-03 -> 2025-03-28 (801d)",
+        "total_return_pct": 9.23,
+        "cagr_pct": 2.82,
+        "max_drawdown_pct": 18.11,
+        "calmar_ratio": 0.16,
+        "sharpe_ratio": -0.34,
+        "sortino_ratio": -0.29,
+        "annualised_vol_pct": 9.68,
+        "benchmark_return_pct": 35.53,
+        "excess_vs_nifty_pp": -26.29
+      },
+      "oos_metrics": {
+        "allocator_id": "VOLATILITY_ADJUSTED",
+        "window": "2025-04-01 -> 2026-11-19 (405d)",
+        "total_return_pct": 8.21,
+        "cagr_pct": 5.03,
+        "max_drawdown_pct": 9.83,
+        "calmar_ratio": 0.51,
+        "sharpe_ratio": -0.16,
+        "sortino_ratio": -0.14,
+        "annualised_vol_pct": 8.11,
+        "benchmark_return_pct": 8.48,
+        "excess_vs_nifty_pp": -0.27
+      }
+    },
+    "RISK_BUDGETED": {
+      "full_metrics": {
+        "allocator_id": "RISK_BUDGETED",
+        "window": "2022-01-03 -> 2026-11-19 (1206d)",
+        "total_return_pct": 18.14,
+        "cagr_pct": 3.54,
+        "max_drawdown_pct": 18.46,
+        "calmar_ratio": 0.19,
+        "sharpe_ratio": -0.28,
+        "sortino_ratio": -0.24,
+        "annualised_vol_pct": 9.18,
+        "benchmark_return_pct": 47.02,
+        "excess_vs_nifty_pp": -28.89,
+        "switch_events": 81,
+        "total_switch_cost_drag_pct": 0.434,
+        "suspension_triggers_count": 11,
+        "documented_recoveries_count": 11,
+        "avg_deployed_exposure_pct": 90.0
+      },
+      "is_metrics": {
+        "allocator_id": "RISK_BUDGETED",
+        "window": "2022-01-03 -> 2025-03-28 (801d)",
+        "total_return_pct": 9.18,
+        "cagr_pct": 2.8,
+        "max_drawdown_pct": 18.08,
+        "calmar_ratio": 0.15,
+        "sharpe_ratio": -0.34,
+        "sortino_ratio": -0.29,
+        "annualised_vol_pct": 9.68,
+        "benchmark_return_pct": 35.53,
+        "excess_vs_nifty_pp": -26.34
+      },
+      "oos_metrics": {
+        "allocator_id": "RISK_BUDGETED",
+        "window": "2025-04-01 -> 2026-11-19 (405d)",
+        "total_return_pct": 8.2,
+        "cagr_pct": 5.03,
+        "max_drawdown_pct": 9.84,
+        "calmar_ratio": 0.51,
+        "sharpe_ratio": -0.16,
+        "sortino_ratio": -0.14,
+        "annualised_vol_pct": 8.1,
+        "benchmark_return_pct": 8.48,
+        "excess_vs_nifty_pp": -0.28
+      }
+    },
+    "CONSTRAINED_ADAPTIVE_ORCHESTRATOR": {
+      "full_metrics": {
+        "allocator_id": "CONSTRAINED_ADAPTIVE_ORCHESTRATOR",
+        "window": "2022-01-03 -> 2026-11-19 (1206d)",
+        "total_return_pct": 14.83,
+        "cagr_pct": 2.93,
+        "max_drawdown_pct": 14.03,
+        "calmar_ratio": 0.21,
+        "sharpe_ratio": -0.41,
+        "sortino_ratio": -0.35,
+        "annualised_vol_pct": 7.99,
+        "benchmark_return_pct": 47.02,
+        "excess_vs_nifty_pp": -32.19,
+        "switch_events": 61,
+        "total_switch_cost_drag_pct": 1.568,
+        "suspension_triggers_count": 11,
+        "documented_recoveries_count": 11,
+        "avg_deployed_exposure_pct": 72.7
+      },
+      "is_metrics": {
+        "allocator_id": "CONSTRAINED_ADAPTIVE_ORCHESTRATOR",
+        "window": "2022-01-03 -> 2025-03-28 (801d)",
+        "total_return_pct": 10.59,
+        "cagr_pct": 3.22,
+        "max_drawdown_pct": 13.33,
+        "calmar_ratio": 0.24,
+        "sharpe_ratio": -0.33,
+        "sortino_ratio": -0.29,
+        "annualised_vol_pct": 8.81,
+        "benchmark_return_pct": 35.53,
+        "excess_vs_nifty_pp": -24.94
+      },
+      "oos_metrics": {
+        "allocator_id": "CONSTRAINED_ADAPTIVE_ORCHESTRATOR",
+        "window": "2025-04-01 -> 2026-11-19 (405d)",
+        "total_return_pct": 3.84,
+        "cagr_pct": 2.37,
+        "max_drawdown_pct": 7.47,
+        "calmar_ratio": 0.32,
+        "sharpe_ratio": -0.66,
+        "sortino_ratio": -0.56,
+        "annualised_vol_pct": 6.05,
+        "benchmark_return_pct": 8.48,
+        "excess_vs_nifty_pp": -4.65
+      }
+    },
+    "STOCK_LEVEL_SHARED_CAPITAL_ORCHESTRATED": {
+      "full_metrics": {
+        "allocator_id": "STOCK_LEVEL_SHARED_CAPITAL_ORCHESTRATED",
+        "window": "2022-01-03 -> 2026-11-19 (1206d)",
+        "total_return_pct": 8.48,
+        "cagr_pct": 1.72,
+        "max_drawdown_pct": 15.77,
+        "calmar_ratio": 0.11,
+        "sharpe_ratio": -0.54,
+        "sortino_ratio": -0.48,
+        "annualised_vol_pct": 8.31,
+        "benchmark_return_pct": 47.02,
+        "excess_vs_nifty_pp": -38.54,
+        "switch_events": 81,
+        "total_switch_cost_drag_pct": 9.21,
+        "suspension_triggers_count": 11,
+        "documented_recoveries_count": 11,
+        "avg_deployed_exposure_pct": 45.8
+      },
+      "is_metrics": {
+        "allocator_id": "STOCK_LEVEL_SHARED_CAPITAL_ORCHESTRATED",
+        "window": "2022-01-03 -> 2025-03-28 (801d)",
+        "total_return_pct": 12.37,
+        "cagr_pct": 3.74,
+        "max_drawdown_pct": 13.33,
+        "calmar_ratio": 0.28,
+        "sharpe_ratio": -0.27,
+        "sortino_ratio": -0.25,
+        "annualised_vol_pct": 8.98,
+        "benchmark_return_pct": 35.53,
+        "excess_vs_nifty_pp": -23.15
+      },
+      "oos_metrics": {
+        "allocator_id": "STOCK_LEVEL_SHARED_CAPITAL_ORCHESTRATED",
+        "window": "2025-04-01 -> 2026-11-19 (405d)",
+        "total_return_pct": -3.46,
+        "cagr_pct": -2.17,
+        "max_drawdown_pct": 6.29,
+        "calmar_ratio": -0.34,
+        "sharpe_ratio": -1.24,
+        "sortino_ratio": -1.04,
+        "annualised_vol_pct": 6.81,
+        "benchmark_return_pct": 8.48,
+        "excess_vs_nifty_pp": -11.95
+      }
+    }
+  },
+  "stress_validation_suite": {
+    "delayed_signal_1d_stress": {
+      "baseline_full_return_pct": 14.83,
+      "delayed_1d_full_return_pct": 12.25,
+      "delayed_1d_max_dd_pct": 14.6,
+      "return_degradation_pp": -2.58
+    },
+    "single_strategy_failure_injection_stress": {
+      "scenario": "Inject -26% 25-day structural collapse into STRAT_A_CS_MOMENTUM during OOS",
+      "orchestrator_full_return_pct": 14.42,
+      "orchestrator_max_dd_pct": 14.03,
+      "orchestrator_suspensions_triggered": 13,
+      "static_unprotected_full_return_pct": 9.47,
+      "static_unprotected_max_dd_pct": 22.69,
+      "drawdown_saved_vs_static_pp": 8.66
+    },
+    "correlation_convergence_stress": {
+      "scenario": "Offensive strategy sleeves converge in correlation during drawdowns",
+      "stressed_full_return_pct": 11.31,
+      "stressed_max_dd_pct": 13.98
+    }
+  },
+  "sample_allocation_explanations": [
+    {
+      "date": "2026-06-11",
+      "regime": "SIDEWAYS_CHOP",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 11.37,
+      "eligible_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "strategy_id": "STRAT_A_CS_MOMENTUM",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 8.56,
+          "trailing_60d_vol_pct": 11.56,
+          "trailing_60d_ret_pct": 1.42,
+          "allocated_weight_pct": 15.99
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "strategy_id": "STRAT_B_VCP_BREAKOUT",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 3.45,
+          "trailing_60d_vol_pct": 15.38,
+          "trailing_60d_ret_pct": 6.92,
+          "allocated_weight_pct": 8.22
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "strategy_id": "STRAT_D_SECTOR_ROTATION",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 7.33,
+          "trailing_60d_vol_pct": 16.92,
+          "trailing_60d_ret_pct": 13.94,
+          "allocated_weight_pct": 9.48
+        },
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 8.16,
+          "trailing_60d_vol_pct": 10.56,
+          "trailing_60d_ret_pct": -0.38,
+          "allocated_weight_pct": 35.23
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 24.46,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(24.5%>7.5%)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(24.5%>7.5%)"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.1599,
+        "STRAT_B_VCP_BREAKOUT": 0.0822,
+        "STRAT_C_TREND_PULLBACK": 0.001,
+        "STRAT_D_SECTOR_ROTATION": 0.0948,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.3523,
+        "CASH_RESERVE": 0.3098
+      },
+      "expected_gross_exposure_pct": 69.02,
+      "cash_reserve_pct": 30.98
+    },
+    {
+      "date": "2026-07-03",
+      "regime": "SIDEWAYS_CHOP",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 9.96,
+      "eligible_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "strategy_id": "STRAT_A_CS_MOMENTUM",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 7.72,
+          "trailing_60d_vol_pct": 12.06,
+          "trailing_60d_ret_pct": 5.79,
+          "allocated_weight_pct": 15.99
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "strategy_id": "STRAT_B_VCP_BREAKOUT",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 0.87,
+          "trailing_60d_vol_pct": 14.5,
+          "trailing_60d_ret_pct": 15.12,
+          "allocated_weight_pct": 8.22
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "strategy_id": "STRAT_D_SECTOR_ROTATION",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 1.29,
+          "trailing_60d_vol_pct": 18.18,
+          "trailing_60d_ret_pct": 21.36,
+          "allocated_weight_pct": 9.48
+        },
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 7.18,
+          "trailing_60d_vol_pct": 10.2,
+          "trailing_60d_ret_pct": 4.4,
+          "allocated_weight_pct": 35.23
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 22.89,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(22.9%>7.5%)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(22.9%>7.5%)"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.1599,
+        "STRAT_B_VCP_BREAKOUT": 0.0822,
+        "STRAT_C_TREND_PULLBACK": 0.001,
+        "STRAT_D_SECTOR_ROTATION": 0.0948,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.3523,
+        "CASH_RESERVE": 0.3098
+      },
+      "expected_gross_exposure_pct": 69.02,
+      "cash_reserve_pct": 30.98
+    },
+    {
+      "date": "2026-07-24",
+      "regime": "SIDEWAYS_CHOP",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 10.35,
+      "eligible_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "strategy_id": "STRAT_A_CS_MOMENTUM",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 9.73,
+          "trailing_60d_vol_pct": 12.22,
+          "trailing_60d_ret_pct": 1.69,
+          "allocated_weight_pct": 15.99
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "strategy_id": "STRAT_B_VCP_BREAKOUT",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 1.98,
+          "trailing_60d_vol_pct": 15.81,
+          "trailing_60d_ret_pct": 11.87,
+          "allocated_weight_pct": 8.22
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "strategy_id": "STRAT_D_SECTOR_ROTATION",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 3.03,
+          "trailing_60d_vol_pct": 17.0,
+          "trailing_60d_ret_pct": 6.5,
+          "allocated_weight_pct": 9.48
+        },
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 7.37,
+          "trailing_60d_vol_pct": 10.61,
+          "trailing_60d_ret_pct": -1.64,
+          "allocated_weight_pct": 35.23
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 23.48,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(23.5%>7.5%)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(23.5%>7.5%)"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.1599,
+        "STRAT_B_VCP_BREAKOUT": 0.0822,
+        "STRAT_C_TREND_PULLBACK": 0.001,
+        "STRAT_D_SECTOR_ROTATION": 0.0948,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.3523,
+        "CASH_RESERVE": 0.3098
+      },
+      "expected_gross_exposure_pct": 69.02,
+      "cash_reserve_pct": 30.98
+    },
+    {
+      "date": "2026-08-14",
+      "regime": "SIDEWAYS_CHOP",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 8.39,
+      "eligible_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "strategy_id": "STRAT_A_CS_MOMENTUM",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 10.61,
+          "trailing_60d_vol_pct": 12.12,
+          "trailing_60d_ret_pct": -2.31,
+          "allocated_weight_pct": 15.99
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "strategy_id": "STRAT_B_VCP_BREAKOUT",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 0.03,
+          "trailing_60d_vol_pct": 13.18,
+          "trailing_60d_ret_pct": 12.25,
+          "allocated_weight_pct": 8.22
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "strategy_id": "STRAT_D_SECTOR_ROTATION",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 0.31,
+          "trailing_60d_vol_pct": 13.81,
+          "trailing_60d_ret_pct": 15.94,
+          "allocated_weight_pct": 9.48
+        },
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 4.49,
+          "trailing_60d_vol_pct": 11.08,
+          "trailing_60d_ret_pct": 1.8,
+          "allocated_weight_pct": 35.23
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 23.03,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(23.0%>7.5%)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(23.0%>7.5%)"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.1599,
+        "STRAT_B_VCP_BREAKOUT": 0.0822,
+        "STRAT_C_TREND_PULLBACK": 0.001,
+        "STRAT_D_SECTOR_ROTATION": 0.0948,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.3523,
+        "CASH_RESERVE": 0.3098
+      },
+      "expected_gross_exposure_pct": 69.02,
+      "cash_reserve_pct": 30.98
+    },
+    {
+      "date": "2026-09-04",
+      "regime": "SIDEWAYS_CHOP",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 8.88,
+      "eligible_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "strategy_id": "STRAT_A_CS_MOMENTUM",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 10.95,
+          "trailing_60d_vol_pct": 10.49,
+          "trailing_60d_ret_pct": -2.62,
+          "allocated_weight_pct": 15.99
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "strategy_id": "STRAT_B_VCP_BREAKOUT",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 0.81,
+          "trailing_60d_vol_pct": 13.34,
+          "trailing_60d_ret_pct": 7.04,
+          "allocated_weight_pct": 8.22
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "strategy_id": "STRAT_D_SECTOR_ROTATION",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 3.84,
+          "trailing_60d_vol_pct": 13.18,
+          "trailing_60d_ret_pct": 12.67,
+          "allocated_weight_pct": 9.48
+        },
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 5.61,
+          "trailing_60d_vol_pct": 9.56,
+          "trailing_60d_ret_pct": 2.77,
+          "allocated_weight_pct": 35.23
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 24.93,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(24.9%>7.5%)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(24.9%>7.5%)"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.1599,
+        "STRAT_B_VCP_BREAKOUT": 0.0822,
+        "STRAT_C_TREND_PULLBACK": 0.001,
+        "STRAT_D_SECTOR_ROTATION": 0.0948,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.3523,
+        "CASH_RESERVE": 0.3098
+      },
+      "expected_gross_exposure_pct": 69.02,
+      "cash_reserve_pct": 30.98
+    },
+    {
+      "date": "2026-09-28",
+      "regime": "STRESS_BEAR",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 10.04,
+      "eligible_strategies": {
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 8.16,
+          "trailing_60d_vol_pct": 9.94,
+          "trailing_60d_ret_pct": -1.05,
+          "allocated_weight_pct": 46.4
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 28.06,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(28.1%>7.5%), regime(STRESS_BEAR)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "status": "REGIME_INCOMPATIBLE",
+          "reason": "Current causal regime STRESS_BEAR outside validated regimes ['STRONG_BULL', 'WEAK_BULL', 'SIDEWAYS_CHOP']"
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "status": "REGIME_INCOMPATIBLE",
+          "reason": "Current causal regime STRESS_BEAR outside validated regimes ['STRONG_BULL', 'WEAK_BULL']"
+        },
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(28.1%>7.5%), regime(STRESS_BEAR)"
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "status": "REGIME_INCOMPATIBLE",
+          "reason": "Current causal regime STRESS_BEAR outside validated regimes ['STRONG_BULL', 'WEAK_BULL', 'SIDEWAYS_CHOP']"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.0,
+        "STRAT_B_VCP_BREAKOUT": 0.0,
+        "STRAT_C_TREND_PULLBACK": 0.0,
+        "STRAT_D_SECTOR_ROTATION": 0.0,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.464,
+        "CASH_RESERVE": 0.536
+      },
+      "expected_gross_exposure_pct": 46.4,
+      "cash_reserve_pct": 53.6
+    },
+    {
+      "date": "2026-10-21",
+      "regime": "STRESS_BEAR",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 10.31,
+      "eligible_strategies": {
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 9.07,
+          "trailing_60d_vol_pct": 8.88,
+          "trailing_60d_ret_pct": -1.83,
+          "allocated_weight_pct": 46.4
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 29.87,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(29.9%>7.5%), regime(STRESS_BEAR)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "status": "REGIME_INCOMPATIBLE",
+          "reason": "Current causal regime STRESS_BEAR outside validated regimes ['STRONG_BULL', 'WEAK_BULL', 'SIDEWAYS_CHOP']"
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "status": "REGIME_INCOMPATIBLE",
+          "reason": "Current causal regime STRESS_BEAR outside validated regimes ['STRONG_BULL', 'WEAK_BULL']"
+        },
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(29.9%>7.5%), regime(STRESS_BEAR)"
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "status": "REGIME_INCOMPATIBLE",
+          "reason": "Current causal regime STRESS_BEAR outside validated regimes ['STRONG_BULL', 'WEAK_BULL', 'SIDEWAYS_CHOP']"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.0,
+        "STRAT_B_VCP_BREAKOUT": 0.0,
+        "STRAT_C_TREND_PULLBACK": 0.0,
+        "STRAT_D_SECTOR_ROTATION": 0.0,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.464,
+        "CASH_RESERVE": 0.536
+      },
+      "expected_gross_exposure_pct": 46.4,
+      "cash_reserve_pct": 53.6
+    },
+    {
+      "date": "2026-11-12",
+      "regime": "WEAK_BULL",
+      "dq_valid_coverage_pct": 98.4,
+      "portfolio_drawdown_pct": 8.54,
+      "eligible_strategies": {
+        "STRAT_A_CS_MOMENTUM": {
+          "strategy_id": "STRAT_A_CS_MOMENTUM",
+          "state": "THROTTLED_50PCT",
+          "sleeve_dd_pct": 17.03,
+          "trailing_60d_vol_pct": 12.03,
+          "trailing_60d_ret_pct": -7.18,
+          "allocated_weight_pct": 8.6
+        },
+        "STRAT_B_VCP_BREAKOUT": {
+          "strategy_id": "STRAT_B_VCP_BREAKOUT",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 5.25,
+          "trailing_60d_vol_pct": 16.04,
+          "trailing_60d_ret_pct": -4.56,
+          "allocated_weight_pct": 9.03
+        },
+        "STRAT_D_SECTOR_ROTATION": {
+          "strategy_id": "STRAT_D_SECTOR_ROTATION",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 5.04,
+          "trailing_60d_vol_pct": 13.57,
+          "trailing_60d_ret_pct": -2.52,
+          "allocated_weight_pct": 10.89
+        },
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": {
+          "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+          "state": "ACTIVE",
+          "sleeve_dd_pct": 5.6,
+          "trailing_60d_vol_pct": 8.49,
+          "trailing_60d_ret_pct": -1.16,
+          "allocated_weight_pct": 39.43
+        }
+      },
+      "suspended_or_throttled": {
+        "STRAT_A_CS_MOMENTUM": {
+          "state": "THROTTLED_50PCT",
+          "sleeve_dd_pct": 17.03,
+          "trigger": "THROTTLED_50PCT (dd=17.0%, ret60d=-7.2%)",
+          "recovery_status": "Promotes back to ACTIVE when dd < 11.0% and ret20d > 0%"
+        },
+        "STRAT_C_TREND_PULLBACK": {
+          "state": "SUSPENDED",
+          "sleeve_dd_pct": 27.05,
+          "trigger": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%)",
+          "recovery_status": "HOLD_SUSPENDED: waiting on dd(27.0%>7.5%)"
+        }
+      },
+      "rejected_strategies": {
+        "STRAT_C_TREND_PULLBACK": {
+          "status": "SUSPENDED_BY_RISK_GOVERNOR",
+          "reason": "SLEEVE_MAX_DD_BREACH (16.50% >= 16.0%) | HOLD_SUSPENDED: waiting on dd(27.0%>7.5%)"
+        },
+        "STRAT_RV1_COINT_PAIRS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -17.67%, IS PF 0.74)"
+        },
+        "STRAT_RV2A_SECTOR_REL_MOM": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret +19.02%, IS PF 1.15)"
+        },
+        "STRAT_RV3_MARKET_NEUTRAL_LS": {
+          "status": "REJECTED_SLBM_DRAG",
+          "reason": "Failed pre-orchestration validation (REJECTED_SLBM_DRAG: IS ret -9.45%, IS PF 0.88)"
+        },
+        "STRAT_RV4A_NIFTY_FUT_HEDGED_25L_LOT": {
+          "status": "CAPITAL_OR_INSTRUMENT_INELIGIBLE",
+          "reason": "Requires INR 2,500,000 & SLBM/F&O access (current capital INR 100,000 cash CNC)"
+        }
+      },
+      "target_weights": {
+        "STRAT_A_CS_MOMENTUM": 0.086,
+        "STRAT_B_VCP_BREAKOUT": 0.0903,
+        "STRAT_C_TREND_PULLBACK": 0.0,
+        "STRAT_D_SECTOR_ROTATION": 0.1089,
+        "STRAT_E_DEFENSIVE_YIELD_LOWVOL": 0.3943,
+        "CASH_RESERVE": 0.3205
+      },
+      "expected_gross_exposure_pct": 67.95,
+      "cash_reserve_pct": 32.05
+    }
+  ]
+}
