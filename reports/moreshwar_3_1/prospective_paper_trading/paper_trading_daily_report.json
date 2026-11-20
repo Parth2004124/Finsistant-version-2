@@ -1,9 +1,9 @@
 {
   "schema_version": "m3_1_paper_daily_report_v1",
   "release_version": "3.1.0-rc1",
-  "generated_at_utc": "2026-11-20T09:17:53.063370+00:00",
-  "trading_date": "2026-11-19",
-  "data_availability_timestamp": "2026-11-20T09:17:53.063373+00:00",
+  "generated_at_utc": "2026-11-20T12:11:47.858068+00:00",
+  "trading_date": "2026-11-20",
+  "data_availability_timestamp": "2026-11-20T12:11:47.846109+00:00",
   "configuration_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
   "configuration_raw_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
   "strategy_identifier": "G_SIMPLE_TREND_BASELINE + EXP_E_COMBINED_EXEC_INTEL",
@@ -24,7 +24,7 @@
   "regime_determination": {
     "raw_regime": "BULL_TREND",
     "confirmed_regime": "BULL_TREND",
-    "confirmation_streak_days": 3,
+    "confirmation_streak_days": 4,
     "confirmation_required_days": 3,
     "allow_new_family_e_entries": true
   },
@@ -38,9 +38,170 @@
     "actual_liquid_pct": 0.0,
     "actual_cash_pct": 100.0
   },
-  "signals_generated": [],
+  "signals_generated": [
+    {
+      "sec_id": "INE669C01036",
+      "symbol": "TECHM",
+      "decision": "REJECTED",
+      "reason": "SIZE_BELOW_MIN_LOT"
+    },
+    {
+      "sec_id": "INE481G01011",
+      "symbol": "ULTRACEMCO",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 183.61,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE397D01024",
+      "symbol": "BHARTIARTL",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 163.58,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE018A01030",
+      "symbol": "LT",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 156.61,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE062A01020",
+      "symbol": "SBIN",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 167.9,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE692A01016",
+      "symbol": "UNIONBANK",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 183.04,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE044A01036",
+      "symbol": "SUNPHARMA",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 158.98,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE917I01010",
+      "symbol": "BAJAJ-AUTO",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 163.88,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE066F01020",
+      "symbol": "HAL",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 159.99,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE0J1Y01017",
+      "symbol": "LICI",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 182.56,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE090A01021",
+      "symbol": "ICICIBANK",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 143.32,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE160A01022",
+      "symbol": "PNB",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 170.45,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE066A01021",
+      "symbol": "EICHERMOT",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 151.89,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE262H01021",
+      "symbol": "PERSISTENT",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 148.37,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE021A01026",
+      "symbol": "ASIANPAINT",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 157.75,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE089A01031",
+      "symbol": "DRREDDY",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 132.73,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE263A01024",
+      "symbol": "BEL",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 130.62,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE158A01026",
+      "symbol": "HEROMOTOCO",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 188.68,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE019A01038",
+      "symbol": "JSWSTEEL",
+      "decision": "REJECTED",
+      "reason": "BELOW_EV_HURDLE",
+      "ev_net_bps": 117.94,
+      "hurdle_bps": 200.0
+    }
+  ],
   "simulated_orders_latest_session": [],
-  "pending_next_session_orders": [],
+  "pending_next_session_orders": [
+    {
+      "kind": "CORE_REBALANCE",
+      "target_core_inr": 73500.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "LIQUID_SWEEP",
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    }
+  ],
   "execution_summary": {
     "total_orders_all_sessions": 0,
     "filled_orders": 0,
@@ -61,8 +222,8 @@
     "benchmark_45_55_nav": 100000.0
   },
   "risk_metrics": {
-    "as_of_date": "2026-11-19",
-    "sample_sessions": 0,
+    "as_of_date": "2026-11-20",
+    "sample_sessions": 1,
     "initial_capital_inr": 100000.0,
     "current_nav_inr": 100000.0,
     "daily_pnl_inr": 0.0,
@@ -70,13 +231,13 @@
     "cumulative_pnl_inr": 0.0,
     "cumulative_return_pct": 0.0,
     "cagr_pct": null,
-    "cagr_sample_status": "INSUFFICIENT_SAMPLE (0/60 sessions)",
+    "cagr_sample_status": "INSUFFICIENT_SAMPLE (1/60 sessions)",
     "max_drawdown_pct": 0.0,
     "current_drawdown_pct": 0.0,
     "rolling_volatility_pct": null,
     "rolling_sharpe": null,
     "rolling_sortino": null,
-    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (0/20 sessions)",
+    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (1/20 sessions)",
     "exposure_by_instrument": [],
     "exposure_by_sector": [],
     "core_etf_exposure_pct": 0.0,
@@ -101,7 +262,7 @@
   "data_quality_state": "PARTIAL_DIAGNOSTIC_ONLY",
   "reconciliation_result": {
     "passed": true,
-    "as_of_date": "2026-11-19",
+    "as_of_date": "2026-11-20",
     "nav_from_assets_inr": 100000.0,
     "nav_from_equity_inr": 100000.0,
     "reconciliation_diff_inr": 0.0,
@@ -126,18 +287,18 @@
   "safe_mode_reason": "",
   "audit_chain": {
     "valid": true,
-    "entries": 3,
-    "head_chain_sha256": "c78a6b061b7f79aa3f8968cdb4fecc4cdfceb62a4241fe768370e797220553fc"
+    "entries": 4,
+    "head_chain_sha256": "612cdbbc93865a2039ea791dd1524e950bc7e1f1fb4a77c1067ec0ebe12082b7"
   },
   "prospective_validation": {
     "prospective_start_date": "2026-11-19",
-    "completed_unseen_sessions": 0,
+    "completed_unseen_sessions": 1,
     "minimum_required_sessions": 60,
     "target_sessions": 120,
-    "progress_to_min_pct": 0.0,
-    "progress_to_target_pct": 0.0,
+    "progress_to_min_pct": 1.67,
+    "progress_to_target_pct": 0.83,
     "validation_complete": false,
-    "status_label": "AWAITING_FIRST_PROSPECTIVE_SESSION",
+    "status_label": "IN_PROGRESS_INCOMPLETE_SAMPLE",
     "prospective_paper_trades": 0,
     "prospective_rejected_orders": 0
   }
