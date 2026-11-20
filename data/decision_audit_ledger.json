@@ -1,7 +1,1419 @@
 {
   "version": 1,
-  "updated_at": "2026-11-20T14:04:02.955863+00:00",
+  "updated_at": "2026-11-20T14:32:36.803844+00:00",
   "records": [
+    {
+      "audit_id": "fnv2-aud-20261120-SAILIFE-a621f743",
+      "signature": "a621f743cae735c4",
+      "symbol": "SAILIFE",
+      "name": "Sai Life Sciences Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803783+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803783+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:31:02.528239+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 78,
+        "business": 40,
+        "moat": 18,
+        "management": 0,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 76.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 1,800.10 vs 20D SMA 1,670.58 (Upward Curve, 30D Reg Target 2,482.01). RSI(14)=67.9, MACD=+84.15 vs Sig=+76.08."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 76.5,
+          "summary": "Fundamental 78/100 (Bus 40/40, Moat 18/20, Mgmt 0/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [IT]. Premium growth multiple (P/E 102.4x) pricing in strong execution. Strong top-line expansion (22.5% YoY) & profit growth (16.5% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 85.3,
+          "summary": "Decision Matrix: BUY NOW (85.3% conviction >= 60% bar). Auto-Risk sized 12 shares (INR 21,601.20) | Moreshwar Target 1,937.80 / SL 1,757.80 (R:R 1:3.26)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1800.1,
+        "change_pct": 0.65,
+        "rsi_14": 67.9,
+        "sma_20": 1670.58,
+        "projected_30d_target": 2482.01,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1772.61,
+        "target": 1937.8,
+        "stop_loss": 1757.8,
+        "rr_ratio": 3.26,
+        "qty": 12,
+        "conviction": 85.3
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h27m27.477064557s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h27m27.477064557s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:32:18.387196+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 1800.1,
+        "target": 1937.8,
+        "stop_loss": 1757.8,
+        "rr_ratio": 3.26,
+        "qty": 12,
+        "conviction": 85.3,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 1.55,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1800.1,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803783+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-TIIL-886fedef",
+      "signature": "886fedef2ae323f9",
+      "symbol": "TIIL",
+      "name": "Technocraft Industries (India) Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803766+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803766+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:59.943400+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 73,
+        "business": 35,
+        "moat": 8,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 80,
+        "technical_score": 96.0,
+        "composite_score": 76.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 2,810.00 vs 20D SMA 2,725.90 (Upward Curve, 30D Reg Target 3,579.08). RSI(14)=68.65, MACD=+30.14 vs Sig=+10.79."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 76.5,
+          "summary": "Fundamental 73/100 (Bus 35/40, Moat 8/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 80/100 [IT]. Attractive valuation at P/E 16.7x with value margin of safety. High capital efficiency (ROE 18.4%, ROCE 15.6%) underscores durable moat. Strong top-line expansion (24.4% YoY) & profit growth (49.4% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 85.3,
+          "summary": "Decision Matrix: BUY NOW (85.3% conviction >= 60% bar). Auto-Risk sized 7 shares (INR 19,670.00) | Moreshwar Target 3,024.97 / SL 2,743.97 (R:R 1:3.26)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 2810.0,
+        "change_pct": 1.02,
+        "rsi_14": 68.65,
+        "sma_20": 2725.9,
+        "projected_30d_target": 3579.08,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 2767.08,
+        "target": 3024.97,
+        "stop_loss": 2743.97,
+        "rr_ratio": 3.26,
+        "qty": 7,
+        "conviction": 85.3
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h27m34.857013376s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h27m34.857013376s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:32:10.979236+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 2810.0,
+        "target": 3024.97,
+        "stop_loss": 2743.97,
+        "rr_ratio": 3.26,
+        "qty": 7,
+        "conviction": 85.3,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 1.55,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 2810.0,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803766+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-JSWENERGY-b64637b4",
+      "signature": "b64637b430461b48",
+      "symbol": "JSWENERGY",
+      "name": "JSW Energy Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803744+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803744+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:57.740367+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 40,
+        "moat": 15,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 77.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 513.40 vs 20D SMA 503.69 (Upward Curve, 30D Reg Target 614.93). RSI(14)=62.58, MACD=+7.15 vs Sig=+6.93."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 77.5,
+          "summary": "Fundamental 80/100 (Bus 40/40, Moat 15/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [POWER]. Premium growth multiple (P/E 40.4x) pricing in strong execution. Strong top-line expansion (23.0% YoY) & profit growth (39.1% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 85.8,
+          "summary": "Decision Matrix: BUY NOW (85.8% conviction >= 60% bar). Auto-Risk sized 42 shares (INR 21,562.80) | Moreshwar Target 590.90 / SL 490.90 (R:R 1:3.44)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 513.4,
+        "change_pct": -0.31,
+        "rsi_14": 62.58,
+        "sma_20": 503.69,
+        "projected_30d_target": 614.93,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 498.77,
+        "target": 590.9,
+        "stop_loss": 490.9,
+        "rr_ratio": 3.44,
+        "qty": 42,
+        "conviction": 85.8
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h27m44.159543214s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h27m44.159543214s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:32:01.748259+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 513.4,
+        "target": 590.9,
+        "stop_loss": 490.9,
+        "rr_ratio": 3.44,
+        "qty": 42,
+        "conviction": 85.8,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 2.93,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 513.4,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803744+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-SJVN-5ac9fb83",
+      "signature": "5ac9fb839fda3852",
+      "symbol": "SJVN",
+      "name": "SJVN Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803721+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803721+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:55.647309+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 40,
+        "moat": 10,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 77.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 55.69 vs 20D SMA 54.96 (Upward Curve, 30D Reg Target 71.04). RSI(14)=57.79, MACD=+0.07 vs Sig=-0.09."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 77.5,
+          "summary": "Fundamental 80/100 (Bus 40/40, Moat 10/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [GENERAL]. Balanced valuation at P/E 22.1x. Strong top-line expansion (117.4% YoY) & profit growth (115.4% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 85.8,
+          "summary": "Decision Matrix: BUY NOW (85.8% conviction >= 60% bar). Auto-Risk sized 179 shares (INR 9,968.51) | Moreshwar Target 133.19 / SL 47.34 (R:R 1:9.28)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 55.69,
+        "change_pct": -0.91,
+        "rsi_14": 57.79,
+        "sma_20": 54.96,
+        "projected_30d_target": 71.04,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 50.12,
+        "target": 133.19,
+        "stop_loss": 47.34,
+        "rr_ratio": 9.28,
+        "qty": 179,
+        "conviction": 85.8
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h27m51.591096417s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h27m51.591096417s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:31:54.246706+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 55.69,
+        "target": 133.19,
+        "stop_loss": 47.34,
+        "rr_ratio": 9.28,
+        "qty": 179,
+        "conviction": 85.8,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 11.11,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 55.69,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803721+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-SUDEEPPHRM-ba918a4d",
+      "signature": "ba918a4d1720d6c1",
+      "symbol": "SUDEEPPHRM",
+      "name": "Sudeep Pharma Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803696+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803696+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:53.428022+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 73,
+        "business": 35,
+        "moat": 18,
+        "management": 0,
+        "risk": 20,
+        "porters_total": 85,
+        "technical_score": 96.0,
+        "composite_score": 79.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 1,192.90 vs 20D SMA 1,139.83 (Upward Curve, 30D Reg Target 1,512.91). RSI(14)=69.51, MACD=+33.30 vs Sig=+27.15."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 79.0,
+          "summary": "Fundamental 73/100 (Bus 35/40, Moat 18/20, Mgmt 0/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [PHARMA]. Premium growth multiple (P/E 70.7x) pricing in strong execution. High capital efficiency (ROE 22.0%, ROCE 19.2%) underscores durable moat. Strong top-line expansion (20.9% YoY) & profit growth (9.3% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 61.7,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (61.7% conviction). Sized 9 shares (INR 10,575.09) | Entry 1,175.01 \u00b7 TP 1,254.92 / SL 1,155.02 (R:R 1:4.0)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1192.9,
+        "change_pct": -1.58,
+        "rsi_14": 69.51,
+        "sma_20": 1139.83,
+        "projected_30d_target": 1512.91,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1192.9,
+        "target": 1286.91,
+        "stop_loss": 1167.91,
+        "rr_ratio": 3.76,
+        "qty": 18,
+        "conviction": 86.7
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "HIGH",
+        "bull_case": "The asset exhibits strong technical bullish signals with a 96% confidence, an upward 20D SMA curve, and a 30D regression target of \u20b91512.91, supported by a robust fundamental score of 73/100, especially in Business (35/40) and Moat (18/20).",
+        "objections_raised": "The RSI at 69.51 is nearing overbought territory, and the trailing P/E of 70.71x is extremely high, indicating significant valuation risk despite the strong growth and moat. The Management/Valuation score of 0/20 is a major red flag, conflicting with the 'BUY NOW (Strong)' verdict.",
+        "rationale": "Given the strong technical momentum and fundamental moat, a cautious accumulation is warranted. However, the high P/E and zero score in Management/Valuation necessitate a recalibration to mitigate risk, specifically by lowering the entry point, tightening the stop-loss, and reducing the target to account for potential overextension. The suggested quantity will be downsized.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:31:47.241003+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 1175.01,
+        "target": 1254.92,
+        "stop_loss": 1155.02,
+        "rr_ratio": 4.0,
+        "qty": 9,
+        "conviction": 61.7,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -1.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -1.5,
+        "target_delta_pct": -2.49,
+        "stop_delta_pct": -1.1,
+        "qty_delta": -9,
+        "conviction_delta": -25.0,
+        "reasons": [
+          "Applied 1.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 20.0% to constrain downside MAE.",
+          "Trimmed target upside by 15.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The RSI at 69.51 is nearing overbought territory, and the trailing P/E of 70.71x is extremely high, indicating significant valuation risk despite the strong growth and moat. The Management/Valuation score of 0/20 is a major red flag, conflicting with the 'BUY NOW (Strong)' verdict."
+        ],
+        "summary": "Applied CRO Calibration (SUDEEPPHRM): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b91192.9 -> \u20b91175.01 | TP \u20b91286.91 -> \u20b91254.92 | SL \u20b91167.91 -> \u20b91155.02 (R:R 1:3.76 -> 1:4.0) | Qty 18 -> 9 sh (0.50x) | Conviction 86.7% -> 61.7%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1192.9,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803696+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-LUMAXTECH-86b72484",
+      "signature": "86b72484dd932390",
+      "symbol": "LUMAXTECH",
+      "name": "Lumax Auto Technologies Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803670+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803670+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:50.794361+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 75,
+        "business": 32,
+        "moat": 18,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 90,
+        "technical_score": 96.0,
+        "composite_score": 82.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 2,321.00 vs 20D SMA 2,163.72 (Upward Curve, 30D Reg Target 3,154.22). RSI(14)=68.3, MACD=+106.24 vs Sig=+93.04."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 82.5,
+          "summary": "Fundamental 75/100 (Bus 32/40, Moat 18/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 90/100 [IT]. Premium growth multiple (P/E 43.8x) pricing in strong execution. High capital efficiency (ROE 28.4%, ROCE 22.7%) underscores durable moat. Strong top-line expansion (34.5% YoY) & profit growth (57.8% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 88.6,
+          "summary": "Decision Matrix: BUY NOW (88.6% conviction >= 60% bar). Auto-Risk sized 9 shares (INR 20,889.00) | Moreshwar Target 2,512.40 / SL 2,280.40 (R:R 1:4.71)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 2321.0,
+        "change_pct": -0.69,
+        "rsi_14": 68.3,
+        "sma_20": 2163.72,
+        "projected_30d_target": 3154.22,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 2294.61,
+        "target": 2512.4,
+        "stop_loss": 2280.4,
+        "rr_ratio": 4.71,
+        "qty": 9,
+        "conviction": 88.6
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h28m0.80255719s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h28m0.80255719s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:31:45.021897+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 2321.0,
+        "target": 2512.4,
+        "stop_loss": 2280.4,
+        "rr_ratio": 4.71,
+        "qty": 9,
+        "conviction": 88.6,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 1.15,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 2321.0,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803670+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-RUBICON-b1ce7019",
+      "signature": "b1ce70190364699e",
+      "symbol": "RUBICON",
+      "name": "Rubicon Research Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803648+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803648+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:48.531128+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 40,
+        "moat": 20,
+        "management": 0,
+        "risk": 20,
+        "porters_total": 95,
+        "technical_score": 96.0,
+        "composite_score": 87.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 1,724.90 vs 20D SMA 1,650.27 (Upward Curve, 30D Reg Target 2,188.54). RSI(14)=60.21, MACD=+29.54 vs Sig=+24.31."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 87.5,
+          "summary": "Fundamental 80/100 (Bus 40/40, Moat 20/20, Mgmt 0/20, Risk 20/20) \u00b7 Porter's 5 Forces 95/100 [PHARMA]. Premium growth multiple (P/E 88.1x) pricing in strong execution. High capital efficiency (ROE 31.2%, ROCE 25.5%) underscores durable moat. Strong top-line expansion (39.9% YoY) & profit growth (55.9% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 81.3,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (81.3% conviction). Sized 6 shares (INR 10,142.40) | Entry 1,690.40 \u00b7 TP 1,825.85 / SL 1,672.12 (R:R 1:7.41)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1724.9,
+        "change_pct": 0.15,
+        "rsi_14": 60.21,
+        "sma_20": 1650.27,
+        "projected_30d_target": 2188.54,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1724.9,
+        "target": 1875.4,
+        "stop_loss": 1703.4,
+        "rr_ratio": 7.0,
+        "qty": 12,
+        "conviction": 91.3
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "HIGH",
+        "bull_case": "Strong sales (39.9%) and profit growth (55.9%) coupled with a high fundamental score (80/100) and a robust moat (95/100) support the bullish outlook.",
+        "objections_raised": "The trailing P/E of 88.14x is exceptionally high, indicating significant valuation risk, and the RSI of 60.21 is approaching overbought territory, suggesting potential technical overextension.",
+        "rationale": "While the growth and moat are compelling, the high P/E and approaching overbought RSI warrant caution. The trade will be sized down, the entry price adjusted for a potential pullback, and the stop-loss tightened to manage risk, reflecting a more conservative approach to this setup.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-20T14:31:37.169468+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 1690.4,
+        "target": 1825.85,
+        "stop_loss": 1672.12,
+        "rr_ratio": 7.41,
+        "qty": 6,
+        "conviction": 81.3,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.64,
+        "stop_delta_pct": -1.84,
+        "qty_delta": -6,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The trailing P/E of 88.14x is exceptionally high, indicating significant valuation risk, and the RSI of 60.21 is approaching overbought territory, suggesting potential technical overextension."
+        ],
+        "summary": "Applied CRO Calibration (RUBICON): BUY NOW -> LIMIT PULLBACK | Entry \u20b91724.9 -> \u20b91690.4 | TP \u20b91875.4 -> \u20b91825.85 | SL \u20b91703.4 -> \u20b91672.12 (R:R 1:7.0 -> 1:7.41) | Qty 12 -> 6 sh (0.50x) | Conviction 91.3% -> 81.3%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1724.9,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803648+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-BAJAJ-AUTO-d72b53bf",
+      "signature": "d72b53bfedee9301",
+      "symbol": "BAJAJ-AUTO",
+      "name": "Bajaj Auto Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803624+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803624+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:45.925152+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 88,
+        "business": 40,
+        "moat": 18,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 95,
+        "technical_score": 96.0,
+        "composite_score": 91.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 10,765.00 vs 20D SMA 10,618.30 (Upward Curve, 30D Reg Target 13,041.19). RSI(14)=63.36, MACD=+63.46 vs Sig=+42.65."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 91.5,
+          "summary": "Fundamental 88/100 (Bus 40/40, Moat 18/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 95/100 [BANKING]. Balanced valuation at P/E 23.0x. High capital efficiency (ROE 35.6%, ROCE 29.3%) underscores durable moat. Strong top-line expansion (57.4% YoY) & profit growth (63.8% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 88.5,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (88.5% conviction). Sized 2 shares (INR 21,422.34) | Entry 10,711.17 \u00b7 TP 11,647.35 / SL 10,633.35 (R:R 1:12.03)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 10765.0,
+        "change_pct": -0.48,
+        "rsi_14": 63.36,
+        "sma_20": 10618.3,
+        "projected_30d_target": 13041.19,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 10765.0,
+        "target": 11750.45,
+        "stop_loss": 10673.45,
+        "rr_ratio": 10.76,
+        "qty": 2,
+        "conviction": 93.5
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "Bajaj Auto demonstrates exceptional fundamental strength with a Total Fundamental Score of 88/100, robust Sales Growth of 57.4%, Profit Growth of 63.8%, and an impressive OPM of 21.03%, underpinned by a strong Porter's 5 Forces Moat of 95/100. The 30D Quant Target of \u20b913041.19 and an upward Degree-2 Polynomial Regression curve suggest continued upside potential.",
+        "objections_raised": "While the technicals are bullish, the current spot price of \u20b910765.0 is above the 20D SMA of \u20b910618.3, and an RSI(14) of 63.36 indicates it's approaching overbought territory, suggesting a potential for a minor pullback. The proposed R:R of 1:10.76, while numerically high, relies on a very tight stop-loss which could be easily triggered by minor volatility, making the actual risk higher than perceived.",
+        "rationale": "Given the strong fundamentals and positive long-term technical outlook, a BUY action is warranted, but with caution. The current price is slightly extended from the 20D SMA, so a discounted entry is prudent to mitigate immediate pullback risk. The stop-loss needs to be tightened to protect capital more effectively against minor reversals, and the target should be slightly trimmed to account for potential over-optimism in the initial projection, especially with the current RSI levels. The position size will be reduced to reflect this cautious approach.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:31:29.538096+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 10711.17,
+        "target": 11647.35,
+        "stop_loss": 10633.35,
+        "rr_ratio": 12.03,
+        "qty": 2,
+        "conviction": 88.5,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -0.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -0.5,
+        "target_delta_pct": -0.88,
+        "stop_delta_pct": -0.38,
+        "qty_delta": 0,
+        "conviction_delta": -5.0,
+        "reasons": [
+          "Applied 0.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 5.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: While the technicals are bullish, the current spot price of \u20b910765.0 is above the 20D SMA of \u20b910618.3, and an RSI(14) of 63.36 indicates it's approaching overbought territory, suggesting a potential for a minor pullback. The proposed R:R of 1:10.76, while numerically high, relies on a very tight stop-loss which could be easily triggered by minor volatility, making the actual risk higher than perceived."
+        ],
+        "summary": "Applied CRO Calibration (BAJAJ-AUTO): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b910765.0 -> \u20b910711.17 | TP \u20b911750.45 -> \u20b911647.35 | SL \u20b910673.45 -> \u20b910633.35 (R:R 1:10.76 -> 1:12.03) | Qty 2 -> 2 sh (0.75x) | Conviction 93.5% -> 88.5%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 10765.0,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803624+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-BALUFORGE-eeb7f94d",
+      "signature": "eeb7f94d1d113e1f",
+      "symbol": "BALUFORGE",
+      "name": "Balu Forge Industries Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803605+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803605+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:43.496597+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 83,
+        "business": 40,
+        "moat": 13,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 79.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 514.20 vs 20D SMA 495.07 (Upward Curve, 30D Reg Target 651.06). RSI(14)=68.32, MACD=+14.57 vs Sig=+12.08."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 79.0,
+          "summary": "Fundamental 83/100 (Bus 40/40, Moat 13/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [GENERAL]. Balanced valuation at P/E 20.9x. Strong top-line expansion (29.0% YoY) & profit growth (88.0% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 86.7,
+          "summary": "Decision Matrix: BUY NOW (86.7% conviction >= 60% bar). Auto-Risk sized 42 shares (INR 21,596.40) | Moreshwar Target 593.20 / SL 493.20 (R:R 1:3.76)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 514.2,
+        "change_pct": -2.34,
+        "rsi_14": 68.32,
+        "sma_20": 495.07,
+        "projected_30d_target": 651.06,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 500.55,
+        "target": 593.2,
+        "stop_loss": 493.2,
+        "rr_ratio": 3.76,
+        "qty": 42,
+        "conviction": 86.7
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h28m17.549753635s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h28m17.549753635s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:31:28.219263+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 514.2,
+        "target": 593.2,
+        "stop_loss": 493.2,
+        "rr_ratio": 3.76,
+        "qty": 42,
+        "conviction": 86.7,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 2.73,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 514.2,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803605+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-LTF-45c1bb21",
+      "signature": "45c1bb212cb9daaf",
+      "symbol": "LTF",
+      "name": "L&T Finance Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803567+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803567+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:40.704541+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 35,
+        "moat": 15,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 80,
+        "technical_score": 96.0,
+        "composite_score": 80.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 272.10 vs 20D SMA 263.53 (Upward Curve, 30D Reg Target 355.93). RSI(14)=69.38, MACD=+3.37 vs Sig=+1.61."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 80.0,
+          "summary": "Fundamental 80/100 (Bus 35/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 80/100 [BANKING]. Balanced valuation at P/E 20.0x. Strong top-line expansion (31.4% YoY) & profit growth (32.4% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 87.2,
+          "summary": "Decision Matrix: BUY NOW (87.2% conviction >= 60% bar). Auto-Risk sized 74 shares (INR 20,135.40) | Moreshwar Target 352.10 / SL 252.10 (R:R 1:4.0)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 272.1,
+        "change_pct": -1.16,
+        "rsi_14": 69.38,
+        "sma_20": 263.53,
+        "projected_30d_target": 355.93,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 259.1,
+        "target": 352.1,
+        "stop_loss": 252.1,
+        "rr_ratio": 4.0,
+        "qty": 74,
+        "conviction": 87.2
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 503 (gemini-2.5-flash-lite): This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 503 (gemini-2.5-flash-lite): This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:31:12.681069+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 272.1,
+        "target": 352.1,
+        "stop_loss": 252.1,
+        "rr_ratio": 4.0,
+        "qty": 74,
+        "conviction": 87.2,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 5.02,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 272.1,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803567+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-TATACAP-b3a7c3e2",
+      "signature": "b3a7c3e2e83ef26f",
+      "symbol": "TATACAP",
+      "name": "Tata Capital Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803533+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803533+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:36.908484+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 85,
+        "business": 40,
+        "moat": 15,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 80,
+        "technical_score": 96.0,
+        "composite_score": 82.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 347.00 vs 20D SMA 335.65 (Upward Curve, 30D Reg Target 425.30). RSI(14)=68.41, MACD=+6.07 vs Sig=+5.69."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 82.5,
+          "summary": "Fundamental 85/100 (Bus 40/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 80/100 [GENERAL]. Balanced valuation at P/E 24.5x. Strong top-line expansion (34.4% YoY) & profit growth (43.2% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 88.6,
+          "summary": "Decision Matrix: BUY NOW (88.6% conviction >= 60% bar). Auto-Risk sized 63 shares (INR 21,861.00) | Moreshwar Target 429.50 / SL 329.50 (R:R 1:4.71)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 347.0,
+        "change_pct": 0.42,
+        "rsi_14": 68.41,
+        "sma_20": 335.65,
+        "projected_30d_target": 425.3,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 335.62,
+        "target": 429.5,
+        "stop_loss": 329.5,
+        "rr_ratio": 4.71,
+        "qty": 63,
+        "conviction": 88.6
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h28m33.026261305s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 17h28m33.026261305s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-20T14:31:12.680774+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 347.0,
+        "target": 429.5,
+        "stop_loss": 329.5,
+        "rr_ratio": 4.71,
+        "qty": 63,
+        "conviction": 88.6,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 3.39,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 347.0,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803533+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-NTPC-1a4fcf70",
+      "signature": "1a4fcf70c4a03e6b",
+      "symbol": "NTPC",
+      "name": "NTPC Limited",
+      "currency": "INR",
+      "created_at": "2026-11-20T14:32:36.803463+00:00",
+      "last_seen_at": "2026-11-20T14:32:36.803463+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-20T10:30:28+00:00",
+      "retrieval_timestamp": "2026-11-20T14:30:33.343028+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 99,
+        "business": 40,
+        "moat": 15,
+        "management": 20,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 87.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 321.50 vs 20D SMA 317.24 (Upward Curve, 30D Reg Target 356.88). RSI(14)=55.5, MACD=+2.01 vs Sig=+1.47."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 87.0,
+          "summary": "Fundamental 99/100 (Bus 40/40, Moat 15/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [POWER]. Attractive valuation at P/E 10.5x with value margin of safety. Strong top-line expansion (21.2% YoY) & profit growth (38.6% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 86.1,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (86.1% conviction). Sized 51 shares (INR 16,068.57) | Entry 315.07 \u00b7 TP 393.37 / SL 304.02 (R:R 1:7.09)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 321.5,
+        "change_pct": -1.08,
+        "rsi_14": 55.5,
+        "sma_20": 317.24,
+        "projected_30d_target": 356.88,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 321.5,
+        "target": 408.5,
+        "stop_loss": 308.5,
+        "rr_ratio": 6.69,
+        "qty": 68,
+        "conviction": 91.1
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "NTPC exhibits strong upward momentum with a 96% bullish technical signal, a 30D Quant Target of \u20b9356.88, and a robust fundamental score of 99/100, driven by 21.2% sales growth and 38.6% profit growth.",
+        "objections_raised": "The current spot price of \u20b9321.50 is already above the 20D SMA of \u20b9317.24 and the 30D Quant Target of \u20b9356.88, suggesting potential technical overextension, while the R:R of 1:6.69, though favorable, could be challenged by a sharp pullback given the proximity to the entry level.",
+        "rationale": "Given the strong fundamentals and technicals, a cautious approach is warranted. We will reduce the position size and apply a discount to the entry price to capture potential pullbacks, while slightly tightening the stop-loss to manage risk more effectively.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-20T14:31:02.540946+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 315.07,
+        "target": 393.37,
+        "stop_loss": 304.02,
+        "rr_ratio": 7.09,
+        "qty": 51,
+        "conviction": 86.1,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -3.7,
+        "stop_delta_pct": -1.45,
+        "qty_delta": -17,
+        "conviction_delta": -5.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The current spot price of \u20b9321.50 is already above the 20D SMA of \u20b9317.24 and the 30D Quant Target of \u20b9356.88, suggesting potential technical overextension, while the R:R of 1:6.69, though favorable, could be challenged by a sharp pullback given the proximity to the entry level."
+        ],
+        "summary": "Applied CRO Calibration (NTPC): BUY NOW -> LIMIT PULLBACK | Entry \u20b9321.5 -> \u20b9315.07 | TP \u20b9408.5 -> \u20b9393.37 | SL \u20b9308.5 -> \u20b9304.02 (R:R 1:6.69 -> 1:7.09) | Qty 68 -> 51 sh (0.75x) | Conviction 91.1% -> 86.1%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 321.5,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-20T14:32:36.803463+00:00"
+      }
+    },
     {
       "audit_id": "fnv2-aud-20261120-SBIN-aff00914",
       "signature": "aff00914f2df5d3e",
@@ -15488,6 +16900,6 @@
       }
     }
   ],
-  "last_scan_new_records": 9,
-  "total_records": 127
+  "last_scan_new_records": 12,
+  "total_records": 139
 }
