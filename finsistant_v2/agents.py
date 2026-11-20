@@ -73,6 +73,46 @@ class BaseTradingAgent:
         }
 
 
+def score_technical_confidence(
+    *,
+    price: float,
+    sma_20: float,
+    ema_12: float,
+    ema_26: float,
+    rsi: float,
+    macd: float,
+    macd_sig: float,
+    proj_30d: float,
+) -> tuple[float, str]:
+    """TechBot_1 scoring rule as a pure function (single source of truth).
+
+    Used by `TechnicalAnalyst.evaluate` for single-symbol pipelines AND by the Moreshwar 3.2
+    full-universe scanner, so the orchestrator scores 1,000+ stocks with the identical rule.
+    """
+    score = 0.50
+    if price >= sma_20:
+        score += 0.14
+    else:
+        score -= 0.12
+    if ema_12 >= ema_26:
+        score += 0.12
+    else:
+        score -= 0.10
+    if macd >= macd_sig:
+        score += 0.08
+    else:
+        score -= 0.08
+    if proj_30d > price:
+        score += 0.10
+    else:
+        score -= 0.10
+    if 46.0 <= rsi <= 70.0:
+        score += 0.07
+    conf = round(max(0.18, min(0.96, score)), 3)
+    signal = "BULLISH" if conf >= 0.58 else ("BEARISH" if conf <= 0.44 else "NEUTRAL")
+    return conf, signal
+
+
 class TechnicalAnalyst(BaseTradingAgent):
     """TechBot_1 — Evaluates OHLCV indicators + Finsistant Polynomial Regression projection."""
 
@@ -97,28 +137,10 @@ class TechnicalAnalyst(BaseTradingAgent):
         proj_30d = snap["projected_30d_target"]
         reg_curve = snap["regression_curve"]
 
-        score = 0.50
-        if price >= sma_20:
-            score += 0.14
-        else:
-            score -= 0.12
-        if ema_12 >= ema_26:
-            score += 0.12
-        else:
-            score -= 0.10
-        if macd >= macd_sig:
-            score += 0.08
-        else:
-            score -= 0.08
-        if proj_30d > price:
-            score += 0.10
-        else:
-            score -= 0.10
-        if 46.0 <= rsi <= 70.0:
-            score += 0.07
-
-        conf = round(max(0.18, min(0.96, score)), 3)
-        signal = "BULLISH" if conf >= 0.58 else ("BEARISH" if conf <= 0.44 else "NEUTRAL")
+        conf, signal = score_technical_confidence(
+            price=price, sma_20=sma_20, ema_12=ema_12, ema_26=ema_26,
+            rsi=rsi, macd=macd, macd_sig=macd_sig, proj_30d=proj_30d,
+        )
         tech_score_100 = int(round(conf * 100))
 
         return {
@@ -207,7 +229,14 @@ class ExecutionAgent(BaseTradingAgent):
 
         tech_conf = float(tech.get("confidence", 0.5))
         fund_conf = float(fund.get("confidence", 0.5))
-        conviction = round(0.45 * tech_conf + 0.55 * fund_conf, 3)
+        # Default weights 0.45/0.55; Moreshwar 3.2's learning loop may supply bounded, audit-logged weights & guards.
+        w_tech, w_fund = context.get("conviction_weights") or (0.45, 0.55)
+        raw_conv = float(w_tech) * tech_conf + float(w_fund) * fund_conf
+        rsi_val = float(snap.get("rsi_14") or 50.0)
+        rsi_pen = float(context.get("rsi_overbought_penalty") or 0.0) if rsi_val > 72.0 else 0.0
+        sec_adj = float(context.get("sector_adjustment") or 0.0)
+        conviction = round(max(0.05, min(0.98, raw_conv - rsi_pen + sec_adj)), 3)
+        min_conviction = float(context.get("min_conviction") or 0.60)
 
         # Finsistant Auto-Risk Position Sizing: 1.5% risk budget divided by (Entry - StopLoss)
         risk_budget = capital * 0.015
@@ -220,7 +249,7 @@ class ExecutionAgent(BaseTradingAgent):
         matrix_action = decision["action"]
         price_above_sma = price >= float(snap.get("sma_20") or price)
         rr_ok = float(moreshwar.get("rr_ratio") or 0.0) >= 1.5
-        sip_aligned = matrix_action == "SIP ONLY" and conviction >= 0.72 and price_above_sma
+        sip_aligned = matrix_action == "SIP ONLY" and conviction >= max(0.72, min_conviction + 0.08) and price_above_sma
 
         if active_trades >= max_trades and matrix_action in ("BUY NOW", "ADD", "SIP ONLY"):
             action = "HOLD"
@@ -228,11 +257,11 @@ class ExecutionAgent(BaseTradingAgent):
             qty = 0
             notional = 0.0
             reason = f"Guardrail triggered: Open trades ({active_trades}) reached MAX_CONCURRENT_TRADES ({max_trades})."
-        elif (matrix_action in ("BUY NOW", "ADD") or sip_aligned) and rr_ok and conviction >= 0.60:
+        elif (matrix_action in ("BUY NOW", "ADD") or sip_aligned) and rr_ok and conviction >= min_conviction:
             action = "BUY"
             signal = "APPROVED"
             reason = (
-                f"Decision Matrix: {matrix_action} ({conviction*100:.1f}% conviction). "
+                f"Decision Matrix: {matrix_action} ({conviction*100:.1f}% conviction >= {min_conviction*100:.0f}% bar). "
                 f"Auto-Risk sized {qty} shares ({currency} {notional:,.2f}) | "
                 f"Moreshwar Target {target:,.2f} / SL {stop_loss:,.2f} (R:R 1:{moreshwar['rr_ratio']})."
             )
@@ -339,6 +368,8 @@ class AgentRunner:
         capital: float = 250000.0,
         active_trades: int = 2,
         is_holding: bool = False,
+        asset_analysis: dict[str, Any] | None = None,
+        learned_params: dict[str, Any] | None = None,
     ) -> PipelineResult:
         t0 = time.perf_counter()
         symbol = symbol.upper().strip()
@@ -355,6 +386,20 @@ class AgentRunner:
             "agent_mode": self.settings.agent_mode,
             "currency": self.settings.default_currency,
         }
+        if asset_analysis is not None:
+            context["asset_analysis"] = asset_analysis
+        if learned_params:
+            wt = float(learned_params.get("w_tech", 0.45))
+            wf = float(learned_params.get("w_fund", 0.55))
+            context["conviction_weights"] = (wt, wf)
+            if "min_conviction" in learned_params:
+                context["min_conviction"] = float(learned_params["min_conviction"])
+            if "rsi_overbought_penalty" in learned_params:
+                context["rsi_overbought_penalty"] = float(learned_params["rsi_overbought_penalty"])
+            sec_map = learned_params.get("sector_adjustments") or {}
+            sec_name = str((asset_analysis or {}).get("sector") or "")
+            if sec_name and sec_name in sec_map:
+                context["sector_adjustment"] = float(sec_map[sec_name])
 
         for agent in self.agents:
             step = agent.evaluate(context)

@@ -200,6 +200,9 @@ function applyPayload(payload) {
   if (!appState._moreshwarV31LiveLoaded && payload.moreshwar_v3_1) {
     appState.moreshwarV31 = payload.moreshwar_v3_1;
   }
+  if (!appState._moreshwarV32LiveLoaded && payload.moreshwar_v3_2) {
+    appState.moreshwarV32 = payload.moreshwar_v3_2;
+  }
   appState.auditTrail = payload.audit_trail || null;
   appState.queue = payload.queue || { buys: [], sells: [], executed: [] };
   appState.rules = payload.rules || [];
@@ -3979,6 +3982,231 @@ function wireMoreshwarV31Controls() {
     });
   });
 
+  async function fetchM32CloudFallback() {
+    const base = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/reports/moreshwar_3_2`;
+    const ts = Date.now();
+    const getJson = async (rel) => {
+      try {
+        const r = await fetch(`${base}/${rel}?ts=${ts}`, { cache: "no-store" });
+        return r.ok ? await r.json() : null;
+      } catch (_) {
+        return null;
+      }
+    };
+    const [scan, learn, snap, daily] = await Promise.all([
+      getJson("orchestrator_scan/latest_scan.json"),
+      getJson("orchestrator_scan/learning_report.json"),
+      getJson("prospective_paper_trading/portfolio_snapshot.json"),
+      getJson("prospective_paper_trading/paper_trading_daily_report.json"),
+    ]);
+    if (!scan && !learn && !snap) return null;
+    return {
+      release_version: (daily && daily.release_version) || "3.2.0",
+      candidate_source: "ORCHESTRATOR_AGENT_CONSENSUS",
+      mission: (learn && learn.mission) || null,
+      orchestrator_scan: scan || null,
+      orchestrator_learning: learn || null,
+      prospective_paper_trading: {
+        execution_monitoring: {
+          pending_next_session_orders: (snap && snap.pending_next_session_orders) || [],
+          open_holdings: (snap && snap.open_holdings) || [],
+        },
+        risk_dashboard: {
+          reconciliation: (snap && snap.reconciliation) || (daily && daily.reconciliation_result) || {},
+        },
+      },
+    };
+  }
+
+  function renderMoreshwarV32Dashboard() {
+    const d = appState.moreshwarV32;
+    if (!d || typeof d !== "object") return;
+    const m = d.mission || (d.orchestrator_learning && d.orchestrator_learning.mission) || {};
+    const scan = d.orchestrator_scan || {};
+    const learn = d.orchestrator_learning || {};
+    const w = learn.weights || scan.weights || {};
+    const stages = scan.stages || {};
+    const ct = (learn.learning && learn.learning.closed_trades) || {};
+    const prosp = d.prospective_paper_trading || {};
+    const pending = (prosp.execution_monitoring && prosp.execution_monitoring.pending_next_session_orders) || [];
+    const recon = (prosp.risk_dashboard && prosp.risk_dashboard.reconciliation) || {};
+
+    const done = Number(m.completed_sessions || 0);
+    const target = Number(m.target_sessions || 80);
+    const nav = Number(m.current_nav_inr ?? 100000);
+    const retPct = Number(m.cumulative_return_pct ?? 0);
+    const pnlInr = Number(m.cumulative_profit_inr ?? 0);
+    const alpha = m.alpha_vs_niftybees_pct;
+    const passed = Number(m.passed_trades ?? ct.passed_trades ?? 0);
+    const failed = Number(m.failed_trades ?? ct.failed_trades ?? 0);
+    const wr = m.win_rate_pct ?? ct.win_rate_pct;
+    const pf = m.profit_factor ?? ct.profit_factor;
+    const gatesPass = Number(m.gates_passed ?? 0);
+    const gatesTot = Number(m.gates_total ?? 6);
+    const fmtInr = (v) => `₹${Number(v || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const fmtPct = (v) => `${Number(v || 0) >= 0 ? "+" : ""}${Number(v || 0).toFixed(2)}%`;
+
+    const mBadge = document.getElementById("mv32MissionBadge");
+    if (mBadge) mBadge.textContent = `MISSION: ${done} / ${target} SESSIONS (${m.progress_pct ?? 0}%)`;
+    const lBadge = document.getElementById("mv32LearnStatusBadge");
+    if (lBadge) lBadge.textContent = `TECH ${Number(w.w_tech ?? 0.45).toFixed(2)} / FUND ${Number(w.w_fund ?? 0.55).toFixed(2)} · BAR ${Math.round(Number(w.min_conviction ?? 0.6) * 100)}%`;
+
+    const kpiHtml = `
+      <div class="kpi-mini-card">
+        <div class="kpi-mini-lbl">80-SESSION MISSION</div>
+        <div class="kpi-mini-val" style="color:var(--accent-cyan);">${done} / ${target}</div>
+        <div class="kpi-mini-sub">${target - done} sessions left · ${m.real_money_ready ? "GRADUATED" : `Gate ${gatesPass}/${gatesTot}`}</div>
+      </div>
+      <div class="kpi-mini-card">
+        <div class="kpi-mini-lbl">PAPER NAV &amp; PROFIT</div>
+        <div class="kpi-mini-val" style="color:${pnlInr >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${fmtInr(nav)}</div>
+        <div class="kpi-mini-sub">${fmtPct(retPct)} (${pnlInr >= 0 ? "+" : ""}${fmtInr(pnlInr)})${alpha != null ? ` · α ${fmtPct(alpha)}` : ""}</div>
+      </div>
+      <div class="kpi-mini-card">
+        <div class="kpi-mini-lbl">PASSED / FAILED TRADES</div>
+        <div class="kpi-mini-val">${passed} PASS / ${failed} FAIL</div>
+        <div class="kpi-mini-sub">${wr != null ? `Win ${Number(wr).toFixed(1)}% · PF ${pf ?? "—"}` : "Awaiting first trade exits"}</div>
+      </div>
+      <div class="kpi-mini-card">
+        <div class="kpi-mini-lbl">FULL-UNIVERSE SCAN</div>
+        <div class="kpi-mini-val">${Number(stages.valid_eod_bars || 0).toLocaleString("en-IN")} NSE</div>
+        <div class="kpi-mini-sub">${stages.shortlisted ?? 0} shortlist → ${stages.exec_buy_approved ?? 0} BUY → ${(scan.queued_for_next_open || []).length} queued</div>
+      </div>
+      <div class="kpi-mini-card">
+        <div class="kpi-mini-lbl">ADAPTIVE WEIGHTS</div>
+        <div class="kpi-mini-val">${Math.round(Number(w.w_tech ?? 0.45) * 100)}% / ${Math.round(Number(w.w_fund ?? 0.55) * 100)}%</div>
+        <div class="kpi-mini-sub">Bar ${Math.round(Number(w.min_conviction ?? 0.6) * 100)}% · RSI Pen -${Math.round(Number(w.rsi_overbought_penalty ?? 0) * 100)}%</div>
+      </div>
+    `;
+    const kpiEl = document.getElementById("mv32Kpis");
+    if (kpiEl) kpiEl.innerHTML = kpiHtml;
+    const rptKpiEl = document.getElementById("rptM32Kpis");
+    if (rptKpiEl) rptKpiEl.innerHTML = kpiHtml;
+
+    const funnelSub = document.getElementById("mv32FunnelSub");
+    if (funnelSub && scan.trading_date) {
+      funnelSub.textContent = `Session ${scan.trading_date}: ${stages.valid_eod_bars || 0} real NSE stocks → ${stages.tech_bullish || 0} TechBot bullish → ${stages.shortlisted || 0} shortlisted → ${stages.agents_ok || 0} Fund+Exec verified → ${stages.exec_buy_approved || 0} BUY → ${(scan.queued_for_next_open || []).length} queued`;
+    }
+
+    const slBody = document.getElementById("mv32ShortlistBody");
+    if (slBody) {
+      const shortlist = Array.isArray(scan.shortlist) ? scan.shortlist : [];
+      const sorted = [...shortlist].sort((a, b) => (b.queued_for_next_open ? 1 : 0) - (a.queued_for_next_open ? 1 : 0) || Number(b.conviction || 0) - Number(a.conviction || 0));
+      slBody.innerHTML = sorted.length
+        ? sorted.slice(0, 12).map((r) => {
+            const decPill = r.queued_for_next_open
+              ? `<span class="tag-pill tag-target">QUEUED OPEN</span>`
+              : r.exec_action === "BUY"
+                ? `<span class="tag-pill tag-entry">BUY (CAP)</span>`
+                : `<span class="tag-pill tag-score">${escHtml(r.exec_action || r.status)}</span>`;
+            return `<tr>
+              <td>#${r.tech_rank ?? "—"}</td>
+              <td><strong>${escHtml(r.symbol)}</strong><div style="font-size:10px;color:var(--text-muted);">${escHtml(r.sector || "")}</div></td>
+              <td>₹${Number(r.eod_close || 0).toFixed(2)}</td>
+              <td>${r.tech_conf != null ? Number(r.tech_conf).toFixed(2) : "—"}</td>
+              <td>${r.fund_conf != null ? Number(r.fund_conf).toFixed(2) : "—"}</td>
+              <td><strong>${r.conviction != null ? (Number(r.conviction) * 100).toFixed(1) + "%" : "—"}</strong></td>
+              <td>${decPill}</td>
+            </tr>`;
+          }).join("")
+        : `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">No scan shortlist available yet.</td></tr>`;
+    }
+
+    const adapEl = document.getElementById("mv32AdaptiveParams");
+    if (adapEl) {
+      const secAdj = w.sector_adjustments || {};
+      const secTxt = Object.keys(secAdj).length
+        ? Object.entries(secAdj).map(([k, v]) => `${escHtml(k)} ${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)}%`).join(", ")
+        : "None yet (neutral)";
+      const gates = m.graduation_gates || {};
+      const gatePills = Object.entries(gates).map(([k, ok]) =>
+        `<span class="tag-pill ${ok ? "tag-target" : "tag-score"}" style="font-size:10px;">${ok ? "PASS" : "WAIT"} ${escHtml(k.replace(/_/g, " "))}</span>`
+      ).join(" ");
+      adapEl.innerHTML =
+        `<div><strong>Status:</strong> ${escHtml(w.status || "OBSERVING")}</div>` +
+        `<div><strong>Active Brain:</strong> TechBot <code>${Number(w.w_tech ?? 0.45).toFixed(2)}</code> · FundBot <code>${Number(w.w_fund ?? 0.55).toFixed(2)}</code> · Min Conviction <code>${(Number(w.min_conviction ?? 0.6) * 100).toFixed(0)}%</code> · RSI&gt;72 Guard <code>-${(Number(w.rsi_overbought_penalty ?? 0) * 100).toFixed(1)}%</code></div>` +
+        `<div><strong>Sector Calibration:</strong> ${secTxt}</div>` +
+        `<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">${gatePills}</div>`;
+    }
+
+    const lesBody = document.getElementById("mv32LessonsBody");
+    if (lesBody) {
+      const lessons = Array.isArray(ct.recent_lessons) ? ct.recent_lessons : [];
+      lesBody.innerHTML = lessons.length
+        ? lessons.slice(0, 10).map((l) => `<tr>
+            <td><strong>${escHtml(l.symbol)}</strong><div style="font-size:10px;color:var(--text-muted);">${escHtml(l.exit_date)}</div></td>
+            <td><span class="tag-pill ${l.outcome === "PASSED" ? "tag-target" : "tag-stop"}">${escHtml(l.outcome)}</span></td>
+            <td style="color:${Number(l.return_pct) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${fmtPct(l.return_pct)}</td>
+            <td>${escHtml(l.exit_reason || "—")}</td>
+            <td style="font-size:11px;">${escHtml(l.lesson_summary || "")}</td>
+          </tr>`).join("")
+        : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No closed trades yet — every exited paper trade will automatically log a PASSED/FAILED post-mortem and update agent weights.</td></tr>`;
+    }
+
+    const rptBrief = document.getElementById("rptM32Brief");
+    if (rptBrief) {
+      const qSyms = (scan.queued_for_next_open || []).join(", ") || "None";
+      const rDiff = Number(recon.reconciliation_diff_inr || 0);
+      rptBrief.innerHTML =
+        `<strong>80-Session Maximum-Profit Orchestrator Mock Test (Session ${done} / ${target}):</strong> ` +
+        `The multi-agent orchestrator scanned <strong>${Number(stages.valid_eod_bars || 0).toLocaleString("en-IN")}</strong> real NSE equities on <code>${escHtml(scan.trading_date || "latest")}</code>, ` +
+        `shortlisted <strong>${stages.shortlisted || 0}</strong>, verified <strong>${stages.agents_ok || 0}</strong> live via FundBot+ExecBot, and queued <strong>${qSyms}</strong> directly into the paper ledger. ` +
+        `Paper NAV: <strong>${fmtInr(nav)}</strong> (${fmtPct(retPct)}; <strong>${passed} PASSED / ${failed} FAILED</strong> closed trades; 4-Ledger Recon: <strong>${recon.passed !== false ? "PASS" : "FAIL"} ₹${rDiff.toFixed(4)}</strong>). ` +
+        `Real money stays strictly locked until all <strong>${gatesTot}</strong> graduation gates pass at Session ${target}.`;
+    }
+
+    const rptQBody = document.getElementById("rptM32QueueBody");
+    if (rptQBody) {
+      rptQBody.innerHTML = pending.length
+        ? pending.map((p, idx) => {
+            const sym = p.symbol || (p.kind === "CORE_REBALANCE" ? "NIFTYBEES" : "LIQUIDBEES");
+            const qtyTxt = p.req_qty ? `${p.req_qty} sh · QUEUED OPEN` : (p.target_core_inr ? `Target ${fmtInr(p.target_core_inr)}` : "Excess Cash Sweep");
+            const pxTxt = p.expected_price ? `₹${Number(p.expected_price).toFixed(2)}` : "Next Open";
+            const convTxt = p.score ? `${(Number(p.score) * 100).toFixed(1)}%` : "Policy";
+            const riskTxt = p.stop_ratio ? `SL ${(Number(p.stop_ratio) * 100).toFixed(1)}%` : "Core/Liquid";
+            return `<tr>
+              <td>M3.2-OPEN-${idx + 1}</td>
+              <td><strong>${escHtml(sym)}</strong> (${escHtml(p.kind || "")})</td>
+              <td>${escHtml(qtyTxt)}</td>
+              <td>${pxTxt}</td>
+              <td>${convTxt}</td>
+              <td>${riskTxt}</td>
+            </tr>`;
+          }).join("")
+        : `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No orders queued for next session open.</td></tr>`;
+    }
+  }
+
+  async function refreshMoreshwarV32FromSource() {
+    if (isCloudOrMobileAssetHost()) {
+      const cloud = await fetchM32CloudFallback();
+      if (cloud) {
+        appState._moreshwarV32LiveLoaded = true;
+        appState.moreshwarV32 = cloud;
+        renderMoreshwarV32Dashboard();
+      }
+      return;
+    }
+    try {
+      const r = await fetch("/api/m3_2/dashboard", { cache: "no-store" });
+      const payload = r.ok ? await r.json() : null;
+      if (payload && (payload.orchestrator_scan || payload.mission)) {
+        appState._moreshwarV32LiveLoaded = true;
+        appState.moreshwarV32 = payload;
+        renderMoreshwarV32Dashboard();
+        return;
+      }
+    } catch (_) {
+      // Fall through to GitHub cloud raw reports
+    }
+    const cloud = await fetchM32CloudFallback();
+    if (cloud) {
+      appState._moreshwarV32LiveLoaded = true;
+      appState.moreshwarV32 = cloud;
+      renderMoreshwarV32Dashboard();
+    }
+  }
+
   async function refreshMoreshwarV31FromSource() {
     if (isCloudOrMobileAssetHost()) {
       const cloud = await fetchM31CloudFallback();
@@ -4012,11 +4240,13 @@ function wireMoreshwarV31Controls() {
   window.refreshFinsistantMobileScan = async () => {
     await Promise.all([
       runLiveScan(true),
+      refreshMoreshwarV32FromSource(),
       refreshMoreshwarV31FromSource(),
     ]);
   };
 
-  // Always fetch latest Moreshwar 3.1 live ledger (local API or GitHub raw reports) so older live_scan.json snapshots never mask newer paper sessions
+  // Always fetch latest Moreshwar 3.2 (Orchestrator 80-Session) & 3.1 (Frozen Baseline) live from local API or GitHub raw
+  refreshMoreshwarV32FromSource();
   refreshMoreshwarV31FromSource();
 }
 

@@ -1,0 +1,21 @@
+{
+  "verified": true,
+  "config_path": "/home/antigravity/Parth2004124/Finsistant-version-2/reports/moreshwar_3_1/strategy_intelligence/FROZEN_PROSPECTIVE_PAPER_TRADING_CONFIG.json",
+  "expected_sha256_prefix": "47a30f4bbd004c5f",
+  "canonical_payload_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
+  "canonical_prefix_16": "47a30f4bbd004c5f",
+  "raw_file_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
+  "verified_at_utc": "2026-11-20T14:20:20.596828+00:00",
+  "selected_policy_id": "G_SIMPLE_TREND_BASELINE",
+  "execution_config_id": "EXP_E_COMBINED_EXEC_INTEL",
+  "admitted_tactical_strategies": [
+    "STRAT_E_DEFENSIVE_YIELD_LOWVOL"
+  ],
+  "suspended_strategies": [
+    "STRAT_A_CS_MOMENTUM"
+  ],
+  "live_trading_enabled": false,
+  "broker_order_placement_enabled": false,
+  "automatic_capital_deployment_enabled": false,
+  "instrument_mapping_note": "Frozen config maps G_SIMPLE_TREND_BASELINE to NIFTYBEES (Core 60%/45%), STRAT_E_DEFENSIVE_YIELD_LOWVOL (Tactical Equity 30%/10%), and LIQUIDBEES (Liquid 10%/45%). No Gold ETF instrument exists in the frozen configuration."
+}

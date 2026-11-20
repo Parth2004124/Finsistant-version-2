@@ -261,6 +261,7 @@ def fetch_completed_nse_eod_snapshot(
     *,
     universe_path: Path = DEFAULT_PROSPECTIVE_UNIVERSE_PATH,
     extra_open_symbols: list[dict[str, str]] | None = None,
+    include_histories: bool = False,
 ) -> dict[str, Any] | None:
     """Fetch genuine post-close NSE EOD market data for `target_date` via Yahoo Finance (`yfinance`).
 
@@ -390,7 +391,18 @@ def fetch_completed_nse_eod_snapshot(
         equity_histories=equity_histories,
     )
 
+    extra_payload: dict[str, Any] = {}
+    if include_histories:
+        # Moreshwar 3.2: expose the real per-stock OHLCV histories (<= trading_date) and NIFTYBEES
+        # dated closes so the orchestrator can scan the FULL universe and mature its own outcomes.
+        extra_payload = {
+            "equity_histories": equity_histories,
+            "niftybees_dates": [str(d) for d in nb_df.index.tolist()],
+            "niftybees_closes_full": [float(x) for x in nb_df["Close"].tolist()],
+        }
+
     return {
+        **extra_payload,
         "trading_date": dt,
         "data_timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "data_source": "yfinance_nse_post_close_eod",

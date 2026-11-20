@@ -318,8 +318,9 @@ class PaperTradingOrchestrator:
         broker_order_placement_enabled: bool = False,
         automatic_capital_deployment_enabled: bool = False,
         broker_adapter: Any = None,
+        extra_admitted_strategy_ids: tuple[str, ...] = (),
     ) -> None:
-        self.safety_guard = PaperOnlyExecutionGuard()
+        self.safety_guard = PaperOnlyExecutionGuard(extra_admitted_strategy_ids)
         self.safety_guard.assert_paper_only(
             live_trading_enabled=live_trading_enabled,
             broker_order_placement_enabled=broker_order_placement_enabled,
@@ -334,6 +335,7 @@ class PaperTradingOrchestrator:
             config_path=self.config_path,
             initial_capital_inr=initial_capital_inr,
             prospective_start_date=prospective_start_date,
+            extra_admitted_strategy_ids=extra_admitted_strategy_ids,
         )
         self.risk_monitor = PaperTradingRiskMonitor()
         self._last_data_quality_report: dict[str, Any] = {

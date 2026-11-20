@@ -111,6 +111,9 @@ jobs:
               --fetch-live-eod \
               --run-id "gha-${GITHUB_RUN_ID}" \
               $EXTRA_FLAG
+            python3 scripts/moreshwar_3_2_paper_ops.py run-session \
+              --date "$TRADING_DATE" \
+              $EXTRA_FLAG
           fi
           AFTER_CNT=$(python3 -c 'import json; from pathlib import Path; p=Path("reports/moreshwar_3_1/prospective_paper_trading/prospective_validation_progress.json"); print(json.loads(p.read_text()).get("completed_unseen_sessions",0) if p.exists() else 0)')
           if [ "$AFTER_CNT" -gt "$BEFORE_CNT" ]; then
@@ -119,11 +122,12 @@ jobs:
             echo "newly_completed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Post-run four-ledger reconciliation & audit-chain verification
+      - name: Post-run four-ledger reconciliation & audit-chain verification (M3.1 & M3.2)
         env:
           M31_DATABASE_URL: ${{ secrets.M31_DATABASE_URL }}
         run: |
           python3 scripts/moreshwar_3_1_paper_ops.py reconcile
+          python3 scripts/moreshwar_3_2_paper_ops.py reconcile
 
       - name: Publish sanitized daily summary to GitHub Step Summary
         if: always()
@@ -137,29 +141,39 @@ jobs:
           prog = json.loads((rep_dir / "prospective_validation_progress.json").read_text()) if (rep_dir / "prospective_validation_progress.json").exists() else {}
           alerts = json.loads((rep_dir / "risk_alerts.json").read_text()) if (rep_dir / "risk_alerts.json").exists() else {}
 
-          print("## Moreshwar 3.1 — Daily Prospective Paper-Trading Report")
+          m32_scan_p = Path("reports/moreshwar_3_2/orchestrator_scan/latest_scan.json")
+          m32_learn_p = Path("reports/moreshwar_3_2/orchestrator_scan/learning_report.json")
+          m32_scan = json.loads(m32_scan_p.read_text()) if m32_scan_p.exists() else {}
+          m32_learn = json.loads(m32_learn_p.read_text()) if m32_learn_p.exists() else {}
+          m32_mission = m32_learn.get("mission") or {}
+          m32_w = m32_learn.get("weights") or {}
+
+          print("## Moreshwar 3.2 — Orchestrator 80-Session Self-Learning Paper Trading")
           print("")
           print("> **PAPER TRADING ONLY — LIVE TRADING: DISABLED · BROKER ORDERS: DISABLED · AUTO CAPITAL DEPLOYMENT: DISABLED**")
           print("")
-          print(f"- **Trading Date:** `{daily.get('trading_date', 'N/A')}`")
-          print(f"- **Engine Status:** `{daily.get('engine_status', 'N/A')}`")
-          print(f"- **Config SHA256 Prefix:** `{str(daily.get('configuration_sha256', ''))[:16]}`")
-          print(f"- **Current Paper NAV:** `INR {daily.get('portfolio_nav', {}).get('current_nav_inr', 100000.0):,.2f}`")
-          print(f"- **Reconciliation Diff:** `INR {daily.get('reconciliation_result', {}).get('reconciliation_diff_inr', 0.0):.4f}` (Passed: `{daily.get('reconciliation_result', {}).get('passed', False)}`)")
-          print(f"- **Prospective Validation Progress:** `{prog.get('completed_unseen_sessions', 0)} / {prog.get('minimum_required_sessions', 60)}` min (`{prog.get('completed_unseen_sessions', 0)} / {prog.get('target_sessions', 120)}` target)")
-          print(f"- **Risk Health / Alerts:** `{alerts.get('overall_health', 'N/A')}` (`{alerts.get('alert_counts', {})}`)")
+          print(f"- **Mission Progress:** `{m32_mission.get('completed_sessions', 0)} / {m32_mission.get('target_sessions', 80)}` sessions (`{m32_mission.get('progress_pct', 0.0)}%`)")
+          print(f"- **Paper NAV & Profit:** `INR {m32_mission.get('current_nav_inr', 100000.0):,.2f}` (`{m32_mission.get('cumulative_return_pct', 0.0):+.2f}%` | Passed: `{m32_mission.get('passed_trades', 0)}`, Failed: `{m32_mission.get('failed_trades', 0)}`)")
+          print(f"- **Learned Agent Weights:** `Tech={m32_w.get('w_tech', 0.45):.2f} / Fund={m32_w.get('w_fund', 0.55):.2f}` | `MinConv={m32_w.get('min_conviction', 0.60):.2f}` | `RSI Penalty={m32_w.get('rsi_overbought_penalty', 0.0):.2f}`")
+          print(f"- **Today's Queued Orchestrator Picks:** `{', '.join(m32_scan.get('queued_for_next_open') or []) or 'None'}`")
+          print("")
+          print("## Moreshwar 3.1 — Frozen Baseline Daily Report")
+          print(f"- **Trading Date:** `{daily.get('trading_date', 'N/A')}` | **NAV:** `INR {daily.get('portfolio_nav', {}).get('current_nav_inr', 100000.0):,.2f}` | **Recon Diff:** `INR {daily.get('reconciliation_result', {}).get('reconciliation_diff_inr', 0.0):.4f}`")
+          print(f"- **Progress:** `{prog.get('completed_unseen_sessions', 0)} / {prog.get('minimum_required_sessions', 60)}` min | **Risk Health:** `{alerts.get('overall_health', 'N/A')}`")
           PY
 
       - name: Upload daily reports & diagnostics as GitHub Artifacts (non-authoritative diagnostics only)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: moreshwar-3-1-daily-reports-${{ github.run_id }}
-          path: reports/moreshwar_3_1/prospective_paper_trading/
+          name: moreshwar-3-2-and-3-1-daily-reports-${{ github.run_id }}
+          path: |
+            reports/moreshwar_3_1/prospective_paper_trading/
+            reports/moreshwar_3_2/
           retention-days: 90
           if-no-files-found: warn
 
-      - name: Persist updated daily snapshots, audit trail & durable paper ledger
+      - name: Persist updated daily snapshots, audit trail & durable paper ledgers (M3.2 & M3.1)
         if: success()
         run: |
           git config user.name "github-actions[bot]"
@@ -167,11 +181,15 @@ jobs:
           git add \
             data/m3_1_paper_trading/prospective_paper_ledger.db \
             data/m3_1_paper_trading/scheduler_status.json \
-            reports/moreshwar_3_1/prospective_paper_trading/
+            reports/moreshwar_3_1/prospective_paper_trading/ \
+            data/m3_2_paper_trading/prospective_paper_ledger.db \
+            data/m3_2_paper_trading/orchestrator_learning.db \
+            data/m3_2_paper_trading/scheduler_status.json \
+            reports/moreshwar_3_2/
           if git diff --staged --quiet; then
             echo "No prospective paper-trading state or report changes to commit."
           else
-            git commit -m "chore(m3.1-paper): persist daily prospective paper-trading state and audit reports"
+            git commit -m "chore(m3.2-paper): persist daily orchestrator paper-trading state, learning ledger & audit reports"
             git push
           fi
 

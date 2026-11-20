@@ -1,0 +1,89 @@
+{
+  "generated_at_utc": "2026-11-20T14:22:55.396449+00:00",
+  "mission": {
+    "mission_name": "80-Session Maximum-Profit Orchestrator Mock Test",
+    "target_sessions": 80,
+    "completed_sessions": 1,
+    "remaining_sessions": 79,
+    "progress_pct": 1.2,
+    "current_nav_inr": 100000.0,
+    "cumulative_profit_inr": 0.0,
+    "cumulative_return_pct": 0.0,
+    "alpha_vs_niftybees_pct": 0.0,
+    "max_drawdown_pct": 0.0,
+    "passed_trades": 0,
+    "failed_trades": 0,
+    "win_rate_pct": null,
+    "profit_factor": null,
+    "real_money_ready": false,
+    "gates_passed": 2,
+    "gates_total": 6,
+    "graduation_gates": {
+      "sessions_80_completed": false,
+      "positive_net_profit": false,
+      "beats_niftybees_benchmark": false,
+      "profit_factor_ge_1_25": false,
+      "max_drawdown_le_12pct": true,
+      "reconciliation_clean": true
+    },
+    "live_trading_enabled": false
+  },
+  "weights": {
+    "w_tech": 0.45,
+    "w_fund": 0.55,
+    "min_conviction": 0.6,
+    "rsi_overbought_penalty": 0.0,
+    "sector_adjustments": {},
+    "status": "OBSERVING (0 closed trades, 0 matured sessions) \u2014 priors active"
+  },
+  "weight_history": [
+    {
+      "trading_date": "2026-11-20",
+      "w_tech": 0.45,
+      "w_fund": 0.55,
+      "min_conviction": 0.6,
+      "rsi_overbought_penalty": 0.0,
+      "sector_adjustments_json": "{}",
+      "status": "OBSERVING (0 closed trades, 0 matured sessions) \u2014 priors active",
+      "matured_sessions": 0,
+      "closed_trades": 0,
+      "passed_trades": 0,
+      "failed_trades": 0,
+      "ic_tech": null,
+      "ic_fund": null,
+      "note": "No closed trades or matured 5D outcomes yet; priors held.",
+      "recorded_at_utc": "2026-11-20T14:21:55.482491+00:00"
+    }
+  ],
+  "learning": {
+    "horizon_trading_days": 5,
+    "matured_sessions": 0,
+    "sessions_with_both_ics": 0,
+    "mean_ic_tech": null,
+    "mean_ic_fund": null,
+    "mean_excess_vs_niftybees_pct": {
+      "universe_all_eligible": null,
+      "agent_shortlist": null,
+      "queued_paper_picks": null
+    },
+    "observations": {
+      "universe": 0,
+      "shortlist": 0,
+      "queued_picks": 0
+    },
+    "closed_trades": {
+      "total_closed_trades": 0,
+      "passed_trades": 0,
+      "failed_trades": 0,
+      "win_rate_pct": null,
+      "profit_factor": null,
+      "total_realized_pnl_inr": 0,
+      "expectancy_per_trade_inr": null,
+      "avg_win_pct": null,
+      "avg_loss_pct": null,
+      "recent_lessons": []
+    },
+    "per_session": []
+  },
+  "scanner_version": "3.2.0"
+}

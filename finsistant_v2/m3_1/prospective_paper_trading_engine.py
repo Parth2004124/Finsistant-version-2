@@ -356,6 +356,10 @@ class PaperOnlyExecutionGuard:
     BROKER_ORDER_PLACEMENT_ENABLED: bool = False
     AUTOMATIC_CAPITAL_DEPLOYMENT_ENABLED: bool = False
 
+    def __init__(self, extra_admitted_strategy_ids: tuple[str, ...] | frozenset[str] = ()) -> None:
+        # Moreshwar 3.2 admits the orchestrator-consensus sleeve; Moreshwar 3.1 admits Family E only.
+        self.extra_admitted_strategy_ids = frozenset(str(x) for x in extra_admitted_strategy_ids)
+
     def assert_paper_only(
         self,
         *,
@@ -383,9 +387,10 @@ class PaperOnlyExecutionGuard:
                     raise PaperTradingSafetyError(
                         f"HARD_STRATEGY_GUARD: Strategy '{sid}' is permanently suspended in Moreshwar 3.1."
                     )
-                if str(sid) != "STRAT_E_DEFENSIVE_YIELD_LOWVOL":
+                if str(sid) != "STRAT_E_DEFENSIVE_YIELD_LOWVOL" and str(sid) not in self.extra_admitted_strategy_ids:
                     raise PaperTradingSafetyError(
-                        f"HARD_STRATEGY_GUARD: Unadmitted strategy '{sid}' blocked; only Family E is admitted."
+                        f"HARD_STRATEGY_GUARD: Unadmitted strategy '{sid}' blocked; only Family E "
+                        f"and explicitly admitted orchestrator sleeves are admitted."
                     )
 
     def submit_live_order(self, order: dict[str, Any]) -> None:
@@ -428,8 +433,9 @@ class ProspectivePaperTradingEngine:
         broker_order_placement_enabled: bool = False,
         automatic_capital_deployment_enabled: bool = False,
         broker_adapter: Any = None,
+        extra_admitted_strategy_ids: tuple[str, ...] = (),
     ) -> None:
-        self.safety_guard = PaperOnlyExecutionGuard()
+        self.safety_guard = PaperOnlyExecutionGuard(extra_admitted_strategy_ids)
         self.safety_guard.assert_paper_only(
             live_trading_enabled=live_trading_enabled,
             broker_order_placement_enabled=broker_order_placement_enabled,
@@ -2358,7 +2364,13 @@ class ProspectivePaperTradingEngine:
                             slippage_override_bps=ecfg.slippage_override_bps,
                         )
                         eff_hurdle = float(ev["hurdle_bps"]) + cur_hurdle_adder
-                        if (not ev["approved"]) or float(ev["expected_net_alpha_bps"]) < eff_hurdle:
+                        # Orchestrator candidates in the LEARNING_PHASE have no measured alpha yet: the
+                        # hard-coded Family E alpha prior is NOT applied to them (all cost, size, sector,
+                        # correlation and regime caps still apply). Realised outcomes are measured instead.
+                        learning_phase = str(cand.get("ev_mode", "")) == "LEARNING_PHASE"
+                        if learning_phase:
+                            ev = dict(ev, expected_net_alpha_bps=eff_hurdle)
+                        if (not learning_phase) and ((not ev["approved"]) or float(ev["expected_net_alpha_bps"]) < eff_hurdle):
                             signals_today.append({
                                 "sec_id": sec_id,
                                 "symbol": sym,
@@ -2396,7 +2408,7 @@ class ProspectivePaperTradingEngine:
                             "kind": "TACTICAL_BUY",
                             "sec_id": sec_id,
                             "symbol": sym,
-                            "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+                            "strategy_id": str(cand.get("strategy_id") or "STRAT_E_DEFENSIVE_YIELD_LOWVOL"),
                             "req_qty": req_qty,
                             "expected_price": round(c_px, 4),
                             "stop_ratio": stop_ratio,

@@ -1,0 +1,33 @@
+{
+  "generated_at_utc": "2026-11-20T14:21:59.961195+00:00",
+  "as_of_date": "2026-11-20",
+  "overall_health": "HEALTHY",
+  "should_enter_safe_mode": false,
+  "safe_mode_triggers": [],
+  "alert_counts": {
+    "CRITICAL": 0,
+    "WARNING": 0,
+    "INFO": 1
+  },
+  "alerts": [
+    {
+      "alert_id": "ALT-9CBF48E3EF",
+      "code": "DIAGNOSTIC_INDEX_DATA_BOUNDARY",
+      "severity": "INFO",
+      "timestamp": "2026-11-20T14:21:59.956841+00:00",
+      "as_of_date": "2026-11-20",
+      "affected_component": "market_data_validation",
+      "observed_value": "PARTIAL_DIAGNOSTIC_ONLY",
+      "threshold": "OK",
+      "description": "DIAGNOSTIC_INDEX_BARS_UNAVAILABLE_POST_2025-10-10: India VIX / GS 10Yr / sector indices are unavailable and NOT fabricated.",
+      "recommended_operational_action": "Continue trading strictly on 100%-coverage daily_bars; do not fabricate VIX/GS10Y.",
+      "resolution_status": "OPEN"
+    }
+  ],
+  "prompt4_advisory_health": {
+    "date": "2026-11-20",
+    "advisory_status": "NORMAL_OPERATING",
+    "live_execution_enabled": false,
+    "alerts": []
+  }
+}

@@ -443,7 +443,7 @@
           <span style="font-size: 12px; color: var(--text-secondary);" id="intelGlobalStatus">Empirical Telemetry &amp; Immutable Audit Layer Active</span>
         </div>
         <div class="chip-row" id="intelJumpRow">
-          <button type="button" class="prompt-chip active-subfilter" data-intel-focus="all">Moreshwar 3.1 (Primary)</button>
+          <button type="button" class="prompt-chip active-subfilter" data-intel-focus="all">Moreshwar 3.2 + 3.1 (Primary)</button>
           <button type="button" class="prompt-chip" data-intel-focus="v30">Legacy 3.0 Log</button>
           <button type="button" class="prompt-chip" data-intel-focus="provenance">Legacy Provenance Log</button>
           <button type="button" class="prompt-chip" data-intel-focus="backtest">Legacy 1Y Backtest Log</button>
@@ -452,7 +452,79 @@
         </div>
       </div>
 
-      <!-- SECTION 3.1: MORESHWAR 3.1 PROSPECTIVE PAPER-TRADING, MONITORING & RISK PLATFORM (v3.1.0-rc1) -->
+      <!-- SECTION 3.2: MORESHWAR 3.2 — ORCHESTRATOR 80-SESSION SELF-LEARNING PAPER TRADING -->
+      <div class="panel intel-section" id="intelSectionV32" style="border-color: hsla(195, 92%, 56%, 0.78);">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">3.2 Moreshwar 3.2 — Self-Improving Orchestrator (80-Session Maximum-Profit Mock Test)</div>
+            <div class="panel-subtitle" id="mv32Subtitle">Full-Universe NSE Scanner (TechBot_1 + FundBot_1 + ExecBot_1) · Picks Feed Directly Into Paper Engine · Learns From Every Passed &amp; Failed Trade</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <span class="tag-pill tag-stop" style="font-weight:700;letter-spacing:0.03em;">PAPER MOCK TEST — REAL MONEY LOCKED</span>
+            <span class="tag-pill tag-target" id="mv32MissionBadge">MISSION: 0 / 80 SESSIONS</span>
+            <span class="tag-pill tag-entry" id="mv32LearnStatusBadge">WEIGHTS: LOADING</span>
+          </div>
+        </div>
+
+        <div class="kpi-strip-grid" id="mv32Kpis"></div>
+
+        <div class="two-col-grid" style="margin-top: 12px;">
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Today's Full-Universe Orchestrator Funnel &amp; Queued Paper Picks</div>
+                <div class="panel-subtitle" id="mv32FunnelSub">Scanning all ~1,182 PIT-eligible NSE stocks (fixed 10-stock list retired)</div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table dq-compact-table">
+                <thead>
+                  <tr>
+                    <th>RANK</th>
+                    <th>SYMBOL</th>
+                    <th>EOD ₹</th>
+                    <th>TECH</th>
+                    <th>FUND</th>
+                    <th>CONV</th>
+                    <th>DECISION</th>
+                  </tr>
+                </thead>
+                <tbody id="mv32ShortlistBody">
+                  <tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Loading live Moreshwar 3.2 orchestrator scan...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="background: var(--bg-base); border-color: var(--border-subtle);">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Per-Trade Learning &amp; Real-Money Graduation Gate</div>
+                <div class="panel-subtitle" id="mv32LearnSub">Adaptive parameters updated from every PASSED &amp; FAILED closed trade + 5D matured outcomes</div>
+              </div>
+            </div>
+            <div id="mv32AdaptiveParams" style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin-bottom:10px;">Loading learned parameters...</div>
+            <div class="table-wrap">
+              <table class="data-table dq-compact-table">
+                <thead>
+                  <tr>
+                    <th>TRADE</th>
+                    <th>OUTCOME</th>
+                    <th>RETURN</th>
+                    <th>EXIT</th>
+                    <th>POST-MORTEM LESSON</th>
+                  </tr>
+                </thead>
+                <tbody id="mv32LessonsBody">
+                  <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No closed trades yet — Session 1 orders queued for next open.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3.1: MORESHWAR 3.1 FROZEN BASELINE PAPER-TRADING PLATFORM (v3.1.0-rc1) -->
       <div class="panel intel-section" id="intelSectionV31" style="border-color: hsla(160, 84%, 44%, 0.72);">
         <div class="panel-header" style="flex-wrap: wrap;">
           <div>
@@ -1213,6 +1285,37 @@
 
     <!-- TAB 5: CUMULATIVE EXECUTIVE REPORTS (NATURAL LANGUAGE & VISUAL CHARTS) -->
     <section class="tab-panel" id="panel-reports">
+      <div class="panel" id="rptM32Panel" style="border-color: hsla(195, 92%, 56%, 0.6);">
+        <div class="panel-header" style="flex-wrap: wrap;">
+          <div>
+            <div class="panel-title">Moreshwar 3.2 — 80-Session Self-Improving Orchestrator Executive Report</div>
+            <div class="panel-subtitle" id="rptM32Sub">Orchestrator Full-Universe Scanner (TechBot + FundBot + ExecBot) · Learns From Every Passed &amp; Failed Trade Before Real Money</div>
+          </div>
+          <span class="tag-pill tag-stop">MOCK TEST ONLY · REAL MONEY LOCKED</span>
+        </div>
+
+        <div class="rpt-executive-brief" id="rptM32Brief">Loading live Moreshwar 3.2 orchestrator mission telemetry...</div>
+        <div class="kpi-strip-grid" id="rptM32Kpis"></div>
+
+        <div class="table-wrap" style="margin-top: 12px;">
+          <table class="data-table dq-compact-table">
+            <thead>
+              <tr>
+                <th>QUEUE / ORDER</th>
+                <th>SYMBOL / STRATEGY</th>
+                <th>STATUS / QTY</th>
+                <th>EOD REF ₹</th>
+                <th>CONVICTION</th>
+                <th>RISK RULE</th>
+              </tr>
+            </thead>
+            <tbody id="rptM32QueueBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Loading Moreshwar 3.2 queued orchestrator trades...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="panel" id="rptM31Panel" style="border-color: rgba(16, 185, 129, 0.35);">
         <div class="panel-header" style="flex-wrap: wrap;">
           <div>

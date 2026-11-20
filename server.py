@@ -137,6 +137,88 @@ def _load_extra_watchlist_symbols() -> list[str]:
         return []
 
 
+def _get_m3_2_dashboard_payload() -> dict[str, Any]:
+    """Return Moreshwar 3.2 (Orchestrator-driven 80-session paper trading & self-learning) payload."""
+    try:
+        from finsistant_v2.m3_2.orchestrated_session import OrchestratedSessionRunner
+
+        return OrchestratedSessionRunner().build_dashboard_payload()
+    except Exception as exc:
+        return {
+            "release_version": "3.2.0",
+            "banner": "PAPER TRADING ONLY — LIVE TRADING DISABLED",
+            "error": str(exc),
+            "safety_posture": {
+                "paper_trading_only": True,
+                "live_trading_enabled": False,
+                "broker_order_placement_enabled": False,
+                "automatic_capital_deployment_enabled": False,
+            },
+        }
+
+
+def _load_m3_2_learned_params() -> dict[str, Any]:
+    """Load current adaptive parameters learned from closed paper trades & matured outcomes."""
+    try:
+        from finsistant_v2.m3_2.learning_ledger import OrchestratorLearningLedger
+        from finsistant_v2.m3_2.orchestrated_session import M32_LEARNING_DB_PATH
+
+        if M32_LEARNING_DB_PATH.exists():
+            return OrchestratorLearningLedger(M32_LEARNING_DB_PATH).current_params()
+    except Exception:
+        pass
+    return {}
+
+
+def _load_dynamic_orchestrator_symbols(max_symbols: int = 12) -> tuple[list[str], str]:
+    """Retire the fixed 10-stock list: load today's real full-universe orchestrator picks & open paper holdings."""
+    from finsistant_v2.m3_2.orchestrated_session import M32_PAPER_REPORTS_DIR, M32_SCAN_DIR
+
+    ordered: list[str] = []
+    seen: set[str] = set()
+
+    def _add(sym: Any) -> None:
+        s = str(sym or "").upper().strip()
+        if s and s not in seen and s not in ("NIFTYBEES", "LIQUIDBEES"):
+            seen.add(s)
+            ordered.append(s)
+
+    snap_path = M32_PAPER_REPORTS_DIR / "portfolio_snapshot.json"
+    if snap_path.exists():
+        try:
+            snap = json.loads(snap_path.read_text(encoding="utf-8"))
+            for h in snap.get("open_holdings") or []:
+                if str(h.get("instrument_type", "")).upper() not in ("CORE_ETF", "LIQUID_ETF"):
+                    _add(h.get("symbol"))
+            for p in snap.get("pending_next_session_orders") or []:
+                if str(p.get("kind", "")).upper() == "TACTICAL_BUY":
+                    _add(p.get("symbol"))
+        except Exception:
+            pass
+
+    scan_path = M32_SCAN_DIR / "latest_scan.json"
+    scan_date = ""
+    if scan_path.exists():
+        try:
+            scan = json.loads(scan_path.read_text(encoding="utf-8"))
+            scan_date = str(scan.get("trading_date") or "")
+            for s in scan.get("queued_for_next_open") or []:
+                _add(s)
+            for c in scan.get("candidates") or []:
+                _add(c.get("symbol"))
+            for r in scan.get("shortlist") or []:
+                if r.get("status") == "AGENTS_OK":
+                    _add(r.get("symbol"))
+                if len(ordered) >= max_symbols:
+                    break
+        except Exception:
+            pass
+
+    if ordered:
+        return ordered[:max_symbols], f"MORESHWAR_3_2_FULL_UNIVERSE_SCAN ({scan_date or 'latest'})"
+    return list(ASSET_UNIVERSE.keys()), "LEGACY_FALLBACK_NO_M32_SCAN"
+
+
 def _refresh_analytics_and_audit(force_new_for_symbol: str | None = None, force_benchmark: bool = False) -> None:
     """Recompute backtest attribution, audit ledger persistence, and data provenance."""
     global BACKTEST_CACHE, MORESHWAR_V2_RESEARCH, AUDIT_LEDGER_CACHE, PROVENANCE_CACHE
@@ -270,7 +352,9 @@ def _initialize_platform_state(force_refresh: bool = False, force_token_refresh:
     kite_holdings_map = {h["symbol"]: h for h in kite_data.get("holdings", [])}
 
     extra_symbols = _load_extra_watchlist_symbols()
-    symbols = list(dict.fromkeys(list(ASSET_UNIVERSE.keys()) + extra_symbols + list(kite_holdings_map.keys())))
+    dyn_symbols, watchlist_source = _load_dynamic_orchestrator_symbols(max_symbols=12)
+    globals()["WATCHLIST_SOURCE"] = watchlist_source
+    symbols = list(dict.fromkeys(dyn_symbols + extra_symbols + list(kite_holdings_map.keys())))
     for sym in symbols:
         kh = kite_holdings_map.get(sym)
         qty = int(kh["qty"]) if kh else 0
@@ -337,12 +421,15 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
         if not is_held:
             p_item["avg_price"] = snap["price"]
 
+        learned_params = _load_m3_2_learned_params()
         run = runner.run_pipeline(
             symbol=sym,
             timeframe="1D",
             capital=sizing_capital,
             active_trades=len([t for t in EXECUTED_LOG if t.get("side") == "BUY"]),
             is_holding=is_held,
+            asset_analysis=snap,
+            learned_params=learned_params,
         )
         PIPELINE_CACHE[sym] = run.model_dump()
 
@@ -611,7 +698,9 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "moreshwar_v2_1_research": MORESHWAR_V2_1_RESEARCH,
         "moreshwar_v2_2_research": MORESHWAR_V2_2_RESEARCH,
         "moreshwar_v3_research": MORESHWAR_V3_RESEARCH,
+        "watchlist_source": globals().get("WATCHLIST_SOURCE", "MORESHWAR_3_2_FULL_UNIVERSE_SCAN"),
         "moreshwar_v3_1": _get_m3_1_dashboard_payload(),
+        "moreshwar_v3_2": _get_m3_2_dashboard_payload(),
         "audit_trail": build_audit_dashboard_view(AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)),
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,
@@ -704,6 +793,9 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/m3_1/dashboard":
             self._send_json(_get_m3_1_dashboard_payload())
+            return
+        if path == "/api/m3_2/dashboard":
+            self._send_json(_get_m3_2_dashboard_payload())
             return
         if path == "/api/m3_1/reports":
             try:
