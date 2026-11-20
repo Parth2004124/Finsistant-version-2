@@ -1,9 +1,9 @@
 {
   "schema_version": "m3_1_paper_daily_report_v1",
   "release_version": "3.1.0-rc1",
-  "generated_at_utc": "2026-11-20T09:17:53.063370+00:00",
-  "trading_date": "2026-11-19",
-  "data_availability_timestamp": "2026-11-20T09:17:53.063373+00:00",
+  "generated_at_utc": "2026-11-20T12:46:40.648254+00:00",
+  "trading_date": "2026-11-20",
+  "data_availability_timestamp": "2026-11-20T12:46:40.616999+00:00",
   "configuration_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
   "configuration_raw_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
   "strategy_identifier": "G_SIMPLE_TREND_BASELINE + EXP_E_COMBINED_EXEC_INTEL",
@@ -24,7 +24,7 @@
   "regime_determination": {
     "raw_regime": "BULL_TREND",
     "confirmed_regime": "BULL_TREND",
-    "confirmation_streak_days": 3,
+    "confirmation_streak_days": 4,
     "confirmation_required_days": 3,
     "allow_new_family_e_entries": true
   },
@@ -38,9 +38,130 @@
     "actual_liquid_pct": 0.0,
     "actual_cash_pct": 100.0
   },
-  "signals_generated": [],
+  "signals_generated": [
+    {
+      "sec_id": "INE172A01027",
+      "symbol": "CASTROLIND",
+      "decision": "QUEUED_FOR_NEXT_OPEN",
+      "req_qty": 35,
+      "ref_close": 190.36,
+      "ev_net_bps": 283.7,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE669C01036",
+      "symbol": "TECHM",
+      "decision": "REJECTED",
+      "reason": "SIZE_BELOW_MIN_LOT"
+    },
+    {
+      "sec_id": "INE481G01011",
+      "symbol": "ULTRACEMCO",
+      "decision": "REJECTED",
+      "reason": "SIZE_BELOW_MIN_LOT"
+    },
+    {
+      "sec_id": "INE129A01019",
+      "symbol": "GAIL",
+      "decision": "QUEUED_FOR_NEXT_OPEN",
+      "req_qty": 35,
+      "ref_close": 191.44,
+      "ev_net_bps": 224.32,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE347G01014",
+      "symbol": "PETRONET",
+      "decision": "REJECTED",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "sec_id": "INE562A01011",
+      "symbol": "INDIANB",
+      "decision": "QUEUED_FOR_NEXT_OPEN",
+      "req_qty": 7,
+      "ref_close": 950.0,
+      "ev_net_bps": 202.51,
+      "hurdle_bps": 200.0
+    },
+    {
+      "sec_id": "INE692A01016",
+      "symbol": "UNIONBANK",
+      "decision": "QUEUED_FOR_NEXT_OPEN",
+      "req_qty": 31,
+      "ref_close": 218.85,
+      "ev_net_bps": 205.77,
+      "hurdle_bps": 200.0
+    }
+  ],
   "simulated_orders_latest_session": [],
-  "pending_next_session_orders": [],
+  "pending_next_session_orders": [
+    {
+      "kind": "CORE_REBALANCE",
+      "target_core_inr": 73500.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "TACTICAL_BUY",
+      "sec_id": "INE172A01027",
+      "symbol": "CASTROLIND",
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "req_qty": 35,
+      "expected_price": 190.36,
+      "stop_ratio": 0.084145,
+      "hold_max_days": 120,
+      "score": 0.959223,
+      "ev_net_bps": 283.7,
+      "ev_hurdle_bps": 200.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "TACTICAL_BUY",
+      "sec_id": "INE129A01019",
+      "symbol": "GAIL",
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "req_qty": 35,
+      "expected_price": 191.44,
+      "stop_ratio": 0.10291,
+      "hold_max_days": 120,
+      "score": 0.921691,
+      "ev_net_bps": 224.32,
+      "ev_hurdle_bps": 200.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "TACTICAL_BUY",
+      "sec_id": "INE562A01011",
+      "symbol": "INDIANB",
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "req_qty": 7,
+      "expected_price": 950.0,
+      "stop_ratio": 0.106614,
+      "hold_max_days": 120,
+      "score": 0.905124,
+      "ev_net_bps": 202.51,
+      "ev_hurdle_bps": 200.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "TACTICAL_BUY",
+      "sec_id": "INE692A01016",
+      "symbol": "UNIONBANK",
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "req_qty": 31,
+      "expected_price": 218.85,
+      "stop_ratio": 0.101504,
+      "hold_max_days": 120,
+      "score": 0.904441,
+      "ev_net_bps": 205.77,
+      "ev_hurdle_bps": 200.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "LIQUID_SWEEP",
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    }
+  ],
   "execution_summary": {
     "total_orders_all_sessions": 0,
     "filled_orders": 0,
@@ -61,8 +182,8 @@
     "benchmark_45_55_nav": 100000.0
   },
   "risk_metrics": {
-    "as_of_date": "2026-11-19",
-    "sample_sessions": 0,
+    "as_of_date": "2026-11-20",
+    "sample_sessions": 1,
     "initial_capital_inr": 100000.0,
     "current_nav_inr": 100000.0,
     "daily_pnl_inr": 0.0,
@@ -70,13 +191,13 @@
     "cumulative_pnl_inr": 0.0,
     "cumulative_return_pct": 0.0,
     "cagr_pct": null,
-    "cagr_sample_status": "INSUFFICIENT_SAMPLE (0/60 sessions)",
+    "cagr_sample_status": "INSUFFICIENT_SAMPLE (1/60 sessions)",
     "max_drawdown_pct": 0.0,
     "current_drawdown_pct": 0.0,
     "rolling_volatility_pct": null,
     "rolling_sharpe": null,
     "rolling_sortino": null,
-    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (0/20 sessions)",
+    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (1/20 sessions)",
     "exposure_by_instrument": [],
     "exposure_by_sector": [],
     "core_etf_exposure_pct": 0.0,
@@ -101,7 +222,7 @@
   "data_quality_state": "PARTIAL_DIAGNOSTIC_ONLY",
   "reconciliation_result": {
     "passed": true,
-    "as_of_date": "2026-11-19",
+    "as_of_date": "2026-11-20",
     "nav_from_assets_inr": 100000.0,
     "nav_from_equity_inr": 100000.0,
     "reconciliation_diff_inr": 0.0,
@@ -126,18 +247,18 @@
   "safe_mode_reason": "",
   "audit_chain": {
     "valid": true,
-    "entries": 3,
-    "head_chain_sha256": "c78a6b061b7f79aa3f8968cdb4fecc4cdfceb62a4241fe768370e797220553fc"
+    "entries": 4,
+    "head_chain_sha256": "cdc5f92671dfb710d5623884196cb5f1d3439601c1d3f829738cbfcfb86e0ed7"
   },
   "prospective_validation": {
     "prospective_start_date": "2026-11-19",
-    "completed_unseen_sessions": 0,
+    "completed_unseen_sessions": 1,
     "minimum_required_sessions": 60,
     "target_sessions": 120,
-    "progress_to_min_pct": 0.0,
-    "progress_to_target_pct": 0.0,
+    "progress_to_min_pct": 1.67,
+    "progress_to_target_pct": 0.83,
     "validation_complete": false,
-    "status_label": "AWAITING_FIRST_PROSPECTIVE_SESSION",
+    "status_label": "IN_PROGRESS_INCOMPLETE_SAMPLE",
     "prospective_paper_trades": 0,
     "prospective_rejected_orders": 0
   }

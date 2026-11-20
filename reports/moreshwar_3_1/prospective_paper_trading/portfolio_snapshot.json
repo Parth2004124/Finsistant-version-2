@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-11-20T09:17:53.066242+00:00",
-  "as_of_date": "2026-11-19",
+  "generated_at_utc": "2026-11-20T12:46:40.648953+00:00",
+  "as_of_date": "2026-11-20",
   "engine_state": {
     "engine_state": "RUNNING",
     "safe_mode_reason": "",
@@ -10,7 +10,7 @@
     "first_eligible_prospective_session": "2026-11-20",
     "deployment_timestamp_utc": "2026-11-20T09:17:53.037877+00:00",
     "database_identifier": "M31-PAPER-DB-27F0B1A4E468",
-    "database_path": "/home/antigravity/Parth2004124/Finsistant-version-2/data/m3_1_paper_trading/prospective_paper_ledger.db",
+    "database_path": "/home/runner/work/Finsistant-version-2/Finsistant-version-2/data/m3_1_paper_trading/prospective_paper_ledger.db",
     "git_commit_sha": "e6af98fa70a83bc2d9bdfddde4bb3142a1e1ed3b",
     "initial_capital_inr": 100000.0,
     "initial_capital_classification": "SIMULATED_CASH_DEPOSIT_NOT_PROFIT",
@@ -30,7 +30,7 @@
   },
   "reconciliation": {
     "passed": true,
-    "as_of_date": "2026-11-19",
+    "as_of_date": "2026-11-20",
     "nav_from_assets_inr": 100000.0,
     "nav_from_equity_inr": 100000.0,
     "reconciliation_diff_inr": 0.0,
@@ -52,8 +52,8 @@
     "failure_reasons": []
   },
   "risk_metrics": {
-    "as_of_date": "2026-11-19",
-    "sample_sessions": 0,
+    "as_of_date": "2026-11-20",
+    "sample_sessions": 1,
     "initial_capital_inr": 100000.0,
     "current_nav_inr": 100000.0,
     "daily_pnl_inr": 0.0,
@@ -61,13 +61,13 @@
     "cumulative_pnl_inr": 0.0,
     "cumulative_return_pct": 0.0,
     "cagr_pct": null,
-    "cagr_sample_status": "INSUFFICIENT_SAMPLE (0/60 sessions)",
+    "cagr_sample_status": "INSUFFICIENT_SAMPLE (1/60 sessions)",
     "max_drawdown_pct": 0.0,
     "current_drawdown_pct": 0.0,
     "rolling_volatility_pct": null,
     "rolling_sharpe": null,
     "rolling_sortino": null,
-    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (0/20 sessions)",
+    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (1/20 sessions)",
     "exposure_by_instrument": [],
     "exposure_by_sector": [],
     "core_etf_exposure_pct": 0.0,
@@ -90,5 +90,71 @@
     "cum_liquid_yield_inr": 0.0
   },
   "open_holdings": [],
-  "pending_next_session_orders": []
+  "pending_next_session_orders": [
+    {
+      "kind": "CORE_REBALANCE",
+      "target_core_inr": 73500.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "TACTICAL_BUY",
+      "sec_id": "INE172A01027",
+      "symbol": "CASTROLIND",
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "req_qty": 35,
+      "expected_price": 190.36,
+      "stop_ratio": 0.084145,
+      "hold_max_days": 120,
+      "score": 0.959223,
+      "ev_net_bps": 283.7,
+      "ev_hurdle_bps": 200.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "TACTICAL_BUY",
+      "sec_id": "INE129A01019",
+      "symbol": "GAIL",
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "req_qty": 35,
+      "expected_price": 191.44,
+      "stop_ratio": 0.10291,
+      "hold_max_days": 120,
+      "score": 0.921691,
+      "ev_net_bps": 224.32,
+      "ev_hurdle_bps": 200.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "TACTICAL_BUY",
+      "sec_id": "INE562A01011",
+      "symbol": "INDIANB",
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "req_qty": 7,
+      "expected_price": 950.0,
+      "stop_ratio": 0.106614,
+      "hold_max_days": 120,
+      "score": 0.905124,
+      "ev_net_bps": 202.51,
+      "ev_hurdle_bps": 200.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "TACTICAL_BUY",
+      "sec_id": "INE692A01016",
+      "symbol": "UNIONBANK",
+      "strategy_id": "STRAT_E_DEFENSIVE_YIELD_LOWVOL",
+      "req_qty": 31,
+      "expected_price": 218.85,
+      "stop_ratio": 0.101504,
+      "hold_max_days": 120,
+      "score": 0.904441,
+      "ev_net_bps": 205.77,
+      "ev_hurdle_bps": 200.0,
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    },
+    {
+      "kind": "LIQUID_SWEEP",
+      "signal_timestamp": "2026-11-20T15:30:00+05:30"
+    }
+  ]
 }

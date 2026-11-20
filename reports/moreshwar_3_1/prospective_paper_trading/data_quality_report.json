@@ -1,20 +1,24 @@
 {
-  "trading_date": "2026-11-19",
-  "checked_at_utc": "2026-11-20T09:17:53.035041+00:00",
+  "trading_date": "2026-11-20",
+  "checked_at_utc": "2026-11-20T12:46:40.638794+00:00",
+  "data_timestamp_utc": "2026-11-20T12:46:40.616999+00:00",
   "overall_status": "PARTIAL_DIAGNOSTIC_ONLY",
   "niftybees_valid": true,
   "liquidbees_valid": true,
+  "valid_equity_bars": 1182,
+  "invalid_equity_bars": 0,
   "diagnostic_index_bars_available": false,
   "known_boundaries": {
-    "historical_daily_bars_coverage": "2021-01-01 -> 2026-11-19 (1,454 sessions)",
+    "historical_daily_bars_coverage": "2021-01-01 -> 2026-11-19 (1,454 sessions, 2,832 PIT equities + NIFTYBEES + LIQUIDBEES)",
     "diagnostic_index_bars_end_date": "2025-10-10",
-    "intraday_tick_minute_data": "UNAVAILABLE",
-    "pit_macro_timestamps": "UNAVAILABLE",
-    "corporate_earnings_financials": "UNAVAILABLE"
+    "intraday_tick_minute_data": "UNAVAILABLE (NEXT_SESSION_OPEN daily bars only)",
+    "pit_macro_timestamps": "UNAVAILABLE (excluded)",
+    "corporate_earnings_financials": "UNAVAILABLE (excluded)"
   },
+  "stale_price_days": 0,
   "issues": [],
   "warnings": [
-    "Awaiting first prospective NSE session after 2026-11-19; daily_index_bars ends 2025-10-10 (diagnostic-only)."
+    "DIAGNOSTIC_INDEX_BARS_UNAVAILABLE_POST_2025-10-10: India VIX / GS 10Yr / sector indices are unavailable and NOT fabricated."
   ],
-  "summary": "Initialized cleanly; awaiting unseen prospective daily market bars."
+  "summary": "DIAGNOSTIC_INDEX_BARS_UNAVAILABLE_POST_2025-10-10: India VIX / GS 10Yr / sector indices are unavailable and NOT fabricated."
 }
