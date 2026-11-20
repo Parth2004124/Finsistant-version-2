@@ -57,18 +57,22 @@ def _extract_ticker_frame(raw_df: Any, ticker: str, single_ticker: bool = False)
     if raw_df is None or getattr(raw_df, "empty", True):
         return None
     try:
-        import pandas as pd  # noqa: F401
-        if single_ticker or not isinstance(raw_df.columns, pd.MultiIndex):
-            df = raw_df.copy()
-        else:
+        import pandas as pd
+
+        if isinstance(raw_df.columns, pd.MultiIndex):
             lvl0 = raw_df.columns.get_level_values(0)
             lvl1 = raw_df.columns.get_level_values(1)
             if ticker in lvl0:
                 df = raw_df[ticker].copy()
             elif ticker in lvl1:
                 df = raw_df.xs(ticker, axis=1, level=1).copy()
+            elif single_ticker:
+                df = raw_df.copy()
+                df.columns = raw_df.columns.get_level_values(0)
             else:
                 return None
+        else:
+            df = raw_df.copy()
         df = df.dropna(subset=["Open", "High", "Low", "Close"], how="any")
         if df.empty:
             return None
