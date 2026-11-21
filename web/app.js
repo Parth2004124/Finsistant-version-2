@@ -81,7 +81,7 @@ function drawUnifiedChart(asset) {
 
   if (!asset || !Array.isArray(asset.candles) || asset.candles.length === 0) {
     ctx.font = "13px 'JetBrains Mono', monospace";
-    ctx.fillStyle = "hsl(350, 84%, 65%)";
+    ctx.fillStyle = "#D95B6D";
     ctx.fillText(appState.errorMsg || "LIVE DATA UNAVAILABLE — SIMULATION DISABLED", 20, h / 2);
     return;
   }
@@ -101,10 +101,10 @@ function drawUnifiedChart(asset) {
   const stepX = plotW / candles.length;
 
   // Grid lines
-  ctx.strokeStyle = "hsla(222, 15%, 24%, 0.45)";
+  ctx.strokeStyle = "rgba(46,56,73,0.5)";
   ctx.lineWidth = 1;
   ctx.font = "10.5px 'JetBrains Mono', monospace";
-  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  ctx.fillStyle = "#8D99AA";
   for (let i = 0; i <= 4; i++) {
     const val = minP + ((maxP - minP) * i) / 4;
     const y = yFor(val);
@@ -119,13 +119,13 @@ function drawUnifiedChart(asset) {
   const firstDate = candles[0].date || "";
   const midDate = candles[Math.floor(candles.length / 2)].date || "";
   const lastDate = candles[candles.length - 1].date || "";
-  ctx.fillStyle = "hsl(215, 15%, 55%)";
+  ctx.fillStyle = "#647184";
   ctx.fillText(firstDate, padLeft, h - 6);
   ctx.fillText(midDate, padLeft + plotW * 0.45, h - 6);
   ctx.fillText(lastDate, w - padRight - 72, h - 6);
 
   // Degree-2 Polynomial Regression Curve (Amber)
-  ctx.strokeStyle = "hsl(38, 92%, 55%)";
+  ctx.strokeStyle = "#D99B38";
   ctx.lineWidth = 1.8;
   ctx.beginPath();
   candles.forEach((c, idx) => {
@@ -140,7 +140,7 @@ function drawUnifiedChart(asset) {
   candles.forEach((c, idx) => {
     const x = padLeft + idx * stepX + stepX * 0.5;
     const isBull = c.close >= c.open;
-    const col = isBull ? "hsl(158, 74%, 44%)" : "hsl(350, 84%, 60%)";
+    const col = isBull ? "#28B47E" : "#D95B6D";
     ctx.strokeStyle = col;
     ctx.fillStyle = col;
     ctx.lineWidth = 1.2;
@@ -173,12 +173,12 @@ function drawUnifiedChart(asset) {
     ctx.restore();
   };
 
-  drawLevelLine(m.target, "hsl(158, 74%, 44%)", `TP ${symPrefix}${m.target}`);
-  drawLevelLine(asset.price, "hsl(196, 86%, 54%)", `CP ${symPrefix}${asset.price}`);
+  drawLevelLine(m.target, "#28B47E", `TP ${symPrefix}${m.target}`);
+  drawLevelLine(asset.price, "#5B9BFA", `CP ${symPrefix}${asset.price}`);
   if (m.recalibrated && typeof m.entry_price === "number" && Math.abs(m.entry_price - asset.price) > asset.price * 0.002) {
-    drawLevelLine(m.entry_price, "hsl(38, 92%, 62%)", `LIM ${symPrefix}${m.entry_price}`);
+    drawLevelLine(m.entry_price, "#D99B38", `LIM ${symPrefix}${m.entry_price}`);
   }
-  drawLevelLine(m.stop_loss, "hsl(350, 84%, 60%)", `SL ${symPrefix}${m.stop_loss}`);
+  drawLevelLine(m.stop_loss, "#D95B6D", `SL ${symPrefix}${m.stop_loss}`);
 }
 
 function applyPayload(payload) {
@@ -741,7 +741,7 @@ function drawBacktestEquityChart(curve) {
 
   if (!Array.isArray(curve) || curve.length < 2) {
     ctx.font = "12px 'JetBrains Mono', monospace";
-    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.fillText("Backtest equity curve will populate after next live scan.", 16, h / 2);
     return;
   }
@@ -760,10 +760,10 @@ function drawBacktestEquityChart(curve) {
   const yFor = (v) => padT + plotH - ((v - minV) / Math.max(1e-6, maxV - minV)) * plotH;
   const xFor = (i) => padL + (i / Math.max(1, curve.length - 1)) * plotW;
 
-  ctx.strokeStyle = "hsla(222, 15%, 24%, 0.45)";
+  ctx.strokeStyle = "rgba(46,56,73,0.5)";
   ctx.lineWidth = 1;
   ctx.font = "10px 'JetBrains Mono', monospace";
-  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  ctx.fillStyle = "#8D99AA";
   for (let i = 0; i <= 4; i++) {
     const v = minV + ((maxV - minV) * i) / 4;
     const y = yFor(v);
@@ -795,9 +795,9 @@ function drawBacktestEquityChart(curve) {
     ctx.restore();
   };
 
-  plotLine("benchmark_nav", "hsl(38, 92%, 55%)", true);
-  plotLine("original_nav", "hsl(196, 86%, 54%)", false);
-  plotLine("recalibrated_nav", "hsl(158, 74%, 44%)", false);
+  plotLine("benchmark_nav", "#D99B38", true);
+  plotLine("original_nav", "#5B9BFA", false);
+  plotLine("recalibrated_nav", "#28B47E", false);
 }
 
 function renderProvenanceMonitor() {
@@ -1291,7 +1291,7 @@ function renderMoreshwarV2ShadowLab() {
         ? "INDEX BENCH"
         : "STATIC FUND WARN";
     return `
-      <tr style="${String(m.model).includes("Model E:") ? "background:hsla(196,86%,54%,0.07);" : ""}">
+      <tr style="${String(m.model).includes("Model E:") ? "background:rgba(91,155,250,0.08);" : ""}">
         <td style="font-weight:${isHighlight ? "700" : "500"};">${escHtml(m.model)}</td>
         <td style="font-family:var(--font-mono);color:${retCol};font-weight:700;">${(m.total_return_pct || 0) >= 0 ? "+" : ""}${m.total_return_pct ?? 0}%</td>
         <td style="font-family:var(--font-mono);color:${retCol};">${(m.annualised_return_pct || 0) >= 0 ? "+" : ""}${m.annualised_return_pct ?? 0}%</td>
@@ -1409,16 +1409,16 @@ function drawMv21EquityChart(r21) {
 
   if (m21c.length < 2) {
     ctx.font = "12px 'JetBrains Mono', monospace";
-    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.fillText("5Y Moreshwar 2.1 equity curve awaiting report payload.", 14, h / 2);
     return;
   }
 
   const allSeries = [
-    { data: m1c, col: "hsl(350, 84%, 60%)", dash: false },
-    { data: m2c, col: "hsl(265, 80%, 66%)", dash: false },
-    { data: bmc, col: "hsl(38, 92%, 55%)", dash: true },
-    { data: m21c, col: "hsl(196, 86%, 54%)", dash: false }
+    { data: m1c, col: "#D95B6D", dash: false },
+    { data: m2c, col: "#9A86E0", dash: false },
+    { data: bmc, col: "#D99B38", dash: true },
+    { data: m21c, col: "#5B9BFA", dash: false }
   ];
   const baseNav = 100000.0;
   const norm = (v) => (Number(v || baseNav) / baseNav) * 100.0;
@@ -1434,10 +1434,10 @@ function drawMv21EquityChart(r21) {
   const nPts = m21c.length;
   const xFor = (i, len) => padL + (i / Math.max(1, len - 1)) * plotW;
 
-  ctx.strokeStyle = "hsla(222, 15%, 24%, 0.45)";
+  ctx.strokeStyle = "rgba(46,56,73,0.5)";
   ctx.lineWidth = 1;
   ctx.font = "10px 'JetBrains Mono', monospace";
-  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  ctx.fillStyle = "#8D99AA";
   for (let i = 0; i <= 4; i++) {
     const v = minV + ((maxV - minV) * i) / 4;
     const y = yFor(v);
@@ -1451,7 +1451,7 @@ function drawMv21EquityChart(r21) {
   if (y100 >= padT && y100 <= padT + plotH) {
     ctx.save();
     ctx.setLineDash([2, 3]);
-    ctx.strokeStyle = "hsla(210, 20%, 70%, 0.3)";
+    ctx.strokeStyle = "rgba(141,153,170,0.3)";
     ctx.beginPath();
     ctx.moveTo(padL, y100);
     ctx.lineTo(w - padR, y100);
@@ -1504,16 +1504,16 @@ function drawMv21MonteCarloChart(mc) {
   const bb = mc?.daily_block_bootstrap;
   if (!tb || !bb) {
     ctx.font = "12px 'JetBrains Mono', monospace";
-    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.fillText("Monte Carlo percentiles awaiting simulation data.", 14, h / 2);
     return;
   }
 
   const bars = [
-    { label: "Trade Ret (P5 / P50 / P95)", p5: tb.p05_return_pct, p50: tb.median_return_pct, p95: tb.p95_return_pct, col: "hsl(196, 86%, 54%)" },
-    { label: "Block-10D Ret (P5 / P50 / P95)", p5: bb.p05_return_pct, p50: bb.median_return_pct, p95: bb.p95_return_pct, col: "hsl(265, 80%, 66%)" },
-    { label: "Trade MaxDD (Med → P95)", p5: 0, p50: -tb.median_max_dd_pct, p95: -tb.p95_max_dd_pct, col: "hsl(350, 84%, 60%)", isDd: true },
-    { label: "Block MaxDD (Med → P95)", p5: 0, p50: -bb.median_max_dd_pct, p95: -bb.p95_max_dd_pct, col: "hsl(38, 92%, 55%)", isDd: true }
+    { label: "Trade Ret (P5 / P50 / P95)", p5: tb.p05_return_pct, p50: tb.median_return_pct, p95: tb.p95_return_pct, col: "#5B9BFA" },
+    { label: "Block-10D Ret (P5 / P50 / P95)", p5: bb.p05_return_pct, p50: bb.median_return_pct, p95: bb.p95_return_pct, col: "#9A86E0" },
+    { label: "Trade MaxDD (Med → P95)", p5: 0, p50: -tb.median_max_dd_pct, p95: -tb.p95_max_dd_pct, col: "#D95B6D", isDd: true },
+    { label: "Block MaxDD (Med → P95)", p5: 0, p50: -bb.median_max_dd_pct, p95: -bb.p95_max_dd_pct, col: "#D99B38", isDd: true }
   ];
 
   const allVals = [0];
@@ -1528,7 +1528,7 @@ function drawMv21MonteCarloChart(mc) {
   const topPad = 8;
   const axisH = 18;
   const zX = xFor(0);
-  ctx.strokeStyle = "hsla(215, 20%, 60%, 0.42)";
+  ctx.strokeStyle = "rgba(141,153,170,0.35)";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(zX, topPad);
@@ -1543,7 +1543,7 @@ function drawMv21MonteCarloChart(mc) {
       : `${b.p5.toFixed(0)}% | ${b.p50.toFixed(1)}% | ${b.p95 >= 0 ? "+" : ""}${b.p95.toFixed(0)}%`;
 
     ctx.font = w < 340 ? "9.5px 'JetBrains Mono', monospace" : "10.5px 'JetBrains Mono', monospace";
-    ctx.fillStyle = "hsl(210, 25%, 90%)";
+    ctx.fillStyle = "#E5EAF1";
     ctx.textAlign = "left";
     ctx.fillText(b.label.slice(0, w < 340 ? 22 : 30), padL, cy + 11);
 
@@ -1554,9 +1554,9 @@ function drawMv21MonteCarloChart(mc) {
     const barY = cy + 17;
     const x1 = xFor(Math.min(b.p5, b.p95));
     const x2 = xFor(Math.max(b.p5, b.p95));
-    ctx.fillStyle = "hsla(222, 18%, 22%, 0.55)";
+    ctx.fillStyle = "rgba(46,56,73,0.55)";
     ctx.fillRect(padL, barY + 3, plotW, 4);
-    ctx.fillStyle = b.isDd ? "hsla(350, 84%, 60%, 0.34)" : "hsla(196, 86%, 54%, 0.32)";
+    ctx.fillStyle = b.isDd ? "rgba(217,91,109,0.32)" : "rgba(91,155,250,0.30)";
     ctx.fillRect(x1, barY, Math.max(4, x2 - x1), 10);
 
     const xm = xFor(b.p50);
@@ -1565,7 +1565,7 @@ function drawMv21MonteCarloChart(mc) {
   });
 
   ctx.font = "10px 'JetBrains Mono', monospace";
-  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  ctx.fillStyle = "#8D99AA";
   ctx.textAlign = "left";
   ctx.fillText(`${minV.toFixed(0)}%`, padL, h - 4);
   ctx.textAlign = "center";
@@ -1870,7 +1870,7 @@ function renderMoreshwarV21Dashboard() {
     const ci = Array.isArray(m.win_rate_ci95) ? `[${m.win_rate_ci95[0]}–${m.win_rate_ci95[1]}]` : "";
     const pVal = m.p_value_vs_zero != null ? ` (p=${m.p_value_vs_zero})` : "";
     return `
-      <tr style="${String(m.model).includes("2.1 (6-Regime") ? "background:hsla(196,86%,54%,0.08);" : ""}">
+      <tr style="${String(m.model).includes("2.1 (6-Regime") ? "background:rgba(91,155,250,0.08);" : ""}">
         <td style="font-weight:${isHl ? "700" : "500"};">${escHtml(m.model)}</td>
         <td style="font-family:var(--font-mono);color:${col};font-weight:700;">${ret >= 0 ? "+" : ""}${ret}%</td>
         <td style="font-family:var(--font-mono);color:${col};">${(m.cagr_pct || 0) >= 0 ? "+" : ""}${m.cagr_pct ?? 0}%</td>
@@ -2268,7 +2268,7 @@ function drawReportEquityCanvas(curve) {
 
   if (!Array.isArray(curve) || curve.length < 2) {
     ctx.font = "12px 'Inter', sans-serif";
-    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.fillText("Growth curve appears after live scan data loads.", 14, h / 2);
     return;
   }
@@ -2287,10 +2287,10 @@ function drawReportEquityCanvas(curve) {
   const yFor = (v) => padT + plotH - ((v - minV) / Math.max(1e-6, maxV - minV)) * plotH;
   const xFor = (i) => padL + (i / Math.max(1, curve.length - 1)) * plotW;
 
-  ctx.strokeStyle = "hsla(222, 15%, 24%, 0.45)";
+  ctx.strokeStyle = "rgba(46,56,73,0.5)";
   ctx.lineWidth = 1;
   ctx.font = "10px 'JetBrains Mono', monospace";
-  ctx.fillStyle = "hsl(215, 15%, 65%)";
+  ctx.fillStyle = "#8D99AA";
   for (let i = 0; i <= 3; i++) {
     const v = minV + ((maxV - minV) * i) / 3;
     const y = yFor(v);
@@ -2324,9 +2324,9 @@ function drawReportEquityCanvas(curve) {
     ctx.restore();
   };
 
-  plotLine("benchmark_nav", "hsl(38, 92%, 55%)", true);
-  plotLine("original_nav", "hsl(196, 86%, 54%)", false);
-  plotLine("recalibrated_nav", "hsl(160, 84%, 44%)", false);
+  plotLine("benchmark_nav", "#D99B38", true);
+  plotLine("original_nav", "#5B9BFA", false);
+  plotLine("recalibrated_nav", "#28B47E", false);
 }
 
 function drawReportAgentCanvas(ranking) {
@@ -2344,7 +2344,7 @@ function drawReportAgentCanvas(ranking) {
 
   if (!Array.isArray(ranking) || !ranking.length) {
     ctx.font = "12px 'Inter', sans-serif";
-    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.fillText("Agent attribution chart awaiting scan.", 14, h / 2);
     return;
   }
@@ -2362,7 +2362,7 @@ function drawReportAgentCanvas(ranking) {
   const scaleNeg = (chartW * 0.45) / maxAbs;
 
   // Zero vertical line
-  ctx.strokeStyle = "hsla(215, 20%, 50%, 0.45)";
+  ctx.strokeStyle = "rgba(141,153,170,0.35)";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(zeroX, 10);
@@ -2373,7 +2373,7 @@ function drawReportAgentCanvas(ranking) {
   ctx.font = "10.5px 'JetBrains Mono', monospace";
   ranking.forEach((r, idx) => {
     const cy = 16 + idx * rowH;
-    ctx.fillStyle = "hsl(210, 25%, 92%)";
+    ctx.fillStyle = "#E5EAF1";
     ctx.fillText(`#${r.rank} ${String(r.agent).replace("_1", "")}`, 6, cy + 12);
 
     const drawBar = (val, yOff, posCol, negCol) => {
@@ -2387,8 +2387,8 @@ function drawReportAgentCanvas(ranking) {
       const tx = val >= 0 ? bx + bw + 4 : Math.max(labelW - 2, bx - 44);
       ctx.fillText(txt, Math.min(w - 44, tx), cy + yOff + 8);
     };
-    drawBar(Number(r.cum_return_lift_pct || 0), 0, "hsl(160, 84%, 44%)", "hsl(350, 84%, 60%)");
-    drawBar(Number(r.drawdown_saved_pct || 0), 12, "hsl(196, 86%, 54%)", "hsl(38, 92%, 55%)");
+    drawBar(Number(r.cum_return_lift_pct || 0), 0, "#28B47E", "#D95B6D");
+    drawBar(Number(r.drawdown_saved_pct || 0), 12, "#5B9BFA", "#D99B38");
   });
 }
 
@@ -2413,7 +2413,7 @@ function drawReportCroDonutCanvas(croAudit) {
 
   if (total <= 0) {
     ctx.font = "12px 'Inter', sans-serif";
-    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.fillText("No CRO interventions logged in current window.", 14, h / 2);
     return;
   }
@@ -2422,9 +2422,9 @@ function drawReportCroDonutCanvas(croAudit) {
   const cy = h / 2;
   const radius = Math.min(cx - 18, cy - 18, 66);
   const slices = [
-    { val: prev, color: "hsl(160, 84%, 44%)", label: "Prevented Bad" },
-    { val: miss, color: "hsl(350, 84%, 60%)", label: "Unnecessary Block/Down" },
-    { val: pres, color: "hsl(196, 86%, 54%)", label: "Preserved Winners" },
+    { val: prev, color: "#28B47E", label: "Prevented Bad" },
+    { val: miss, color: "#D95B6D", label: "Unnecessary Block/Down" },
+    { val: pres, color: "#5B9BFA", label: "Preserved Winners" },
   ];
 
   let startA = -Math.PI / 2;
@@ -2440,29 +2440,29 @@ function drawReportCroDonutCanvas(croAudit) {
   });
 
   ctx.textAlign = "center";
-  ctx.fillStyle = "hsl(210, 25%, 94%)";
+  ctx.fillStyle = "#E5EAF1";
   ctx.font = "bold 18px 'JetBrains Mono', monospace";
   ctx.fillText(`${comb.prevention_rate_pct ?? 0}%`, cx, cy + 4);
   ctx.font = "9.5px 'Inter', sans-serif";
-  ctx.fillStyle = "hsl(215, 15%, 68%)";
+  ctx.fillStyle = "#8D99AA";
   ctx.fillText("PREVENTED", cx, cy + 18);
 
   // Clean right-side breakdown labels
   ctx.textAlign = "left";
   const lx = cx + radius + 28;
   const items = [
-    [`${prev} / ${total} Bad Prevented`, `Avg block save -${croAudit?.blocks?.avg_loss_avoided_pct ?? 0}%`, "hsl(160, 84%, 44%)"],
-    [`${miss} / ${total} Unnecessary`, `Missed avg +${croAudit?.blocks?.avg_upside_missed_pct ?? 0}%`, "hsl(350, 84%, 60%)"],
-    [`${pres} / ${total} Preserved Wins`, `Net CRO value ${(comb.net_intervention_value_pct || 0) >= 0 ? "+" : ""}${comb.net_intervention_value_pct ?? 0}%`, "hsl(196, 86%, 54%)"],
+    [`${prev} / ${total} Bad Prevented`, `Avg block save -${croAudit?.blocks?.avg_loss_avoided_pct ?? 0}%`, "#28B47E"],
+    [`${miss} / ${total} Unnecessary`, `Missed avg +${croAudit?.blocks?.avg_upside_missed_pct ?? 0}%`, "#D95B6D"],
+    [`${pres} / ${total} Preserved Wins`, `Net CRO value ${(comb.net_intervention_value_pct || 0) >= 0 ? "+" : ""}${comb.net_intervention_value_pct ?? 0}%`, "#5B9BFA"],
   ];
   items.forEach(([t1, t2, col], idx) => {
     const iy = 38 + idx * 50;
     ctx.fillStyle = col;
     ctx.fillRect(lx, iy - 9, 8, 8);
-    ctx.fillStyle = "hsl(210, 25%, 92%)";
+    ctx.fillStyle = "#E5EAF1";
     ctx.font = "bold 11px 'JetBrains Mono', monospace";
     ctx.fillText(t1, lx + 14, iy - 1);
-    ctx.fillStyle = "hsl(215, 15%, 68%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.font = "10px 'Inter', sans-serif";
     ctx.fillText(t2, lx + 14, iy + 14);
   });
@@ -2483,7 +2483,7 @@ function drawReportBenchmarkCanvas(rows) {
 
   if (!Array.isArray(rows) || !rows.length) {
     ctx.font = "12px 'Inter', sans-serif";
-    ctx.fillStyle = "hsl(215, 15%, 65%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.fillText("Benchmark comparison awaiting scan.", 14, h / 2);
     return;
   }
@@ -2497,7 +2497,7 @@ function drawReportBenchmarkCanvas(rows) {
   const scaleNeg = (plotW * 0.72) / maxAbs;
   const scalePos = (plotW * 0.28) / maxAbs;
 
-  ctx.strokeStyle = "hsla(215, 20%, 50%, 0.45)";
+  ctx.strokeStyle = "rgba(141,153,170,0.35)";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(zeroX, 8);
@@ -2516,12 +2516,12 @@ function drawReportBenchmarkCanvas(rows) {
       .replace("Simple SMA-20 + Fixed 1:2 (5%/10%)", "Simple SMA-20")
       .replace("Matrix Entries + Fixed 1:2 Exits", "Matrix + 1:2");
 
-    ctx.fillStyle = "hsl(210, 25%, 90%)";
+    ctx.fillStyle = "#E5EAF1";
     ctx.fillText(shortName.slice(0, w < 380 ? 14 : 20), 6, cy + 12);
 
     const val = Number(r.cumulative_return_pct || 0);
     const isBench = String(r.strategy).includes("Nifty") || String(r.strategy).includes("Equal-Weight");
-    const col = val >= 0 ? (isBench ? "hsl(38, 92%, 55%)" : "hsl(160, 84%, 44%)") : (String(r.strategy).includes("Matrix +") ? "hsl(196, 86%, 54%)" : "hsl(350, 84%, 60%)");
+    const col = val >= 0 ? (isBench ? "#D99B38" : "#28B47E") : (String(r.strategy).includes("Matrix +") ? "#5B9BFA" : "#D95B6D");
     const xEnd = val >= 0 ? zeroX + val * scalePos : zeroX + val * scaleNeg;
     const bx = Math.min(zeroX, xEnd);
     const bw = Math.max(2, Math.abs(xEnd - zeroX));
@@ -3440,7 +3440,7 @@ function renderMoreshwarV31Dashboard() {
       <div><strong>Prospective Start Boundary:</strong> <code>${vt.prospective_start_date || "2026-11-19"}</code> · Status: <strong>${vt.status_label || "AWAITING_FIRST_PROSPECTIVE_SESSION"}</strong></div>
       <div><strong>Unseen Sessions Completed:</strong> <strong>${done} / ${minReq}</strong> minimum (${pctMin}%) · <strong>${done} / ${tgt}</strong> target (${pctTgt}%)</div>
       <div style="background:rgba(255,255,255,0.08);height:7px;border-radius:4px;overflow:hidden;margin:4px 0 6px;">
-        <div style="width:${pctMin}%;height:100%;background:hsl(160,84%,44%);"></div>
+        <div style="width:${pctMin}%;height:100%;background:#28B47E;"></div>
       </div>
       <div><strong>Prospective Trades:</strong> ${vt.prospective_paper_trades || 0} filled · ${vt.prospective_rejected_orders || 0} rejected/failed</div>
       <div><strong>Rolling Sharpe / Max DD:</strong> ${rm.rolling_sharpe != null ? rm.rolling_sharpe : (rm.rolling_ratios_sample_status || "INSUFFICIENT_SAMPLE")} · Max DD ${Number(rm.max_drawdown_pct || 0).toFixed(2)}%</div>
@@ -3529,7 +3529,7 @@ function renderMoreshwarV31Dashboard() {
           .slice(0, 5)
           .map((a) => `<div><span class="tag-pill ${a.severity === "CRITICAL" ? "tag-stop" : "tag-score"}">${a.severity}</span> <strong>${a.code}</strong>: ${a.description}</div>`)
           .join("")
-      : `<div style="color:hsl(160,84%,44%);">No active critical or warning risk alerts.</div>`;
+      : `<div style="color:#28B47E;">No active critical or warning risk alerts.</div>`;
     riskEl.innerHTML = `
       <div><strong>System Health:</strong> <strong>${rk.overall_health || "HEALTHY"}</strong> · <strong>Reconciliation:</strong> ${recon.passed ? "PASS" : "FAIL"} (diff ₹${Number(recon.reconciliation_diff_inr || 0).toFixed(4)})</div>
       <div><strong>Drawdown:</strong> Current ${Number(rm.current_drawdown_pct || 0).toFixed(2)}% · Max ${Number(rm.max_drawdown_pct || 0).toFixed(2)}% · <strong>CAGR:</strong> ${rm.cagr_pct != null ? fmtPct(rm.cagr_pct) : (rm.cagr_sample_status || "INSUFFICIENT_SAMPLE")}</div>
@@ -3645,9 +3645,9 @@ function drawMv31ProspectiveChart(data) {
   const doneSess = Number((data || {}).prospective_paper_trading?.validation_tracker?.completed_unseen_sessions || curve.length || 0);
   if (curve.length < 2) {
     ctx.font = "12px 'Inter', sans-serif";
-    ctx.fillStyle = "hsl(215, 15%, 72%)";
+    ctx.fillStyle = "#8D99AA";
     ctx.fillText(`Prospective Paper Curve: ${doneSess} real unseen session(s) recorded post-2026-11-19 (line plots from session 2).`, 14, h / 2 - 8);
-    ctx.fillStyle = "hsl(38, 92%, 60%)";
+    ctx.fillStyle = "#D99B38";
     ctx.fillText("Historical backtest (2021-07 → 2026-11-19) is shown separately on the right.", 14, h / 2 + 12);
     return;
   }
@@ -3679,9 +3679,9 @@ function drawMv31ProspectiveChart(data) {
     ctx.stroke();
     ctx.restore();
   };
-  drawSeries("blend_45_55_nav", "hsl(215, 25%, 65%)", true);
-  drawSeries("niftybees_nav", "hsl(38, 92%, 55%)", true);
-  drawSeries("portfolio_nav", "hsl(160, 84%, 44%)", false);
+  drawSeries("blend_45_55_nav", "#8D99AA", true);
+  drawSeries("niftybees_nav", "#D99B38", true);
+  drawSeries("portfolio_nav", "#28B47E", false);
 }
 
 function renderMoreshwarV30Dashboard() {
