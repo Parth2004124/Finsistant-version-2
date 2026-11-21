@@ -1,29 +1,31 @@
 :root {
-  --bg-base: hsl(222, 24%, 6%);
-  --bg-surface: hsl(222, 20%, 9.5%);
-  --bg-elevated: hsl(222, 18%, 13%);
-  --bg-hover: hsl(222, 16%, 16%);
-  --border-subtle: hsl(222, 15%, 17%);
-  --border-strong: hsl(222, 14%, 24%);
+  --bg-base: #0B0E13;
+  --bg-surface: #141922;
+  --bg-elevated: #1B222D;
+  --bg-hover: #212A38;
+  --border-subtle: #232B38;
+  --border-strong: #2E3849;
 
-  --text-primary: hsl(210, 25%, 96%);
-  --text-secondary: hsl(215, 15%, 70%);
-  --text-muted: hsl(215, 12%, 48%);
+  --text-primary: #E5EAF1;
+  --text-secondary: #8D99AA;
+  --text-muted: #647184;
 
-  --accent-emerald: hsl(158, 74%, 44%);
-  --accent-emerald-dim: hsla(158, 74%, 44%, 0.14);
-  --accent-amber: hsl(38, 92%, 55%);
-  --accent-amber-dim: hsla(38, 92%, 55%, 0.14);
-  --accent-crimson: hsl(350, 84%, 60%);
-  --accent-crimson-dim: hsla(350, 84%, 60%, 0.14);
-  --accent-cyan: hsl(196, 86%, 54%);
-  --accent-cyan-dim: hsla(196, 86%, 54%, 0.14);
+  --accent-emerald: #21C7A8;
+  --accent-emerald-dim: rgba(33, 199, 168, 0.12);
+  --accent-positive: #28B47E;
+  --accent-positive-dim: rgba(40, 180, 126, 0.12);
+  --accent-amber: #D99B38;
+  --accent-amber-dim: rgba(217, 155, 56, 0.12);
+  --accent-crimson: #D95B6D;
+  --accent-crimson-dim: rgba(217, 91, 109, 0.12);
+  --accent-cyan: #5B9BFA;
+  --accent-cyan-dim: rgba(91, 155, 250, 0.12);
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
   --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-md: 8px;
 }
 
 * {
@@ -39,6 +41,8 @@ body {
   font-size: 13.5px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -67,20 +71,21 @@ body {
   height: 36px;
   border-radius: var(--radius-sm);
   background-color: var(--bg-elevated);
-  border: 1px solid var(--border-strong);
+  border: 1px solid rgba(33, 199, 168, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 13px;
+  letter-spacing: 0.04em;
   color: var(--accent-emerald);
 }
 
 .brand-title {
   font-size: 15.5px;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
   color: var(--text-primary);
 }
 
@@ -112,6 +117,7 @@ body {
 
 .ribbon-stat strong {
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   color: var(--text-primary);
   font-weight: 600;
 }
@@ -137,17 +143,18 @@ body {
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .nav-tab:hover {
   color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .nav-tab.active {
   background-color: var(--bg-elevated);
   color: var(--text-primary);
-  border: 1px solid var(--border-strong);
+  border: 1px solid rgba(33, 199, 168, 0.38);
 }
 
 /* Main Workspace */
@@ -222,29 +229,38 @@ body {
 /* Buttons */
 .btn-primary {
   background-color: var(--accent-emerald);
-  color: hsl(220, 25%, 6%);
+  color: #0B0E13;
   border: none;
+  box-shadow: inset 0 0 0 1px rgba(33, 199, 168, 0.55);
   border-radius: var(--radius-sm);
   padding: 7px 13px;
   font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.06);
+}
+
+.btn-danger {
+  background-color: #C94A5C;
+  color: #E5EAF1;
+  border: none;
+  box-shadow: inset 0 0 0 1px rgba(217, 91, 109, 0.55);
+  border-radius: var(--radius-sm);
+  padding: 7px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   cursor: pointer;
   transition: filter 0.15s ease;
 }
 
-.btn-primary:hover {
-  filter: brightness(1.08);
-}
-
-.btn-danger {
-  background-color: var(--accent-crimson);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 7px 13px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
+.btn-danger:hover {
+  filter: brightness(1.06);
 }
 
 .btn-secondary {
@@ -256,10 +272,12 @@ body {
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-secondary:hover {
   background-color: var(--bg-hover);
+  border-color: rgba(141, 153, 170, 0.45);
 }
 
 .btn-primary:disabled,
@@ -330,7 +348,7 @@ body {
 /* Sell Warning Banner */
 .sell-warning-box {
   background-color: var(--accent-crimson-dim);
-  border: 1px solid hsla(350, 84%, 60%, 0.4);
+  border: 1px solid rgba(217, 91, 109, 0.38);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   display: flex;
@@ -341,8 +359,8 @@ body {
 
 /* Analysis Terminal Box */
 .terminal-box {
-  background-color: hsl(222, 26%, 5%);
-  border: 1px solid var(--border-strong);
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 12px;
   font-family: var(--font-mono);
@@ -439,6 +457,7 @@ canvas#unifiedChart {
   width: 100%;
   border-collapse: collapse;
   font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 .data-table th, .data-table td {
@@ -448,6 +467,7 @@ canvas#unifiedChart {
 }
 
 .data-table th {
+  font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
   color: var(--text-secondary);
@@ -481,7 +501,7 @@ canvas#unifiedChart {
 
 .chat-bubble.user {
   background-color: var(--accent-cyan-dim);
-  border: 1px solid hsla(196, 86%, 54%, 0.35);
+  border: 1px solid rgba(91, 155, 250, 0.35);
   color: var(--text-primary);
   align-self: flex-end;
   max-width: 88%;
@@ -509,6 +529,7 @@ canvas#unifiedChart {
   padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .prompt-chip:hover {
@@ -525,9 +546,11 @@ canvas#unifiedChart {
   padding: 6px 10px;
   border-radius: var(--radius-sm);
   outline: none;
+  transition: border-color 0.15s ease;
 }
 
-.input-field:focus {
+.input-field:focus,
+.select-field:focus {
   border-color: var(--accent-emerald);
 }
 
@@ -1277,9 +1300,9 @@ canvas#backtestEquityChart {
 }
 
 .legacy-archive-drawer {
-  border: 1px dashed var(--border-subtle);
-  border-radius: 10px;
-  background: rgba(15, 23, 42, 0.45);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: rgba(20, 25, 34, 0.72);
   margin-top: 14px;
   overflow: hidden;
 }
@@ -1304,7 +1327,7 @@ canvas#backtestEquityChart {
 }
 
 .legacy-archive-drawer > summary:hover {
-  background: rgba(148, 163, 184, 0.06);
+  background: rgba(141, 153, 170, 0.06);
   color: var(--text-primary);
 }
 

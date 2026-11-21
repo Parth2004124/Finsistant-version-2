@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg_base">#05080F</color>
-    <color name="bg_surface">#0B1220</color>
-    <color name="accent_emerald">#10B981</color>
-    <color name="accent_cyan">#22D3EE</color>
+    <color name="bg_base">#0B0E13</color>
+    <color name="bg_surface">#141922</color>
+    <color name="kite_blue">#5B9BFA</color>
+    <color name="kite_green">#21C7A8</color>
 </resources>

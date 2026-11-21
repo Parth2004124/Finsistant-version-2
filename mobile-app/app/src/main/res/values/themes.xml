@@ -4,8 +4,8 @@
         <item name="android:windowBackground">@color/bg_base</item>
         <item name="android:statusBarColor">@color/bg_surface</item>
         <item name="android:navigationBarColor">@color/bg_surface</item>
-        <item name="colorPrimary">@color/accent_emerald</item>
+        <item name="colorPrimary">@color/kite_blue</item>
         <item name="colorPrimaryDark">@color/bg_surface</item>
-        <item name="colorAccent">@color/accent_cyan</item>
+        <item name="colorAccent">@color/kite_blue</item>
     </style>
 </resources>

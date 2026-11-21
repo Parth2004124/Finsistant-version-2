@@ -31,17 +31,17 @@ class MainActivity : AppCompatActivity() {
         webView = findViewById(R.id.webView)
 
         swipeRefresh.setColorSchemeColors(
-            Color.parseColor("#10B981"),
-            Color.parseColor("#22D3EE")
+            Color.parseColor("#5B9BFA"),
+            Color.parseColor("#21C7A8")
         )
-        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#0B1220"))
+        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#1B222D"))
         swipeRefresh.setOnChildScrollUpCallback { _, _ -> webView.scrollY > 0 }
 
         val assetLoader = WebViewAssetLoader.Builder()
             .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
             .build()
 
-        webView.setBackgroundColor(Color.parseColor("#05080F"))
+        webView.setBackgroundColor(Color.parseColor("#0B0E13"))
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
@@ -95,9 +95,9 @@ class MainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 webView.evaluateJavascript(
-                    "(function(){ if (window.getActiveMobileTab && window.getActiveMobileTab() !== 'picks') { window.switchMobileTab('picks'); return 'switched'; } return 'exit'; })()"
+                    "(function(){ if (window.handleFinsistantMobileBack && window.handleFinsistantMobileBack()) return 'handled'; if (window.getActiveMobileTab && window.getActiveMobileTab() !== 'mission') { window.switchMobileTab('mission'); return 'handled'; } return 'exit'; })()"
                 ) { result ->
-                    if (result != "\"switched\"") {
+                    if (result != "\"handled\"") {
                         isEnabled = false
                         onBackPressedDispatcher.onBackPressed()
                     }

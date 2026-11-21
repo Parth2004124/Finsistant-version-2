@@ -8,7 +8,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:label="Finsistant V2"
+        android:label="MOVIQ"
         android:supportsRtl="true"
         android:theme="@style/Theme.FinsistantV2"
         android:usesCleartextTraffic="false">

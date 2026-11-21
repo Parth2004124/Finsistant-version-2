@@ -1,0 +1,826 @@
+/* ==========================================================================
+   FINSISTANT V2 — MOBILE-FIRST ZERODHA KITE DARK MODE (ANDROID APK ONLY)
+   Loaded exclusively inside mobile-app/app/src/main/assets/index.html.
+   Web interface (root & web/) is 100% untouched.
+   ========================================================================== */
+
+:root {
+  --bg-base: #0B0E13;
+  --bg-surface: #141922;
+  --bg-elevated: #1B222D;
+  --bg-hover: #232B38;
+  --border-subtle: #232B38;
+  --border-strong: #2E3849;
+  --kite-blue: #5B9BFA;
+  --kite-blue-soft: rgba(91, 155, 250, 0.14);
+  --accent-emerald: #21C7A8;
+  --accent-cyan: #5B9BFA;
+  --accent-crimson: #D95B6D;
+  --accent-amber: #D99B38;
+  --text-primary: #E5EAF1;
+  --text-secondary: #8D99AA;
+  --text-muted: #647184;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Roboto", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Roboto Mono", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  background: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-sans) !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+}
+
+/* Hide bulky desktop header & desktop tabs on Android mobile shell */
+header.topbar {
+  display: none !important;
+}
+
+/* ---- KITE MOBILE TOP APP BAR (52px) ---- */
+.km-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  height: 54px;
+  background: #141922;
+  border-bottom: 1px solid #1B222D;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  gap: 10px;
+}
+
+.km-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.km-back-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.km-back-btn.visible {
+  display: inline-flex;
+}
+
+.km-title-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.km-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.km-subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.km-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.km-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.km-icon-btn {
+  height: 36px;
+  min-width: 36px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #2E3849;
+  background: #141922;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.km-icon-btn:active {
+  background: #232B38;
+}
+
+.km-icon-btn.accent {
+  border-color: rgba(56, 126, 209, 0.45);
+  color: #8DB8FB;
+  background: rgba(56, 126, 209, 0.12);
+}
+
+/* ---- WORKSPACE SPACING FOR BOTTOM NAV ---- */
+.workspace {
+  padding: 0 0 78px 0 !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
+.tab-panel {
+  padding: 0 !important;
+}
+
+/* Remove heavy desktop borders, glowing outlines & nested card boxes */
+.panel {
+  background: var(--bg-surface) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 14px 16px !important;
+  margin: 0 0 8px 0 !important;
+}
+
+.panel .panel {
+  background: transparent !important;
+  padding: 12px 0 0 0 !important;
+  margin: 12px 0 0 0 !important;
+  border-top: 1px solid var(--border-subtle) !important;
+}
+
+.panel-header {
+  padding-bottom: 10px !important;
+  margin-bottom: 10px !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+.panel-title {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.01em !important;
+}
+
+.panel-subtitle {
+  font-size: 12px !important;
+  color: var(--text-secondary) !important;
+  margin-top: 2px !important;
+  line-height: 1.4 !important;
+}
+
+/* Collapse all multi-column desktop grids to single airy mobile column */
+.mission-grid,
+.two-col-grid,
+.agents-row,
+.pillar-grid,
+.gemini-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+
+/* Clean flat buttons in Kite style */
+.btn-primary {
+  background: var(--kite-blue) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  min-height: 44px !important;
+  padding: 0 16px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.btn-secondary {
+  background: #1B222D !important;
+  color: var(--text-primary) !important;
+  border: 1px solid #2E3849 !important;
+  border-radius: 4px !important;
+  min-height: 40px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.btn-danger {
+  background: var(--accent-crimson) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  min-height: 44px !important;
+  padding: 0 16px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.input-field,
+.select-field {
+  background: #0B0E13 !important;
+  border: 1px solid #2E3849 !important;
+  border-radius: 4px !important;
+  color: var(--text-primary) !important;
+  min-height: 42px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+}
+
+.input-field:focus,
+.select-field:focus {
+  border-color: var(--kite-blue) !important;
+  outline: none !important;
+}
+
+/* Tame loud badges into crisp Kite-style micro-tags */
+.tag-pill {
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  padding: 3px 7px !important;
+  border-radius: 3px !important;
+  letter-spacing: 0.02em !important;
+  border: none !important;
+}
+
+.tag-target {
+  background: rgba(38, 166, 91, 0.16) !important;
+  color: #3FC08F !important;
+}
+
+.tag-entry {
+  background: rgba(56, 126, 209, 0.16) !important;
+  color: #8DB8FB !important;
+}
+
+.tag-stop {
+  background: rgba(223, 81, 76, 0.16) !important;
+  color: #E27A88 !important;
+}
+
+.tag-score {
+  background: rgba(232, 168, 56, 0.15) !important;
+  color: #E5B25D !important;
+}
+
+/* ---- KITE SEGMENTED SUB-TABS (Underline indicator like Kite Holdings/Positions) ---- */
+.km-segbar {
+  display: flex;
+  background: #141922;
+  border-bottom: 1px solid #1B222D;
+  position: sticky;
+  top: 54px;
+  z-index: 80;
+}
+
+.km-seg-btn {
+  flex: 1;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  padding: 0 8px;
+}
+
+.km-seg-btn.active {
+  color: var(--kite-blue);
+}
+
+.km-seg-btn.active::after {
+  content: "";
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 0;
+  height: 2.5px;
+  background: var(--kite-blue);
+  border-radius: 2px 2px 0 0;
+}
+
+/* ---- TAB 1: WATCHLIST VIEW vs FOCUSED STOCK DETAIL VIEW ---- */
+.km-watchlist-wrap {
+  background: var(--bg-surface);
+}
+
+.km-mission-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #141922;
+  border-bottom: 1px solid #1B222D;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.km-mission-strip strong {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.km-mission-strip .km-link {
+  color: var(--kite-blue);
+  font-weight: 600;
+}
+
+.km-search-bar {
+  padding: 10px 14px;
+  background: var(--bg-base);
+  border-bottom: 1px solid #1B222D;
+}
+
+.km-search-input {
+  width: 100%;
+  height: 40px;
+  background: #141922;
+  border: 1px solid #2E3849;
+  border-radius: 6px;
+  padding: 0 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.km-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.km-wl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #1B222D;
+  background: var(--bg-surface);
+  cursor: pointer;
+  gap: 12px;
+  min-height: 68px;
+}
+
+.km-wl-row:active {
+  background: #1B222D;
+}
+
+.km-wl-row.active-sym {
+  border-left: 3px solid var(--kite-blue);
+  padding-left: 13px;
+}
+
+.km-wl-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.km-wl-sym-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.km-wl-sym {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.km-wl-exch {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.km-wl-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.km-wl-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.km-wl-price {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.km-wl-price.up {
+  color: #3FC08F;
+}
+
+.km-wl-price.down {
+  color: #E27A88;
+}
+
+.km-wl-chg {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Toggle between Watchlist list & Stock Detail inside Tab 1 */
+body.km-mission-list #panel-mission .mission-grid > :nth-child(1),
+body.km-mission-list #panel-mission .mission-grid > :nth-child(2),
+body.km-mission-list #panel-mission .mission-grid > :nth-child(3) {
+  display: none !important;
+}
+
+body.km-mission-detail #kmWatchlistContainer {
+  display: none !important;
+}
+
+body.km-mission-detail #panel-mission .mission-grid > :nth-child(1),
+body.km-mission-detail #panel-mission .mission-grid > :nth-child(3) {
+  display: none !important;
+}
+
+body.km-mission-detail #panel-mission .mission-grid > :nth-child(2) {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+/* Clean Stock Detail Price & Chart styling */
+#panel-mission .chart-box {
+  height: 220px !important;
+  margin: 8px 0 !important;
+}
+
+#panel-mission .chart-legend {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+  padding: 10px 0 2px 0 !important;
+  border-top: 1px solid var(--border-subtle) !important;
+  font-size: 12px !important;
+}
+
+#panel-mission .provenance-strip {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  padding: 6px 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+#panel-mission .prov-meta-text {
+  font-size: 11px !important;
+  color: var(--text-muted) !important;
+  width: 100% !important;
+}
+
+/* Compact Agent Rows (replace 3 tall desktop cards with clean flat rows) */
+.agent-card {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  border-radius: 0 !important;
+  padding: 12px 0 !important;
+}
+
+.agent-card:last-child {
+  border-bottom: none !important;
+  padding-bottom: 2px !important;
+}
+
+.progress-track {
+  background: #232B38 !important;
+  height: 5px !important;
+  border-radius: 3px !important;
+  margin: 6px 0 !important;
+}
+
+.progress-fill {
+  background: var(--kite-blue) !important;
+}
+
+/* Make Gemini CRO clean & compact on phone */
+#geminiRationalePanel .panel-header {
+  cursor: pointer;
+}
+
+/* ---- KPI STRIPS (Clean 2x2 Kite Grid instead of dense 5-column strip) ---- */
+.kpi-strip-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 1px !important;
+  background: #232B38 !important;
+  border: 1px solid #232B38 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  margin: 10px 0 !important;
+}
+
+.kpi-mini-card {
+  background: #141922 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 12px !important;
+}
+
+.kpi-mini-lbl {
+  font-size: 10.5px !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+}
+
+.kpi-mini-val {
+  font-family: var(--font-mono) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  margin: 4px 0 2px 0 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.kpi-mini-sub {
+  font-size: 11px !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.35 !important;
+}
+
+/* ---- TAB 4 (MISSION 3.2) MOBILE SEGMENTED VIEWS ---- */
+#panel-intelligence .intel-subnav-bar {
+  display: none !important;
+}
+
+body.km-m32-seg-picks #intelSectionV31,
+body.km-m32-seg-picks #legacyIntelArchiveLog,
+body.km-m32-seg-picks #intelSectionV32 .two-col-grid > :nth-child(2) {
+  display: none !important;
+}
+
+body.km-m32-seg-learn #intelSectionV31,
+body.km-m32-seg-learn #legacyIntelArchiveLog,
+body.km-m32-seg-learn #intelSectionV32 .two-col-grid > :nth-child(1) {
+  display: none !important;
+}
+
+body.km-m32-seg-m31 #intelSectionV32 {
+  display: none !important;
+}
+
+/* Convert dense desktop tables into scrollable/readable Kite flat tables */
+.table-wrap,
+.table-scroll {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  margin: 0 -16px !important;
+  padding: 0 16px !important;
+}
+
+.data-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 12.5px !important;
+}
+
+.data-table th {
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  padding: 8px 6px !important;
+  border-bottom: 1px solid #232B38 !important;
+  white-space: nowrap !important;
+}
+
+.data-table td {
+  padding: 11px 6px !important;
+  border-bottom: 1px solid #1B222D !important;
+  color: var(--text-primary) !important;
+  vertical-align: middle !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Hide low-priority middle columns in M3.2 shortlist on narrow phones so it fits 390px with ZERO horizontal scroll! */
+#mv32ShortlistBody tr td:nth-child(1),
+#intelSectionV32 thead tr th:nth-child(1),
+#mv32ShortlistBody tr td:nth-child(4),
+#intelSectionV32 thead tr th:nth-child(4),
+#mv32ShortlistBody tr td:nth-child(5),
+#intelSectionV32 thead tr th:nth-child(5) {
+  display: none !important;
+}
+
+/* Same clean 4-column fit for Reports Queued Orders table */
+#rptM32Panel thead tr th:nth-child(1),
+#rptM32QueueBody tr td:nth-child(1),
+#rptM32Panel thead tr th:nth-child(6),
+#rptM32QueueBody tr td:nth-child(6),
+#rptM31Panel thead tr th:nth-child(1),
+#rptM31QueueBody tr td:nth-child(1),
+#rptM31Panel thead tr th:nth-child(6),
+#rptM31QueueBody tr td:nth-child(6) {
+  display: none !important;
+}
+
+/* ---- TAB 2 (PORTFOLIO / STOCKSIGHT) SEGMENTED VIEWS ---- */
+body.km-ss-seg-score #panel-stocksight .two-col-grid > :nth-child(2) {
+  display: none !important;
+}
+
+body.km-ss-seg-list #panel-stocksight .two-col-grid > :nth-child(1) {
+  display: none !important;
+}
+
+.pillar-card {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid #1B222D !important;
+  border-radius: 0 !important;
+  padding: 10px 0 !important;
+}
+
+.terminal-box,
+.rpt-executive-brief {
+  background: #141922 !important;
+  border: 1px solid #1B222D !important;
+  border-radius: 6px !important;
+  padding: 12px !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: var(--text-primary) !important;
+}
+
+/* ---- TAB 3 (SETUP) CLEAN KITE SETTINGS LAYOUT ---- */
+#panel-agents [style*="grid-template-columns: 1fr 1fr"] {
+  grid-template-columns: 1fr !important;
+}
+
+.legacy-archive-drawer {
+  background: #141922 !important;
+  border: 1px solid #1B222D !important;
+  border-radius: 0 !important;
+  margin: 8px 0 !important;
+}
+
+.legacy-archive-drawer summary {
+  padding: 14px 16px !important;
+  font-size: 13px !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ---- STOCKY AI SLIDE-UP BOTTOM SHEET ---- */
+.km-ai-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 120;
+  display: none;
+}
+
+.km-ai-backdrop.open {
+  display: block;
+}
+
+.km-ai-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 82vh;
+  background: #141922;
+  border-top: 1px solid #2E3849;
+  border-radius: 16px 16px 0 0;
+  z-index: 130;
+  display: none;
+  flex-direction: column;
+  padding: 10px 14px 16px 14px;
+}
+
+.km-ai-sheet.open {
+  display: flex;
+}
+
+.km-ai-handle {
+  width: 38px;
+  height: 4px;
+  background: #2E3849;
+  border-radius: 2px;
+  margin: 0 auto 10px auto;
+}
+
+.km-ai-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #232B38;
+}
+
+.km-ai-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  padding-top: 10px;
+}
+
+.km-ai-body .chat-messages {
+  flex: 1 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+}
+
+/* ---- KITE FIXED BOTTOM NAVIGATION BAR (58px) ---- */
+.km-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60px;
+  background: #141922;
+  border-top: 1px solid #1B222D;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.km-nav-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+
+.km-nav-btn svg {
+  width: 21px;
+  height: 21px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.km-nav-btn.active {
+  color: var(--kite-blue);
+  font-weight: 600;
+}
+
+/* Crisp kite-style compact M3.2 list in Portfolio All-12 view */
+.km-mobile-list-card {
+  background: var(--bg-surface);
+}
