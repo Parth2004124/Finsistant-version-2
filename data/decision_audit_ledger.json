@@ -1,7 +1,1459 @@
 {
   "version": 1,
-  "updated_at": "2026-11-21T02:21:59.495965+00:00",
+  "updated_at": "2026-11-23T06:49:41.245770+00:00",
   "records": [
+    {
+      "audit_id": "fnv2-aud-20261120-SAILIFE-cef4b5b1",
+      "signature": "cef4b5b1a7719a23",
+      "symbol": "SAILIFE",
+      "name": "Sai Life Sciences Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245688+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245688+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:49:01.698176+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 78,
+        "business": 40,
+        "moat": 18,
+        "management": 0,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 76.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 1,808.90 vs 20D SMA 1,670.58 (Upward Curve, 30D Reg Target 2,482.01). RSI(14)=67.9, MACD=+84.15 vs Sig=+76.08."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 76.5,
+          "summary": "Fundamental 78/100 (Bus 40/40, Moat 18/20, Mgmt 0/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [IT]. Premium growth multiple (P/E 102.9x) pricing in strong execution. Strong top-line expansion (22.5% YoY) & profit growth (16.5% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 70.3,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (70.3% conviction). Sized 9 shares (INR 15,791.67) | Entry 1,754.63 \u00b7 TP 1,872.33 / SL 1,716.35 (R:R 1:3.07)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1808.9,
+        "change_pct": 0.5,
+        "rsi_14": 67.9,
+        "sma_20": 1670.58,
+        "projected_30d_target": 2482.01,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1808.9,
+        "target": 1947.37,
+        "stop_loss": 1766.37,
+        "rr_ratio": 3.26,
+        "qty": 12,
+        "conviction": 85.3
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "WAIT FOR PULLBACK",
+        "risk_rating": "HIGH",
+        "bull_case": "The stock exhibits strong upward momentum with a 96% bullish technical signal and a 30D Quant Target of \u20b92482.01, supported by a robust fundamental score of 78/100.",
+        "objections_raised": "The trailing P/E of 102.9x is exceptionally high, the RSI at 67.9 is approaching overbought territory, and the Management/Valuation pillar of the fundamental score is a concerning 0/20.",
+        "rationale": "Given the elevated P/E and approaching overbought RSI, a direct buy at current levels is too aggressive. We will wait for a pullback to a more attractive entry point, tighten the stop-loss to reduce downside exposure, and haircut the target to account for valuation risks.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-23T06:49:30.885984+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 1754.63,
+        "target": 1872.33,
+        "stop_loss": 1716.35,
+        "rr_ratio": 3.07,
+        "qty": 9,
+        "conviction": 70.3,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -3.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -3.0,
+        "target_delta_pct": -3.85,
+        "stop_delta_pct": -2.83,
+        "qty_delta": -3,
+        "conviction_delta": -15.0,
+        "reasons": [
+          "Applied 3.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 15.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The trailing P/E of 102.9x is exceptionally high, the RSI at 67.9 is approaching overbought territory, and the Management/Valuation pillar of the fundamental score is a concerning 0/20."
+        ],
+        "summary": "Applied CRO Calibration (SAILIFE): BUY NOW -> LIMIT PULLBACK | Entry \u20b91808.9 -> \u20b91754.63 | TP \u20b91947.37 -> \u20b91872.33 | SL \u20b91766.37 -> \u20b91716.35 (R:R 1:3.26 -> 1:3.07) | Qty 12 -> 9 sh (0.75x) | Conviction 85.3% -> 70.3%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1808.9,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245688+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-TIIL-b4029d20",
+      "signature": "b4029d20aaebf12f",
+      "symbol": "TIIL",
+      "name": "Technocraft Industries (India) Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245670+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245670+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:58.659738+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 73,
+        "business": 35,
+        "moat": 8,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 80,
+        "technical_score": 96.0,
+        "composite_score": 76.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 2,783.00 vs 20D SMA 2,725.90 (Upward Curve, 30D Reg Target 3,579.08). RSI(14)=68.65, MACD=+30.14 vs Sig=+10.79."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 76.5,
+          "summary": "Fundamental 73/100 (Bus 35/40, Moat 8/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 80/100 [IT]. Attractive valuation at P/E 16.4x with value margin of safety. High capital efficiency (ROE 18.4%, ROCE 15.6%) underscores durable moat. Strong top-line expansion (24.4% YoY) & profit growth (49.4% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 75.3,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (75.3% conviction). Sized 5 shares (INR 13,636.70) | Entry 2,727.34 \u00b7 TP 2,918.74 / SL 2,671.81 (R:R 1:3.45)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 2783.0,
+        "change_pct": -1.81,
+        "rsi_14": 68.65,
+        "sma_20": 2725.9,
+        "projected_30d_target": 3579.08,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 2783.0,
+        "target": 2995.67,
+        "stop_loss": 2717.67,
+        "rr_ratio": 3.26,
+        "qty": 7,
+        "conviction": 85.3
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "Technocraft Industries exhibits strong growth with 24.4% sales and 49.4% profit growth, supported by a robust fundamental score of 73/100 and a low Beta of 0.44.",
+        "objections_raised": "The current RSI of 68.65 is approaching overbought territory, and the 30D Polynomial Regression Target of \u20b93579.08 appears overly optimistic given the current spot price and Moreshwar's target.",
+        "rationale": "While the fundamental strength is evident, the technical indicators suggest a potential for overextension. A cautious approach is warranted, scaling the position and adjusting risk parameters to account for potential pullbacks and a more conservative upside target.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-23T06:49:21.527443+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 2727.34,
+        "target": 2918.74,
+        "stop_loss": 2671.81,
+        "rr_ratio": 3.45,
+        "qty": 5,
+        "conviction": 75.3,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.57,
+        "stop_delta_pct": -1.69,
+        "qty_delta": -2,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The current RSI of 68.65 is approaching overbought territory, and the 30D Polynomial Regression Target of \u20b93579.08 appears overly optimistic given the current spot price and Moreshwar's target."
+        ],
+        "summary": "Applied CRO Calibration (TIIL): BUY NOW -> LIMIT PULLBACK | Entry \u20b92783.0 -> \u20b92727.34 | TP \u20b92995.67 -> \u20b92918.74 | SL \u20b92717.67 -> \u20b92671.81 (R:R 1:3.26 -> 1:3.45) | Qty 7 -> 5 sh (0.75x) | Conviction 85.3% -> 75.3%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 2783.0,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245670+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-JSWENERGY-6c428a59",
+      "signature": "6c428a59131d6009",
+      "symbol": "JSWENERGY",
+      "name": "JSW Energy Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245647+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245647+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:55.394909+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 40,
+        "moat": 15,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 77.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 507.35 vs 20D SMA 503.69 (Upward Curve, 30D Reg Target 614.93). RSI(14)=62.58, MACD=+7.15 vs Sig=+6.93."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 77.5,
+          "summary": "Fundamental 80/100 (Bus 40/40, Moat 15/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [POWER]. Balanced valuation at P/E 39.9x. Strong top-line expansion (23.0% YoY) & profit growth (39.1% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 75.8,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (75.8% conviction). Sized 32 shares (INR 15,910.40) | Entry 497.20 \u00b7 TP 566.95 / SL 478.07 (R:R 1:3.65)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 507.35,
+        "change_pct": -1.11,
+        "rsi_14": 62.58,
+        "sma_20": 503.69,
+        "projected_30d_target": 614.93,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 507.35,
+        "target": 584.85,
+        "stop_loss": 484.85,
+        "rr_ratio": 3.44,
+        "qty": 43,
+        "conviction": 85.8
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "JSW Energy exhibits strong growth with 23.0% sales and 39.1% profit growth, supported by a robust fundamental score of 80/100 and a low Beta of 0.21.",
+        "objections_raised": "The current spot price of \u20b9507.35 is above the 20D SMA of \u20b9503.69, and the RSI of 62.58, while not overbought, suggests limited immediate upside without a pullback. The trailing P/E of 39.92x is elevated for the sector.",
+        "rationale": "While the technicals and fundamentals are generally positive, the current price is not ideal for entry. A slight discount on entry and a tightened stop-loss will be applied to improve the risk-reward profile. The position size will be reduced to mitigate risk given the elevated valuation.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-23T06:49:21.526423+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 497.2,
+        "target": 566.95,
+        "stop_loss": 478.07,
+        "rr_ratio": 3.65,
+        "qty": 32,
+        "conviction": 75.8,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -3.06,
+        "stop_delta_pct": -1.4,
+        "qty_delta": -11,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The current spot price of \u20b9507.35 is above the 20D SMA of \u20b9503.69, and the RSI of 62.58, while not overbought, suggests limited immediate upside without a pullback. The trailing P/E of 39.92x is elevated for the sector."
+        ],
+        "summary": "Applied CRO Calibration (JSWENERGY): BUY NOW -> LIMIT PULLBACK | Entry \u20b9507.35 -> \u20b9497.2 | TP \u20b9584.85 -> \u20b9566.95 | SL \u20b9484.85 -> \u20b9478.07 (R:R 1:3.44 -> 1:3.65) | Qty 43 -> 32 sh (0.75x) | Conviction 85.8% -> 75.8%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 507.35,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245647+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-SJVN-734103a8",
+      "signature": "734103a862b16ab7",
+      "symbol": "SJVN",
+      "name": "SJVN Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245619+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245619+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:50.816651+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 40,
+        "moat": 10,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 77.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 55.08 vs 20D SMA 54.96 (Upward Curve, 30D Reg Target 71.04). RSI(14)=57.79, MACD=+0.07 vs Sig=-0.09."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 77.5,
+          "summary": "Fundamental 80/100 (Bus 40/40, Moat 10/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [GENERAL]. Balanced valuation at P/E 21.9x. Strong top-line expansion (117.4% YoY) & profit growth (115.4% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 75.8,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (75.8% conviction). Sized 90 shares (INR 4,858.20) | Entry 53.98 \u00b7 TP 123.73 / SL 46.96 (R:R 1:9.94)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 55.08,
+        "change_pct": -1.25,
+        "rsi_14": 57.79,
+        "sma_20": 54.96,
+        "projected_30d_target": 71.04,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 55.08,
+        "target": 132.58,
+        "stop_loss": 46.82,
+        "rr_ratio": 9.38,
+        "qty": 181,
+        "conviction": 85.8
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "Strong sales and profit growth (117.4% and 115.4% respectively) coupled with a high fundamental score of 80/100 and a low Beta of 0.53 suggest robust underlying business performance.",
+        "objections_raised": "The R:R of 1:9.38 is extremely wide, and the 30D Quant Target of \u20b971.04 is significantly below the Moreshwar Target of \u20b9132.58, indicating a potential overextension or conflicting price targets.",
+        "rationale": "While the fundamental score is high, the aggressive R:R and conflicting targets warrant caution. We will reduce position size and apply a haircut to the target to align with more conservative expectations, while also tightening the stop-loss to manage downside risk. Entry will be adjusted to capture a potential pullback.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-23T06:49:11.909233+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 53.98,
+        "target": 123.73,
+        "stop_loss": 46.96,
+        "rr_ratio": 9.94,
+        "qty": 90,
+        "conviction": 75.8,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -6.68,
+        "stop_delta_pct": 0.3,
+        "qty_delta": -91,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The R:R of 1:9.38 is extremely wide, and the 30D Quant Target of \u20b971.04 is significantly below the Moreshwar Target of \u20b9132.58, indicating a potential overextension or conflicting price targets."
+        ],
+        "summary": "Applied CRO Calibration (SJVN): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b955.08 -> \u20b953.98 | TP \u20b9132.58 -> \u20b9123.73 | SL \u20b946.82 -> \u20b946.96 (R:R 1:9.38 -> 1:9.94) | Qty 181 -> 90 sh (0.50x) | Conviction 85.8% -> 75.8%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 55.08,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245619+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-SUDEEPPHRM-5d54cda0",
+      "signature": "5d54cda00c0c727d",
+      "symbol": "SUDEEPPHRM",
+      "name": "Sudeep Pharma Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245590+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245590+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:47.644274+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 73,
+        "business": 35,
+        "moat": 18,
+        "management": 0,
+        "risk": 20,
+        "porters_total": 85,
+        "technical_score": 96.0,
+        "composite_score": 79.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 1,268.80 vs 20D SMA 1,139.83 (Upward Curve, 30D Reg Target 1,512.91). RSI(14)=69.51, MACD=+33.30 vs Sig=+27.15."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 79.0,
+          "summary": "Fundamental 73/100 (Bus 35/40, Moat 18/20, Mgmt 0/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [PHARMA]. Premium growth multiple (P/E 75.2x) pricing in strong execution. High capital efficiency (ROE 22.0%, ROCE 19.2%) underscores durable moat. Strong top-line expansion (20.9% YoY) & profit growth (9.3% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 76.7,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (76.7% conviction). Sized 8 shares (INR 9,947.36) | Entry 1,243.42 \u00b7 TP 1,333.72 / SL 1,220.75 (R:R 1:3.98)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1268.8,
+        "change_pct": 6.5,
+        "rsi_14": 69.51,
+        "sma_20": 1139.83,
+        "projected_30d_target": 1512.91,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1268.8,
+        "target": 1369.13,
+        "stop_loss": 1242.13,
+        "rr_ratio": 3.76,
+        "qty": 17,
+        "conviction": 86.7
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "HIGH",
+        "bull_case": "The stock exhibits strong technical momentum with a 96% bullish confirmation, RSI at 69.51, and a positive 30-day polynomial regression target of \u20b91512.91, supported by a robust fundamental score of 73/100.",
+        "objections_raised": "The current spot price of \u20b91268.80 is significantly above the 20D SMA (\u20b91139.83), indicating potential technical overextension, while the trailing P/E of 75.25x suggests a stretched valuation despite strong growth metrics.",
+        "rationale": "While the setup shows strong technical and fundamental signals, the high P/E and current price proximity to overbought RSI levels warrant a cautious approach. The trade will be sized down and an entry discount applied to capture potential pullbacks, with a slightly tightened stop-loss to manage risk.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-23T06:49:11.704922+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 1243.42,
+        "target": 1333.72,
+        "stop_loss": 1220.75,
+        "rr_ratio": 3.98,
+        "qty": 8,
+        "conviction": 76.7,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.59,
+        "stop_delta_pct": -1.72,
+        "qty_delta": -9,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The current spot price of \u20b91268.80 is significantly above the 20D SMA (\u20b91139.83), indicating potential technical overextension, while the trailing P/E of 75.25x suggests a stretched valuation despite strong growth metrics."
+        ],
+        "summary": "Applied CRO Calibration (SUDEEPPHRM): BUY NOW -> LIMIT PULLBACK | Entry \u20b91268.8 -> \u20b91243.42 | TP \u20b91369.13 -> \u20b91333.72 | SL \u20b91242.13 -> \u20b91220.75 (R:R 1:3.76 -> 1:3.98) | Qty 17 -> 8 sh (0.50x) | Conviction 86.7% -> 76.7%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1268.8,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245590+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-LUMAXTECH-bd09c46d",
+      "signature": "bd09c46d7b9e43ad",
+      "symbol": "LUMAXTECH",
+      "name": "Lumax Auto Technologies Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245564+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245564+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:44.265809+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 75,
+        "business": 32,
+        "moat": 18,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 90,
+        "technical_score": 96.0,
+        "composite_score": 82.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 2,317.80 vs 20D SMA 2,163.72 (Upward Curve, 30D Reg Target 3,154.22). RSI(14)=68.3, MACD=+106.24 vs Sig=+93.04."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 82.5,
+          "summary": "Fundamental 75/100 (Bus 32/40, Moat 18/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 90/100 [IT]. Premium growth multiple (P/E 43.5x) pricing in strong execution. High capital efficiency (ROE 28.4%, ROCE 22.7%) underscores durable moat. Strong top-line expansion (34.5% YoY) & profit growth (57.8% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 80.6,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (80.6% conviction). Sized 7 shares (INR 15,981.21) | Entry 2,283.03 \u00b7 TP 2,464.86 / SL 2,246.49 (R:R 1:4.98)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 2317.8,
+        "change_pct": -0.51,
+        "rsi_14": 68.3,
+        "sma_20": 2163.72,
+        "projected_30d_target": 3154.22,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 2317.8,
+        "target": 2509.2,
+        "stop_loss": 2277.2,
+        "rr_ratio": 4.71,
+        "qty": 9,
+        "conviction": 88.6
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "The strong fundamental score of 75/100, robust Sales Growth of 34.5%, and Profit Growth of 57.8% indicate solid business momentum. Technicals show a bullish signal with 96% confidence, MACD crossover, and the spot price above the 20D SMA, supported by an upward Degree-2 Polynomial Regression curve.",
+        "objections_raised": "The RSI(14) at 68.3 is approaching overbought territory, and the Trailing P/E of 43.55x suggests a stretched valuation. The 'Low Margin' risk explanation and the relatively low Management/Valuation score of 5/20 further raise concerns about the current price point.",
+        "rationale": "While the overall bullish momentum is evident, the elevated RSI and high P/E necessitate a more conservative entry. A cautious accumulation strategy, targeting a slightly lower entry point, will improve the risk-reward profile and mitigate potential pullback risks. The stop-loss will be tightened to protect capital given the valuation concerns, and the target will be modestly trimmed to account for potential over-optimism.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-23T06:49:09.276567+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 2283.03,
+        "target": 2464.86,
+        "stop_loss": 2246.49,
+        "rr_ratio": 4.98,
+        "qty": 7,
+        "conviction": 80.6,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -1.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -1.5,
+        "target_delta_pct": -1.77,
+        "stop_delta_pct": -1.35,
+        "qty_delta": -2,
+        "conviction_delta": -8.0,
+        "reasons": [
+          "Applied 1.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 5.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The RSI(14) at 68.3 is approaching overbought territory, and the Trailing P/E of 43.55x suggests a stretched valuation. The 'Low Margin' risk explanation and the relatively low Management/Valuation score of 5/20 further raise concerns about the current price point."
+        ],
+        "summary": "Applied CRO Calibration (LUMAXTECH): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b92317.8 -> \u20b92283.03 | TP \u20b92509.2 -> \u20b92464.86 | SL \u20b92277.2 -> \u20b92246.49 (R:R 1:4.71 -> 1:4.98) | Qty 9 -> 7 sh (0.75x) | Conviction 88.6% -> 80.6%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 2317.8,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245564+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-RUBICON-81bcc0d8",
+      "signature": "81bcc0d8d6e440ec",
+      "symbol": "RUBICON",
+      "name": "Rubicon Research Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245544+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245544+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:40.604268+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 40,
+        "moat": 20,
+        "management": 0,
+        "risk": 20,
+        "porters_total": 95,
+        "technical_score": 96.0,
+        "composite_score": 87.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 1,678.70 vs 20D SMA 1,650.27 (Upward Curve, 30D Reg Target 2,188.54). RSI(14)=60.21, MACD=+29.54 vs Sig=+24.31."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 87.5,
+          "summary": "Fundamental 80/100 (Bus 40/40, Moat 20/20, Mgmt 0/20, Risk 20/20) \u00b7 Porter's 5 Forces 95/100 [PHARMA]. Premium growth multiple (P/E 85.7x) pricing in strong execution. High capital efficiency (ROE 31.2%, ROCE 25.5%) underscores durable moat. Strong top-line expansion (39.9% YoY) & profit growth (55.9% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 76.3,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (76.3% conviction). Sized 10 shares (INR 16,661.10) | Entry 1,666.11 \u00b7 TP 1,805.76 / SL 1,647.21 (R:R 1:7.39)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1678.7,
+        "change_pct": -2.32,
+        "rsi_14": 60.21,
+        "sma_20": 1650.27,
+        "projected_30d_target": 2188.54,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1678.7,
+        "target": 1825.7,
+        "stop_loss": 1657.7,
+        "rr_ratio": 7.0,
+        "qty": 13,
+        "conviction": 91.3
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "Rubicon demonstrates robust business fundamentals (40/40) and an exceptional Moat (95/100), driving strong sales growth (39.9%) and profit growth (55.9%) with a high ROE (31.25%). The 30D Quant Target of \u20b92188.54 and an upward Degree-2 Polynomial Regression curve suggest significant upside potential.",
+        "objections_raised": "The trailing P/E of 85.73x is extremely high, indicating significant overvaluation despite strong growth, and the 'Management/Valuation' fundamental score of 0/20 is a major red flag. While RSI is not overbought at 60.21, the spot price is above the 20D SMA, and the suggested R:R of 1:7.0 is based on a very tight stop-loss, increasing volatility risk.",
+        "rationale": "Despite strong growth and moat, the extreme P/E and zero score for 'Management/Valuation' necessitate a cautious approach. We will recalibrate to a 'CAUTIOUS ACCUMULATE' with a slightly lower entry to mitigate valuation risk, a tighter stop-loss to protect capital, and a modest target haircut to reflect potential over-optimism, while reducing the position size.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-23T06:49:08.925478+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 1666.11,
+        "target": 1805.76,
+        "stop_loss": 1647.21,
+        "rr_ratio": 7.39,
+        "qty": 10,
+        "conviction": 76.3,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -0.75
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -0.75,
+        "target_delta_pct": -1.09,
+        "stop_delta_pct": -0.63,
+        "qty_delta": -3,
+        "conviction_delta": -15.0,
+        "reasons": [
+          "Applied 0.75% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 5.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The trailing P/E of 85.73x is extremely high, indicating significant overvaluation despite strong growth, and the 'Management/Valuation' fundamental score of 0/20 is a major red flag. While RSI is not overbought at 60.21, the spot price is above the 20D SMA, and the suggested R:R of 1:7.0 is based on a very tight stop-loss, increasing volatility risk."
+        ],
+        "summary": "Applied CRO Calibration (RUBICON): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b91678.7 -> \u20b91666.11 | TP \u20b91825.7 -> \u20b91805.76 | SL \u20b91657.7 -> \u20b91647.21 (R:R 1:7.0 -> 1:7.39) | Qty 13 -> 10 sh (0.75x) | Conviction 91.3% -> 76.3%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1678.7,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245544+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-BAJAJ-AUTO-a71cc4e8",
+      "signature": "a71cc4e869b7577f",
+      "symbol": "BAJAJ-AUTO",
+      "name": "Bajaj Auto Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245516+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245516+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:38.159118+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 88,
+        "business": 40,
+        "moat": 18,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 95,
+        "technical_score": 96.0,
+        "composite_score": 91.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 10,732.00 vs 20D SMA 10,618.30 (Upward Curve, 30D Reg Target 13,041.19). RSI(14)=63.36, MACD=+63.46 vs Sig=+42.65."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 91.5,
+          "summary": "Fundamental 88/100 (Bus 40/40, Moat 18/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 95/100 [BANKING]. Balanced valuation at P/E 22.9x. High capital efficiency (ROE 35.6%, ROCE 29.3%) underscores durable moat. Strong top-line expansion (57.4% YoY) & profit growth (63.8% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 88.5,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (88.5% conviction). Sized 2 shares (INR 21,356.68) | Entry 10,678.34 \u00b7 TP 11,611.05 / SL 10,596.26 (R:R 1:11.36)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 10732.0,
+        "change_pct": -0.24,
+        "rsi_14": 63.36,
+        "sma_20": 10618.3,
+        "projected_30d_target": 13041.19,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 10732.0,
+        "target": 11713.8,
+        "stop_loss": 10640.8,
+        "rr_ratio": 10.77,
+        "qty": 2,
+        "conviction": 93.5
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "Bajaj Auto exhibits robust fundamentals with a Total Fundamental Score of 88/100, including perfect Business (40/40) and strong Moat (18/20) and Risk/Stability (20/20) scores. Strong growth metrics like Sales Growth of 57.4% and Profit Growth of 63.8% support a bullish outlook, further reinforced by a 1:10.77 R:R ratio.",
+        "objections_raised": "Despite the strong fundamentals, the current spot price of \u20b910732.0 is above the 20D SMA of \u20b910618.3, and an RSI(14) of 63.36 suggests it is approaching overbought territory, indicating potential for a short-term pullback. The Moreshwar Entry of \u20b910672.72 is very close to the Stop-Loss of \u20b910640.8, offering limited buffer for minor volatility.",
+        "rationale": "While the fundamental and technical signals are largely bullish, the proximity of the entry to the stop-loss and the slightly elevated RSI warrant a more cautious approach. We will recalibrate to seek a slightly lower entry point to mitigate immediate pullback risk and tighten the stop-loss to protect capital more effectively. The target will be moderately trimmed to account for potential over-optimism, and the position size will be reduced to reflect a cautious accumulation strategy.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-23T06:49:06.588656+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 10678.34,
+        "target": 11611.05,
+        "stop_loss": 10596.26,
+        "rr_ratio": 11.36,
+        "qty": 2,
+        "conviction": 88.5,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -0.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -0.5,
+        "target_delta_pct": -0.88,
+        "stop_delta_pct": -0.42,
+        "qty_delta": 0,
+        "conviction_delta": -5.0,
+        "reasons": [
+          "Applied 0.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 5.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: Despite the strong fundamentals, the current spot price of \u20b910732.0 is above the 20D SMA of \u20b910618.3, and an RSI(14) of 63.36 suggests it is approaching overbought territory, indicating potential for a short-term pullback. The Moreshwar Entry of \u20b910672.72 is very close to the Stop-Loss of \u20b910640.8, offering limited buffer for minor volatility."
+        ],
+        "summary": "Applied CRO Calibration (BAJAJ-AUTO): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b910732.0 -> \u20b910678.34 | TP \u20b911713.8 -> \u20b911611.05 | SL \u20b910640.8 -> \u20b910596.26 (R:R 1:10.77 -> 1:11.36) | Qty 2 -> 2 sh (0.75x) | Conviction 93.5% -> 88.5%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 10732.0,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245516+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-BALUFORGE-65961776",
+      "signature": "6596177613ea3282",
+      "symbol": "BALUFORGE",
+      "name": "Balu Forge Industries Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245493+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245493+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:35.106566+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 83,
+        "business": 40,
+        "moat": 13,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 79.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 504.60 vs 20D SMA 495.07 (Upward Curve, 30D Reg Target 651.06). RSI(14)=68.32, MACD=+14.57 vs Sig=+12.08."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 79.0,
+          "summary": "Fundamental 83/100 (Bus 40/40, Moat 13/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [GENERAL]. Balanced valuation at P/E 20.4x. Strong top-line expansion (29.0% YoY) & profit growth (88.0% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 78.7,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (78.7% conviction). Sized 32 shares (INR 15,904.96) | Entry 497.03 \u00b7 TP 569.71 / SL 478.13 (R:R 1:3.85)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 504.6,
+        "change_pct": -2.0,
+        "rsi_14": 68.32,
+        "sma_20": 495.07,
+        "projected_30d_target": 651.06,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 504.6,
+        "target": 583.6,
+        "stop_loss": 483.6,
+        "rr_ratio": 3.76,
+        "qty": 43,
+        "conviction": 86.7
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "Balu Forge exhibits strong business fundamentals (40/40) with impressive sales growth (29.0%) and profit growth (88.0%), supported by a robust OPM of 25.57% and a strong moat (75/100). The 30D Quant Target of \u20b9651.06 and upward Degree-2 Polynomial Regression curve suggest continued upside potential.",
+        "objections_raised": "The current RSI of 68.32 is approaching overbought territory, and the spot price of \u20b9504.6 is already above the 20D SMA of \u20b9495.07, indicating potential technical overextension. The 0.0% ROE and ROCE, while likely data entry issues, introduce uncertainty, and the 'Management/Valuation' score of 10/20 is a notable weakness.",
+        "rationale": "While the fundamental strength and growth are compelling, the technical indicators suggest a need for caution. A cautious accumulation strategy is warranted, aiming for a slightly lower entry to mitigate immediate overextension risk. The stop-loss will be tightened, and the target will be trimmed to reflect a more conservative outlook given the valuation concerns.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-23T06:49:06.537976+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 497.03,
+        "target": 569.71,
+        "stop_loss": 478.13,
+        "rr_ratio": 3.85,
+        "qty": 32,
+        "conviction": 78.7,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -1.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -1.5,
+        "target_delta_pct": -2.38,
+        "stop_delta_pct": -1.13,
+        "qty_delta": -11,
+        "conviction_delta": -8.0,
+        "reasons": [
+          "Applied 1.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 8.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The current RSI of 68.32 is approaching overbought territory, and the spot price of \u20b9504.6 is already above the 20D SMA of \u20b9495.07, indicating potential technical overextension. The 0.0% ROE and ROCE, while likely data entry issues, introduce uncertainty, and the 'Management/Valuation' score of 10/20 is a notable weakness."
+        ],
+        "summary": "Applied CRO Calibration (BALUFORGE): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b9504.6 -> \u20b9497.03 | TP \u20b9583.6 -> \u20b9569.71 | SL \u20b9483.6 -> \u20b9478.13 (R:R 1:3.76 -> 1:3.85) | Qty 43 -> 32 sh (0.75x) | Conviction 86.7% -> 78.7%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 504.6,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245493+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-LTF-3c6ce4d3",
+      "signature": "3c6ce4d3b41a1532",
+      "symbol": "LTF",
+      "name": "L&T Finance Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245468+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245468+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:31.894517+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 35,
+        "moat": 15,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 80,
+        "technical_score": 96.0,
+        "composite_score": 80.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 274.68 vs 20D SMA 263.53 (Upward Curve, 30D Reg Target 355.93). RSI(14)=69.38, MACD=+3.37 vs Sig=+1.61."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 80.0,
+          "summary": "Fundamental 80/100 (Bus 35/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 80/100 [BANKING]. Balanced valuation at P/E 20.2x. Strong top-line expansion (31.4% YoY) & profit growth (32.4% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 80.0,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (80.0% conviction). Sized 56 shares (INR 14,997.36) | Entry 267.81 \u00b7 TP 343.81 / SL 249.81 (R:R 1:4.22)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 274.68,
+        "change_pct": 1.03,
+        "rsi_14": 69.38,
+        "sma_20": 263.53,
+        "projected_30d_target": 355.93,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 274.68,
+        "target": 354.68,
+        "stop_loss": 254.68,
+        "rr_ratio": 4.0,
+        "qty": 75,
+        "conviction": 87.2
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "LTF exhibits strong fundamental growth with Sales Growth at 31.4% and Profit Growth at 32.4%, supported by a robust Total Fundamental Score of 80/100 and a high Porter's 5 Forces Moat of 80/100.",
+        "objections_raised": "The RSI(14) at 69.38 indicates the asset is nearing overbought territory, and the current spot price of \u20b9274.68 is significantly above the 20D SMA of \u20b9263.53, suggesting technical overextension. The suggested R:R of 1:4.0 is attractive, but the entry point is aggressive given the current momentum.",
+        "rationale": "While the fundamental and technical signals are largely positive, the current price action suggests a potential for a short-term pullback. A more prudent approach involves setting a lower entry point to capitalize on any dip, tightening the stop-loss to manage risk, and slightly trimming the target to account for potential over-optimism, thereby improving the risk-adjusted return.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-23T06:49:04.048131+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 267.81,
+        "target": 343.81,
+        "stop_loss": 249.81,
+        "rr_ratio": 4.22,
+        "qty": 56,
+        "conviction": 80.0,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.5,
+        "target_delta_pct": -3.06,
+        "stop_delta_pct": -1.91,
+        "qty_delta": -19,
+        "conviction_delta": -7.2,
+        "reasons": [
+          "Applied 2.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 5.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The RSI(14) at 69.38 indicates the asset is nearing overbought territory, and the current spot price of \u20b9274.68 is significantly above the 20D SMA of \u20b9263.53, suggesting technical overextension. The suggested R:R of 1:4.0 is attractive, but the entry point is aggressive given the current momentum."
+        ],
+        "summary": "Applied CRO Calibration (LTF): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b9274.68 -> \u20b9267.81 | TP \u20b9354.68 -> \u20b9343.81 | SL \u20b9254.68 -> \u20b9249.81 (R:R 1:4.0 -> 1:4.22) | Qty 75 -> 56 sh (0.75x) | Conviction 87.2% -> 80.0%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 274.68,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245468+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-TATACAP-855d1b85",
+      "signature": "855d1b856ac87a74",
+      "symbol": "TATACAP",
+      "name": "Tata Capital Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245438+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245438+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:28.532149+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 85,
+        "business": 40,
+        "moat": 15,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 80,
+        "technical_score": 96.0,
+        "composite_score": 82.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 343.15 vs 20D SMA 335.65 (Upward Curve, 30D Reg Target 425.30). RSI(14)=68.41, MACD=+6.07 vs Sig=+5.69."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 82.5,
+          "summary": "Fundamental 85/100 (Bus 40/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 80/100 [GENERAL]. Balanced valuation at P/E 24.4x. Strong top-line expansion (34.4% YoY) & profit growth (43.2% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 78.6,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (78.6% conviction). Sized 48 shares (INR 15,977.28) | Entry 332.86 \u00b7 TP 411.24 / SL 317.11 (R:R 1:4.98)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 343.15,
+        "change_pct": -0.59,
+        "rsi_14": 68.41,
+        "sma_20": 335.65,
+        "projected_30d_target": 425.3,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 343.15,
+        "target": 425.65,
+        "stop_loss": 325.65,
+        "rr_ratio": 4.71,
+        "qty": 64,
+        "conviction": 88.6
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "TATACAP exhibits strong fundamental growth with Sales Growth of 34.4% and Profit Growth of 43.2%, supported by an excellent Total Fundamental Score of 85/100 and a robust Porter's 5 Forces Moat of 80/100.",
+        "objections_raised": "The current RSI(14) at 68.41 suggests the asset is approaching overbought territory, and the spot price of \u20b9343.15 is already above the suggested entry of \u20b9331.77, indicating potential for a pullback. The Trailing P/E of 24.39x, while not extreme, warrants caution given the current market conditions.",
+        "rationale": "While the long-term outlook for TATACAP remains positive due to strong fundamentals and an upward polynomial regression curve, the immediate technicals suggest a slight overextension. We will recalibrate to a 'CAUTIOUS ACCUMULATE' stance, aiming for a discounted entry closer to support, a tighter stop-loss to protect capital, and a minor haircut on the target to account for potential short-term volatility. The position size will be reduced to mitigate risk.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-23T06:49:04.047745+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 332.86,
+        "target": 411.24,
+        "stop_loss": 317.11,
+        "rr_ratio": 4.98,
+        "qty": 48,
+        "conviction": 78.6,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -3.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -3.0,
+        "target_delta_pct": -3.39,
+        "stop_delta_pct": -2.62,
+        "qty_delta": -16,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 3.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 5.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The current RSI(14) at 68.41 suggests the asset is approaching overbought territory, and the spot price of \u20b9343.15 is already above the suggested entry of \u20b9331.77, indicating potential for a pullback. The Trailing P/E of 24.39x, while not extreme, warrants caution given the current market conditions."
+        ],
+        "summary": "Applied CRO Calibration (TATACAP): BUY NOW -> LIMIT PULLBACK | Entry \u20b9343.15 -> \u20b9332.86 | TP \u20b9425.65 -> \u20b9411.24 | SL \u20b9325.65 -> \u20b9317.11 (R:R 1:4.71 -> 1:4.98) | Qty 64 -> 48 sh (0.75x) | Conviction 88.6% -> 78.6%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 343.15,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245438+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261120-NTPC-b51bbb90",
+      "signature": "b51bbb90a9d6081d",
+      "symbol": "NTPC",
+      "name": "NTPC Limited",
+      "currency": "INR",
+      "created_at": "2026-11-23T06:49:41.245358+00:00",
+      "last_seen_at": "2026-11-23T06:49:41.245358+00:00",
+      "market_date": "2026-11-20",
+      "market_timestamp": "2026-11-23T06:47:43+00:00",
+      "retrieval_timestamp": "2026-11-23T06:48:25.345527+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "Moreshwar-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 99,
+        "business": 40,
+        "moat": 15,
+        "management": 20,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 87.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 318.80 vs 20D SMA 317.24 (Upward Curve, 30D Reg Target 356.88). RSI(14)=55.5, MACD=+2.01 vs Sig=+1.47."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 87.0,
+          "summary": "Fundamental 99/100 (Bus 40/40, Moat 15/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [POWER]. Attractive valuation at P/E 10.4x with value margin of safety. Strong top-line expansion (21.2% YoY) & profit growth (38.6% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 83.1,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (83.1% conviction). Sized 52 shares (INR 16,329.04) | Entry 314.02 \u00b7 TP 390.58 / SL 302.32 (R:R 1:6.54)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 318.8,
+        "change_pct": -0.81,
+        "rsi_14": 55.5,
+        "sma_20": 317.24,
+        "projected_30d_target": 356.88,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 318.8,
+        "target": 405.8,
+        "stop_loss": 305.8,
+        "rr_ratio": 6.69,
+        "qty": 69,
+        "conviction": 91.1
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "NTPC exhibits strong fundamentals (99/100 score, P/E 10.4x, ROE 14.46%, Profit Growth 38.6%) and a robust R:R of 1:6.69, supported by an upward polynomial regression curve and a low Beta of 0.35.",
+        "objections_raised": "Despite strong fundamentals, the spot price is slightly above the 20D SMA, and the Moreshwar entry is aggressive, offering minimal buffer to the stop-loss. The suggested target of \u20b9405.8 represents a significant jump from the 30D Quant Target of \u20b9356.88, indicating potential over-optimism.",
+        "rationale": "Given the strong fundamental profile and favorable R:R, a cautious accumulation strategy is warranted. We will recalibrate the entry to a slight discount to mitigate immediate downside, tighten the stop-loss to protect capital, and apply a haircut to the ambitious target, while reducing the position size to manage risk.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-23T06:49:01.711602+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 314.02,
+        "target": 390.58,
+        "stop_loss": 302.32,
+        "rr_ratio": 6.54,
+        "qty": 52,
+        "conviction": 83.1,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -1.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -1.5,
+        "target_delta_pct": -3.75,
+        "stop_delta_pct": -1.14,
+        "qty_delta": -17,
+        "conviction_delta": -8.0,
+        "reasons": [
+          "Applied 1.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 12.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: Despite strong fundamentals, the spot price is slightly above the 20D SMA, and the Moreshwar entry is aggressive, offering minimal buffer to the stop-loss. The suggested target of \u20b9405.8 represents a significant jump from the 30D Quant Target of \u20b9356.88, indicating potential over-optimism."
+        ],
+        "summary": "Applied CRO Calibration (NTPC): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b9318.8 -> \u20b9314.02 | TP \u20b9405.8 -> \u20b9390.58 | SL \u20b9305.8 -> \u20b9302.32 (R:R 1:6.69 -> 1:6.54) | Qty 69 -> 52 sh (0.75x) | Conviction 91.1% -> 83.1%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 318.8,
+        "mark_date": "2026-11-20",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-23T06:49:41.245358+00:00"
+      }
+    },
     {
       "audit_id": "fnv2-aud-20261120-SAILIFE-26356b4a",
       "signature": "26356b4aeec048f7",
@@ -112,15 +1564,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 1800.1,
+        "latest_mark_price": 1808.9,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.54,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495888+00:00"
+        "marked_at": "2026-11-23T06:49:41.244965+00:00",
+        "original_counterfactual_pct": 0.49,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -233,15 +1688,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 2810.0,
+        "latest_mark_price": 2783.0,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 0.55,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495863+00:00"
+        "marked_at": "2026-11-23T06:49:41.244995+00:00",
+        "original_counterfactual_pct": -0.96,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -354,15 +1812,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 513.4,
+        "latest_mark_price": 507.35,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 0.84,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495835+00:00"
+        "marked_at": "2026-11-23T06:49:41.245011+00:00",
+        "original_counterfactual_pct": -1.18,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -475,15 +1936,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 55.69,
+        "latest_mark_price": 55.08,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 4.1,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495784+00:00"
+        "marked_at": "2026-11-23T06:49:41.245024+00:00",
+        "original_counterfactual_pct": -1.1,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -593,15 +2057,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 1192.9,
+        "latest_mark_price": 1268.8,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
         "unrealized_return_pct": 0.0,
-        "counterfactual_return_pct": 0.0,
+        "counterfactual_return_pct": 6.36,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495750+00:00"
+        "marked_at": "2026-11-23T06:49:41.245037+00:00",
+        "original_counterfactual_pct": 6.36,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -714,15 +2181,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 2321.0,
+        "latest_mark_price": 2317.8,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 1.9,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495717+00:00"
+        "marked_at": "2026-11-23T06:49:41.245052+00:00",
+        "original_counterfactual_pct": -0.14,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -835,15 +2305,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 1724.9,
+        "latest_mark_price": 1678.7,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": -1.2,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495690+00:00"
+        "marked_at": "2026-11-23T06:49:41.245065+00:00",
+        "original_counterfactual_pct": -2.68,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -956,15 +2429,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 10765.0,
+        "latest_mark_price": 10732.0,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 1.73,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495658+00:00"
+        "marked_at": "2026-11-23T06:49:41.245089+00:00",
+        "original_counterfactual_pct": -0.31,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1077,15 +2553,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 514.2,
+        "latest_mark_price": 504.6,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 0.08,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495627+00:00"
+        "marked_at": "2026-11-23T06:49:41.245103+00:00",
+        "original_counterfactual_pct": -1.87,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1198,15 +2677,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 272.1,
+        "latest_mark_price": 274.68,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 5.15,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495587+00:00"
+        "marked_at": "2026-11-23T06:49:41.245115+00:00",
+        "original_counterfactual_pct": 0.95,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1319,15 +2801,18 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 321.5,
+        "latest_mark_price": 318.8,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 0.67,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495484+00:00"
+        "marked_at": "2026-11-23T06:49:41.245128+00:00",
+        "original_counterfactual_pct": -0.84,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1440,16 +2925,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 1800.1,
+        "latest_mark_price": 1808.9,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 2.04,
+        "unrealized_return_pct": 2.54,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495085+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245134+00:00",
+        "original_counterfactual_pct": 0.49,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -1564,16 +3049,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 2810.0,
+        "latest_mark_price": 2783.0,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 2.04,
+        "unrealized_return_pct": 1.06,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495120+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245140+00:00",
+        "original_counterfactual_pct": -0.96,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -1688,16 +3173,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 513.4,
+        "latest_mark_price": 507.35,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 2.04,
+        "unrealized_return_pct": 0.84,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495144+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245146+00:00",
+        "original_counterfactual_pct": -1.18,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -1812,16 +3297,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 55.69,
+        "latest_mark_price": 55.08,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 2.03,
+        "unrealized_return_pct": 0.92,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495162+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245152+00:00",
+        "original_counterfactual_pct": -1.1,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -1936,16 +3421,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 2321.0,
+        "latest_mark_price": 2317.8,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 1.52,
+        "unrealized_return_pct": 1.38,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495182+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245158+00:00",
+        "original_counterfactual_pct": -0.14,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -2060,16 +3545,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 1724.9,
+        "latest_mark_price": 1678.7,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 1.52,
+        "unrealized_return_pct": -1.2,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495201+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245164+00:00",
+        "original_counterfactual_pct": -2.68,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -2184,16 +3669,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 10765.0,
+        "latest_mark_price": 10732.0,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 1.52,
+        "unrealized_return_pct": 1.21,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495216+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245170+00:00",
+        "original_counterfactual_pct": -0.31,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -2308,16 +3793,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 514.2,
+        "latest_mark_price": 504.6,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 2.04,
+        "unrealized_return_pct": 0.13,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495244+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245175+00:00",
+        "original_counterfactual_pct": -1.87,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -2432,16 +3917,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 272.1,
+        "latest_mark_price": 274.68,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 3.09,
+        "unrealized_return_pct": 4.07,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495263+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245182+00:00",
+        "original_counterfactual_pct": 0.95,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -2556,16 +4041,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 347.0,
+        "latest_mark_price": 343.15,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 3.3,
+        "unrealized_return_pct": 2.16,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495282+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245191+00:00",
+        "original_counterfactual_pct": -1.11,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -2680,16 +4165,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 321.5,
+        "latest_mark_price": 318.8,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 2.04,
+        "unrealized_return_pct": 1.18,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495297+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245196+00:00",
+        "original_counterfactual_pct": -0.84,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -2799,16 +4284,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 1800.1,
+        "latest_mark_price": 1808.9,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 0.49,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495306+00:00",
-        "original_counterfactual_pct": 1.55,
+        "marked_at": "2026-11-23T06:49:41.245202+00:00",
+        "original_counterfactual_pct": 2.05,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
       }
@@ -2918,16 +4403,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 2810.0,
+        "latest_mark_price": 2783.0,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": -0.96,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495315+00:00",
-        "original_counterfactual_pct": 1.55,
+        "marked_at": "2026-11-23T06:49:41.245207+00:00",
+        "original_counterfactual_pct": 0.58,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
       }
@@ -3037,16 +4522,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 513.4,
+        "latest_mark_price": 507.35,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": -1.18,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495324+00:00",
-        "original_counterfactual_pct": 2.93,
+        "marked_at": "2026-11-23T06:49:41.245212+00:00",
+        "original_counterfactual_pct": 1.72,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
       }
@@ -3156,16 +4641,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 55.69,
+        "latest_mark_price": 55.08,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": -1.1,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495331+00:00",
-        "original_counterfactual_pct": 11.11,
+        "marked_at": "2026-11-23T06:49:41.245218+00:00",
+        "original_counterfactual_pct": 9.9,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
       }
@@ -3280,16 +4765,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 1192.9,
+        "latest_mark_price": 1268.8,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 1.52,
+        "unrealized_return_pct": 7.98,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495345+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245223+00:00",
+        "original_counterfactual_pct": 6.36,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -3399,16 +4884,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 2321.0,
+        "latest_mark_price": 2317.8,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": -0.14,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495353+00:00",
-        "original_counterfactual_pct": 1.15,
+        "marked_at": "2026-11-23T06:49:41.245228+00:00",
+        "original_counterfactual_pct": 1.01,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
       }
@@ -3523,16 +5008,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 1724.9,
+        "latest_mark_price": 1678.7,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 2.04,
+        "unrealized_return_pct": -0.69,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495361+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245233+00:00",
+        "original_counterfactual_pct": -2.68,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -3647,16 +5132,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 10765.0,
+        "latest_mark_price": 10732.0,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.5,
+        "unrealized_return_pct": 0.19,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495370+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245239+00:00",
+        "original_counterfactual_pct": -0.31,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -3766,16 +5251,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 514.2,
+        "latest_mark_price": 504.6,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": -1.87,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495378+00:00",
-        "original_counterfactual_pct": 2.73,
+        "marked_at": "2026-11-23T06:49:41.245245+00:00",
+        "original_counterfactual_pct": 0.81,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
       }
@@ -3885,16 +5370,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 272.1,
+        "latest_mark_price": 274.68,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 0.95,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495386+00:00",
-        "original_counterfactual_pct": 5.02,
+        "marked_at": "2026-11-23T06:49:41.245250+00:00",
+        "original_counterfactual_pct": 6.01,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
       }
@@ -4004,16 +5489,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 347.0,
+        "latest_mark_price": 343.15,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": -1.11,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495394+00:00",
-        "original_counterfactual_pct": 3.39,
+        "marked_at": "2026-11-23T06:49:41.245255+00:00",
+        "original_counterfactual_pct": 2.24,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
       }
@@ -4128,16 +5613,16 @@
         "order_id": null,
         "broker_fill_price": null,
         "broker_timestamp": null,
-        "latest_mark_price": 321.5,
+        "latest_mark_price": 318.8,
         "mark_date": "2026-11-20",
         "realized_return_pct": null,
-        "unrealized_return_pct": 2.04,
+        "unrealized_return_pct": 1.18,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-21T02:21:59.495402+00:00",
-        "original_counterfactual_pct": 0.0,
+        "marked_at": "2026-11-23T06:49:41.245260+00:00",
+        "original_counterfactual_pct": -0.84,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
@@ -19628,6 +21113,6 @@
       }
     }
   ],
-  "last_scan_new_records": 11,
-  "total_records": 161
+  "last_scan_new_records": 12,
+  "total_records": 173
 }
