@@ -45,6 +45,7 @@ from finsistant_v2.m3_1.paper_trading_scheduler import (
     PaperTradingScheduler,
     is_eligible_nse_trading_day,
     list_eligible_nse_sessions_between,
+    resolve_pending_auto_sessions,
 )
 from finsistant_v2.m3_1.prospective_paper_trading_engine import (
     DEFAULT_FROZEN_CONFIG_PATH,
@@ -461,7 +462,9 @@ def main() -> int:
             fetch_completed_nse_eod_snapshot,
         )
 
-        target_dt = current_ist_date_str() if str(args.date).lower().strip() == "auto" else str(args.date).strip()
+        raw_date = str(args.date).strip()
+        is_auto = raw_date.lower() == "auto"
+        target_dt = current_ist_date_str() if is_auto else raw_date
         if target_dt <= HISTORICAL_DB_END_DATE:
             print(json.dumps({
                 "trading_date": target_dt,
@@ -469,53 +472,74 @@ def main() -> int:
                 "reason": f"HISTORICAL_CUTOFF_GUARD: {target_dt} <= {HISTORICAL_DB_END_DATE} (prospective sessions must be strictly after {HISTORICAL_DB_END_DATE}).",
             }, indent=2))
             return 0
-        ok, cal_reason = is_eligible_nse_trading_day(target_dt)
-        if not ok:
-            print(json.dumps({"trading_date": target_dt, "skipped": True, "reason": cal_reason}, indent=2))
-            return 0
+        if not is_auto:
+            ok, cal_reason = is_eligible_nse_trading_day(target_dt)
+            if not ok:
+                print(json.dumps({"trading_date": target_dt, "skipped": True, "reason": cal_reason}, indent=2))
+                return 0
 
         pull_info = storage.pull_durable_ledger(owner_run_id=run_id)
+        orch = PaperTradingOrchestrator()
+        if is_auto:
+            dates_to_run = resolve_pending_auto_sessions(orch, target_dt)
+            if not dates_to_run:
+                _, cal_reason = is_eligible_nse_trading_day(target_dt)
+                storage.close_without_push()
+                print(json.dumps({"trading_date": target_dt, "skipped": True, "reason": cal_reason}, indent=2))
+                return 0
+        else:
+            dates_to_run = [target_dt]
+
         lock_acquired = False
         try:
-            lock_info = storage.db_lock.acquire(owner_run_id=run_id, trading_date=target_dt)
+            lock_info = storage.db_lock.acquire(owner_run_id=run_id, trading_date=dates_to_run[-1])
             lock_acquired = True
-            orch = PaperTradingOrchestrator()
             sched = PaperTradingScheduler(orchestrator=orch)
 
             if args.fetch_live_eod:
-                snap_open = orch.engine.get_full_ledger_snapshot().get("open_tactical_positions", [])
-                extra_open = [
-                    {
-                        "sec_id": str(p["sec_id"]),
-                        "symbol": str(p["symbol"]),
-                        "sector": str(p["sector"]),
-                        "industry": str(p["industry"]),
-                    }
-                    for p in snap_open
-                ]
-                provider = lambda d: fetch_completed_nse_eod_snapshot(d, extra_open_symbols=extra_open)
+                def provider(d: str) -> dict | None:
+                    snap_open = orch.engine.get_full_ledger_snapshot().get("open_tactical_positions", [])
+                    extra_open = [
+                        {
+                            "sec_id": str(p["sec_id"]),
+                            "symbol": str(p["symbol"]),
+                            "sector": str(p["sector"]),
+                            "industry": str(p["industry"]),
+                        }
+                        for p in snap_open
+                    ]
+                    return fetch_completed_nse_eod_snapshot(d, extra_open_symbols=extra_open)
             else:
                 provider = lambda _d: None
 
-            res = sched.run_scheduled_session(
-                trading_date=target_dt,
-                market_data_provider=provider,
-                observation_mode="PROSPECTIVE_PAPER",
-                mark_missed_if_unavailable=bool(args.mark_missed),
-            )
-            recon = orch.engine.reconcile_portfolio()
-            chain = orch.engine.verify_audit_chain()
-            if (not recon["passed"]) or (not chain["valid"]):
-                orch.engine.enter_safe_mode(
-                    f"POST_RUN_INTEGRITY_FAILURE: recon_passed={recon['passed']}, audit_chain={chain['valid']}",
-                    trading_date=target_dt,
+            session_results: list[dict] = []
+            recon = None
+            chain = None
+            for dt in dates_to_run:
+                if dt <= HISTORICAL_DB_END_DATE:
+                    continue
+                res = sched.run_scheduled_session(
+                    trading_date=dt,
+                    market_data_provider=provider,
+                    observation_mode="PROSPECTIVE_PAPER",
+                    mark_missed_if_unavailable=bool(args.mark_missed),
                 )
-                orch.export_all_daily_reports()
-                storage.db_lock.release(owner_run_id=run_id)
-                lock_acquired = False
-                storage.close_without_push()
-                print(json.dumps({"status": "SAFE_MODE_POST_RUN_FAILURE", "reconciliation": recon, "audit_chain": chain}, indent=2, default=str))
-                return 1
+                recon = orch.engine.reconcile_portfolio()
+                chain = orch.engine.verify_audit_chain()
+                if (not recon["passed"]) or (not chain["valid"]):
+                    orch.engine.enter_safe_mode(
+                        f"POST_RUN_INTEGRITY_FAILURE: recon_passed={recon['passed']}, audit_chain={chain['valid']}",
+                        trading_date=dt,
+                    )
+                    orch.export_all_daily_reports()
+                    storage.db_lock.release(owner_run_id=run_id)
+                    lock_acquired = False
+                    storage.close_without_push()
+                    print(json.dumps({"status": "SAFE_MODE_POST_RUN_FAILURE", "trading_date": dt, "reconciliation": recon, "audit_chain": chain}, indent=2, default=str))
+                    return 1
+                session_results.append(res)
+                if res.get("waiting") or res.get("scheduler_status") in ("WAITING_FOR_DATA", "SAFE_MODE", "FAILED"):
+                    break
 
             storage.db_lock.release(owner_run_id=run_id)
             lock_acquired = False
@@ -523,7 +547,7 @@ def main() -> int:
             print(json.dumps({
                 "storage_pull": pull_info,
                 "db_lock": lock_info,
-                "scheduler_result": res,
+                "scheduler_result": session_results[-1] if len(session_results) == 1 else session_results,
                 "post_run_reconciliation": recon,
                 "audit_chain": chain,
                 "storage_push": push_info,

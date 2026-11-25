@@ -102,6 +102,42 @@ def list_eligible_nse_sessions_between(
     return out
 
 
+def resolve_pending_auto_sessions(
+    orchestrator: PaperTradingOrchestrator,
+    up_to_date_ist: str,
+    *,
+    holidays: frozenset[str] = DEFAULT_NSE_HOLIDAYS,
+) -> list[str]:
+    """Return ordered uncompleted eligible NSE sessions up to `up_to_date_ist`.
+
+    Prevents delayed GitHub Actions crons (crossing midnight IST or landing on a holiday)
+    from silently skipping prior trading sessions between the last completed/missed date
+    and `up_to_date_ist`.
+    """
+    eng = orchestrator.engine.get_engine_state()
+    cutoff = str(eng.get("historical_cutoff_date") or eng.get("prospective_start_date") or up_to_date_ist)
+    conn = orchestrator.engine._connect()
+    try:
+        rows = conn.execute(
+            "SELECT trading_date FROM session_checkpoints WHERE phase IN ('COMPLETED', 'MISSED')"
+        ).fetchall()
+        done_dates = {str(r["trading_date"]) for r in rows}
+    finally:
+        conn.close()
+
+    anchor = max(done_dates) if done_dates else cutoff
+    if up_to_date_ist <= anchor:
+        ok, _ = is_eligible_nse_trading_day(up_to_date_ist, holidays=holidays)
+        return [up_to_date_ist] if ok else []
+
+    candidates = list_eligible_nse_sessions_between(anchor, up_to_date_ist, holidays=holidays)
+    pending = [dt for dt in candidates if dt not in done_dates]
+    if pending:
+        return pending
+    ok, _ = is_eligible_nse_trading_day(up_to_date_ist, holidays=holidays)
+    return [up_to_date_ist] if ok else []
+
+
 class PaperTradingScheduler:
     """Single-worker, lock-protected, idempotent daily NSE paper-trading scheduler."""
 
