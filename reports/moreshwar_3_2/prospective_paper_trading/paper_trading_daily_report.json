@@ -29,5 +29,5 @@
     "target_sessions": 80
   },
   "mission_target_sessions": 80,
-  "candidate_source": "ORCHESTRATOR_AGENT_CONSENSUS (Moreshwar 3.2)"
+  "candidate_source": "ORCHESTRATOR_AGENT_CONSENSUS (MOVIQ 3.2)"
 }

@@ -265,7 +265,7 @@ class ExecutionAgent(BaseTradingAgent):
             reason = (
                 f"Decision Matrix: {matrix_action} ({conviction*100:.1f}% conviction >= {min_conviction*100:.0f}% bar). "
                 f"Auto-Risk sized {qty} shares ({currency} {notional:,.2f}) | "
-                f"Moreshwar Target {target:,.2f} / SL {stop_loss:,.2f} (R:R 1:{moreshwar['rr_ratio']})."
+                f"MOVIQ Target {target:,.2f} / SL {stop_loss:,.2f} (R:R 1:{moreshwar['rr_ratio']})."
             )
         elif matrix_action in ("EXIT", "REDUCE", "AVOID") or conviction <= 0.44:
             action = "SELL"
@@ -303,7 +303,7 @@ class ExecutionAgent(BaseTradingAgent):
         }
 
         return {
-            "stage": "Moreshwar Levels & Kite Execution Bridge",
+            "stage": "MOVIQ Levels & Kite Execution Bridge",
             "signal": signal,
             "action": action,
             "decision_badge": matrix_action,
@@ -321,7 +321,7 @@ class ExecutionAgent(BaseTradingAgent):
 
 
 class AgentRunner:
-    """Finsistant Version 2 Multi-Agent Orchestrator."""
+    """MOVIQ Multi-Agent Orchestrator."""
 
     def __init__(
         self,
@@ -343,9 +343,9 @@ class AgentRunner:
 
         return {
             "pipeline_status": "HEALTHY" if all_ready else "DEGRADED",
-            "platform": "Finsistant Version 2 (All-in-One)",
+            "platform": "MOVIQ — Quantitative Intelligence Engine",
             "merged_modules": [
-                "StockSight Version 2 (4-Pillar + Porter's 5 Forces + Moreshwar Levels)",
+                "StockSight Version 2 (4-Pillar + Porter's 5 Forces + MOVIQ Levels)",
                 "Finsistant Execution Terminal (TechSight Queue + Polynomial Regression + Stocky AI)",
                 "Multi-Agent Orchestrator (TechBot_1 + FundBot_1 + ExecBot_1)",
             ],

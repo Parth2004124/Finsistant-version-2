@@ -45,12 +45,12 @@ M32_SCAN_DIR = M32_REPORTS_DIR / "orchestrator_scan"
 RELEASE_VERSION_M3_2 = "3.2.0"
 MIN_EOD_UNIVERSE_BARS = 800
 
-# Moreshwar 3.2 aims to beat NIFTYBEES significantly via active AI stock picks,
+# MOVIQ 3.2 aims to beat NIFTYBEES significantly via active AI stock picks,
 # so it holds 0% passive NIFTYBEES and deploys 90% into Tactical AI picks in BULL_TREND
-# (keeping M3.1 frozen at 60/30/10 as the conservative baseline).
+# (keeping MOVIQ 3.1 frozen at 60/30/10 as the conservative baseline).
 M32_ALPHA_REGIME_POLICY = AdaptiveRegimePolicy(
     policy_id="M32_ACTIVE_ALPHA_0_90_10",
-    policy_name="Moreshwar 3.2 Active Alpha (BULL: 0% NIFTYBEES / 90% AI Picks / 10% Liquid)",
+    policy_name="MOVIQ 3.2 Active Alpha (BULL: 0% NIFTYBEES / 90% AI Picks / 10% Liquid)",
     regime_source="SIMPLE_TREND",
     regime_rules=(
         ("BULL_TREND", 0.0, 90.0, 10.0, True, 0.0, 1.0),
@@ -328,7 +328,7 @@ class OrchestratedSessionRunner:
                     d = json.loads(daily.read_text(encoding="utf-8"))
                     d["release_version"] = RELEASE_VERSION_M3_2
                     d["mission_target_sessions"] = MISSION_TARGET_SESSIONS
-                    d["candidate_source"] = "ORCHESTRATOR_AGENT_CONSENSUS (Moreshwar 3.2)"
+                    d["candidate_source"] = "ORCHESTRATOR_AGENT_CONSENSUS (MOVIQ 3.2)"
                     d["allocation_policy"] = public["allocation_policy"]
                     d["exit_signals"] = list(self.last_exit_signals)
                     d["ems_blotter"] = self.last_blotter
@@ -347,7 +347,7 @@ class OrchestratedSessionRunner:
         )
 
     def build_dashboard_payload(self) -> dict[str, Any]:
-        """Build complete Moreshwar 3.2 dashboard payload combining paper ledger + orchestrator scan + learning + BTCA."""
+        """Build complete MOVIQ 3.2 dashboard payload combining paper ledger + orchestrator scan + learning + BTCA."""
         base = self.orch.build_dashboard_payload()
         latest_scan = None
         scan_path = self.scan_dir / "latest_scan.json"

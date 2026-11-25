@@ -167,7 +167,7 @@ ASSET & SUGGESTED TRADE:
 - Symbol: {symbol} ({analysis.get('name', symbol)}) | Exchange: {analysis.get('exchange', '')} | Sector: {analysis.get('sector', '')}
 - Suggested Action: {tx_type} | Matrix Verdict: {d.get('action', 'N/A')} ({d.get('conviction', 'N/A')}) | Setup: {analysis.get('setup_type', 'N/A')}
 - Sized Qty: {qty} shares | Spot Price: {sym_p}{analysis.get('price', 0)} ({analysis.get('change_pct', 0):+.2f}% today)
-- Moreshwar Levels: Entry {sym_p}{m.get('entry_price', 0)} | Target {sym_p}{m.get('target', 0)} | Stop-Loss {sym_p}{m.get('stop_loss', 0)} | R:R 1:{m.get('rr_ratio', 0)}
+- MOVIQ Levels: Entry {sym_p}{m.get('entry_price', 0)} | Target {sym_p}{m.get('target', 0)} | Stop-Loss {sym_p}{m.get('stop_loss', 0)} | R:R 1:{m.get('rr_ratio', 0)}
 - Degree-2 Polynomial Regression: {analysis.get('regression_curve', 'N/A')} | 30D Quant Target: {sym_p}{analysis.get('projected_30d_target', 0)}
 
 TECHNICAL TELEMETRY (TechBot_1):

@@ -1,4 +1,4 @@
-name: Moreshwar 3.1 — Daily Prospective Paper Trading (Paper-Only)
+name: MOVIQ — Daily Prospective Paper Trading (Paper-Only)
 
 on:
   schedule:
@@ -150,7 +150,7 @@ jobs:
           m32_mission = m32_learn.get("mission") or {}
           m32_w = m32_learn.get("weights") or {}
 
-          print("## Moreshwar 3.2 — Orchestrator 80-Session Self-Learning Paper Trading")
+          print("## MOVIQ 3.2 — Orchestrator 80-Session Self-Learning Paper Trading")
           print("")
           print("> **PAPER TRADING ONLY — LIVE TRADING: DISABLED · BROKER ORDERS: DISABLED · AUTO CAPITAL DEPLOYMENT: DISABLED**")
           print("")
@@ -159,7 +159,7 @@ jobs:
           print(f"- **Learned Agent Weights:** `Tech={m32_w.get('w_tech', 0.45):.2f} / Fund={m32_w.get('w_fund', 0.55):.2f}` | `MinConv={m32_w.get('min_conviction', 0.60):.2f}` | `RSI Penalty={m32_w.get('rsi_overbought_penalty', 0.0):.2f}`")
           print(f"- **Today's Queued Orchestrator Picks:** `{', '.join(m32_scan.get('queued_for_next_open') or []) or 'None'}`")
           print("")
-          print("## Moreshwar 3.1 — Frozen Baseline Daily Report")
+          print("## MOVIQ 3.1 — Frozen Baseline Daily Report")
           print(f"- **Trading Date:** `{daily.get('trading_date', 'N/A')}` | **NAV:** `INR {daily.get('portfolio_nav', {}).get('current_nav_inr', 100000.0):,.2f}` | **Recon Diff:** `INR {daily.get('reconciliation_result', {}).get('reconciliation_diff_inr', 0.0):.4f}`")
           print(f"- **Progress:** `{prog.get('completed_unseen_sessions', 0)} / {prog.get('minimum_required_sessions', 60)}` min | **Risk Health:** `{alerts.get('overall_health', 'N/A')}`")
           PY
@@ -231,8 +231,8 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           python3 scripts/m3_1_notify.py --failure --run-url "$RUN_URL" || true
-          TITLE="[Moreshwar 3.1 Paper Trading] Daily Workflow Failure / Safe-Mode Alert"
-          BODY="Automated Moreshwar 3.1 prospective paper-trading workflow failed on run ${RUN_URL}. Last valid durable portfolio state was preserved and SAFE_MODE recovery verification is required before resuming entries. (Live trading remains permanently DISABLED.)"
+          TITLE="[MOVIQ Paper Trading] Daily Workflow Failure / Safe-Mode Alert"
+          BODY="Automated MOVIQ prospective paper-trading workflow failed on run ${RUN_URL}. Last valid durable portfolio state was preserved and SAFE_MODE recovery verification is required before resuming entries. (Live trading remains permanently DISABLED.)"
           EXISTING=$(gh issue list --state open --search "in:title \"${TITLE}\"" --json number --jq '.[0].number // empty' || true)
           if [ -n "$EXISTING" ]; then
             gh issue comment "$EXISTING" --body "$BODY" || true
@@ -241,6 +241,6 @@ jobs:
           fi
           if [ -n "${M31_ALERT_WEBHOOK_URL:-}" ]; then
             curl -fsS -X POST -H "Content-Type: application/json" \
-              -d "{\"text\": \"Moreshwar 3.1 Paper-Trading Alert: workflow run failed (${RUN_URL}). Last valid state preserved; live trading disabled.\"}" \
+              -d "{\"text\": \"MOVIQ Paper-Trading Alert: workflow run failed (${RUN_URL}). Last valid state preserved; live trading disabled.\"}" \
               "$M31_ALERT_WEBHOOK_URL" >/dev/null || true
           fi

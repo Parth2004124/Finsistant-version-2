@@ -4,7 +4,7 @@ Implements:
 1. 4-Pillar Fundamental Score (Business /40, Moat /20, Management /20, Risk /20)
 2. Industry Normalization Matrix (BANKING, IT, FMCG, PHARMA, AUTO, POWER, REALTY, GENERAL)
 3. Porter's 5 Forces Qualitative Moat Score (Max 100)
-4. Moreshwar Dynamic Target, Entry, and Stop-Loss Levels
+4. MOVIQ Dynamic Target, Entry, and Stop-Loss Levels
 5. Final Decision Tree Matrix (BUY NOW, ADD, HOLD, SIP ONLY, WAIT, REVIEW, REDUCE, EXIT, AVOID)
 """
 
@@ -288,13 +288,13 @@ def calculate_moreshwar_levels(
     p_score_total: int,
     is_holding: bool = False,
 ) -> dict[str, Any]:
-    """Calculate Moreshwar Dynamic Target, Entry, and Stop-Loss Levels.
+    """Calculate MOVIQ Dynamic Target, Entry, and Stop-Loss Levels.
 
     Mathematical Model from StockSight V2 score_logic.md:
     - Y = Spot Price
     - X = Average of (fScore.total and pScore.total)
     - To scale cleanly across both ₹100 and ₹10,000+ assets while preserving the exact X formula,
-      we provide both the exact Moreshwar point offset and percentage-calibrated execution levels.
+      we provide both the exact MOVIQ point offset and percentage-calibrated execution levels.
     """
     x_blend = round((f_score_total + p_score_total) / 2.0, 1)
     downside_pts = 100.0 - x_blend

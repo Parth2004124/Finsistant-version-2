@@ -5,7 +5,7 @@ Categorizes every displayed financial metric across six explicit origins:
 2. HISTORICAL_MARKET_DATA   — Historical OHLCV market data bars
 3. BROKER_API               — Zerodha Kite Connect v3 live portfolio/order API
 4. CACHED_DATABASE          — Cached records / Git ledger / offline cache
-5. INTERNAL_CALCULATION     — Deterministic indicators, StockSight, Moreshwar
+5. INTERNAL_CALCULATION     — Deterministic indicators, StockSight, MOVIQ
 6. AI_ANALYTICAL_ESTIMATE   — Gemini Critical Analyst estimates & recalibrations
 
 Strictly separates `market_timestamp` from `retrieval_timestamp`, flags stale/missing/proxied
@@ -297,7 +297,7 @@ def build_asset_provenance(
             "notes": "Computed locally by quant_engine.py from real historical bars.",
         },
         "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & Moreshwar Entry/TP/SL",
+            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
             "value": f"Fund {analysis.get('fundamental_score', {}).get('total')}/100 | Porter {analysis.get('porters_score', {}).get('total')}/100",
             "source_category": "INTERNAL_CALCULATION",
             "source_label": SOURCE_TAXONOMY["INTERNAL_CALCULATION"]["label"],
@@ -471,7 +471,7 @@ def build_data_integrity_report(
             "status": "DETERMINISTIC",
             "market_timestamp": next((p["market_timestamp"] for p in per_asset.values() if p["market_timestamp"]), None),
             "retrieval_timestamp": now_utc.isoformat(),
-            "detail": "StockSight V2, Porter's 5 Forces, Moreshwar Levels, Poly-Reg2, Backtester (ROCE proxied via ROE/ROA)",
+            "detail": "StockSight V2, Porter's 5 Forces, MOVIQ Levels, Poly-Reg2, Backtester (ROCE proxied via ROE/ROA)",
         },
         {
             "category": SOURCE_TAXONOMY["AI_ANALYTICAL_ESTIMATE"]["label"],
