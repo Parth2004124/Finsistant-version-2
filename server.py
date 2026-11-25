@@ -21,6 +21,7 @@ from urllib.parse import parse_qs, urlparse
 
 from finsistant_v2 import (
     ASSET_UNIVERSE,
+    AdversarialProsecutorAgent,
     AgentRunner,
     ExecutionAgent,
     FinsistantSettings,
@@ -69,8 +70,9 @@ LEDGER_PATH: Path = DEFAULT_LEDGER_PATH
 current_settings: FinsistantSettings = load_settings(BASE_DIR / ".env")
 tech_agent = TechnicalAnalyst(name="TechBot_1")
 fund_agent = FundamentalAnalyst(name="FundBot_1")
+prosecutor_agent = AdversarialProsecutorAgent(name="BearProsecutor_1")
 exec_agent = ExecutionAgent(name="ExecBot_1")
-runner = AgentRunner(agents=[tech_agent, fund_agent, exec_agent], settings=current_settings)
+runner = AgentRunner(agents=[tech_agent, fund_agent, prosecutor_agent, exec_agent], settings=current_settings)
 stocky = StockyAssistant()
 
 # Unified Live State (0 simulated holdings; live Kite holdings when connected)

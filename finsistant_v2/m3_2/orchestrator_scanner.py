@@ -31,11 +31,13 @@ import threading
 from typing import Any, Callable
 
 from finsistant_v2.agents import (
+    AdversarialProsecutorAgent,
     ExecutionAgent,
     FundamentalAnalyst,
     TechnicalAnalyst,
     score_technical_confidence,
 )
+from finsistant_v2.adversarial_prosecutor import DEFAULT_MIN_SURVIVAL_SCORE
 from finsistant_v2.quant_engine import compute_ohlcv_and_regression_from_candles
 
 ORCH_STRATEGY_ID = "STRAT_ORCH_AGENT_CONSENSUS"
@@ -301,6 +303,7 @@ class OrchestratorUniverseScanner:
         self._analysis_fn = analysis_fn or _default_fast_live_analysis
         self.tech_agent = TechnicalAnalyst()
         self.fund_agent = FundamentalAnalyst()
+        self.prosecutor_agent = AdversarialProsecutorAgent()
         self.exec_agent = ExecutionAgent()
 
     # ------------------------------------------------------------------
@@ -482,10 +485,16 @@ class OrchestratorUniverseScanner:
                 "min_conviction": min_conv,
                 "rsi_overbought_penalty": rsi_pen,
                 "sector_adjustment": sec_adj,
+                "attack_multipliers": dict(learned_params.get("attack_multipliers") or {}),
+                "min_survival_score": float(learned_params.get("min_survival_score", DEFAULT_MIN_SURVIVAL_SCORE)),
+                "adv_20d_inr": float((bar or {}).get("adv_20d_inr") or 0.0) if bar else None,
+                "hl_range_pct": float((bar or {}).get("hl_range_pct") or 0.0) if bar else None,
+                "price_discrepancy_pct": disc,
             }
-            for agent in (self.tech_agent, self.fund_agent, self.exec_agent):
+            for agent in (self.tech_agent, self.fund_agent, self.prosecutor_agent, self.exec_agent):
                 ctx[agent.role_key] = agent.evaluate(ctx)
-            tech, fund, exe = ctx["technical"], ctx["fundamental"], ctx["execution"]
+            tech, fund, pros_step, exe = ctx["technical"], ctx["fundamental"], ctx["prosecution"], ctx["execution"]
+            prosecution = pros_step.get("metrics") or {}
             fscore = snap["fundamental_score"]["total"]
             pscore = snap["porters_score"]["total"]
             price = float(snap["price"])
@@ -507,6 +516,15 @@ class OrchestratorUniverseScanner:
                     "exec_signal": exe["signal"],
                     "exec_reason": exe["summary"],
                     "decision_badge": exe.get("decision_badge"),
+                    "prosecution_verdict": prosecution.get("verdict"),
+                    "survival_score": prosecution.get("survival_score"),
+                    "min_survival_score": prosecution.get("min_survival_score"),
+                    "damage_pts": prosecution.get("total_damage_pts"),
+                    "fatal_count": prosecution.get("fatal_count", 0),
+                    "attack_ids": list(prosecution.get("attack_ids") or []),
+                    "prosecution_summary": prosecution.get("summary"),
+                    "prosecution_size_mult": prosecution.get("size_multiplier", 1.0),
+                    "prosecution_attacks": list(prosecution.get("attacks") or []),
                     "moreshwar_stop_loss": stop_loss,
                     "moreshwar_target": float(exe.get("take_profit") or 0.0),
                     "stop_ratio": round(stop_ratio, 6),
@@ -600,6 +618,8 @@ class OrchestratorUniverseScanner:
         params.setdefault("rsi_overbought_penalty", PRIOR_RSI_OVERBOUGHT_PENALTY)
         params.setdefault("sector_adjustments", {})
         params.setdefault("stop_tighten_mult", 1.0)
+        params.setdefault("attack_multipliers", {})
+        params.setdefault("min_survival_score", DEFAULT_MIN_SURVIVAL_SCORE)
         params.setdefault("status", weights_status)
 
         tech_rows, skipped = self.score_universe_technical(
@@ -620,7 +640,12 @@ class OrchestratorUniverseScanner:
         )
 
         buys = [r for r in agent_rows if r["status"] == "AGENTS_OK" and r["exec_action"] == "BUY"]
-        buys.sort(key=lambda r: (-r["conviction"], r["tech_rank"]))
+        buys.sort(
+            key=lambda r: (
+                -float(r["conviction"]) * (0.5 + 0.5 * float(r.get("survival_score") or 50.0) / 100.0),
+                r["tech_rank"],
+            )
+        )
         candidates: list[dict[str, Any]] = []
         for r in buys[: self.cfg.max_final_candidates]:
             candidates.append(
@@ -629,6 +654,8 @@ class OrchestratorUniverseScanner:
                     "symbol": r["symbol"],
                     "strategy_id": ORCH_STRATEGY_ID,
                     "score": float(r["conviction"]),
+                    "survival_score": float(r.get("survival_score") or 0.0),
+                    "size_multiplier": float(r.get("prosecution_size_mult") or 1.0),
                     "stop_ratio": float(r["stop_ratio"]),
                     "tech_conf": r["tech_conf"],
                     "fund_conf": r["fund_conf"],
@@ -637,6 +664,7 @@ class OrchestratorUniverseScanner:
             )
 
         n_ok = sum(1 for r in agent_rows if r["status"] == "AGENTS_OK")
+        n_killed = sum(1 for r in agent_rows if r.get("exec_signal") == "KILLED_BY_ADVERSARY")
         n_failed_data = sum(
             1 for r in agent_rows if r["status"] in ("FAILED_DATA_UNAVAILABLE", "EXCLUDED_AGENT_DATA_UNAVAILABLE")
         )
@@ -662,6 +690,8 @@ class OrchestratorUniverseScanner:
                 "min_conviction": round(float(params["min_conviction"]), 4),
                 "rsi_overbought_penalty": round(float(params["rsi_overbought_penalty"]), 4),
                 "sector_adjustments": dict(params["sector_adjustments"]),
+                "attack_multipliers": dict(params["attack_multipliers"]),
+                "min_survival_score": round(float(params["min_survival_score"]), 2),
                 "status": str(params["status"]),
             },
             "stages": {
@@ -673,6 +703,7 @@ class OrchestratorUniverseScanner:
                 "agents_ok": n_ok,
                 "agents_excluded": len(agent_rows) - n_ok,
                 "agents_failed_data": n_failed_data,
+                "adversarial_killed": n_killed,
                 "exec_buy_approved": len(buys),
                 "paper_candidates": len(candidates),
                 "skipped": skipped,
