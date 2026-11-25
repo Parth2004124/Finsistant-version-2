@@ -28,6 +28,11 @@ from typing import Any
 
 import numpy as np
 
+from finsistant_v2.trade_automation import (
+    compute_post_trade_tca,
+    summarize_btca_and_feedback,
+)
+
 from .orchestrator_scanner import (
     MISSION_TARGET_SESSIONS,
     PRIOR_MIN_CONVICTION,
@@ -171,6 +176,26 @@ class OrchestratorLearningLedger:
                     ic_tech REAL,
                     ic_fund REAL,
                     note TEXT,
+                    recorded_at_utc TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS btca_executions (
+                    order_id TEXT PRIMARY KEY,
+                    trading_date TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    side TEXT NOT NULL,
+                    algo_strategy TEXT NOT NULL,
+                    arrival_price REAL,
+                    bar_open REAL,
+                    actual_exec_price REAL,
+                    req_qty REAL NOT NULL,
+                    filled_qty REAL NOT NULL,
+                    fill_rate_pct REAL NOT NULL,
+                    delay_cost_bps REAL,
+                    execution_slippage_bps REAL,
+                    statutory_cost_bps REAL,
+                    implementation_shortfall_bps REAL,
+                    slippage_surprise_bps REAL,
+                    execution_status TEXT NOT NULL,
                     recorded_at_utc TEXT NOT NULL
                 );
                 """
@@ -564,6 +589,7 @@ class OrchestratorLearningLedger:
                 "rsi_overbought_penalty": PRIOR_RSI_OVERBOUGHT_PENALTY,
                 "sector_adjustments": {},
                 "stop_tighten_mult": PRIOR_STOP_TIGHTEN_MULT,
+                "tca_hurdle_adder_bps": float(self.btca_report().get("tca_hurdle_adder_bps") or 0.0),
                 "status": "SESSION 1/80 · PRIOR_FIXED (awaiting first closed trades & matured outcomes)",
             }
         try:
@@ -583,6 +609,7 @@ class OrchestratorLearningLedger:
             "rsi_overbought_penalty": float(r["rsi_overbought_penalty"]),
             "sector_adjustments": sec_adj if isinstance(sec_adj, dict) else {},
             "stop_tighten_mult": _clamp(stop_mult, STOP_MULT_MIN, STOP_MULT_MAX),
+            "tca_hurdle_adder_bps": float(self.btca_report().get("tca_hurdle_adder_bps") or 0.0),
             "status": str(r["status"]),
         }
 
@@ -868,6 +895,78 @@ class OrchestratorLearningLedger:
             "live_trading_enabled": False,
         }
 
+    def sync_btca_executions(self, paper_orders: list[dict[str, Any]]) -> int:
+        """Persist Post-Trade BTCA Implementation Shortfall metrics for tactical equity executions."""
+        if not paper_orders:
+            return 0
+        added = 0
+        conn = self._connect()
+        try:
+            existing = {r[0] for r in conn.execute("SELECT order_id FROM btca_executions").fetchall()}
+            for o in paper_orders:
+                if str(o.get("instrument_class") or "").upper() != "DELIVERY":
+                    continue
+                oid = str(o.get("order_id") or "")
+                if not oid or oid in existing:
+                    continue
+                arr_px = float(o.get("arrival_price") or o.get("expected_price") or 0.0)
+                bar_open = float(o.get("bar_open") or o.get("expected_price") or 0.0)
+                tca = compute_post_trade_tca(
+                    order_id=oid,
+                    symbol=str(o.get("symbol") or ""),
+                    side=str(o.get("side") or "BUY"),
+                    trading_date=str(o.get("trading_date") or ""),
+                    arrival_price=arr_px,
+                    bar_open=bar_open,
+                    actual_exec_price=float(o.get("actual_exec_price") or 0.0),
+                    req_qty=float(o.get("requested_qty") or 0.0),
+                    filled_qty=float(o.get("filled_qty") or 0.0),
+                    gross_value_inr=float(o.get("gross_value_inr") or 0.0),
+                    total_cost_inr=float(o.get("total_cost_inr") or 0.0),
+                    slippage_inr=float(o.get("slippage_inr") or 0.0),
+                    algo_strategy=str(o.get("algo_strategy") or "NEXT_SESSION_OPEN"),
+                    pre_trade_est_cost_bps=o.get("pre_trade_est_cost_bps"),
+                )
+                conn.execute(
+                    "INSERT INTO btca_executions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    (
+                        tca["order_id"],
+                        tca["trading_date"],
+                        tca["symbol"],
+                        tca["side"],
+                        tca["algo_strategy"],
+                        tca["arrival_price"],
+                        tca["bar_open"],
+                        tca["actual_exec_price"],
+                        float(o.get("requested_qty") or 0.0),
+                        float(o.get("filled_qty") or 0.0),
+                        tca["fill_rate_pct"],
+                        tca["delay_cost_bps"],
+                        tca["execution_slippage_bps"],
+                        tca["statutory_cost_bps"],
+                        tca["implementation_shortfall_bps"],
+                        tca["slippage_surprise_bps"],
+                        str(o.get("execution_status") or "UNKNOWN"),
+                        _utc_now_iso(),
+                    ),
+                )
+                added += 1
+            conn.commit()
+        finally:
+            conn.close()
+        return added
+
+    def btca_report(self) -> dict[str, Any]:
+        """Return Bloomberg BTCA-style Post-Trade Implementation Shortfall summary and bounded hurdle feedback."""
+        conn = self._connect()
+        try:
+            rows = [dict(r) for r in conn.execute("SELECT * FROM btca_executions ORDER BY trading_date DESC, order_id DESC").fetchall()]
+        finally:
+            conn.close()
+        summary = summarize_btca_and_feedback(rows)
+        summary["recent_executions"] = rows[:15]
+        return summary
+
     def export_learning_json(
         self,
         path: Path,
@@ -887,6 +986,7 @@ class OrchestratorLearningLedger:
             "weights": params,
             "weight_history": history[-80:],
             "learning": self.learning_report(),
+            "btca": self.btca_report(),
             **(extra or {}),
         }
         path = Path(path)
