@@ -28,4 +28,19 @@ jobs:
 
       - name: Run M3.1 and M3.2 regression test suites
         run: |
-          python3 -m pytest -v tests/m3_1 tests/m3_2 tests/test_release_audit.py
+          set +e
+          python3 -m pytest -v --tb=short tests/m3_1 tests/m3_2 tests/test_release_audit.py > pytest_out.txt 2>&1
+          RC=$?
+          cat pytest_out.txt
+          cat pytest_out.txt >> "$GITHUB_STEP_SUMMARY"
+          if [ "$RC" -ne 0 ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          lines = Path("pytest_out.txt").read_text(encoding="utf-8", errors="replace").splitlines()
+          summary = lines[-60:]
+          for ln in summary:
+              if ln.strip():
+                  print(f"::error::{ln[:400]}")
+          PY
+          fi
+          exit "$RC"
