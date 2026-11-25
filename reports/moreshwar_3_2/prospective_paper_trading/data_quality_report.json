@@ -1,11 +1,11 @@
 {
-  "trading_date": "2026-11-20",
-  "checked_at_utc": "2026-11-20T14:21:59.930875+00:00",
-  "data_timestamp_utc": "2026-11-20T14:21:55.478139+00:00",
+  "trading_date": "2026-11-23",
+  "checked_at_utc": "2026-11-25T00:13:23.443471+00:00",
+  "data_timestamp_utc": "2026-11-25T00:13:20.739418+00:00",
   "overall_status": "PARTIAL_DIAGNOSTIC_ONLY",
   "niftybees_valid": true,
   "liquidbees_valid": true,
-  "valid_equity_bars": 1182,
+  "valid_equity_bars": 1183,
   "invalid_equity_bars": 0,
   "diagnostic_index_bars_available": false,
   "known_boundaries": {
