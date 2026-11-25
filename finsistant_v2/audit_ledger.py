@@ -22,7 +22,7 @@ ENGINE_VERSIONS: dict[str, str] = {
     "platform_version": "Finsistant-V2.3-Audit",
     "scoring_model": "StockSight-V2.1",
     "quant_model": "PolyReg2-RSI14-MACD-v2",
-    "moreshwar_model": "Moreshwar-Dynamic-V2",
+    "moreshwar_model": "MOVIQ-Dynamic-V2",
     "orchestrator_model": "AgentRunner-3Bot-v2",
 }
 

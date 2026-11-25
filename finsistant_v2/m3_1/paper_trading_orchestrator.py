@@ -932,7 +932,7 @@ class PaperTradingOrchestrator:
             "generated_at_utc": _utc_now_iso(),
             "banner": "PAPER TRADING ONLY — LIVE TRADING DISABLED",
             "safety_banner_lines": [
-                "MORESHWAR 3.1 — PAPER TRADING ONLY.",
+                "MOVIQ 3.1 — PAPER TRADING ONLY.",
                 "LIVE TRADING: DISABLED.",
                 "BROKER ORDER PLACEMENT: DISABLED.",
                 "AUTOMATIC CAPITAL DEPLOYMENT: DISABLED.",

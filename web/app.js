@@ -456,7 +456,7 @@ function renderAllViews() {
   document.getElementById("analysisTerminalBox").innerHTML = `
     <div style="color: var(--accent-cyan); font-weight: 600;">${active.symbol} Live Orchestrator Verdict${recalTag}</div>
     <div>• StockSight V2 Score: <strong>${f.total}/100</strong> | Porter Moat: <strong>${p.total}/100</strong></div>
-    <div>• Moreshwar Levels: Entry <strong>${fmtCurrency(m.entry_price, cur, 2)}</strong> · Target <strong>${fmtCurrency(m.target, cur, 2)}</strong> · SL <strong>${fmtCurrency(m.stop_loss, cur, 2)}</strong> (R:R 1:${m.rr_ratio})</div>
+    <div>• MOVIQ Levels: Entry <strong>${fmtCurrency(m.entry_price, cur, 2)}</strong> · Target <strong>${fmtCurrency(m.target, cur, 2)}</strong> · SL <strong>${fmtCurrency(m.stop_loss, cur, 2)}</strong> (R:R 1:${m.rr_ratio})</div>
     <div>• Auto-Risk Sized Qty: <strong>${execQty} Shares</strong> (${fmtCurrency(execQty * m.entry_price, cur, 2)})</div>
     <div>• Multi-Agent Verdict: <strong style="color: var(--accent-emerald);">${d.action}</strong> (${convPct}% Conviction)</div>
   `;
@@ -508,7 +508,7 @@ function renderAllViews() {
     if (crit.status === "live") {
       const stance = String(crit.stance || "MONITOR").toUpperCase();
       const risk = String(crit.risk_rating || "MEDIUM").toUpperCase();
-      gSubEl.textContent = `Adversarial risk & valuation audit across live fundamentals, technicals & Moreshwar R:R`;
+      gSubEl.textContent = `Adversarial risk & valuation audit across live fundamentals, technicals & MOVIQ R:R`;
       gRiskEl.textContent = `RISK: ${risk}`;
       gRiskEl.className = `tag-pill ${risk === "LOW" ? "tag-target" : (risk === "HIGH" || risk === "EXTREME") ? "tag-stop" : "tag-score"}`;
       gStanceEl.textContent = stance;
@@ -611,7 +611,7 @@ function renderAllViews() {
   `;
 
   document.getElementById("ssDecisionMatrixBox").innerHTML = `
-    <div style="color:var(--accent-emerald);font-weight:600;">Moreshwar Mathematical Model &amp; Final Decision Matrix</div>
+    <div style="color:var(--accent-emerald);font-weight:600;">MOVIQ Mathematical Model &amp; Final Decision Matrix</div>
     <div>• Composite Quality (X): <strong>${m.x_composite_score} / 100</strong> | Spot Price (Y): <strong>${fmtCurrency(active.price, cur, 2)}</strong></div>
     <div>• Dynamic Entry: <strong>${fmtCurrency(m.entry_price, cur, 2)}</strong> | Dynamic Target: <strong>${fmtCurrency(m.target, cur, 2)}</strong> | Dynamic Stop-Loss: <strong>${fmtCurrency(m.stop_loss, cur, 2)}</strong></div>
     <div>• Final Matrix Signal: <strong>${d.action}</strong> (${d.rationale})</div>
@@ -1053,7 +1053,7 @@ function renderBacktestAnalytics() {
 
       <div class="dq-card" style="border-top:2px solid var(--accent-crimson);">
         <div class="dq-card-head">
-          <span class="dq-q-title">Q3. MORESHWAR VS BENCHMARKS</span>
+          <span class="dq-q-title">Q3. MOVIQ VS BENCHMARKS</span>
           <span class="tag-pill ${mTone}">${escHtml(mVerdict)}</span>
         </div>
         <div class="dq-headline">${escHtml(q3.diagnostic || "")}</div>
@@ -1128,7 +1128,7 @@ function renderBacktestAnalytics() {
         <strong style="font-family:var(--font-mono);">ExecBot_1</strong>
         <span class="tag-pill tag-entry">PF ${exec.profit_factor ?? 0}</span>
       </div>
-      <div style="font-size:11px;color:var(--text-secondary);">${escHtml(exec.role || "Moreshwar Execution")}</div>
+      <div style="font-size:11px;color:var(--text-secondary);">${escHtml(exec.role || "MOVIQ Execution")}</div>
       <div style="font-family:var(--font-mono);font-size:11.5px;">Target Hits: <strong>${exec.target_hits ?? 0}</strong> · Stops: <strong>${exec.stop_losses_triggered ?? 0}</strong></div>
       <div style="font-family:var(--font-mono);font-size:11.5px;">Realized R:R: <strong>1:${exec.realized_rr_ratio ?? 0}</strong></div>
     </div>
@@ -1181,12 +1181,12 @@ function renderMoreshwarV2ShadowLab() {
 
   if (badgeEl && res) {
     badgeEl.textContent = res.promoted_to_production
-      ? "MORESHWAR 2.0 PROMOTED"
+      ? "MOVIQ 2.0 PROMOTED"
       : "SHADOW ONLY · M1 ACTIVE IN PROD";
   }
 
   if (!v2) {
-    gridEl.innerHTML = `<div class="mv2-field-card" style="grid-column:1/-1;"><span class="mv2-field-val">Awaiting Moreshwar 2.0 shadow telemetry...</span><span class="mv2-field-sub">Populates on live scan or /api/state refresh.</span></div>`;
+    gridEl.innerHTML = `<div class="mv2-field-card" style="grid-column:1/-1;"><span class="mv2-field-val">Awaiting MOVIQ 2.0 shadow telemetry...</span><span class="mv2-field-sub">Populates on live scan or /api/state refresh.</span></div>`;
     reasonEl.innerHTML = "";
   } else {
     const cur = asset.currency || "INR";
@@ -1324,7 +1324,7 @@ function renderMoreshwarV2ShadowLab() {
         <span class="dq-q-title">OUT-OF-SAMPLE TEST SPLIT</span>
         <span class="tag-pill tag-target">${escHtml(oos.splits?.out_of_sample?.start || "")} → ${escHtml(oos.splits?.out_of_sample?.end || "")}</span>
       </div>
-      <div class="dq-headline">Clean Causal Moreshwar 2.0 on unseen tail vs M1 &amp; Nifty 50:</div>
+      <div class="dq-headline">Clean Causal MOVIQ 2.0 on unseen tail vs M1 &amp; Nifty 50:</div>
       <div class="dq-mini-grid">
         <div class="dq-mini-stat">
           <div class="dq-mini-lbl">M2 Clean OOS</div>
@@ -1373,7 +1373,7 @@ function renderMoreshwarV2ShadowLab() {
         <span class="dq-q-title">HONEST PROMOTION GATE (PHASE 10)</span>
         <span class="tag-pill tag-stop">REVIEW REQUIRED</span>
       </div>
-      <div class="dq-headline">Why Moreshwar 2.0 remains in Shadow Research Mode until reviewed:</div>
+      <div class="dq-headline">Why MOVIQ 2.0 remains in Shadow Research Mode until reviewed:</div>
       <div style="font-size:11px;color:var(--text-secondary);line-height:1.45;">
         • <strong>Proven Win:</strong> ATR(14) + Sizing + Nifty Bear Block swings identical StockSight picks from <strong>-7.76% → +0.58%</strong> (Model D) &amp; slashes MaxDD <strong>14.2% → 7.25%</strong>; OOS M2 wins <strong>+4.92% (0.70% DD)</strong>.<br>
         • <strong>Honest Caveat:</strong> Stripping static fundamentals cleanly (Model E Clean) yields <strong>${models.find((x) => String(x.model).includes("Model E:"))?.total_return_pct ?? "--"}%</strong> (Sharpe negative vs 6.5% T-bill) because historical quarterly ROE/OPM ratios are unavailable from NSE/Yahoo feeds.<br>
@@ -1410,7 +1410,7 @@ function drawMv21EquityChart(r21) {
   if (m21c.length < 2) {
     ctx.font = "12px 'JetBrains Mono', monospace";
     ctx.fillStyle = "#8D99AA";
-    ctx.fillText("5Y Moreshwar 2.1 equity curve awaiting report payload.", 14, h / 2);
+    ctx.fillText("5Y MOVIQ 2.1 equity curve awaiting report payload.", 14, h / 2);
     return;
   }
 
@@ -1587,9 +1587,9 @@ function renderMoreshwarV22Dashboard() {
   const r22 = appState.moreshwarV22Research;
   if (!r22 || !r22.scorecard || !r22.scorecard.integrated_m22) {
     bannerEl.className = "mv21-verdict-banner";
-    bannerEl.innerHTML = `<strong>Moreshwar 2.2 Integrated Report Unavailable:</strong> Run <code>python3 -m finsistant_v2.backtest_engine_v2_2_integrated</code> to generate <code>reports/moreshwar_2_2/integrated_final_report.json</code>.`;
+    bannerEl.innerHTML = `<strong>MOVIQ 2.2 Integrated Report Unavailable:</strong> Run <code>python3 -m finsistant_v2.backtest_engine_v2_2_integrated</code> to generate <code>reports/moreshwar_2_2/integrated_final_report.json</code>.`;
     kpiEl.innerHTML = "";
-    scBody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-secondary);">No Moreshwar 2.2 integrated research report loaded.</td></tr>`;
+    scBody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-secondary);">No MOVIQ 2.2 integrated research report loaded.</td></tr>`;
     stBody.innerHTML = "";
     if (bsEl) bsEl.innerHTML = "";
     if (badgeEl) badgeEl.textContent = "REPORT PENDING · M1.0 ACTIVE IN PROD";
@@ -1691,9 +1691,9 @@ function renderMoreshwarV21Dashboard() {
   const r21 = appState.moreshwarV21Research;
   if (!r21 || !r21.models) {
     bannerEl.className = "mv21-verdict-banner";
-    bannerEl.innerHTML = `<strong>Moreshwar 2.1 Report Pending / Unavailable:</strong> Run <code>scripts/run_moreshwar_v2_1_experiments.py</code> and regenerate <code>live_scan.json</code> to view 5Y statistical validation.`;
+    bannerEl.innerHTML = `<strong>MOVIQ 2.1 Report Pending / Unavailable:</strong> Run <code>scripts/run_moreshwar_v2_1_experiments.py</code> and regenerate <code>live_scan.json</code> to view 5Y statistical validation.`;
     kpiEl.innerHTML = "";
-    bmBody.innerHTML = `<tr><td colspan="14" style="text-align:center;color:var(--text-secondary);">No Moreshwar 2.1 benchmark report loaded.</td></tr>`;
+    bmBody.innerHTML = `<tr><td colspan="14" style="text-align:center;color:var(--text-secondary);">No MOVIQ 2.1 benchmark report loaded.</td></tr>`;
     if (wfBody) wfBody.innerHTML = "";
     if (regBody) regBody.innerHTML = "";
     if (prGrid) prGrid.innerHTML = "";
@@ -1760,7 +1760,7 @@ function renderMoreshwarV21Dashboard() {
   const ruleText = dec.promotion_recommendation || (
     r21.promoted_to_production
       ? "Promoted to production after outperforming benchmarks with statistically significant expectancy across untouched OOS folds."
-      : "Keep Moreshwar 1.0 active in production; Moreshwar 2.1 requires positive statistically significant net expectancy (p < 0.05) across OOS & regime folds before promotion."
+      : "Keep MOVIQ 1.0 active in production; MOVIQ 2.1 requires positive statistically significant net expectancy (p < 0.05) across OOS & regime folds before promotion."
   );
   const unresolvedList = Array.isArray(dec.unresolved_risks) ? dec.unresolved_risks : [];
   bannerEl.className = `mv21-verdict-banner${isPositive ? " verdict-positive" : ""}`;
@@ -2509,7 +2509,7 @@ function drawReportBenchmarkCanvas(rows) {
   rows.forEach((r, i) => {
     const cy = 12 + i * rowH;
     const shortName = String(r.strategy)
-      .replace("Moreshwar Mathematical Model (Orig)", "Moreshwar Orig")
+      .replace("Moreshwar Mathematical Model (Orig)", "MOVIQ Orig")
       .replace("Recalibrated Moreshwar (+ Gemini CRO)", "Recal + CRO")
       .replace("Nifty 50 (^NSEI) Buy & Hold", "Nifty 50 Hold")
       .replace("Equal-Weight Universe Buy & Hold", "Equal-Wt 10")
@@ -2578,7 +2578,7 @@ function renderReportsView() {
   const openLive = sampleCtx.open_records ?? 0;
 
   briefEl.innerHTML = `
-    <strong>Plain-English Bottom Line:</strong> Across <strong>${assetsList.length}</strong> live tracked stocks, our tighter quality filters eliminated <strong>${selM.noise_reduction_pct ?? 0}%</strong> of low-conviction noise, leaving <strong>${buys.length} high-conviction BUY setups</strong> right now (<em>${escHtml(buySyms)}</em>) and <strong>${sells.length}</strong> exit warnings. On 1-year historical walk-forward testing (net of 0.35% costs), <strong>${escHtml(topAgent)}</strong> contributes the most to profit (<strong>${topLift >= 0 ? "+" : ""}${topLift}%</strong> cumulative lift and <strong>${topDd >= 0 ? "+" : ""}${topDd}%</strong> drawdown protection), while <strong>Gemini CRO</strong> prevented <strong>${prevCount} of ${totalCro} weak trades (${prevRate}%)</strong> at a cost of <strong>${unnecCount} unnecessary blocks/downgrades (${unnecRate}%)</strong>. However, the default <strong>Moreshwar exit formula</strong> trails Nifty 50 (<strong>${trOrig.cumulative_return_pct ?? 0}%</strong> vs <strong>${bench.benchmark_return_pct >= 0 ? "+" : ""}${bench.benchmark_return_pct ?? 0}%</strong>) because its tight stop-loss gets triggered by short-term noise. Live broker execution currently has <strong>${trAct.total_signals || 0} real fills</strong>, and the permanent ledger holds <strong>${settledLive}/${minLive} settled</strong> live decisions (${openLive} open waiting for T+1..T+14 outcomes).
+    <strong>Plain-English Bottom Line:</strong> Across <strong>${assetsList.length}</strong> live tracked stocks, our tighter quality filters eliminated <strong>${selM.noise_reduction_pct ?? 0}%</strong> of low-conviction noise, leaving <strong>${buys.length} high-conviction BUY setups</strong> right now (<em>${escHtml(buySyms)}</em>) and <strong>${sells.length}</strong> exit warnings. On 1-year historical walk-forward testing (net of 0.35% costs), <strong>${escHtml(topAgent)}</strong> contributes the most to profit (<strong>${topLift >= 0 ? "+" : ""}${topLift}%</strong> cumulative lift and <strong>${topDd >= 0 ? "+" : ""}${topDd}%</strong> drawdown protection), while <strong>Gemini CRO</strong> prevented <strong>${prevCount} of ${totalCro} weak trades (${prevRate}%)</strong> at a cost of <strong>${unnecCount} unnecessary blocks/downgrades (${unnecRate}%)</strong>. However, the default <strong>MOVIQ exit formula</strong> trails Nifty 50 (<strong>${trOrig.cumulative_return_pct ?? 0}%</strong> vs <strong>${bench.benchmark_return_pct >= 0 ? "+" : ""}${bench.benchmark_return_pct ?? 0}%</strong>) because its tight stop-loss gets triggered by short-term noise. Live broker execution currently has <strong>${trAct.total_signals || 0} real fills</strong>, and the permanent ledger holds <strong>${settledLive}/${minLive} settled</strong> live decisions (${openLive} open waiting for T+1..T+14 outcomes).
   `;
 
   kpiEl.innerHTML = `
@@ -2615,7 +2615,7 @@ function renderReportsView() {
   }
   const agCapEl = document.getElementById("rptAgentCaption");
   if (agCapEl) {
-    agCapEl.textContent = `${topAgent} drives the largest performance boost (${topLift >= 0 ? "+" : ""}${topLift}% lift), followed by TechBot_1 and Gemini_CRO. ExecBot_1's tight Moreshwar stop-loss distance is the only negative drag compared to wider 5%/10% exits.`;
+    agCapEl.textContent = `${topAgent} drives the largest performance boost (${topLift >= 0 ? "+" : ""}${topLift}% lift), followed by TechBot_1 and Gemini_CRO. ExecBot_1's tight MOVIQ stop-loss distance is the only negative drag compared to wider 5%/10% exits.`;
   }
   const croCapEl = document.getElementById("rptCroCaption");
   if (croCapEl) {
@@ -2623,7 +2623,7 @@ function renderReportsView() {
   }
   const bmCapEl = document.getElementById("rptBenchmarkCaption");
   if (bmCapEl) {
-    bmCapEl.textContent = `Moreshwar beats a naive Simple SMA-20 rule (+${q3.spread_vs_sma_strategy_pct ?? 0}% spread and nearly 10% lower drawdown), but using the same high-quality AI entries with wider Fixed 1:2 exits improves cumulative performance by ${Math.abs(q3.spread_vs_fixed_1to2_pct ?? 0).toFixed(2)}%.`;
+    bmCapEl.textContent = `MOVIQ beats a naive Simple SMA-20 rule (+${q3.spread_vs_sma_strategy_pct ?? 0}% spread and nearly 10% lower drawdown), but using the same high-quality AI entries with wider Fixed 1:2 exits improves cumulative performance by ${Math.abs(q3.spread_vs_fixed_1to2_pct ?? 0).toFixed(2)}%.`;
   }
 
   const strongBuys = assetsList.filter((a) => ["BUY NOW", "ADD"].includes(a.decision_matrix?.action)).length;
@@ -2764,7 +2764,7 @@ async function handleStockyQuery(rawText = "") {
         `🔍 Live Analysis: ${a.symbol} (${a.name})\n` +
         `• Live Spot: ${fmtCurrency(a.price, a.currency, 2)} (${a.change_pct >= 0 ? "+" : ""}${a.change_pct}%)\n` +
         `• Fundamental Score: ${a.fundamental_score.total}/100 | Porter Moat: ${a.porters_score.total}/100\n` +
-        `• Moreshwar Levels: Entry ${fmtCurrency(a.moreshwar_levels.entry_price, a.currency, 2)} | Target ${fmtCurrency(a.moreshwar_levels.target, a.currency, 2)} | SL ${fmtCurrency(a.moreshwar_levels.stop_loss, a.currency, 2)}\n` +
+        `• MOVIQ Levels: Entry ${fmtCurrency(a.moreshwar_levels.entry_price, a.currency, 2)} | Target ${fmtCurrency(a.moreshwar_levels.target, a.currency, 2)} | SL ${fmtCurrency(a.moreshwar_levels.stop_loss, a.currency, 2)}\n` +
         `• 30D Polynomial Regression: ${fmtCurrency(a.projected_30d_target, a.currency, 2)} (${a.regression_curve}) | Decision: ${a.decision_matrix.action}`;
     }
   }
@@ -3719,7 +3719,7 @@ function renderMoreshwarV30Dashboard() {
       })();
     }
     if (bannerEl) {
-      bannerEl.innerHTML = `<strong>Moreshwar 3.0 (${"v3.0.0-rc1"}):</strong> Loading frozen PIT NSE research &amp; paper-trading release bundle...`;
+      bannerEl.innerHTML = `<strong>MOVIQ 3.0 (${"v3.0.0-rc1"}):</strong> Loading frozen PIT NSE research &amp; paper-trading release bundle...`;
     }
     return;
   }
@@ -3733,7 +3733,7 @@ function renderMoreshwarV30Dashboard() {
   const ledger = port.paper_account_ledger || {};
 
   if (bannerEl) {
-    bannerEl.innerHTML = `<strong>Moreshwar 3.0 Release Outcome:</strong> ${rd.release_outcome || "CONDITIONAL GO (PAPER ONLY)"} · ${rd.summary_rationale || "Frozen M3.0 PIT baseline preserved; live broker execution disabled."}`;
+    bannerEl.innerHTML = `<strong>MOVIQ 3.0 Release Outcome:</strong> ${rd.release_outcome || "CONDITIONAL GO (PAPER ONLY)"} · ${rd.summary_rationale || "Frozen M3.0 PIT baseline preserved; live broker execution disabled."}`;
   }
 
   if (kpiEl) {
@@ -3763,7 +3763,7 @@ function renderMoreshwarV30Dashboard() {
             <td>${s.status || "FROZEN"}</td>
           </tr>`)
           .join("")
-      : `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Moreshwar 3.0 frozen baseline loaded.</td></tr>`;
+      : `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">MOVIQ 3.0 frozen baseline loaded.</td></tr>`;
   }
 
   if (portBody) {
@@ -3827,7 +3827,7 @@ function renderMoreshwarV30Dashboard() {
                 )
               : []),
           ].join("")
-        : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Prompt 9 Independent Audit Verdict: ${iv || "NO-GO Live Capital (Upgraded in Moreshwar 3.1)"}</td></tr>`;
+        : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Prompt 9 Independent Audit Verdict: ${iv || "NO-GO Live Capital (Upgraded in MOVIQ 3.1)"}</td></tr>`;
     valBody.innerHTML = benches.length
       ? benches
           .slice(0, 8)

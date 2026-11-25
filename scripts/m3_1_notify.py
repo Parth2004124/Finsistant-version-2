@@ -99,13 +99,13 @@ def decide_and_format_notification(
         priority = "high"
         tags = "rotating_light,warning"
         reason = "CRITICAL_FAILURE_OR_SAFE_MODE"
-        title = f"ALERT: Moreshwar 3.1 Paper Trading ({engine_status})"
+        title = f"ALERT: MOVIQ 3.1 Paper Trading ({engine_status})"
     elif force_send:
         should_send = True
         priority = "default"
         tags = "white_check_mark,chart_with_upwards_trend"
         reason = "MANUAL_TEST_OR_FORCE"
-        title = f"Moreshwar 3.1 Paper Check-In ({completed}/{min_req} sessions)"
+        title = f"MOVIQ 3.1 Paper Check-In ({completed}/{min_req} sessions)"
     elif session_newly_completed and completed > 0:
         is_friday = False
         try:
@@ -122,13 +122,13 @@ def decide_and_format_notification(
                 if completed == 60
                 else ("FULL 120-SESSION VALIDATION COMPLETE" if completed == 120 else f"Session {completed} Milestone")
             )
-            title = f"Moreshwar 3.1 Paper: {gate_lbl}"
+            title = f"MOVIQ 3.1 Paper: {gate_lbl}"
         elif is_friday:
             should_send = True
             priority = "default"
             tags = "calendar,chart_with_upwards_trend"
             reason = "WEEKLY_FRIDAY_DIGEST"
-            title = f"Moreshwar 3.1 Weekly Paper Digest ({completed}/{min_req})"
+            title = f"MOVIQ 3.1 Weekly Paper Digest ({completed}/{min_req})"
         else:
             title = ""
     else:

@@ -92,7 +92,7 @@ class StockyAssistant:
                 "reply": (
                     f"✅ **Execution Bridge Ready:** Queued **BUY {qty} shares of {sym}** @ ₹{snap['price']:,.2f} "
                     f"(Total: ₹{qty * snap['price']:,.2f}).\n"
-                    f"• Moreshwar Target: **₹{m['target']:,.2f}** | Stop-Loss: **₹{m['stop_loss']:,.2f}** (R:R 1:{m['rr_ratio']})."
+                    f"• MOVIQ Target: **₹{m['target']:,.2f}** | Stop-Loss: **₹{m['stop_loss']:,.2f}** (R:R 1:{m['rr_ratio']})."
                 ),
                 "queued_trade": {
                     "symbol": sym,
@@ -136,7 +136,7 @@ class StockyAssistant:
                         f"(Business: {f['business']}/40 · Moat: {f['moat']}/20 · Management: {f['management']}/20 · Risk: {f['risk']}/20)\n"
                         f"• **Porter's 5 Forces Moat:** **{p['total']} / 100** "
                         f"(Entrants: {p['entrants']} · Suppliers: {p['suppliers']} · Buyers: {p['buyers']} · Substitutes: {p['substitutes']} · Rivalry: {p['rivalry']})\n"
-                        f"• **Moreshwar Dynamic Levels:** Entry **₹{m['entry_price']:,.2f}** | Target **₹{m['target']:,.2f}** | Stop-Loss **₹{m['stop_loss']:,.2f}**\n"
+                        f"• **MOVIQ Dynamic Levels:** Entry **₹{m['entry_price']:,.2f}** | Target **₹{m['target']:,.2f}** | Stop-Loss **₹{m['stop_loss']:,.2f}**\n"
                         f"• **30D Quant Regression Target:** **₹{snap['projected_30d_target']:,.2f}** ({snap['regression_curve']})\n\n"
                         f"💡 **Verdict:** {f['nlp']} {d['rationale']}"
                     ),
