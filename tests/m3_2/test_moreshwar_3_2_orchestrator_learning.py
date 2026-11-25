@@ -148,6 +148,66 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
             self.assertFalse(mission["real_money_ready"])
             self.assertFalse(mission["live_trading_enabled"])
 
+    def test_scoring_rejects_unavailable_fundamentals_no_fake_defaults(self) -> None:
+        from finsistant_v2.scoring_engine import calculate_fundamental_score, calculate_porters_score
+
+        bad_meta = {"fundamentals_status": "unavailable", "fundamental_source_category": "UNAVAILABLE"}
+        with self.assertRaises(ValueError):
+            calculate_fundamental_score(bad_meta)
+        with self.assertRaises(ValueError):
+            calculate_porters_score(bad_meta)
+
+        partial_meta = {"name": "TEST", "pe": 0.0, "missing_fields": ["pe", "roe", "opm", "sales_growth", "profit_growth", "mcap_cr"]}
+        with self.assertRaises(ValueError):
+            calculate_fundamental_score(partial_meta, strict=True)
+
+    def test_scanner_retries_then_fails_upfront_on_data_failure(self) -> None:
+        dates, c_up = _synth_history(100.0, 0.004, n=70, end_date="2026-11-20")
+        histories = {
+            "SEC_1": {
+                "symbol": "FAILCO", "sector": "IT", "industry": "Software",
+                "dates": dates, "open": c_up, "high": [x * 1.01 for x in c_up],
+                "low": [x * 0.99 for x in c_up], "close": c_up, "volume": [1_000_000.0] * 70,
+            },
+        }
+        eq_bars = {
+            "SEC_1": {"sec_id": "SEC_1", "symbol": "FAILCO", "sector": "IT", "close": c_up[-1], "adv_20d_inr": 80_000_000.0, "vol_20d": 0.014, "valid": True},
+        }
+        calls = {"n": 0}
+
+        def failing_live(_sym: str) -> dict:
+            calls["n"] += 1
+            raise RuntimeError("NSE MCP unavailable")
+
+        scanner = OrchestratorUniverseScanner(
+            OrchestratorScanConfig(shortlist_size=5, max_workers=1, max_retries_per_symbol=2),
+            analysis_fn=failing_live,
+        )
+        with self.assertRaises(RuntimeError, msg="ORCHESTRATOR_SCAN_FAILED_UPFRONT"):
+            scanner.scan(trading_date="2026-11-20", equity_histories=histories, eq_bars=eq_bars)
+        self.assertEqual(calls["n"], 2)
+
+    def test_m32_overrides_blocked_for_m31_and_active_0_90_10_for_m32(self) -> None:
+        from finsistant_v2.m3_1.prospective_paper_trading_engine import ProspectivePaperTradingEngine
+        from finsistant_v2.m3_2.orchestrated_session import M32_ALPHA_REGIME_POLICY, M32_EXEC_CFG_OVERRIDE, OrchestratedSessionRunner
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tdir = Path(tmp)
+            with self.assertRaises(PaperTradingSafetyError):
+                ProspectivePaperTradingEngine(
+                    db_path=tdir / "m31_bad.db",
+                    regime_policy_override=M32_ALPHA_REGIME_POLICY,
+                )
+            runner = OrchestratedSessionRunner(
+                db_path=tdir / "m32.db",
+                learning_db_path=tdir / "learn.db",
+                reports_dir=tdir / "rep",
+                scan_dir=tdir / "scan",
+            )
+            bull = [r for r in runner.orch.engine._effective_regime_policy.regime_rules if r[0] == "BULL_TREND"][0]
+            self.assertEqual((bull[1], bull[2], bull[3]), (0.0, 90.0, 10.0))
+            self.assertEqual(M32_EXEC_CFG_OVERRIDE["sweep_unused_tactical_to_core"], False)
+
 
 if __name__ == "__main__":
     unittest.main()

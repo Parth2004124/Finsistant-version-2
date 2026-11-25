@@ -57,7 +57,9 @@ class OrchestratorScanConfig:
     max_price_discrepancy_pct: float = 5.0  # live agent price vs EOD bar; larger => excluded
     stop_ratio_min: float = 0.08
     stop_ratio_max: float = 0.14
-    max_workers: int = 6
+    max_workers: int = 2
+    max_retries_per_symbol: int = 4
+    min_agents_ok_ratio: float = 0.80
 
     def as_dict(self) -> dict[str, Any]:
         return dict(self.__dict__)
@@ -84,8 +86,8 @@ def _candles_from_history(h: dict[str, Any], n: int) -> list[dict[str, Any]]:
 
 
 def _default_fast_live_analysis(symbol: str) -> dict[str, Any]:
-    """Fetch real live Yahoo fundamentals + OHLCV analysis without hanging on NSE MCP timeouts."""
-    from finsistant_v2 import live_data
+    """Fetch strict Official NSE MCP quotes/OHLCV + verified live fundamentals (zero silent fallbacks or default scores)."""
+    from finsistant_v2.live_data import fetch_live_market_snapshot
     from finsistant_v2.quant_engine import compute_ohlcv_and_regression_from_candles
     from finsistant_v2.scoring_engine import (
         calculate_decision_matrix,
@@ -95,21 +97,15 @@ def _default_fast_live_analysis(symbol: str) -> dict[str, Any]:
     )
 
     sym = symbol.upper().strip()
-    yahoo_sym, exchange_hint = live_data.resolve_yahoo_symbol(sym)
-    live = live_data._fetch_via_yfinance(sym, yahoo_sym, exchange_hint)
-    if not live:
-        raise RuntimeError(f"Real Yahoo Finance data unavailable for {sym} ({yahoo_sym})")
-    live.setdefault("price_source_category", "YAHOO_LIVE_FEED")
-    live.setdefault("ohlcv_source_category", "HISTORICAL_MARKET_DATA")
-    live.setdefault("fundamental_source_category", "YAHOO_LIVE_FEED")
+    live = fetch_live_market_snapshot(sym, force_refresh=True, strict_no_fallback=True)
 
     quant = compute_ohlcv_and_regression_from_candles(live["candles"], periods=45)
     candles = quant["candles"]
     latest = candles[-1]
     spot = float(live["price"])
 
-    f_score = calculate_fundamental_score(live)
-    p_score = calculate_porters_score(live)
+    f_score = calculate_fundamental_score(live, strict=True)
+    p_score = calculate_porters_score(live, strict=True)
     moreshwar = calculate_moreshwar_levels(
         spot_price=spot,
         f_score_total=f_score["total"],
@@ -139,7 +135,7 @@ def _default_fast_live_analysis(symbol: str) -> dict[str, Any]:
         "change_pct": float(live["change_pct"]),
         "fetched_at": live["fetched_at"],
         "market_timestamp": live.get("market_timestamp") or f"{candles[-1]['date']}T10:00:00+00:00",
-        "market_timestamp_kind": live.get("market_timestamp_kind", "end_of_day_bar"),
+        "market_timestamp_kind": live.get("market_timestamp_kind", "exchange_quote"),
         "missing_fields": list(live.get("missing_fields") or []),
         "proxy_fields": dict(live.get("proxy_fields") or {}),
         "cache_hit": False,
@@ -147,6 +143,7 @@ def _default_fast_live_analysis(symbol: str) -> dict[str, Any]:
         "price_source_category": live["price_source_category"],
         "ohlcv_source_category": live["ohlcv_source_category"],
         "fundamental_source_category": live["fundamental_source_category"],
+        "fundamentals_status": live.get("fundamentals_status", "live"),
         "data_source": live["data_source"],
         "rsi_14": float(latest["rsi_14"]),
         "macd": float(latest["macd"]),
@@ -303,8 +300,29 @@ class OrchestratorUniverseScanner:
             "projected_30d_upside_pct": r.get("projected_30d_upside_pct"),
             "status": "PENDING",
         }
+        import time as _time
+
+        last_exc: Exception | None = None
+        snap: dict[str, Any] | None = None
+        max_attempts = max(1, int(self.cfg.max_retries_per_symbol))
+        for attempt in range(max_attempts):
+            try:
+                cand_snap = self._analysis_fn(r["symbol"])
+                if not cand_snap or str(cand_snap.get("fundamentals_status", "")).lower() == "unavailable" or str(cand_snap.get("fundamental_source_category", "")).upper() == "UNAVAILABLE":
+                    raise RuntimeError(f"Fundamental data unavailable for {r['symbol']} (refusing default score).")
+                snap = cand_snap
+                break
+            except Exception as exc:
+                last_exc = exc
+                if attempt < max_attempts - 1:
+                    _time.sleep(min(15.0, 2.0 * (attempt + 1)))
+
+        if snap is None:
+            row["status"] = "FAILED_DATA_UNAVAILABLE"
+            row["error"] = str(last_exc)[:200] if last_exc else "Unknown data fetch error"
+            return row
+
         try:
-            snap = self._analysis_fn(r["symbol"])
             live_px = float(snap["price"])
             disc = abs(live_px / float(r["close"]) - 1.0) * 100.0 if r["close"] else 999.0
             row["live_price"] = round(live_px, 4)
@@ -360,7 +378,7 @@ class OrchestratorUniverseScanner:
                 }
             )
         except Exception as exc:
-            row["status"] = "EXCLUDED_AGENT_DATA_UNAVAILABLE"
+            row["status"] = "FAILED_DATA_UNAVAILABLE"
             row["error"] = str(exc)[:200]
         return row
 
@@ -448,6 +466,18 @@ class OrchestratorUniverseScanner:
             )
 
         n_ok = sum(1 for r in agent_rows if r["status"] == "AGENTS_OK")
+        n_failed_data = sum(
+            1 for r in agent_rows if r["status"] in ("FAILED_DATA_UNAVAILABLE", "EXCLUDED_AGENT_DATA_UNAVAILABLE")
+        )
+        max_allowed_failures = int(len(shortlist) * (1.0 - float(self.cfg.min_agents_ok_ratio)))
+        if shortlist and (n_failed_data > max_allowed_failures or (n_ok == 0 and n_failed_data > 0)):
+            sample_err = next((r.get("error") for r in agent_rows if r.get("error")), "data unavailable")
+            raise RuntimeError(
+                f"ORCHESTRATOR_SCAN_FAILED_UPFRONT on {trading_date}: "
+                f"{n_failed_data}/{len(shortlist)} shortlisted symbols failed real NSE/fundamental fetch "
+                f"after {self.cfg.max_retries_per_symbol} retries ({sample_err})."
+            )
+
         return {
             "scanner_version": SCANNER_VERSION,
             "trading_date": str(trading_date),
@@ -471,6 +501,7 @@ class OrchestratorUniverseScanner:
                 "shortlisted": len(shortlist),
                 "agents_ok": n_ok,
                 "agents_excluded": len(agent_rows) - n_ok,
+                "agents_failed_data": n_failed_data,
                 "exec_buy_approved": len(buys),
                 "paper_candidates": len(candidates),
                 "skipped": skipped,

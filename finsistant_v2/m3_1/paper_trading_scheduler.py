@@ -259,7 +259,13 @@ class PaperTradingScheduler:
             st["last_reason"] = f"Querying daily market data for {dt}"
             self._persist_status(st)
 
-            snapshot = market_data_provider(dt)
+            try:
+                snapshot = market_data_provider(dt)
+            except Exception as exc:
+                st["status"] = "FAILED"
+                st["last_reason"] = f"Market data / scan error on {dt}: {exc}"
+                self._persist_status(st)
+                raise
             if snapshot is None:
                 if mark_missed_if_unavailable:
                     self.orchestrator.engine.record_missed_session(
