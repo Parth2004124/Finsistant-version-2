@@ -666,6 +666,14 @@ body.km-m32-seg-m31 #intelSectionV32 {
   display: none !important;
 }
 
+#mv32ShortlistBody tr td[colspan],
+#mv32LessonsBody tr td[colspan],
+#rptM32QueueBody tr td[colspan],
+#rptM31QueueBody tr td[colspan] {
+  display: table-cell !important;
+  white-space: normal !important;
+}
+
 /* ---- TAB 2 (PORTFOLIO / STOCKSIGHT) SEGMENTED VIEWS ---- */
 body.km-ss-seg-score #panel-stocksight .two-col-grid > :nth-child(2) {
   display: none !important;
