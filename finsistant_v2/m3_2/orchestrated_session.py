@@ -22,6 +22,10 @@ from finsistant_v2.m3_1.live_nse_eod_feed import fetch_completed_nse_eod_snapsho
 from finsistant_v2.m3_1.paper_trading_orchestrator import PaperTradingOrchestrator
 from finsistant_v2.m3_1.paper_trading_scheduler import PaperTradingScheduler
 from finsistant_v2.m3_1.prospective_paper_trading_engine import REPO_ROOT
+from finsistant_v2.trade_automation import (
+    EMSOrderBlotter,
+    RuleBuilderEngine,
+)
 
 from .learning_ledger import OrchestratorLearningLedger
 from .orchestrator_scanner import (
@@ -112,15 +116,18 @@ class OrchestratedSessionRunner:
         )
         self.ledger = OrchestratorLearningLedger(learning_db_path)
         self.scanner = scanner or OrchestratorUniverseScanner(OrchestratorScanConfig())
+        self.rbld = RuleBuilderEngine()
         self.scan_dir = Path(scan_dir)
         self.reports_dir = Path(reports_dir)
         self.last_scan: dict[str, Any] | None = None
         self.last_exit_signals: list[dict[str, Any]] = []
+        self.last_blotter: dict[str, Any] | None = None
 
     # -- provider handed to PaperTradingScheduler -------------------------------------------------
     def market_data_provider(self, trading_date: str) -> dict[str, Any] | None:
         self.last_scan = None
         self.last_exit_signals = []
+        self.last_blotter = None
         ledger_snap = self.orch.engine.get_full_ledger_snapshot()
         snap_open = ledger_snap.get("open_tactical_positions", [])
         extra_open = [
@@ -156,14 +163,45 @@ class OrchestratedSessionRunner:
             today=trading_date, equity_histories=histories, nb_dates=nb_dates, nb_closes=nb_closes
         )
         upd = self.ledger.update_weights(trading_date)
+        btca_summary = self.ledger.btca_report()
 
         nav = float(ledger_snap.get("portfolio_state", {}).get("last_nav_inr", 100_000.0) or 100_000.0)
+        dd_pct = float((ledger_snap.get("risk_metrics") or {}).get("max_drawdown_pct") or 0.0)
+        recon_diff = float((ledger_snap.get("reconciliation") or {}).get("reconciliation_diff_inr") or 0.0)
+        eng_state = str((ledger_snap.get("engine_state") or {}).get("engine_state") or "RUNNING")
+        desk_halted, ks_reasons = self.rbld.evaluate_desk_kill_switch(
+            engine_state=eng_state,
+            drawdown_pct=dd_pct,
+            recon_diff_inr=recon_diff,
+            btca_drift_breached=bool(btca_summary.get("kill_switch_drift_breached")),
+        )
+        blotter = EMSOrderBlotter(desk_halted=desk_halted, kill_switch_reasons=ks_reasons)
+
         exit_signals = self.scanner.evaluate_open_holdings(
             snap_open,
             learned_params=upd,
             capital_inr=nav,
         )
         self.last_exit_signals = list(exit_signals)
+        for ex in exit_signals:
+            bar = snap["equity_bars"].get(str(ex["sec_id"]), {})
+            ex_px = float(bar.get("close") or 0.0)
+            ex_verdict = self.rbld.evaluate_order(
+                symbol=str(ex["symbol"]),
+                side="SELL",
+                arrival_price=ex_px,
+                order_notional_inr=ex_px * 1.0,
+                nav_inr=nav,
+                adv_20d_inr=float(bar.get("adv_20d_inr") or 80_000_000.0),
+                hl_range_pct=float(bar.get("hl_range_pct") or 2.0),
+                daily_vol_frac=float(bar.get("vol_20d") or 0.018),
+                bar_valid=bool(bar.get("valid", True)),
+                desk_halted=desk_halted,
+                desk_halt_reasons=ks_reasons,
+                prefer_algo_wheel=True,
+                require_min_adv=False,
+            )
+            blotter.record_compliance_result(ex_verdict, qty=0)
 
         scan = self.scanner.scan(
             trading_date=trading_date,
@@ -172,15 +210,73 @@ class OrchestratedSessionRunner:
             learned_params=upd,
             capital_inr=nav,
         )
+        # Record any scanner symbol failures explicitly into EMS exception blotter
+        for row in scan.get("shortlist") or []:
+            if str(row.get("status") or "") in ("FAILED_DATA_UNAVAILABLE", "EXCLUDED_PRICE_DISCREPANCY"):
+                blotter.record_data_exception(
+                    str(row.get("symbol") or ""),
+                    str(row.get("error") or row.get("status")),
+                    source="ORCHESTRATOR_SHORTLIST",
+                )
+
+        shortlist_by_sid = {str(r.get("sec_id")): r for r in (scan.get("shortlist") or [])}
+        open_sec_exp: dict[str, float] = {}
+        for p in snap_open:
+            sn = str(p.get("sector") or "UNKNOWN_SECTOR")
+            open_sec_exp[sn] = open_sec_exp.get(sn, 0.0) + float(p.get("qty") or 0) * float(p.get("last_price") or 0.0)
+        base_slot_inr = (nav * 0.90) / max(1, int(M32_EXEC_CFG_OVERRIDE["max_tactical_positions"]))
+        tca_adder = float(btca_summary.get("tca_hurdle_adder_bps") or 0.0)
+
+        approved_candidates: list[dict[str, Any]] = []
+        for cand in scan.get("candidates") or []:
+            sid = str(cand["sec_id"])
+            bar = snap["equity_bars"].get(sid, {})
+            sl_row = shortlist_by_sid.get(sid, {})
+            c_px = float(bar.get("close") or sl_row.get("eod_close") or 0.0)
+            sec_nm = str(bar.get("sector") or sl_row.get("sector") or "UNKNOWN_SECTOR")
+            est_notional = min(base_slot_inr, nav * (float(M32_EXEC_CFG_OVERRIDE["max_single_stock_pct"]) / 100.0))
+            sec_after_pct = ((open_sec_exp.get(sec_nm, 0.0) + est_notional) / max(1.0, nav)) * 100.0
+            verdict = self.rbld.evaluate_order(
+                symbol=str(cand["symbol"]),
+                side="BUY",
+                arrival_price=c_px,
+                order_notional_inr=est_notional,
+                nav_inr=nav,
+                adv_20d_inr=float(bar.get("adv_20d_inr") or 0.0),
+                hl_range_pct=float(bar.get("hl_range_pct") or 2.0),
+                daily_vol_frac=float(bar.get("vol_20d") or 0.018),
+                fundamentals_status="live" if sl_row.get("status") == "AGENTS_OK" else "unavailable",
+                bar_valid=bool(bar.get("valid", True)),
+                price_discrepancy_pct=float(sl_row.get("price_discrepancy_pct") or 0.0),
+                sector_exposure_after_pct=sec_after_pct,
+                open_positions_count=len(snap_open),
+                max_positions=int(M32_EXEC_CFG_OVERRIDE["max_tactical_positions"]),
+                desk_halted=desk_halted,
+                desk_halt_reasons=ks_reasons,
+                prefer_algo_wheel=True,
+                require_min_adv=True,
+            )
+            blotter.record_compliance_result(verdict, qty=int(est_notional // max(1e-6, c_px)) if c_px > 0 else 0)
+            if verdict["compliance_passed"]:
+                enriched_cand = dict(cand)
+                enriched_cand["execution_mode"] = verdict["selected_algo"]
+                enriched_cand["pre_trade_cost_bps"] = verdict["pre_trade_tca"]["est_total_cost_bps"]
+                enriched_cand["matched_rules"] = verdict["matched_rules"]
+                enriched_cand["tca_hurdle_adder_bps"] = tca_adder
+                approved_candidates.append(enriched_cand)
+
+        self.last_blotter = blotter.to_payload(rules=self.rbld.get_rules(), btca_summary=btca_summary)
+        scan["candidates"] = approved_candidates
         scan["outcomes_matured_this_run"] = matured
         scan["trade_lessons_synced_pre_scan"] = new_lessons
         scan["exit_signals"] = list(exit_signals)
+        scan["ems_blotter"] = self.last_blotter
         self.last_scan = scan
 
-        snap["family_e_candidates"] = scan["candidates"]  # engine key; candidates are orchestrator picks
+        snap["family_e_candidates"] = approved_candidates
         snap["candidate_source"] = "ORCHESTRATOR_AGENT_CONSENSUS"
         snap["tactical_exit_signals"] = exit_signals
-        snap["pairwise_corr_map"] = pairwise_corr_for_candidates(scan["candidates"], histories)
+        snap["pairwise_corr_map"] = pairwise_corr_for_candidates(approved_candidates, histories)
         return snap
 
     # -- full lifecycle -----------------------------------------------------------------------------
@@ -192,12 +288,15 @@ class OrchestratedSessionRunner:
             observation_mode="PROSPECTIVE_PAPER",
             mark_missed_if_unavailable=mark_missed,
         )
-        self.finalize_reports(trading_date)
+        exec_orders = ((res.get("execution_result") or {}).get("orders") or [])
+        self.finalize_reports(trading_date, session_orders=exec_orders)
         return res
 
-    def finalize_reports(self, trading_date: str) -> None:
+    def finalize_reports(self, trading_date: str, *, session_orders: list[dict[str, Any]] | None = None) -> None:
         paper_snap = self.orch.engine.get_full_ledger_snapshot()
-        # Sync any trades closed during today's session immediately so post-mortems & weights reflect today
+        # Sync Post-Trade BTCA execution analytics & closed-trade post-mortems immediately
+        if session_orders:
+            self.ledger.sync_btca_executions(session_orders)
         post_lessons = self.ledger.sync_closed_trades(self.orch.engine.db_path)
         if post_lessons > 0:
             self.ledger.update_weights(trading_date)
@@ -215,6 +314,7 @@ class OrchestratedSessionRunner:
             public["config_sha256"] = hashlib.sha256(json.dumps(scan["config"], sort_keys=True).encode()).hexdigest()
             public["queued_for_next_open"] = sorted(queued)
             public["exit_signals"] = list(self.last_exit_signals)
+            public["ems_blotter"] = self.last_blotter
             public["allocation_policy"] = "0% NIFTYBEES / 90% Tactical AI Picks / 10% Liquid (BULL_TREND)"
             public["trade_lessons_synced_post_session"] = post_lessons
             self.scan_dir.mkdir(parents=True, exist_ok=True)
@@ -231,6 +331,7 @@ class OrchestratedSessionRunner:
                     d["candidate_source"] = "ORCHESTRATOR_AGENT_CONSENSUS (Moreshwar 3.2)"
                     d["allocation_policy"] = public["allocation_policy"]
                     d["exit_signals"] = list(self.last_exit_signals)
+                    d["ems_blotter"] = self.last_blotter
                     d["orchestrator_scan_summary"] = public["stages"]
                     daily.write_text(json.dumps(d, indent=2, default=str), encoding="utf-8")
                 except Exception:
@@ -246,7 +347,7 @@ class OrchestratedSessionRunner:
         )
 
     def build_dashboard_payload(self) -> dict[str, Any]:
-        """Build complete Moreshwar 3.2 dashboard payload combining paper ledger + orchestrator scan + learning."""
+        """Build complete Moreshwar 3.2 dashboard payload combining paper ledger + orchestrator scan + learning + BTCA."""
         base = self.orch.build_dashboard_payload()
         latest_scan = None
         scan_path = self.scan_dir / "latest_scan.json"
@@ -268,10 +369,13 @@ class OrchestratedSessionRunner:
                 "weights": self.ledger.current_params(),
                 "weight_history": [],
                 "learning": self.ledger.learning_report(),
+                "btca": self.ledger.btca_report(),
             }
         base["release_version"] = RELEASE_VERSION_M3_2
         base["candidate_source"] = "ORCHESTRATOR_AGENT_CONSENSUS"
         base["mission"] = learning_doc.get("mission")
         base["orchestrator_scan"] = latest_scan
         base["orchestrator_learning"] = learning_doc
+        base["ems_blotter"] = (latest_scan or {}).get("ems_blotter") or self.last_blotter
+        base["btca"] = learning_doc.get("btca") or self.ledger.btca_report()
         return base

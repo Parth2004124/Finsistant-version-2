@@ -57,6 +57,10 @@ from finsistant_v2.m3_1.prospective_paper_trading_engine import (
     ConfigIntegrityError,
     PaperTradingSafetyError,
 )
+from finsistant_v2.trade_automation import (
+    EMSOrderBlotter,
+    RuleBuilderEngine,
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = BASE_DIR / "web"
@@ -88,6 +92,8 @@ M3_1_ORCHESTRATOR: PaperTradingOrchestrator | None = None
 M3_1_SCHEDULER: PaperTradingScheduler | None = None
 AUDIT_LEDGER_CACHE: dict[str, Any] = {}
 PROVENANCE_CACHE: dict[str, Any] = {}
+RBLD_ENGINE = RuleBuilderEngine()
+EMS_BLOTTER = EMSOrderBlotter()
 AUTO_RULES: list[dict[str, Any]] = [
     {"rule_id": "rule-1", "name": "Strict Breakout Rules (Score > 80 & R:R > 1.8)", "min_score": 80, "active": True},
     {"rule_id": "rule-2", "name": "Moat Compounders (Fundamental >= 75 & Porter >= 75)", "min_score": 75, "active": True},
@@ -334,15 +340,42 @@ def _refresh_analytics_and_audit(force_new_for_symbol: str | None = None, force_
     )
 
 
+def _ohlcv_telemetry(candles: list[dict[str, Any]], spot: float) -> tuple[float, float, float]:
+    """Compute real trailing 20D ADV (INR/notional), H-L spread %, and daily return volatility."""
+    import math as _math
+
+    bars = candles[-20:] if candles else []
+    if not bars:
+        return 0.0, 0.0, 0.02
+    adv = sum(max(0.0, float(b.get("close") or spot)) * max(0.0, float(b.get("volume") or 0.0)) for b in bars) / len(bars)
+    last_b = bars[-1]
+    lc = max(1e-6, float(last_b.get("close") or spot))
+    hl_pct = max(0.0, ((float(last_b.get("high") or lc) - float(last_b.get("low") or lc)) / lc) * 100.0)
+    rets = []
+    for k in range(1, len(bars)):
+        p0 = float(bars[k - 1].get("close") or 0.0)
+        p1 = float(bars[k].get("close") or 0.0)
+        if p0 > 0 and p1 > 0:
+            rets.append((p1 / p0) - 1.0)
+    if len(rets) >= 5:
+        mu = sum(rets) / len(rets)
+        var = sum((x - mu) ** 2 for x in rets) / max(1, len(rets) - 1)
+        vol = max(0.004, _math.sqrt(var))
+    else:
+        vol = max(0.008, hl_pct / 100.0)
+    return round(adv, 2), round(hl_pct, 2), round(vol, 5)
+
+
 def _initialize_platform_state(force_refresh: bool = False, force_token_refresh: bool = False) -> None:
-    """Seed watchlist from live Yahoo Finance and load real Zerodha Kite holdings (0 if none)."""
-    global CASH_BALANCE, KITE_STATUS
+    """Seed watchlist from live feeds and load real Zerodha Kite holdings (fail-closed per symbol into EMS blotter)."""
+    global CASH_BALANCE, KITE_STATUS, EMS_BLOTTER
     PORTFOLIO_STATE.clear()
     ANALYSIS_CACHE.clear()
     FULL_HISTORY_CACHE.clear()
     PIPELINE_CACHE.clear()
     GEMINI_CRITIQUES.clear()
     TRADE_QUEUE.clear()
+    EMS_BLOTTER = EMSOrderBlotter()
 
     kite_data = fetch_kite_portfolio(force_token_refresh=force_token_refresh)
     KITE_META.clear()
@@ -359,7 +392,11 @@ def _initialize_platform_state(force_refresh: bool = False, force_token_refresh:
         kh = kite_holdings_map.get(sym)
         qty = int(kh["qty"]) if kh else 0
         avg = float(kh["avg_price"]) if kh else 0.0
-        snap = get_asset_full_analysis(sym, is_holding=(qty > 0), force_refresh=force_refresh)
+        try:
+            snap = get_asset_full_analysis(sym, is_holding=(qty > 0), force_refresh=force_refresh)
+        except Exception as exc:
+            EMS_BLOTTER.record_data_exception(sym, str(exc), source="INITIALIZE_LIVE_FEED")
+            continue
         ANALYSIS_CACHE[sym] = snap
         try:
             raw_hist = fetch_live_market_snapshot(sym, force_refresh=False)
@@ -388,19 +425,34 @@ def _initialize_platform_state(force_refresh: bool = False, force_token_refresh:
             "moreshwar": snap["moreshwar_levels"],
         }
 
+    if not PORTFOLIO_STATE:
+        raise RuntimeError(f"ALL_SYMBOLS_FAILED_LIVE_SCAN: {EMS_BLOTTER.exceptions[:5]}")
+
     _scan_and_populate_queue(force_refresh=False)
 
 
 def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]:
-    """Run TechSight + StockSight V2 + 3-Agent Orchestrator + Gemini Critical Analyst scan."""
-    global LAST_SCAN_AT
+    """Run TechSight + StockSight V2 + 3-Agent Orchestrator + Bloomberg RBLD Compliance + Gemini Critic."""
+    global LAST_SCAN_AT, EMS_BLOTTER
     TRADE_QUEUE.clear()
+    prev_init_exceptions = [
+        e for e in EMS_BLOTTER.exceptions if e.get("exception_type") == "FAILED_DATA_UNAVAILABLE"
+    ]
+    EMS_BLOTTER = EMSOrderBlotter()
+    EMS_BLOTTER.exceptions.extend(prev_init_exceptions)
+
     sizing_capital = CASH_BALANCE if CASH_BALANCE > 0 else 100000.0
+    m32_params = _load_m3_2_learned_params()
+    tca_adder = float(m32_params.get("tca_hurdle_adder_bps") or 0.0)
 
     for sym in list(PORTFOLIO_STATE.keys()):
         p_item = PORTFOLIO_STATE[sym]
         is_held = int(p_item.get("qty", 0)) > 0
-        snap = get_asset_full_analysis(sym, is_holding=is_held, force_refresh=force_refresh)
+        try:
+            snap = get_asset_full_analysis(sym, is_holding=is_held, force_refresh=force_refresh)
+        except Exception as exc:
+            EMS_BLOTTER.record_data_exception(sym, str(exc), source="SCAN_REFRESH_GATE")
+            continue
         ANALYSIS_CACHE[sym] = snap
         try:
             raw_hist = fetch_live_market_snapshot(sym, force_refresh=False)
@@ -421,7 +473,6 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
         if not is_held:
             p_item["avg_price"] = snap["price"]
 
-        learned_params = _load_m3_2_learned_params()
         run = runner.run_pipeline(
             symbol=sym,
             timeframe="1D",
@@ -429,7 +480,7 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
             active_trades=len([t for t in EXECUTED_LOG if t.get("side") == "BUY"]),
             is_holding=is_held,
             asset_analysis=snap,
-            learned_params=learned_params,
+            learned_params=m32_params,
         )
         PIPELINE_CACHE[sym] = run.model_dump()
 
@@ -457,6 +508,30 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
         else:
             continue
 
+        order_qty = p_item.get("qty", 1) if tx_type == "SELL" else max(1, run.quantity)
+        adv_20d, hl_pct, d_vol = _ohlcv_telemetry(snap.get("candles") or [], float(snap["price"]))
+        order_notional = float(order_qty) * float(snap["price"])
+        verdict = RBLD_ENGINE.evaluate_order(
+            symbol=sym,
+            side=tx_type,
+            arrival_price=float(snap["price"]),
+            order_notional_inr=order_notional,
+            nav_inr=sizing_capital,
+            adv_20d_inr=adv_20d,
+            hl_range_pct=hl_pct,
+            daily_vol_frac=d_vol,
+            fundamentals_status=str(snap.get("fundamentals_status", "live")),
+            bar_valid=float(snap["price"]) > 0,
+            sector_exposure_after_pct=(order_notional / max(1.0, sizing_capital)) * 100.0,
+            open_positions_count=len([v for v in PORTFOLIO_STATE.values() if int(v.get("qty", 0)) > 0]),
+            max_positions=8,
+            prefer_algo_wheel=True,
+            require_min_adv=(snap.get("exchange") == "NSE"),
+        )
+        EMS_BLOTTER.record_compliance_result(verdict, qty=order_qty)
+        if not verdict["compliance_passed"]:
+            continue
+
         TRADE_QUEUE.append(
             {
                 "id": f"pick-{sym.lower()}-{int(time.time()) % 10000}",
@@ -466,6 +541,11 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
                 "setup_type": snap["setup_type"],
                 "transaction_type": tx_type,
                 "status": "PENDING",
+                "lifecycle_state": verdict["lifecycle_state"],
+                "algo_strategy": verdict["selected_algo"],
+                "matched_rules": verdict["matched_rules"],
+                "pre_trade_tca": verdict["pre_trade_tca"],
+                "tca_hurdle_adder_bps": tca_adder,
                 "technical_score": int(round(run.messages[0].confidence * 100)),
                 "fundamental_score": f_tot,
                 "porters_score": p_tot,
@@ -475,7 +555,7 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
                 "target": m["target"],
                 "stop_loss": m["stop_loss"],
                 "rr_ratio": m["rr_ratio"],
-                "qty": p_item.get("qty", 1) if tx_type == "SELL" else max(1, run.quantity),
+                "qty": order_qty,
                 "horizon_days": "5D" if tx_type == "SELL" else "14D",
                 "rationale": f"{run.messages[1].summary} {run.messages[2].summary}",
             }
@@ -701,6 +781,11 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
         "watchlist_source": globals().get("WATCHLIST_SOURCE", "MORESHWAR_3_2_FULL_UNIVERSE_SCAN"),
         "moreshwar_v3_1": _get_m3_1_dashboard_payload(),
         "moreshwar_v3_2": _get_m3_2_dashboard_payload(),
+        "ems_blotter": EMS_BLOTTER.to_payload(
+            rules=RBLD_ENGINE.get_rules(),
+            btca_summary=(_get_m3_2_dashboard_payload().get("orchestrator_learning") or {}).get("btca") or {},
+        ),
+        "rbld_rules": RBLD_ENGINE.get_rules(),
         "audit_trail": build_audit_dashboard_view(AUDIT_LEDGER_CACHE or load_audit_ledger(LEDGER_PATH)),
         "rules": AUTO_RULES,
         "active_analysis": active_analysis,
@@ -1009,7 +1094,8 @@ class FinsistantV2HTTPHandler(BaseHTTPRequestHandler):
             for r in AUTO_RULES:
                 if r["rule_id"] == rule_id:
                     r["active"] = not r["active"]
-            self._send_json({"rules": AUTO_RULES})
+            RBLD_ENGINE.toggle_rule(rule_id)
+            self._send_json({"rules": AUTO_RULES, "rbld_rules": RBLD_ENGINE.get_rules()})
             return
 
         if path == "/api/chat":

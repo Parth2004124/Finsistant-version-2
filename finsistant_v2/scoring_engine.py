@@ -82,19 +82,20 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = True) ->
     sales_growth = _require_real_metric(meta, "sales_growth")
     profit_growth = _require_real_metric(meta, "profit_growth")
     roe = _require_real_metric(meta, "roe")
-    pe = _require_real_metric(meta, "pe")
     mcap_cr = _require_real_metric(meta, "mcap_cr")
     if mcap_cr <= 0:
         raise ValueError("Invalid non-positive mcap_cr; refusing fake fundamental score.")
+    raw_pe = meta.get("pe")
+    pe = float(raw_pe) if raw_pe is not None else -1.0  # Loss/negative TTM EPS genuinely omits P/E on Screener/Yahoo
     opm = float(meta["opm"]) if meta.get("opm") is not None else (0.0 if is_financial else _require_real_metric(meta, "opm"))
     roce = float(meta["roce"]) if meta.get("roce") is not None else (roe if is_financial else _require_real_metric(meta, "roce"))
     beta = float(meta["beta"]) if meta.get("beta") is not None else 1.0
-    ret_1y = float(meta["ret_1y"]) if meta.get("ret_1y") is not None else _require_real_metric(meta, "ret_1y")
-    debt_to_equity = float(meta["debt_to_equity"]) if meta.get("debt_to_equity") is not None else (None if is_financial else _require_real_metric(meta, "debt_to_equity"))
-    if strict and (not is_financial) and debt_to_equity is None:
-        raise ValueError("Missing required 'debt_to_equity' for non-financial company.")
+    ret_1y = float(meta["ret_1y"]) if meta.get("ret_1y") is not None else 0.0
+    debt_to_equity = float(meta["debt_to_equity"]) if meta.get("debt_to_equity") is not None else None
 
     reasons: list[str] = []
+    if raw_pe is None:
+        reasons.append("No Positive TTM P/E")
 
     # A. Business Pillar (Max 40)
     business = 0.0
@@ -211,7 +212,9 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = True) ->
     total = int(round(min(99.0, max(0.0, raw_total))))
 
     nlp_parts = []
-    if pe < 18:
+    if pe <= 0:
+        nlp_parts.append("Negative or unavailable TTM earnings (P/E N/A).")
+    elif pe < 18:
         nlp_parts.append(f"Attractive valuation at P/E {pe:.1f}x with value margin of safety.")
     elif pe > 40:
         nlp_parts.append(f"Premium growth multiple (P/E {pe:.1f}x) pricing in strong execution.")
@@ -234,7 +237,7 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = True) ->
         "explanation": " & ".join(reasons[:2]) if reasons else ("Strong Moat & Growth" if total >= 65 else "Balanced Setup"),
         "nlp": " ".join(nlp_parts),
         "ratios": {
-            "pe": pe,
+            "pe": float(raw_pe) if raw_pe is not None else None,
             "roe": roe,
             "roce": roce,
             "opm": opm,

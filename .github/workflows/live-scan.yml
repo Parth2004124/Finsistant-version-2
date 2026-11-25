@@ -49,8 +49,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install yfinance for live Yahoo Finance session
-        run: python3 -m pip install --quiet --upgrade yfinance
+      - name: Install live data dependencies (yfinance + requests)
+        run: python3 -m pip install --quiet --upgrade yfinance requests
 
       - name: Run live data & 3-agent orchestration scan
         env:
@@ -64,7 +64,22 @@ jobs:
           ADD_SYMBOL: ${{ github.event.inputs.add_symbol || '' }}
           REMOVE_SYMBOL: ${{ github.event.inputs.remove_symbol || '' }}
           FORCE_KITE_REFRESH: ${{ github.event.inputs.refresh_kite || 'false' }}
-        run: python3 scripts/generate_live_scan.py
+        run: |
+          set +e
+          python3 scripts/generate_live_scan.py > live_scan_run.log 2>&1
+          RC=$?
+          cat live_scan_run.log
+          if [ "$RC" -ne 0 ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          lines = Path("live_scan_run.log").read_text(encoding="utf-8", errors="replace").splitlines()
+          for ln in lines[-10:]:
+              if ln.strip():
+                  print(f"::error::{ln[:400]}")
+          PY
+          fi
+          rm -f live_scan_run.log
+          exit "$RC"
 
       - name: Commit updated live_scan.json and audit ledger if changed
         run: |

@@ -35,7 +35,8 @@
     "rsi_overbought_penalty": 0.0,
     "sector_adjustments": {},
     "stop_tighten_mult": 1.0,
-    "status": "SESSION 0/80 \u00b7 CLEAN RESET \u2014 awaiting first strict NSE session"
+    "status": "SESSION 0/80 \u00b7 CLEAN RESET \u2014 awaiting first strict NSE session",
+    "tca_hurdle_adder_bps": 0.0
   },
   "weight_history": [],
   "learning": {
@@ -56,5 +57,19 @@
     "recent_lessons": []
   },
   "scanner_version": "3.2.0",
-  "allocation_policy": "0% NIFTYBEES / 90% Tactical AI Picks / 10% Liquid (BULL_TREND)"
+  "allocation_policy": "0% NIFTYBEES / 90% Tactical AI Picks / 10% Liquid (BULL_TREND)",
+  "btca": {
+    "total_orders": 0,
+    "filled_orders": 0,
+    "avg_fill_rate_pct": null,
+    "mean_implementation_shortfall_bps": null,
+    "mean_delay_cost_bps": null,
+    "mean_execution_slippage_bps": null,
+    "mean_statutory_cost_bps": null,
+    "mean_slippage_surprise_bps": null,
+    "tca_hurdle_adder_bps": 0.0,
+    "kill_switch_drift_breached": false,
+    "algo_breakdown": {},
+    "recent_executions": []
+  }
 }

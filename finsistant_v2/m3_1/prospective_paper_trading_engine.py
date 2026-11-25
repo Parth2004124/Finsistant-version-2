@@ -1441,6 +1441,7 @@ class ProspectivePaperTradingEngine:
                 rejection_reason: str = "",
                 ev_net_bps: float = 0.0,
                 ev_hurdle_bps: float = 200.0,
+                extra_tca: dict[str, Any] | None = None,
             ) -> None:
                 nonlocal cum_costs, cum_turnover
                 gross_val = float(cost_dict["raw_notional"]) if cost_dict else (fill_qty * exec_px)
@@ -1483,7 +1484,7 @@ class ProspectivePaperTradingEngine:
                     "ev_hurdle_bps": round(float(ev_hurdle_bps), 2),
                     "observation_mode": obs_mode,
                 }
-                orders_today.append(row_dict)
+                orders_today.append({**row_dict, **extra_tca} if extra_tca else row_dict)
                 conn.execute(
                     """
                     INSERT INTO simulated_orders(
@@ -1969,9 +1970,21 @@ class ProspectivePaperTradingEngine:
                 adv_v = float(bar.get("adv_20d_inr") or 80_000_000.0)
                 hl_v = float(bar.get("hl_range_pct") or 2.0)
                 vol_v = float(bar.get("vol_20d") or 0.018)
+                order_exec_mode = (
+                    str(order.get("execution_mode") or ecfg.execution_mode)
+                    if self._regime_policy_override is not None
+                    else ecfg.execution_mode
+                )
+                order_tca_meta = {
+                    "arrival_price": float(order.get("expected_price") or o_px),
+                    "bar_open": o_px,
+                    "algo_strategy": order_exec_mode,
+                    "pre_trade_est_cost_bps": order.get("pre_trade_cost_bps"),
+                    "matched_rules": order.get("matched_rules") or [],
+                }
 
                 fill = simulate_execution_fill(
-                    execution_mode=ecfg.execution_mode,
+                    execution_mode=order_exec_mode,
                     side="BUY",
                     req_qty=int(order["req_qty"]),
                     prev_close=prev_c,
@@ -2004,6 +2017,7 @@ class ProspectivePaperTradingEngine:
                         rejection_reason=str(fill.get("reason") or "EXECUTION_FILL_FAILED"),
                         ev_net_bps=float(order.get("ev_net_bps", 0.0)),
                         ev_hurdle_bps=float(order.get("ev_hurdle_bps", 200.0)),
+                        extra_tca=order_tca_meta if self._regime_policy_override is not None else None,
                     )
                     continue
 
@@ -2027,6 +2041,7 @@ class ProspectivePaperTradingEngine:
                         rejection_reason="INSUFFICIENT_SETTLED_CASH_OR_BELOW_MIN_LOT",
                         ev_net_bps=float(order.get("ev_net_bps", 0.0)),
                         ev_hurdle_bps=float(order.get("ev_hurdle_bps", 200.0)),
+                        extra_tca=order_tca_meta if self._regime_policy_override is not None else None,
                     )
                     continue
 
@@ -2039,7 +2054,7 @@ class ProspectivePaperTradingEngine:
                     adv_20d_inr=adv_v,
                     daily_vol_frac=vol_v,
                     hl_range_pct=hl_v,
-                    execution_mode=ecfg.execution_mode,
+                    execution_mode=order_exec_mode,
                 )
                 tot_out = float(bc["exec_notional"]) + float(bc["regulatory_total"])
                 if tot_out > settled_cash:
@@ -2060,6 +2075,7 @@ class ProspectivePaperTradingEngine:
                         rejection_reason="TOTAL_OUTFLOW_EXCEEDS_SETTLED_CASH",
                         ev_net_bps=float(order.get("ev_net_bps", 0.0)),
                         ev_hurdle_bps=float(order.get("ev_hurdle_bps", 200.0)),
+                        extra_tca=order_tca_meta if self._regime_policy_override is not None else None,
                     )
                     continue
 
@@ -2083,6 +2099,7 @@ class ProspectivePaperTradingEngine:
                     status=fill_status,
                     ev_net_bps=float(order.get("ev_net_bps", 0.0)),
                     ev_hurdle_bps=float(order.get("ev_hurdle_bps", 200.0)),
+                    extra_tca=order_tca_meta if self._regime_policy_override is not None else None,
                 )
 
                 sl_r = float(order.get("stop_ratio") or 0.09)
@@ -2482,6 +2499,16 @@ class ProspectivePaperTradingEngine:
 
                         base_slot = (tact_budget_inr / max(1, ecfg.max_tactical_positions)) * cur_size_mult
                         est_lot = min(base_slot, rem_tact_inr, sec_room, ind_room, nav_c * (ecfg.max_single_stock_pct / 100.0))
+                        cand_exec_mode = (
+                            str(cand.get("execution_mode") or ecfg.execution_mode)
+                            if self._regime_policy_override is not None
+                            else ecfg.execution_mode
+                        )
+                        tca_adder = (
+                            float(cand.get("tca_hurdle_adder_bps") or 0.0)
+                            if self._regime_policy_override is not None
+                            else 0.0
+                        )
                         ev = estimate_trade_economic_value(
                             candidate=cand,
                             lot_notional_inr=est_lot,
@@ -2492,11 +2519,11 @@ class ProspectivePaperTradingEngine:
                             div_yield_ttm_frac=float(bar.get("div_yield_ttm") or 0.015),
                             regime=confirmed_regime,
                             cost_engine=self.cost_engine,
-                            execution_mode=ecfg.execution_mode,
+                            execution_mode=cand_exec_mode,
                             hurdle_mode=ecfg.hurdle_mode,
                             slippage_override_bps=ecfg.slippage_override_bps,
                         )
-                        eff_hurdle = float(ev["hurdle_bps"]) + cur_hurdle_adder
+                        eff_hurdle = float(ev["hurdle_bps"]) + cur_hurdle_adder + tca_adder
                         if (not ev["approved"]) or float(ev["expected_net_alpha_bps"]) < eff_hurdle:
                             signals_today.append({
                                 "sec_id": sec_id,
@@ -2531,7 +2558,7 @@ class ProspectivePaperTradingEngine:
                             signals_today.append({"sec_id": sec_id, "symbol": sym, "decision": "REJECTED", "reason": "SIZE_BELOW_MIN_LOT"})
                             continue
 
-                        next_pending_orders.append({
+                        pend_item: dict[str, Any] = {
                             "kind": "TACTICAL_BUY",
                             "sec_id": sec_id,
                             "symbol": sym,
@@ -2544,7 +2571,14 @@ class ProspectivePaperTradingEngine:
                             "ev_net_bps": float(ev["expected_net_alpha_bps"]),
                             "ev_hurdle_bps": eff_hurdle,
                             "signal_timestamp": sig_ts_eod,
-                        })
+                        }
+                        if self._regime_policy_override is not None:
+                            pend_item["execution_mode"] = cand_exec_mode
+                            if cand.get("pre_trade_cost_bps") is not None:
+                                pend_item["pre_trade_cost_bps"] = float(cand["pre_trade_cost_bps"])
+                            if cand.get("matched_rules"):
+                                pend_item["matched_rules"] = list(cand["matched_rules"])
+                        next_pending_orders.append(pend_item)
                         signals_today.append({
                             "sec_id": sec_id,
                             "symbol": sym,
