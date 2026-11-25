@@ -45,10 +45,13 @@ W_TECH_MIN, W_TECH_MAX = 0.25, 0.75
 MIN_CONV_FLOOR, MIN_CONV_CEIL = 0.56, 0.76
 RSI_PEN_MIN, RSI_PEN_MAX = 0.0, 0.12
 SECTOR_ADJ_LIMIT = 0.05
+PRIOR_STOP_TIGHTEN_MULT = 1.0
+STOP_MULT_MIN, STOP_MULT_MAX = 0.80, 1.10
 
 MAX_WEIGHT_STEP = 0.03
 MAX_CONV_STEP = 0.02
 MAX_RSI_PEN_STEP = 0.02
+MAX_STOP_MULT_STEP = 0.05
 SHRINKAGE_K_TRADES = 6.0
 SHRINKAGE_K_SESSIONS = 8.0
 
@@ -148,7 +151,9 @@ class OrchestratorLearningLedger:
                     conviction REAL,
                     rsi_14 REAL,
                     lesson_summary TEXT NOT NULL,
-                    recorded_at_utc TEXT NOT NULL
+                    recorded_at_utc TEXT NOT NULL,
+                    mfe_giveback_pct REAL,
+                    pillar_attribution TEXT
                 );
                 CREATE TABLE IF NOT EXISTS weight_history (
                     trading_date TEXT PRIMARY KEY,
@@ -157,6 +162,7 @@ class OrchestratorLearningLedger:
                     min_conviction REAL NOT NULL DEFAULT 0.60,
                     rsi_overbought_penalty REAL NOT NULL DEFAULT 0.0,
                     sector_adjustments_json TEXT NOT NULL DEFAULT '{}',
+                    stop_tighten_mult REAL NOT NULL DEFAULT 1.0,
                     status TEXT NOT NULL,
                     matured_sessions INTEGER NOT NULL,
                     closed_trades INTEGER NOT NULL DEFAULT 0,
@@ -174,11 +180,17 @@ class OrchestratorLearningLedger:
             self._ensure_columns(conn, "scan_shortlist", [("rsi_14", "REAL"), ("sector", "TEXT")])
             self._ensure_columns(
                 conn,
+                "trade_lessons",
+                [("mfe_giveback_pct", "REAL"), ("pillar_attribution", "TEXT")],
+            )
+            self._ensure_columns(
+                conn,
                 "weight_history",
                 [
                     ("min_conviction", "REAL NOT NULL DEFAULT 0.60"),
                     ("rsi_overbought_penalty", "REAL NOT NULL DEFAULT 0.0"),
                     ("sector_adjustments_json", "TEXT NOT NULL DEFAULT '{}'"),
+                    ("stop_tighten_mult", "REAL NOT NULL DEFAULT 1.0"),
                     ("closed_trades", "INTEGER NOT NULL DEFAULT 0"),
                     ("passed_trades", "INTEGER NOT NULL DEFAULT 0"),
                     ("failed_trades", "INTEGER NOT NULL DEFAULT 0"),
@@ -322,12 +334,20 @@ class OrchestratorLearningLedger:
                     if t_c is not None and f_c is not None and abs(t_c - f_c) >= 0.08:
                         stronger = "TechBot" if t_c > f_c else "FundBot"
                         parts.append(f"{stronger} led winning trade -> reinforcing weight")
-                    if mfe is not None and mfe > ret_pct + 4.0:
-                        parts.append(f"Peak MFE was +{mfe:.1f}% vs exit {ret_pct:+.1f}%")
+                mfe_giveback = round(max(0.0, float(mfe) - ret_pct), 3) if mfe is not None else None
+                if mfe_giveback is not None and mfe_giveback > 4.0:
+                    parts.append(f"Peak MFE +{mfe:.1f}% vs exit {ret_pct:+.1f}% (gave back {mfe_giveback:.1f}%)")
+                if t_c is not None and f_c is not None:
+                    if outcome == "PASSED":
+                        pillar_attr = "TECH_LED" if t_c >= f_c + 0.05 else ("FUND_LED" if f_c >= t_c + 0.05 else "BALANCED_WIN")
+                    else:
+                        pillar_attr = "TECH_OVERCONFIDENT" if t_c >= f_c + 0.05 else ("FUND_VALUE_TRAP" if f_c >= t_c + 0.05 else "JOINT_MISS")
+                else:
+                    pillar_attr = "TECH_ONLY" if t_c is not None else "UNATTRIBUTED"
 
                 lesson_txt = " · ".join(parts)
                 conn.execute(
-                    "INSERT INTO trade_lessons VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    "INSERT INTO trade_lessons VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     (
                         pid,
                         sec_id,
@@ -352,6 +372,8 @@ class OrchestratorLearningLedger:
                         rsi,
                         lesson_txt,
                         _utc_now_iso(),
+                        mfe_giveback,
+                        pillar_attr,
                     ),
                 )
                 added += 1
@@ -541,18 +563,26 @@ class OrchestratorLearningLedger:
                 "min_conviction": PRIOR_MIN_CONVICTION,
                 "rsi_overbought_penalty": PRIOR_RSI_OVERBOUGHT_PENALTY,
                 "sector_adjustments": {},
+                "stop_tighten_mult": PRIOR_STOP_TIGHTEN_MULT,
                 "status": "SESSION 1/80 · PRIOR_FIXED (awaiting first closed trades & matured outcomes)",
             }
         try:
             sec_adj = json.loads(r["sector_adjustments_json"] or "{}")
         except Exception:
             sec_adj = {}
+        r_keys = r.keys() if hasattr(r, "keys") else ()
+        stop_mult = (
+            float(r["stop_tighten_mult"])
+            if ("stop_tighten_mult" in r_keys and r["stop_tighten_mult"] is not None)
+            else PRIOR_STOP_TIGHTEN_MULT
+        )
         return {
             "w_tech": float(r["w_tech"]),
             "w_fund": float(r["w_fund"]),
             "min_conviction": float(r["min_conviction"]),
             "rsi_overbought_penalty": float(r["rsi_overbought_penalty"]),
             "sector_adjustments": sec_adj if isinstance(sec_adj, dict) else {},
+            "stop_tighten_mult": _clamp(stop_mult, STOP_MULT_MIN, STOP_MULT_MAX),
             "status": str(r["status"]),
         }
 
@@ -561,12 +591,13 @@ class OrchestratorLearningLedger:
         return (p["w_tech"], p["w_fund"]), p["status"]
 
     def update_weights(self, trading_date: str) -> dict[str, Any]:
-        """Update agent weights, conviction bar, RSI guard, and sector bias from real outcomes & closed trades."""
+        """Update agent weights, conviction bar, RSI guard, sector bias, and stop scaling from real outcomes & closed trades."""
         report = self.learning_report()
         prev = self.current_params()
         w_t_prev = float(prev["w_tech"])
         min_conv_prev = float(prev["min_conviction"])
         rsi_pen_prev = float(prev["rsi_overbought_penalty"])
+        stop_mult_prev = float(prev.get("stop_tighten_mult", PRIOR_STOP_TIGHTEN_MULT))
 
         conn = self._connect()
         try:
@@ -618,6 +649,7 @@ class OrchestratorLearningLedger:
             new_t = w_t_prev
             new_min_conv = min_conv_prev
             new_rsi_pen = rsi_pen_prev
+            new_stop_mult = stop_mult_prev
             sector_adj: dict[str, float] = {}
             status = "OBSERVING (0 closed trades, 0 matured sessions) — priors active"
             notes.append("No closed trades or matured 5D outcomes yet; priors held.")
@@ -684,21 +716,50 @@ class OrchestratorLearningLedger:
                     if abs(adj) >= 0.003:
                         sector_adj[sec] = adj
 
+            # (E) Stop-loss multiplier [0.80, 1.10] calibrated from MFE giveback & stop-out rate (step ±0.05)
+            target_stop_mult = PRIOR_STOP_TIGHTEN_MULT
+            if n_trades > 0:
+                givebacks = [
+                    float(r["mfe_giveback_pct"])
+                    if r.get("mfe_giveback_pct") is not None
+                    else max(0.0, float(r["mfe_pct"]) - float(r["return_pct"]))
+                    for r in lessons
+                    if r.get("mfe_giveback_pct") is not None or r.get("mfe_pct") is not None
+                ]
+                avg_giveback = float(np.mean(givebacks)) if givebacks else 0.0
+                sl_fails = [r for r in lessons if r["outcome"] == "FAILED" and "STOP" in str(r.get("exit_reason") or "").upper()]
+                sl_fail_rate = len(sl_fails) / n_trades
+                shrink_m = n_trades / (n_trades + SHRINKAGE_K_TRADES)
+                if avg_giveback >= 5.0 or sl_fail_rate >= 0.45:
+                    tighten_delta = min(0.20, (avg_giveback * 0.018 + sl_fail_rate * 0.15) * shrink_m)
+                    target_stop_mult = PRIOR_STOP_TIGHTEN_MULT - tighten_delta
+                    notes.append(f"mfe_giveback={avg_giveback:.1f}% sl_fail={sl_fail_rate:.0%} -> tightening stop_mult")
+                elif n_pass >= 4 and (n_pass / n_trades) >= 0.60 and avg_giveback < 3.0:
+                    target_stop_mult = PRIOR_STOP_TIGHTEN_MULT + 0.08 * shrink_m
+                    notes.append(f"clean_wins={n_pass}/{n_trades} low_giveback={avg_giveback:.1f}% -> easing stop_mult")
+            target_stop_mult = _clamp(target_stop_mult, STOP_MULT_MIN, STOP_MULT_MAX)
+            new_stop_mult = _clamp(
+                stop_mult_prev + _clamp(target_stop_mult - stop_mult_prev, -MAX_STOP_MULT_STEP, MAX_STOP_MULT_STEP),
+                STOP_MULT_MIN,
+                STOP_MULT_MAX,
+            )
+
             status = f"LEARNING ACTIVE ({n_pass} passed / {n_fail} failed trades · {n_ic} matured sessions)"
 
         new_f = round(1.0 - new_t, 4)
         new_t = round(new_t, 4)
         new_min_conv = round(new_min_conv, 4)
         new_rsi_pen = round(new_rsi_pen, 4)
+        new_stop_mult = round(new_stop_mult, 4)
         note_str = "; ".join(notes) if notes else "Weights updated cleanly."
 
         conn = self._connect()
         try:
             conn.execute(
                 "INSERT OR REPLACE INTO weight_history "
-                "(trading_date, w_tech, w_fund, min_conviction, rsi_overbought_penalty, sector_adjustments_json, "
+                "(trading_date, w_tech, w_fund, min_conviction, rsi_overbought_penalty, sector_adjustments_json, stop_tighten_mult, "
                 "status, matured_sessions, closed_trades, passed_trades, failed_trades, ic_tech, ic_fund, note, recorded_at_utc) "
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     str(trading_date),
                     new_t,
@@ -706,6 +767,7 @@ class OrchestratorLearningLedger:
                     new_min_conv,
                     new_rsi_pen,
                     json.dumps(sector_adj, sort_keys=True),
+                    new_stop_mult,
                     status,
                     n_ic,
                     n_trades,
@@ -727,6 +789,7 @@ class OrchestratorLearningLedger:
             "min_conviction": new_min_conv,
             "rsi_overbought_penalty": new_rsi_pen,
             "sector_adjustments": sector_adj,
+            "stop_tighten_mult": new_stop_mult,
             "status": status,
             "note": note_str,
             "learning": report,

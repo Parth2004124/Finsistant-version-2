@@ -52,7 +52,7 @@ def _utc_now_iso() -> str:
 def redact_sensitive_text(text: str) -> str:
     """Redact credentials in database URLs or secret strings so nothing sensitive ever appears in logs."""
     out = _SECRET_URL_RE.sub(r"\1***:***@", str(text))
-    for env_key in ("M31_DATABASE_URL", "M31_ALERT_WEBHOOK_URL", "GITHUB_TOKEN"):
+    for env_key in ("M31_DATABASE_URL", "M32_DATABASE_URL", "M31_ALERT_WEBHOOK_URL", "GITHUB_TOKEN"):
         val = os.getenv(env_key, "").strip()
         if val and len(val) >= 6:
             out = out.replace(val, f"***REDACTED_{env_key}***")
@@ -227,6 +227,9 @@ class PersistentStorageAdapter:
         db_path: Path = DEFAULT_PAPER_DB_PATH,
         storage_config_path: Path = DEFAULT_STORAGE_CONFIG_PATH,
         database_url: str | None = None,
+        lock_name: str | None = None,
+        advisory_lock_key: int = POSTGRES_ADVISORY_LOCK_KEY,
+        ledger_id: str = "primary",
     ) -> None:
         PaperOnlyExecutionGuard().assert_paper_only()
         self.db_path = Path(db_path)
@@ -242,11 +245,14 @@ class PersistentStorageAdapter:
         raw_url = database_url if database_url is not None else os.getenv(env_var, "").strip()
         self._database_url = raw_url.strip()
         self.backend_mode = "EXTERNAL_POSTGRESQL" if self._database_url.startswith(("postgres://", "postgresql://")) else "DURABLE_GIT_LEDGER"
+        self.advisory_lock_key = int(advisory_lock_key)
+        self.ledger_id = str(ledger_id or "primary")
         self._pg_conn: Any = None
         self._pg_version: int = 0
+        resolved_lock = lock_name or str(self.config.get("database_locking", {}).get("lock_name", DEFAULT_LOCK_NAME))
         self.db_lock = DatabaseExecutionLock(
             db_path=self.db_path,
-            lock_name=str(self.config.get("database_locking", {}).get("lock_name", DEFAULT_LOCK_NAME)),
+            lock_name=resolved_lock,
             lease_ttl_seconds=int(self.config.get("database_locking", {}).get("lease_ttl_seconds", 1800)),
         )
 
@@ -297,17 +303,20 @@ class PersistentStorageAdapter:
                 );
                 """
             )
-            cur.execute("SELECT pg_try_advisory_lock(%s)", (POSTGRES_ADVISORY_LOCK_KEY,))
+            cur.execute("SELECT pg_try_advisory_lock(%s)", (self.advisory_lock_key,))
             got_lock = bool(cur.fetchone()[0])
             if not got_lock:
                 conn.rollback()
                 conn.close()
                 self._pg_conn = None
-                raise DatabaseLockError("POSTGRES_ADVISORY_LOCK_CONFLICT: another workflow holds the M3.1 execution lock.")
+                raise DatabaseLockError(
+                    f"POSTGRES_ADVISORY_LOCK_CONFLICT: another workflow holds lock {self.advisory_lock_key} ({self.ledger_id})."
+                )
             conn.commit()
 
             cur.execute(
-                "SELECT version_num, sha256_hex, sqlite_bytes FROM m31_durable_ledger_store WHERE ledger_id = 'primary'"
+                "SELECT version_num, sha256_hex, sqlite_bytes FROM m31_durable_ledger_store WHERE ledger_id = %s",
+                (self.ledger_id,),
             )
             row = cur.fetchone()
             if row is not None:
@@ -355,7 +364,7 @@ class PersistentStorageAdapter:
                 """
                 INSERT INTO m31_durable_ledger_store(
                     ledger_id, version_num, sha256_hex, updated_at_utc, owner_run_id, sqlite_bytes
-                ) VALUES ('primary', %s, %s, %s, %s, %s)
+                ) VALUES (%s, %s, %s, %s, %s, %s)
                 ON CONFLICT(ledger_id) DO UPDATE SET
                     version_num = excluded.version_num,
                     sha256_hex = excluded.sha256_hex,
@@ -363,9 +372,9 @@ class PersistentStorageAdapter:
                     owner_run_id = excluded.owner_run_id,
                     sqlite_bytes = excluded.sqlite_bytes
                 """,
-                (next_ver, sha_now, _utc_now_iso(), owner_run_id, blob),
+                (self.ledger_id, next_ver, sha_now, _utc_now_iso(), owner_run_id, blob),
             )
-            cur.execute("SELECT pg_advisory_unlock(%s)", (POSTGRES_ADVISORY_LOCK_KEY,))
+            cur.execute("SELECT pg_advisory_unlock(%s)", (self.advisory_lock_key,))
             conn.commit()
             conn.close()
             self._pg_conn = None
@@ -384,7 +393,7 @@ class PersistentStorageAdapter:
         if self._pg_conn is not None:
             try:
                 cur = self._pg_conn.cursor()
-                cur.execute("SELECT pg_advisory_unlock(%s)", (POSTGRES_ADVISORY_LOCK_KEY,))
+                cur.execute("SELECT pg_advisory_unlock(%s)", (self.advisory_lock_key,))
                 self._pg_conn.commit()
             except Exception:
                 pass

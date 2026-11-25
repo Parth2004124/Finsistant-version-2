@@ -238,11 +238,13 @@ class ExecutionAgent(BaseTradingAgent):
         conviction = round(max(0.05, min(0.98, raw_conv - rsi_pen + sec_adj)), 3)
         min_conviction = float(context.get("min_conviction") or 0.60)
 
-        # Finsistant Auto-Risk Position Sizing: 1.5% risk budget divided by (Entry - StopLoss)
-        risk_budget = capital * 0.015
+        # Finsistant Auto-Risk Position Sizing: risk budget divided by (Entry - StopLoss), capped by single-stock cap
+        risk_budget_pct = float(context.get("risk_budget_pct") or (0.011 if agent_mode == "paper_trading" else 0.015))
+        max_single_pct = float(context.get("max_single_stock_pct") or (15.0 if agent_mode == "paper_trading" else 22.0))
+        risk_budget = capital * risk_budget_pct
         per_share_risk = max(1.0, abs(price - stop_loss))
         raw_qty = max(1, int(risk_budget // per_share_risk))
-        max_affordable_qty = max(1, int((capital * 0.22) // max(1.0, price)))
+        max_affordable_qty = max(1, int((capital * (max_single_pct / 100.0)) // max(1.0, price)))
         qty = min(raw_qty, max_affordable_qty)
         notional = round(qty * price, 2)
 

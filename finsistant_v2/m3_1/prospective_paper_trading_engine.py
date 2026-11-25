@@ -1789,10 +1789,91 @@ class ProspectivePaperTradingEngine:
             # --------------------------------------------------------------
             # STEP 1: Execute Queued Orders from Prior Session Close at Today's Open
             # --------------------------------------------------------------
+            vacated_slot = False
             queued_core_order = next((o for o in pending_orders if o.get("kind") == "CORE_REBALANCE"), None)
             queued_liquid_sweep = next((o for o in pending_orders if o.get("kind") == "LIQUID_SWEEP"), None)
+            queued_tact_sells = [o for o in pending_orders if o.get("kind") == "TACTICAL_SELL"]
             queued_tact_buys = [o for o in pending_orders if o.get("kind") == "TACTICAL_BUY"]
             carry_pending: list[dict[str, Any]] = []
+
+            for order in queued_tact_sells:
+                sec_id = str(order["sec_id"])
+                pos = open_pos.get(sec_id)
+                if pos is None:
+                    continue
+                bar = eq_bars.get(sec_id)
+                if not bar or not bool(bar.get("valid", True)) or float(bar.get("open", 0.0) or 0.0) <= 0:
+                    carry_pending.append(order)
+                    continue
+                sym = str(pos["symbol"])
+                o_px = float(bar["open"])
+                qty_sell = int(pos["qty"])
+                sc = self.cost_engine.calculate_leg_cost(
+                    instrument_class="DELIVERY",
+                    side="SELL",
+                    raw_notional=qty_sell * o_px,
+                    trade_date=dt,
+                    slippage_bps=ecfg.slippage_override_bps,
+                    adv_20d_inr=float(bar.get("adv_20d_inr") or 80_000_000.0),
+                    daily_vol_frac=float(bar.get("vol_20d") or 0.018),
+                    hl_range_pct=float(bar.get("hl_range_pct") or 2.0),
+                    execution_mode=ecfg.execution_mode,
+                    dp_already_charged_today=((dt, sym) in dp_pairs),
+                )
+                if sc["dp_charge"] > 0:
+                    dp_pairs.add((dt, sym))
+                net_proc = float(sc["exec_notional"]) - float(sc["regulatory_total"])
+                oid = _next_order_id("SELL")
+                _record_order_and_cost(
+                    order_id=oid,
+                    signal_ts=str(order["signal_timestamp"]),
+                    strategy_id=str(pos["strategy_id"]),
+                    instrument_class="DELIVERY",
+                    sec_id=sec_id,
+                    symbol=sym,
+                    side="SELL",
+                    req_qty=qty_sell,
+                    fill_qty=qty_sell,
+                    expected_px=o_px,
+                    exec_px=float(sc["exec_notional"]) / max(1, qty_sell),
+                    cost_dict=sc,
+                    status="FILLED",
+                )
+                if ecfg.settlement_lag_days <= 0:
+                    settled_cash += net_proc
+                else:
+                    conn.execute(
+                        """
+                        INSERT INTO settlement_ledger(
+                            settlement_id, order_id, trade_date, settlement_date,
+                            due_session_counter, symbol, amount_inr, status, observation_mode
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)
+                        """,
+                        (f"SET-{oid}", oid, dt, f"T+{ecfg.settlement_lag_days}", session_k + ecfg.settlement_lag_days, sym, round(net_proc, 6), obs_mode),
+                    )
+                pnl_price = net_proc - float(pos["cost_basis_inr"])
+                realized_tact_pnl += pnl_price
+                conn.execute(
+                    """
+                    UPDATE positions SET
+                        status = 'CLOSED', exit_date = ?, last_price = ?, bars_held = ?,
+                        dividends_received_inr = ?, realized_pnl_inr = ?, exit_reason = ?, exit_regime = ?
+                    WHERE position_id = ?
+                    """,
+                    (
+                        dt,
+                        o_px,
+                        int(pos["bars_held"]),
+                        float(pos["dividends_received_inr"]),
+                        pnl_price,
+                        str(order.get("reason") or "ORCHESTRATOR_EXIT"),
+                        confirmed_regime,
+                        str(pos["position_id"]),
+                    ),
+                )
+                del open_pos[sec_id]
+                cooldown_map[sec_id] = session_k + ecfg.cooldown_days
+                vacated_slot = True
 
             if queued_tact_buys and entries_permitted_by_state:
                 if queued_core_order is not None:
@@ -2101,7 +2182,6 @@ class ProspectivePaperTradingEngine:
             # --------------------------------------------------------------
             # STEP 2: Existing Risk Management & Stop-Loss Exits (ALWAYS active, even in Bear/SAFE_MODE!)
             # --------------------------------------------------------------
-            vacated_slot = False
             for sec_id in list(open_pos.keys()):
                 pos = open_pos[sec_id]
                 pos["bars_held"] = int(pos["bars_held"]) + 1
@@ -2310,6 +2390,30 @@ class ProspectivePaperTradingEngine:
             next_pending_orders: list[dict[str, Any]] = list(carry_pending)
             sig_ts_eod = f"{dt}T15:30:00+05:30"
 
+            # Queue active orchestrator exit signals for NEXT SESSION OPEN (T+1)
+            exiting_sec_ids: set[str] = set()
+            for ex in (market_snapshot.get("tactical_exit_signals") or []):
+                ex_sid = str(ex.get("sec_id") or "")
+                if not ex_sid or ex_sid not in open_pos or ex_sid in exiting_sec_ids:
+                    continue
+                pos = open_pos[ex_sid]
+                exiting_sec_ids.add(ex_sid)
+                next_pending_orders.append({
+                    "kind": "TACTICAL_SELL",
+                    "sec_id": ex_sid,
+                    "symbol": str(pos["symbol"]),
+                    "strategy_id": str(pos["strategy_id"]),
+                    "req_qty": int(pos["qty"]),
+                    "reason": str(ex.get("reason") or "ORCHESTRATOR_EXIT"),
+                    "signal_timestamp": sig_ts_eod,
+                })
+                signals_today.append({
+                    "sec_id": ex_sid,
+                    "symbol": str(pos["symbol"]),
+                    "decision": "QUEUED_EXIT_NEXT_OPEN",
+                    "reason": str(ex.get("reason") or "ORCHESTRATOR_EXIT"),
+                })
+
             # Target Core ETF rebalance queued for T+1 open
             unused_tact = max(0.0, (nav_c * (cur_tgt_t / 100.0)) - tact_val_c)
             eff_core_target_inr = nav_c * (cur_tgt_c / 100.0)
@@ -2321,7 +2425,7 @@ class ProspectivePaperTradingEngine:
                 "signal_timestamp": sig_ts_eod,
             })
 
-            # Family E candidate evaluation (ONLY if Bull regime allows new entries AND engine not halted/paused)
+            # Candidate evaluation (ONLY if Bull regime allows new entries AND engine not halted/paused)
             can_replenish = (
                 (session_k == 1)
                 or (ecfg.event_driven_replenishment and vacated_slot and (session_k - last_replenish_session) >= ecfg.replenish_min_gap_days)
@@ -2349,7 +2453,7 @@ class ProspectivePaperTradingEngine:
                             break
                         sec_id = str(cand["sec_id"])
                         sym = str(cand["symbol"])
-                        if sec_id in open_pos or session_k < cooldown_map.get(sec_id, -1):
+                        if sec_id in open_pos or sec_id in exiting_sec_ids or session_k < cooldown_map.get(sec_id, -1):
                             continue
                         bar = eq_bars.get(sec_id)
                         if not bar or not bool(bar.get("valid", True)):
@@ -2393,13 +2497,7 @@ class ProspectivePaperTradingEngine:
                             slippage_override_bps=ecfg.slippage_override_bps,
                         )
                         eff_hurdle = float(ev["hurdle_bps"]) + cur_hurdle_adder
-                        # Orchestrator candidates in the LEARNING_PHASE have no measured alpha yet: the
-                        # hard-coded Family E alpha prior is NOT applied to them (all cost, size, sector,
-                        # correlation and regime caps still apply). Realised outcomes are measured instead.
-                        learning_phase = str(cand.get("ev_mode", "")) == "LEARNING_PHASE"
-                        if learning_phase:
-                            ev = dict(ev, expected_net_alpha_bps=eff_hurdle)
-                        if (not learning_phase) and ((not ev["approved"]) or float(ev["expected_net_alpha_bps"]) < eff_hurdle):
+                        if (not ev["approved"]) or float(ev["expected_net_alpha_bps"]) < eff_hurdle:
                             signals_today.append({
                                 "sec_id": sec_id,
                                 "symbol": sym,

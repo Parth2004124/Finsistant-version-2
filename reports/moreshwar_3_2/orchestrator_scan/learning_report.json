@@ -1,27 +1,27 @@
 {
-  "generated_at_utc": "2026-11-25T00:35:30.035284+00:00",
+  "generated_at_utc": "2026-11-25T06:51:34.340854+00:00",
   "mission": {
     "mission_name": "80-Session Maximum-Profit Orchestrator Mock Test",
     "target_sessions": 80,
-    "completed_sessions": 2,
-    "remaining_sessions": 78,
-    "progress_pct": 2.5,
-    "current_nav_inr": 98381.37,
-    "cumulative_profit_inr": -1618.63,
-    "cumulative_return_pct": -1.62,
-    "alpha_vs_niftybees_pct": 0.01,
-    "max_drawdown_pct": 1.62,
+    "completed_sessions": 0,
+    "remaining_sessions": 80,
+    "progress_pct": 0.0,
+    "current_nav_inr": 100000.0,
+    "cumulative_profit_inr": 0.0,
+    "cumulative_return_pct": 0.0,
+    "alpha_vs_niftybees_pct": null,
+    "max_drawdown_pct": 0.0,
     "passed_trades": 0,
     "failed_trades": 0,
     "win_rate_pct": null,
     "profit_factor": null,
     "real_money_ready": false,
-    "gates_passed": 3,
+    "gates_passed": 1,
     "gates_total": 6,
     "graduation_gates": {
       "sessions_80_completed": false,
       "positive_net_profit": false,
-      "beats_niftybees_benchmark": true,
+      "beats_niftybees_benchmark": false,
       "profit_factor_ge_1_25": false,
       "max_drawdown_le_12pct": true,
       "reconciliation_clean": true
@@ -34,73 +34,27 @@
     "min_conviction": 0.6,
     "rsi_overbought_penalty": 0.0,
     "sector_adjustments": {},
-    "status": "OBSERVING (0 closed trades, 0 matured sessions) \u2014 priors active"
+    "stop_tighten_mult": 1.0,
+    "status": "SESSION 0/80 \u00b7 CLEAN RESET \u2014 awaiting first strict NSE session"
   },
-  "weight_history": [
-    {
-      "trading_date": "2026-11-20",
-      "w_tech": 0.45,
-      "w_fund": 0.55,
-      "min_conviction": 0.6,
-      "rsi_overbought_penalty": 0.0,
-      "sector_adjustments_json": "{}",
-      "status": "OBSERVING (0 closed trades, 0 matured sessions) \u2014 priors active",
-      "matured_sessions": 0,
-      "closed_trades": 0,
-      "passed_trades": 0,
-      "failed_trades": 0,
-      "ic_tech": null,
-      "ic_fund": null,
-      "note": "No closed trades or matured 5D outcomes yet; priors held.",
-      "recorded_at_utc": "2026-11-20T14:21:55.482491+00:00"
-    },
-    {
-      "trading_date": "2026-11-23",
-      "w_tech": 0.45,
-      "w_fund": 0.55,
-      "min_conviction": 0.6,
-      "rsi_overbought_penalty": 0.0,
-      "sector_adjustments_json": "{}",
-      "status": "OBSERVING (0 closed trades, 0 matured sessions) \u2014 priors active",
-      "matured_sessions": 0,
-      "closed_trades": 0,
-      "passed_trades": 0,
-      "failed_trades": 0,
-      "ic_tech": null,
-      "ic_fund": null,
-      "note": "No closed trades or matured 5D outcomes yet; priors held.",
-      "recorded_at_utc": "2026-11-25T00:13:20.769465+00:00"
-    }
-  ],
+  "weight_history": [],
   "learning": {
-    "horizon_trading_days": 5,
-    "matured_sessions": 0,
-    "sessions_with_both_ics": 0,
-    "mean_ic_tech": null,
-    "mean_ic_fund": null,
-    "mean_excess_vs_niftybees_pct": {
-      "universe_all_eligible": null,
-      "agent_shortlist": null,
-      "queued_paper_picks": null
-    },
-    "observations": {
-      "universe": 0,
-      "shortlist": 0,
-      "queued_picks": 0
-    },
+    "scans_recorded": 0,
+    "shortlisted_evaluated": 0,
     "closed_trades": {
       "total_closed_trades": 0,
       "passed_trades": 0,
       "failed_trades": 0,
       "win_rate_pct": null,
       "profit_factor": null,
-      "total_realized_pnl_inr": 0,
-      "expectancy_per_trade_inr": null,
-      "avg_win_pct": null,
-      "avg_loss_pct": null,
-      "recent_lessons": []
+      "net_pnl_inr": 0.0,
+      "avg_return_pct": null
     },
-    "per_session": []
+    "sessions_with_both_ics": 0,
+    "mean_ic_tech": null,
+    "mean_ic_fund": null,
+    "recent_lessons": []
   },
-  "scanner_version": "3.2.0"
+  "scanner_version": "3.2.0",
+  "allocation_policy": "0% NIFTYBEES / 90% Tactical AI Picks / 10% Liquid (BULL_TREND)"
 }

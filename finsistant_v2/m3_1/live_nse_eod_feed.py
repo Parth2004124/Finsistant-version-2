@@ -256,19 +256,99 @@ def compute_family_e_candidates_from_bars(
     return eq_bars, top_cands, corr_map
 
 
+def parse_nse_bhavcopy_csv(raw_txt: str) -> dict[str, dict[str, Any]] | None:
+    """Parse raw Official NSE sec_bhavdata_full CSV text into dict[SYMBOL -> OHLCV bar]."""
+    import csv
+    import io
+
+    if not raw_txt or not str(raw_txt).strip():
+        return None
+    out: dict[str, dict[str, Any]] = {}
+    reader = csv.DictReader(io.StringIO(raw_txt))
+    for row in reader:
+        clean_row = {str(k or "").strip(): str(v or "").strip() for k, v in row.items()}
+        series = clean_row.get("SERIES", "")
+        if series not in ("EQ", "BE", "BZ", "SM", "ST"):
+            continue
+        sym = clean_row.get("SYMBOL", "").upper()
+        if not sym:
+            continue
+        try:
+            o = float(clean_row["OPEN_PRICE"])
+            h = float(clean_row["HIGH_PRICE"])
+            l = float(clean_row["LOW_PRICE"])
+            c = float(clean_row.get("CLOSE_PRICE") or clean_row.get("LAST_PRICE") or 0.0)
+            vol = float(clean_row.get("TTL_TRD_QNTY") or 0.0)
+        except (KeyError, ValueError):
+            continue
+        if o > 0 and c > 0 and h >= l:
+            out[sym] = {
+                "open": round(o, 4),
+                "high": round(h, 4),
+                "low": round(l, 4),
+                "close": round(c, 4),
+                "volume": round(vol, 2),
+                "valid": True,
+            }
+    return out or None
+
+
+def fetch_nse_bhavcopy_day(target_date: str) -> dict[str, dict[str, Any]] | None:
+    """Fetch Official NSE sec_bhavdata_full_{DDMMYYYY}.csv for `target_date`.
+
+    Returns dict[SYMBOL -> {open, high, low, close, volume}] or None if not yet published (HTTP 404).
+    """
+    import time as _time
+    import urllib.error
+    import urllib.request
+
+    y, m, d = str(target_date).split("-")
+    url = f"https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_{d}{m}{y}.csv"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        "Accept": "text/csv,text/plain,*/*",
+        "Referer": "https://www.nseindia.com/",
+    }
+    raw_txt: str | None = None
+    for attempt in range(4):
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=20.0) as resp:
+                raw_txt = resp.read().decode("utf-8", "replace")
+                break
+        except urllib.error.HTTPError as exc:
+            if exc.code == 404:
+                return None
+            if attempt < 3:
+                _time.sleep(2.0 * (attempt + 1))
+                continue
+            raise
+        except (urllib.error.URLError, TimeoutError, OSError):
+            if attempt < 3:
+                _time.sleep(2.0 * (attempt + 1))
+                continue
+            raise
+    if not raw_txt:
+        return None
+    return parse_nse_bhavcopy_csv(raw_txt)
+
+
 def fetch_completed_nse_eod_snapshot(
     target_date: str,
     *,
     universe_path: Path = DEFAULT_PROSPECTIVE_UNIVERSE_PATH,
     extra_open_symbols: list[dict[str, str]] | None = None,
     include_histories: bool = False,
+    prefer_nse_bhavcopy: bool = False,
 ) -> dict[str, Any] | None:
-    """Fetch genuine post-close NSE EOD market data for `target_date` via Yahoo Finance (`yfinance`).
+    """Fetch genuine post-close NSE EOD market data for `target_date`.
 
-    Returns `None` if `NIFTYBEES.NS` does not yet have a completed daily bar for `target_date`
-    (never fabricates prices!).
+    When `prefer_nse_bhavcopy=True` (Moreshwar 3.2), `target_date`'s official exchange bars
+    are verified and sourced from NSE's `sec_bhavdata_full_{DDMMYYYY}.csv` Bhavcopy.
+    Returns `None` if `target_date` EOD data is not yet published (never fabricates prices!).
     """
     PaperOnlyExecutionGuard().assert_paper_only()
+    import time as _time
     import yfinance as yf
 
     dt = str(target_date)
@@ -276,51 +356,76 @@ def fetch_completed_nse_eod_snapshot(
     start_str = (dt_obj - timedelta(days=430)).isoformat()
     end_str = (dt_obj + timedelta(days=2)).isoformat()  # yfinance `end` is exclusive; we strictly slice <= dt!
 
-    # 1. Fetch Core ETF (`NIFTYBEES.NS`) & Liquid ETF (`LIQUIDBEES.NS`) first to verify session availability!
+    nse_bhav: dict[str, dict[str, Any]] | None = None
+    if prefer_nse_bhavcopy:
+        nse_bhav = fetch_nse_bhavcopy_day(dt)
+        if nse_bhav is None or "NIFTYBEES" not in nse_bhav or "LIQUIDBEES" not in nse_bhav:
+            return None
+
+    # 1. Fetch Core ETF (`NIFTYBEES.NS`) & Liquid ETF (`LIQUIDBEES.NS`) history <= dt
     nb_raw = yf.download("NIFTYBEES.NS", start=start_str, end=end_str, auto_adjust=False, actions=True, progress=False, threads=False)
     nb_df = _extract_ticker_frame(nb_raw, "NIFTYBEES.NS", single_ticker=True)
     if nb_df is None:
         return None
     nb_df = nb_df[nb_df.index <= dt]
-    if dt not in nb_df.index:
-        # Session not completed / not yet published on NSE EOD feed -> DO NOT fabricate!
-        return None
 
-    nb_row = nb_df.loc[dt]
-    nb_bar = {
-        "open": round(float(nb_row["Open"]), 4),
-        "high": round(float(nb_row["High"]), 4),
-        "low": round(float(nb_row["Low"]), 4),
-        "close": round(float(nb_row["Close"]), 4),
-        "volume": round(float(nb_row.get("Volume", 0.0) or 0.0), 2),
-        "valid": bool(float(nb_row["Open"]) > 0 and float(nb_row["Close"]) > 0),
-    }
-    if not nb_bar["valid"]:
-        return None
+    if nse_bhav is not None and "NIFTYBEES" in nse_bhav:
+        nb_bar = dict(nse_bhav["NIFTYBEES"])
+        if dt not in nb_df.index:
+            import pandas as pd
+            nb_df.loc[dt] = {
+                "Open": nb_bar["open"],
+                "High": nb_bar["high"],
+                "Low": nb_bar["low"],
+                "Close": nb_bar["close"],
+                "Volume": nb_bar["volume"],
+                "Dividends": 0.0,
+            }
+            nb_df = nb_df.sort_index()
+        else:
+            nb_df.loc[dt, ["Open", "High", "Low", "Close", "Volume"]] = [
+                nb_bar["open"], nb_bar["high"], nb_bar["low"], nb_bar["close"], nb_bar["volume"]
+            ]
+    else:
+        if dt not in nb_df.index:
+            return None
+        nb_row = nb_df.loc[dt]
+        nb_bar = {
+            "open": round(float(nb_row["Open"]), 4),
+            "high": round(float(nb_row["High"]), 4),
+            "low": round(float(nb_row["Low"]), 4),
+            "close": round(float(nb_row["Close"]), 4),
+            "volume": round(float(nb_row.get("Volume", 0.0) or 0.0), 2),
+            "valid": bool(float(nb_row["Open"]) > 0 and float(nb_row["Close"]) > 0),
+        }
+        if not nb_bar["valid"]:
+            return None
 
     nb_closes = [float(x) for x in nb_df["Close"].tolist() if np.isfinite(float(x)) and float(x) > 0]
     nb_arr = np.asarray(nb_closes, dtype=np.float64)
     nb_rets = np.diff(nb_arr) / np.maximum(1e-6, nb_arr[:-1]) if len(nb_arr) >= 2 else np.array([], dtype=np.float64)
 
-    lb_raw = yf.download("LIQUIDBEES.NS", start=(dt_obj - timedelta(days=30)).isoformat(), end=end_str, auto_adjust=False, actions=False, progress=False, threads=False)
-    lb_df = _extract_ticker_frame(lb_raw, "LIQUIDBEES.NS", single_ticker=True)
-    if lb_df is not None:
-        lb_df = lb_df[lb_df.index <= dt]
-    if lb_df is not None and dt in lb_df.index:
-        lb_row = lb_df.loc[dt]
-        lb_bar = {
-            "open": round(float(lb_row["Open"]), 4),
-            "high": round(float(lb_row["High"]), 4),
-            "low": round(float(lb_row["Low"]), 4),
-            "close": round(float(lb_row["Close"]), 4),
-            "volume": round(float(lb_row.get("Volume", 0.0) or 0.0), 2),
-            "valid": bool(float(lb_row["Open"]) > 0 and float(lb_row["Close"]) > 0),
-        }
-        if not lb_bar["valid"]:
-            return None
+    if nse_bhav is not None and "LIQUIDBEES" in nse_bhav:
+        lb_bar = dict(nse_bhav["LIQUIDBEES"])
     else:
-        # Strict zero-fabrication rule: never carry forward prior session prices for target_date
-        return None
+        lb_raw = yf.download("LIQUIDBEES.NS", start=(dt_obj - timedelta(days=30)).isoformat(), end=end_str, auto_adjust=False, actions=False, progress=False, threads=False)
+        lb_df = _extract_ticker_frame(lb_raw, "LIQUIDBEES.NS", single_ticker=True)
+        if lb_df is not None:
+            lb_df = lb_df[lb_df.index <= dt]
+        if lb_df is not None and dt in lb_df.index:
+            lb_row = lb_df.loc[dt]
+            lb_bar = {
+                "open": round(float(lb_row["Open"]), 4),
+                "high": round(float(lb_row["High"]), 4),
+                "low": round(float(lb_row["Low"]), 4),
+                "close": round(float(lb_row["Close"]), 4),
+                "volume": round(float(lb_row.get("Volume", 0.0) or 0.0), 2),
+                "valid": bool(float(lb_row["Open"]) > 0 and float(lb_row["Close"]) > 0),
+            }
+            if not lb_bar["valid"]:
+                return None
+        else:
+            return None
 
     # 2. Load full frozen prospective PIT-eligible NSE equity universe + any open tactical holdings
     uni_items: list[dict[str, Any]] = []
@@ -342,47 +447,84 @@ def fetch_completed_nse_eod_snapshot(
             })
             seen_sids.add(sid)
 
-    # 3. Batch-download full PIT-eligible equity universe histories (chunks of 100 tickers for Yahoo Finance stability)
+    # 3. Batch-download equity histories with retries (and override target_date bar from NSE Bhavcopy when active)
     equity_histories: dict[str, dict[str, Any]] = {}
     chunk_size = 100
     for i in range(0, len(uni_items), chunk_size):
         chunk = uni_items[i : i + chunk_size]
         tickers = [str(u["yf_ticker"]) for u in chunk]
-        try:
-            raw_batch = yf.download(
-                tickers,
-                start=start_str,
-                end=end_str,
-                group_by="ticker",
-                auto_adjust=False,
-                actions=True,
-                progress=False,
-                threads=True,
-            )
-        except Exception:
+        raw_batch = None
+        for attempt in range(3):
+            try:
+                raw_batch = yf.download(
+                    tickers,
+                    start=start_str,
+                    end=end_str,
+                    group_by="ticker",
+                    auto_adjust=False,
+                    actions=True,
+                    progress=False,
+                    threads=True,
+                )
+                if raw_batch is not None and not getattr(raw_batch, "empty", True):
+                    break
+            except Exception:
+                raw_batch = None
+            if attempt < 2:
+                _time.sleep(2.0 * (attempt + 1))
+        if raw_batch is None:
             continue
         single = len(tickers) == 1
         for u in chunk:
             tkr = str(u["yf_ticker"])
+            sym_u = str(u["symbol"]).upper()
             df_u = _extract_ticker_frame(raw_batch, tkr, single_ticker=single)
             if df_u is None:
                 continue
             df_u = df_u[df_u.index <= dt]
-            if dt not in df_u.index or len(df_u) < 2:
+            dates_u = df_u.index.tolist()
+            opens_u = df_u["Open"].tolist()
+            highs_u = df_u["High"].tolist()
+            lows_u = df_u["Low"].tolist()
+            closes_u = df_u["Close"].tolist()
+            vols_u = df_u["Volume"].fillna(0.0).tolist() if "Volume" in df_u.columns else [0.0] * len(df_u)
+            divs_u = df_u["Dividends"].fillna(0.0).tolist() if "Dividends" in df_u.columns else [0.0] * len(df_u)
+
+            if nse_bhav is not None:
+                bh_row = nse_bhav.get(sym_u)
+                if bh_row is None:
+                    continue
+                if dates_u and dates_u[-1] == dt:
+                    opens_u[-1] = bh_row["open"]
+                    highs_u[-1] = bh_row["high"]
+                    lows_u[-1] = bh_row["low"]
+                    closes_u[-1] = bh_row["close"]
+                    vols_u[-1] = bh_row["volume"]
+                else:
+                    dates_u.append(dt)
+                    opens_u.append(bh_row["open"])
+                    highs_u.append(bh_row["high"])
+                    lows_u.append(bh_row["low"])
+                    closes_u.append(bh_row["close"])
+                    vols_u.append(bh_row["volume"])
+                    divs_u.append(0.0)
+            elif dt not in df_u.index:
                 continue
-            divs = df_u["Dividends"].fillna(0.0).tolist() if "Dividends" in df_u.columns else [0.0] * len(df_u)
+
+            if len(dates_u) < 2:
+                continue
             equity_histories[str(u["sec_id"])] = {
                 "symbol": str(u["symbol"]),
                 "sector": str(u["sector"]),
                 "industry": str(u["industry"]),
                 "is_unknown_sector": bool(u.get("is_unknown_sector", False)),
-                "dates": df_u.index.tolist(),
-                "open": df_u["Open"].tolist(),
-                "high": df_u["High"].tolist(),
-                "low": df_u["Low"].tolist(),
-                "close": df_u["Close"].tolist(),
-                "volume": df_u["Volume"].fillna(0.0).tolist() if "Volume" in df_u.columns else [0.0] * len(df_u),
-                "dividends": divs,
+                "dates": dates_u,
+                "open": opens_u,
+                "high": highs_u,
+                "low": lows_u,
+                "close": closes_u,
+                "volume": vols_u,
+                "dividends": divs_u,
             }
 
     eq_bars, family_e_cands, corr_map = compute_family_e_candidates_from_bars(
@@ -393,8 +535,6 @@ def fetch_completed_nse_eod_snapshot(
 
     extra_payload: dict[str, Any] = {}
     if include_histories:
-        # Moreshwar 3.2: expose the real per-stock OHLCV histories (<= trading_date) and NIFTYBEES
-        # dated closes so the orchestrator can scan the FULL universe and mature its own outcomes.
         extra_payload = {
             "equity_histories": equity_histories,
             "niftybees_dates": [str(d) for d in nb_df.index.tolist()],
@@ -405,7 +545,7 @@ def fetch_completed_nse_eod_snapshot(
         **extra_payload,
         "trading_date": dt,
         "data_timestamp_utc": datetime.now(timezone.utc).isoformat(),
-        "data_source": "yfinance_nse_post_close_eod",
+        "data_source": "nse_official_bhavcopy+history" if nse_bhav is not None else "yfinance_nse_post_close_eod",
         "niftybees_bar": nb_bar,
         "liquidbees_bar": lb_bar,
         "niftybees_close_history": nb_closes[-250:],

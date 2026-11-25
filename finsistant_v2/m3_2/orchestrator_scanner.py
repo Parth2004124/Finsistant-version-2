@@ -288,6 +288,7 @@ class OrchestratorUniverseScanner:
         rsi_pen = float(learned_params.get("rsi_overbought_penalty", PRIOR_RSI_OVERBOUGHT_PENALTY))
         sec_adj_map = learned_params.get("sector_adjustments") or {}
         sec_adj = float(sec_adj_map.get(r["sector"], 0.0))
+        stop_mult = max(0.80, min(1.10, float(learned_params.get("stop_tighten_mult", 1.0))))
 
         row: dict[str, Any] = {
             "sec_id": r["sec_id"],
@@ -338,6 +339,8 @@ class OrchestratorUniverseScanner:
                 "active_trades": 0,
                 "max_concurrent_trades": 99,
                 "agent_mode": "paper_trading",
+                "risk_budget_pct": 0.011,
+                "max_single_stock_pct": 15.0,
                 "currency": "INR",
                 "is_holding": False,
                 "conviction_weights": weights,
@@ -353,7 +356,7 @@ class OrchestratorUniverseScanner:
             price = float(snap["price"])
             stop_loss = float(exe.get("stop_loss") or 0.0)
             raw_stop_ratio = (price - stop_loss) / price if price > 0 and stop_loss > 0 else self.cfg.stop_ratio_max
-            stop_ratio = min(self.cfg.stop_ratio_max, max(self.cfg.stop_ratio_min, raw_stop_ratio))
+            stop_ratio = min(self.cfg.stop_ratio_max, max(self.cfg.stop_ratio_min, raw_stop_ratio * stop_mult))
             row.update(
                 {
                     "status": "AGENTS_OK",
@@ -372,6 +375,7 @@ class OrchestratorUniverseScanner:
                     "moreshwar_stop_loss": stop_loss,
                     "moreshwar_target": float(exe.get("take_profit") or 0.0),
                     "stop_ratio": round(stop_ratio, 6),
+                    "stop_tighten_mult": round(stop_mult, 4),
                     "fundamental_source": snap.get("fundamental_source_category"),
                     "price_source": snap.get("price_source_category"),
                     "missing_fields": list(snap.get("missing_fields") or []),
@@ -399,6 +403,7 @@ class OrchestratorUniverseScanner:
         params.setdefault("min_conviction", PRIOR_MIN_CONVICTION)
         params.setdefault("rsi_overbought_penalty", PRIOR_RSI_OVERBOUGHT_PENALTY)
         params.setdefault("sector_adjustments", {})
+        params.setdefault("stop_tighten_mult", 1.0)
 
         workers = max(1, min(self.cfg.max_workers, len(shortlist)))
         if workers <= 1:
@@ -435,6 +440,7 @@ class OrchestratorUniverseScanner:
         params.setdefault("min_conviction", PRIOR_MIN_CONVICTION)
         params.setdefault("rsi_overbought_penalty", PRIOR_RSI_OVERBOUGHT_PENALTY)
         params.setdefault("sector_adjustments", {})
+        params.setdefault("stop_tighten_mult", 1.0)
         params.setdefault("status", weights_status)
 
         tech_rows, skipped = self.score_universe_technical(
@@ -458,7 +464,6 @@ class OrchestratorUniverseScanner:
                     "strategy_id": ORCH_STRATEGY_ID,
                     "score": float(r["conviction"]),
                     "stop_ratio": float(r["stop_ratio"]),
-                    "ev_mode": "LEARNING_PHASE",
                     "tech_conf": r["tech_conf"],
                     "fund_conf": r["fund_conf"],
                     "tech_rank": r["tech_rank"],
@@ -510,3 +515,56 @@ class OrchestratorUniverseScanner:
             "candidates": candidates,
             "universe_tech": tech_rows,
         }
+
+    def evaluate_open_holdings(
+        self,
+        open_positions: list[dict[str, Any]],
+        *,
+        learned_params: dict[str, Any] | None = None,
+        capital_inr: float = 100_000.0,
+    ) -> list[dict[str, Any]]:
+        """Re-evaluate open tactical positions via TechBot+FundBot+ExecBot (is_holding=True) for active EXIT/SELL."""
+        if not open_positions:
+            return []
+        params = dict(learned_params or {})
+        weights = (float(params.get("w_tech", PRIOR_W_TECH)), float(params.get("w_fund", PRIOR_W_FUND)))
+        min_conv = float(params.get("min_conviction", PRIOR_MIN_CONVICTION))
+        rsi_pen = float(params.get("rsi_overbought_penalty", PRIOR_RSI_OVERBOUGHT_PENALTY))
+        sec_adj_map = params.get("sector_adjustments") or {}
+        exits: list[dict[str, Any]] = []
+        for pos in open_positions:
+            sym = str(pos.get("symbol") or "").strip().upper()
+            sid = str(pos.get("sec_id") or "")
+            if not sym or not sid:
+                continue
+            snap = self._analysis_fn(sym)
+            ctx: dict[str, Any] = {
+                "symbol": sym,
+                "asset_analysis": snap,
+                "capital": float(capital_inr),
+                "active_trades": len(open_positions),
+                "max_concurrent_trades": 99,
+                "agent_mode": "paper_trading",
+                "currency": "INR",
+                "is_holding": True,
+                "conviction_weights": weights,
+                "min_conviction": min_conv,
+                "rsi_overbought_penalty": rsi_pen,
+                "sector_adjustment": float(sec_adj_map.get(str(pos.get("sector") or ""), 0.0)),
+            }
+            for agent in (self.tech_agent, self.fund_agent, self.exec_agent):
+                ctx[agent.role_key] = agent.evaluate(ctx)
+            exe = ctx["execution"]
+            badge = str(exe.get("decision_badge") or "")
+            if exe.get("action") == "SELL" or badge in ("EXIT", "REDUCE"):
+                exits.append({
+                    "sec_id": sid,
+                    "symbol": sym,
+                    "action": exe.get("action"),
+                    "decision_badge": badge,
+                    "conviction": float(exe.get("conviction") or 0.0),
+                    "reason": f"ORCHESTRATOR_{badge or 'SELL'}",
+                    "summary": exe.get("summary", ""),
+                })
+        return exits
+

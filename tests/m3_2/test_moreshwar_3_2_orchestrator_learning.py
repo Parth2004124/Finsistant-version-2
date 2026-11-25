@@ -207,6 +207,154 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
             bull = [r for r in runner.orch.engine._effective_regime_policy.regime_rules if r[0] == "BULL_TREND"][0]
             self.assertEqual((bull[1], bull[2], bull[3]), (0.0, 90.0, 10.0))
             self.assertEqual(M32_EXEC_CFG_OVERRIDE["sweep_unused_tactical_to_core"], False)
+            self.assertEqual(M32_EXEC_CFG_OVERRIDE["hurdle_mode"], "DYNAMIC_VOL")
+
+    def test_screener_parser_extracts_ratios_without_zero_defaults(self) -> None:
+        from finsistant_v2.screener_data import parse_screener_html
+
+        sample_html = """
+        <html><body>
+        <h1>Test Industries Ltd</h1>
+        <section id="peers"><p class="sub"><a href="/market/">Capital Goods</a></p></section>
+        <ul id="top-ratios">
+          <li><span class="name">Market Cap</span><span class="nowrap value">₹ <span class="number">12,345</span> Cr.</span></li>
+          <li><span class="name">Stock P/E</span><span class="nowrap value"><span class="number">24.5</span></span></li>
+          <li><span class="name">ROCE</span><span class="nowrap value"><span class="number">21.4</span> %</span></li>
+          <li><span class="name">ROE</span><span class="nowrap value"><span class="number">18.2</span> %</span></li>
+        </ul>
+        <section id="quarters"><table><tr><td>OPM %</td><td>15%</td><td>17.5%</td></tr></table></section>
+        <section id="profit-loss">
+          Compounded Sales Growth <table><tr><td>TTM:</td><td>22%</td></tr></table>
+          Compounded Profit Growth <table><tr><td>3 Years:</td><td>28%</td></tr></table>
+        </section>
+        <section id="balance-sheet"><table>
+          <tr><td>Equity Capital</td><td>100</td><td>100</td></tr>
+          <tr><td>Reserves</td><td>800</td><td>900</td></tr>
+          <tr><td>Borrowings</td><td>150</td><td>200</td></tr>
+        </table></section>
+        </body></html>
+        """
+        out = parse_screener_html(sample_html, "TESTCO")
+        self.assertEqual(out["mcap_cr"], 12345.0)
+        self.assertEqual(out["pe"], 24.5)
+        self.assertEqual(out["roce"], 21.4)
+        self.assertEqual(out["roe"], 18.2)
+        self.assertEqual(out["opm"], 17.5)
+        self.assertEqual(out["sales_growth"], 22.0)
+        self.assertEqual(out["profit_growth"], 28.0)
+        self.assertEqual(out["debt_to_equity"], 0.2)
+
+        partial_html = '<ul id="top-ratios"><li><span class="name">Stock P/E</span><span class="nowrap value"><span class="number">19.1</span></span></li></ul>'
+        partial = parse_screener_html(partial_html, "PARTCO")
+        self.assertEqual(partial["pe"], 19.1)
+        self.assertIsNone(partial["roe"])
+        self.assertIsNone(partial["roce"])
+        self.assertIsNone(partial["opm"])
+
+        with self.assertRaises(ValueError):
+            parse_screener_html("<html><body>blocked</body></html>", "BAD")
+
+    def test_strict_scoring_refuses_missing_fundamentals(self) -> None:
+        from finsistant_v2.scoring_engine import calculate_fundamental_score, calculate_porters_score
+
+        with self.assertRaises(ValueError):
+            calculate_fundamental_score(
+                {"sector": "IT", "pe": None, "roe": None, "roce": None, "opm": None, "sales_growth": None, "profit_growth": None, "debt_to_equity": None},
+                strict=True,
+            )
+        with self.assertRaises(ValueError):
+            calculate_porters_score({"sector": "IT", "mcap_cr": None, "opm": None, "roe": None, "roce": None}, strict=True)
+
+    def test_nse_bhavcopy_and_holiday_parsers(self) -> None:
+        from finsistant_v2.m3_1.live_nse_eod_feed import parse_nse_bhavcopy_csv
+        from finsistant_v2.m3_1.paper_trading_scheduler import parse_nse_holiday_master
+
+        csv_txt = (
+            "SYMBOL, SERIES, DATE1, PREV_CLOSE, OPEN_PRICE, HIGH_PRICE, LOW_PRICE, LAST_PRICE, CLOSE_PRICE, TTL_TRD_QNTY\n"
+            "INFY, EQ, 25-Nov-2026, 1800, 1810, 1840, 1795, 1830, 1832.5, 5432100\n"
+            "TESTNCD, N1, 25-Nov-2026, 1000, 1000, 1005, 998, 1001, 1001, 200\n"
+        )
+        bars = parse_nse_bhavcopy_csv(csv_txt)
+        self.assertIsNotNone(bars)
+        self.assertIn("INFY", bars)
+        self.assertNotIn("TESTNCD", bars)
+        self.assertEqual(bars["INFY"]["close"], 1832.5)
+
+        hols = parse_nse_holiday_master({"CM": [{"tradingDate": "26-Jan-2026"}, {"tradingDate": "25-Dec-2026"}]})
+        self.assertEqual(hols, frozenset({"2026-01-26", "2026-12-25"}))
+        with self.assertRaises(RuntimeError):
+            parse_nse_holiday_master({})
+
+    def test_m32_ev_hurdle_enforced_and_active_tactical_sell_executes(self) -> None:
+        from finsistant_v2.m3_1.adaptive_strategy_engine import MarketRegime
+        from finsistant_v2.m3_2.orchestrated_session import ORCH_STRATEGY_ID, OrchestratedSessionRunner
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tdir = Path(tmp)
+            runner = OrchestratedSessionRunner(
+                db_path=tdir / "m32.db",
+                learning_db_path=tdir / "learn.db",
+                reports_dir=tdir / "rep",
+                scan_dir=tdir / "scan",
+            )
+            dates = ["2026-11-20", "2026-11-23", "2026-11-25", "2026-11-26"]
+            for i, d in enumerate(dates):
+                px_nb = 290.0 + i * 0.5
+                px_liq = 1000.0 + i * 0.1
+                px_a = 100.0 + i * 2.0
+                # Day 0: low-score candidate fails EV hurdle; Day 1: high-score enters; Day 2: T+1 open fills + queues SELL; Day 3: SELL fills
+                if i == 0:
+                    cands = [{"sec_id": "SEC_A", "symbol": "ALPHACO", "strategy_id": ORCH_STRATEGY_ID, "score": 0.10, "stop_ratio": 0.09, "ev_expected_alpha_bps": 10.0}]
+                    exits: list[dict] = []
+                elif i == 1:
+                    cands = [{"sec_id": "SEC_A", "symbol": "ALPHACO", "strategy_id": ORCH_STRATEGY_ID, "score": 0.92, "stop_ratio": 0.09, "ev_expected_alpha_bps": 450.0}]
+                    exits = []
+                elif i == 2:
+                    cands = []
+                    exits = [{"sec_id": "SEC_A", "symbol": "ALPHACO", "action": "SELL", "decision_badge": "EXIT", "conviction": 0.35, "reason": "ORCHESTRATOR_EXIT"}]
+                else:
+                    cands = []
+                    exits = []
+
+                snap = {
+                    "trading_date": d,
+                    "data_timestamp": f"{d}T16:00:00+05:30",
+                    "regime": MarketRegime("BULL_TREND", px_nb, px_nb - 15.0, px_nb / (px_nb - 15.0) - 1.0, True),
+                    "niftybees": {"open": px_nb, "high": px_nb + 1, "low": px_nb - 1, "close": px_nb, "prev_close": px_nb - 0.5, "volume": 100_000.0, "atr_14": 2.5, "vol_20d": 0.01, "valid": True},
+                    "liquidbees": {"open": px_liq, "high": px_liq + 0.1, "low": px_liq - 0.1, "close": px_liq, "prev_close": px_liq - 0.1, "volume": 50_000.0, "atr_14": 0.2, "vol_20d": 0.001, "valid": True},
+                    "equity_bars": {
+                        "SEC_A": {
+                            "sec_id": "SEC_A", "symbol": "ALPHACO", "sector": "IT", "industry": "Software",
+                            "is_unknown_sector": False, "open": px_a, "high": px_a + 1, "low": px_a - 1,
+                            "close": px_a, "prev_close": px_a - 2.0, "volume": 1_000_000.0, "atr_14": 2.0,
+                            "vol_20d": 0.014, "hl_range_pct": 2.0, "adv_20d_inr": 100_000_000.0,
+                            "div_yield_ttm": 0.01, "valid": True,
+                        }
+                    },
+                    "family_e_candidates": cands,
+                    "tactical_exit_signals": exits,
+                    "pairwise_corr_map": {},
+                    "niftybees_dividend_per_unit": 0.0,
+                    "liquidbees_dividend_per_unit": 0.0,
+                    "equity_dividends": {},
+                }
+                res = runner.orch.engine.run_daily_cycle(trading_date=d, market_data=snap, observation_mode="PROSPECTIVE_PAPER")
+                self.assertEqual(res["portfolio_state"]["core_qty"], 0)
+                if i == 0:
+                    rej = [s for s in res["signals"] if s.get("reason") == "BELOW_EV_HURDLE"]
+                    self.assertTrue(rej, "Low-EV candidate must be rejected when hurdle_mode=DYNAMIC_VOL (no LEARNING_PHASE bypass).")
+                elif i == 2:
+                    self.assertGreaterEqual(len(res["open_tactical_positions"]), 1)
+                    pend_kinds = [p.get("kind") for p in res["pending_orders"]]
+                    self.assertIn("TACTICAL_SELL", pend_kinds)
+                elif i == 3:
+                    self.assertEqual(len(res["open_tactical_positions"]), 0)
+            lessons_added = runner.ledger.sync_closed_trades(runner.orch.engine.db_path)
+            self.assertEqual(lessons_added, 1)
+            upd = runner.ledger.update_weights(dates[-1])
+            self.assertIn("stop_tighten_mult", upd)
+            self.assertGreaterEqual(upd["stop_tighten_mult"], 0.80)
+            self.assertLessEqual(upd["stop_tighten_mult"], 1.10)
 
 
 if __name__ == "__main__":
