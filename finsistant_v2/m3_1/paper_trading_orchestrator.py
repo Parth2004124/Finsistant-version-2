@@ -319,6 +319,8 @@ class PaperTradingOrchestrator:
         automatic_capital_deployment_enabled: bool = False,
         broker_adapter: Any = None,
         extra_admitted_strategy_ids: tuple[str, ...] = (),
+        regime_policy_override: Any = None,
+        exec_cfg_override: dict[str, Any] | None = None,
     ) -> None:
         self.safety_guard = PaperOnlyExecutionGuard(extra_admitted_strategy_ids)
         self.safety_guard.assert_paper_only(
@@ -336,6 +338,8 @@ class PaperTradingOrchestrator:
             initial_capital_inr=initial_capital_inr,
             prospective_start_date=prospective_start_date,
             extra_admitted_strategy_ids=extra_admitted_strategy_ids,
+            regime_policy_override=regime_policy_override,
+            exec_cfg_override=exec_cfg_override,
         )
         self.risk_monitor = PaperTradingRiskMonitor()
         self._last_data_quality_report: dict[str, Any] = {

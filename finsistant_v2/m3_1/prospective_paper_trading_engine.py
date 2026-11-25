@@ -434,6 +434,8 @@ class ProspectivePaperTradingEngine:
         automatic_capital_deployment_enabled: bool = False,
         broker_adapter: Any = None,
         extra_admitted_strategy_ids: tuple[str, ...] = (),
+        regime_policy_override: AdaptiveRegimePolicy | None = None,
+        exec_cfg_override: dict[str, Any] | None = None,
     ) -> None:
         self.safety_guard = PaperOnlyExecutionGuard(extra_admitted_strategy_ids)
         self.safety_guard.assert_paper_only(
@@ -443,8 +445,24 @@ class ProspectivePaperTradingEngine:
             broker_adapter=broker_adapter,
         )
 
+        if (regime_policy_override is not None or exec_cfg_override is not None) and "STRAT_ORCH_AGENT_CONSENSUS" not in extra_admitted_strategy_ids:
+            raise PaperTradingSafetyError(
+                "HARD_CONFIG_GUARD: Allocation/execution overrides are forbidden for frozen Moreshwar 3.1."
+            )
+
         self.config_path = Path(config_path)
         self.verified_config = load_and_verify_frozen_config(self.config_path)
+        self._regime_policy_override = regime_policy_override
+        if exec_cfg_override:
+            merged_ec = asdict(self.verified_config.exec_cfg)
+            merged_ec.update(exec_cfg_override)
+            merged_ec["active_sleeves"] = tuple(merged_ec["active_sleeves"])
+            merged_ec["sleeve_weights"] = tuple((str(k), float(v)) for k, v in merged_ec["sleeve_weights"])
+            self._effective_exec_cfg = ExecutionIntelligenceConfig(**merged_ec)
+        else:
+            self._effective_exec_cfg = self.verified_config.exec_cfg
+        self._effective_regime_policy = regime_policy_override or self.verified_config.regime_policy
+
         self.cost_engine = TransactionCostIntelligence(self.verified_config.tariff_schedule)
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1316,8 +1334,8 @@ class ProspectivePaperTradingEngine:
         if allow_entries_override is False:
             entries_permitted_by_state = False
 
-        ecfg = self.verified_config.exec_cfg
-        policy = self.verified_config.regime_policy
+        ecfg = self._effective_exec_cfg
+        policy = self._effective_regime_policy
         policy_map = {
             r[0]: (float(r[1]), float(r[2]), float(r[3]), bool(r[4]), float(r[5]), float(r[6]))
             for r in policy.regime_rules
@@ -1719,7 +1737,7 @@ class ProspectivePaperTradingEngine:
                             status="FILLED",
                         )
                 elif diff_inr < -ecfg.min_core_trade_inr and core_qty > 0:
-                    sell_qty = min(core_qty, int(abs(diff_inr) // max(1.0, nb_px_o)))
+                    sell_qty = core_qty if target_core_inr <= 0.0 else min(core_qty, int(abs(diff_inr) // max(1.0, nb_px_o)))
                     if sell_qty < 1:
                         return
                     cc = self.cost_engine.calculate_leg_cost(
@@ -1778,7 +1796,11 @@ class ProspectivePaperTradingEngine:
 
             if queued_tact_buys and entries_permitted_by_state:
                 if queued_core_order is not None:
-                    tgt_c_inr = float(queued_core_order["target_core_inr"])
+                    override_core_zero = (
+                        self._regime_policy_override is not None
+                        and policy_map.get(confirmed_regime, (1.0,))[0] <= 0.0
+                    )
+                    tgt_c_inr = 0.0 if override_core_zero else float(queued_core_order["target_core_inr"])
                     if (core_qty * nb_px_o) > tgt_c_inr + ecfg.min_core_trade_inr:
                         _rebalance_core(tgt_c_inr, str(queued_core_order["signal_timestamp"]), force_trim=True)
                 est_buy = 0.0
@@ -2036,8 +2058,15 @@ class ProspectivePaperTradingEngine:
                 )
 
             # Execute queued Core Rebalance & Liquid Sweep at today's Open
+            override_core_zero_post = (
+                self._regime_policy_override is not None
+                and policy_map.get(confirmed_regime, (1.0,))[0] <= 0.0
+            )
             if queued_core_order is not None:
-                _rebalance_core(float(queued_core_order["target_core_inr"]), str(queued_core_order["signal_timestamp"]))
+                tgt_post = 0.0 if override_core_zero_post else float(queued_core_order["target_core_inr"])
+                _rebalance_core(tgt_post, str(queued_core_order["signal_timestamp"]), force_trim=override_core_zero_post)
+            elif override_core_zero_post and core_qty > 0:
+                _rebalance_core(0.0, f"{dt}T09:15:00+05:30", force_trim=True)
 
             if queued_liquid_sweep is not None and entries_permitted_by_state:
                 excess_cash = settled_cash - ecfg.liquid_sweep_min_cash_inr

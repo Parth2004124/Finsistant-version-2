@@ -115,10 +115,13 @@ class _McpEndpointSession:
         except Exception:
             pass
 
-    def call_tool(self, tool_name: str, arguments: dict[str, Any], timeout: float = 15.0) -> dict[str, Any]:
+    def call_tool(self, tool_name: str, arguments: dict[str, Any], timeout: float = 18.0) -> dict[str, Any]:
+        import time as _time
+
         with self._lock:
             last_err: Exception | None = None
-            for attempt in range(2):
+            max_attempts = 5
+            for attempt in range(max_attempts):
                 try:
                     self._ensure_session()
                     self._req_id += 1
@@ -141,11 +144,12 @@ class _McpEndpointSession:
                     if res.get("isError"):
                         raise RuntimeError(f"NSE MCP tool error ({tool_name}): {data}")
                     return data
-                except (urllib.error.HTTPError, RuntimeError, TimeoutError, ValueError) as exc:
+                except (urllib.error.HTTPError, urllib.error.URLError, RuntimeError, TimeoutError, ValueError, OSError) as exc:
                     last_err = exc
-                    # Force clean re-initialize on retry if session expired
+                    # Force clean re-initialize on retry if session expired or transient error
                     self._session_id = None
-                    if attempt == 0:
+                    if attempt < max_attempts - 1:
+                        _time.sleep(min(12.0, 1.5 * (2 ** attempt)))
                         continue
             raise last_err or RuntimeError(f"NSE MCP tool call failed: {tool_name}")
 

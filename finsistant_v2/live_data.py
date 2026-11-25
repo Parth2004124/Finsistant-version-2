@@ -48,9 +48,9 @@ _LIVE_CACHE: dict[str, tuple[float, dict[str, Any]]] = {}
 _CACHE_TTL_SEC = 60.0
 
 
-def _get_yahoo_crumb() -> str:
+def _get_yahoo_crumb(force_refresh: bool = False) -> str:
     global _CACHED_CRUMB, _CRUMB_TS
-    if _CACHED_CRUMB and (time.time() - _CRUMB_TS) < 1800:
+    if (not force_refresh) and _CACHED_CRUMB and (time.time() - _CRUMB_TS) < 1800:
         return _CACHED_CRUMB
     try:
         _OPENER.open("https://fc.yahoo.com", timeout=8)
@@ -121,10 +121,18 @@ def _fetch_via_yfinance(sym: str, yahoo_sym: str, exchange_hint: str) -> dict[st
         return None
 
     info = {}
-    try:
-        info = ticker.info or {}
-    except Exception:
-        info = {}
+    for attempt in range(4):
+        try:
+            info = ticker.info or {}
+            if info and (info.get("marketCap") or info.get("trailingPE") or info.get("returnOnEquity")):
+                break
+        except Exception:
+            info = {}
+        if attempt < 3:
+            time.sleep(1.5 * (attempt + 1))
+
+    if not info:
+        raise RuntimeError(f"Live Yahoo info/fundamentals unavailable for {yahoo_sym} after retries.")
 
     spot = float(info.get("regularMarketPrice") or info.get("currentPrice") or candles[-1]["close"])
     prev_bar = float(candles[-2]["close"]) if len(candles) >= 2 else spot
@@ -274,61 +282,76 @@ def _raw_num(val: Any) -> float | None:
     return None
 
 
-def _fetch_yahoo_fundamentals_only(yahoo_sym: str, currency: str, spot: float) -> dict[str, Any]:
-    """Fetch company-level fundamental ratios from Yahoo (NSE MCP does not publish company P/E or ROE)."""
+def _fetch_yahoo_fundamentals_only(yahoo_sym: str, currency: str, spot: float, *, strict: bool = False) -> dict[str, Any]:
+    """Fetch company-level fundamental ratios (NSE MCP does not publish company P/E or ROE)."""
     missing_fields: list[str] = []
     proxy_fields: dict[str, str] = {}
     info: dict[str, Any] = {}
     yahoo_spot: float | None = None
 
-    try:
-        import yfinance as yf  # type: ignore
-
-        info = yf.Ticker(yahoo_sym).info or {}
-        if info:
-            raw_sp = info.get("regularMarketPrice") or info.get("currentPrice")
-            if raw_sp is not None:
-                yahoo_spot = round(float(raw_sp), 2)
-    except Exception:
-        info = {}
-
-    if not info:
+    max_attempts = 5
+    for attempt in range(max_attempts):
         try:
-            crumb = _get_yahoo_crumb()
-            qs_url = (
-                f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{urllib.parse.quote(yahoo_sym)}"
-                f"?modules=price,summaryDetail,defaultKeyStatistics,financialData,assetProfile&crumb={urllib.parse.quote(crumb)}"
-            )
-            qs_json = _fetch_json(qs_url, retries=2)
-            qs_res = ((qs_json.get("quoteSummary") or {}).get("result") or [{}])[0]
-            price_mod = qs_res.get("price") or {}
-            summary_mod = qs_res.get("summaryDetail") or {}
-            stats_mod = qs_res.get("defaultKeyStatistics") or {}
-            fin_mod = qs_res.get("financialData") or {}
-            prof_mod = qs_res.get("assetProfile") or {}
-            yahoo_spot_raw = _raw_num(price_mod.get("regularMarketPrice"))
-            if yahoo_spot_raw is not None:
-                yahoo_spot = round(float(yahoo_spot_raw), 2)
-            info = {
-                "longName": price_mod.get("longName") or price_mod.get("shortName"),
-                "sector": prof_mod.get("sector") or prof_mod.get("industry"),
-                "trailingPE": _raw_num(summary_mod.get("trailingPE")),
-                "forwardPE": _raw_num(stats_mod.get("forwardPE")),
-                "returnOnEquity": _raw_num(fin_mod.get("returnOnEquity")),
-                "returnOnAssets": _raw_num(fin_mod.get("returnOnAssets")),
-                "operatingMargins": _raw_num(fin_mod.get("operatingMargins")),
-                "revenueGrowth": _raw_num(fin_mod.get("revenueGrowth")),
-                "earningsGrowth": _raw_num(fin_mod.get("earningsGrowth")),
-                "earningsQuarterlyGrowth": _raw_num(fin_mod.get("earningsQuarterlyGrowth")),
-                "marketCap": _raw_num(summary_mod.get("marketCap")) or _raw_num(price_mod.get("marketCap")),
-                "sharesOutstanding": _raw_num(stats_mod.get("sharesOutstanding")) or _raw_num(stats_mod.get("impliedSharesOutstanding")),
-                "beta": _raw_num(stats_mod.get("beta")) or _raw_num(summary_mod.get("beta")),
-                "debtToEquity": _raw_num(fin_mod.get("debtToEquity")),
-            }
+            import yfinance as yf  # type: ignore
+
+            t_info = yf.Ticker(yahoo_sym).info or {}
+            if t_info and (t_info.get("marketCap") or t_info.get("trailingPE") or t_info.get("returnOnEquity")):
+                info = t_info
+                raw_sp = info.get("regularMarketPrice") or info.get("currentPrice")
+                if raw_sp is not None:
+                    yahoo_spot = round(float(raw_sp), 2)
+                break
         except Exception:
-            info = {}
+            pass
+
+        for host in ("query2.finance.yahoo.com", "query1.finance.yahoo.com"):
+            try:
+                crumb = _get_yahoo_crumb(force_refresh=(attempt > 0))
+                qs_url = (
+                    f"https://{host}/v10/finance/quoteSummary/{urllib.parse.quote(yahoo_sym)}"
+                    f"?modules=price,summaryDetail,defaultKeyStatistics,financialData,assetProfile&crumb={urllib.parse.quote(crumb)}"
+                )
+                qs_json = _fetch_json(qs_url, retries=2)
+                qs_res = ((qs_json.get("quoteSummary") or {}).get("result") or [{}])[0]
+                if not qs_res:
+                    continue
+                price_mod = qs_res.get("price") or {}
+                summary_mod = qs_res.get("summaryDetail") or {}
+                stats_mod = qs_res.get("defaultKeyStatistics") or {}
+                fin_mod = qs_res.get("financialData") or {}
+                prof_mod = qs_res.get("assetProfile") or {}
+                yahoo_spot_raw = _raw_num(price_mod.get("regularMarketPrice"))
+                if yahoo_spot_raw is not None:
+                    yahoo_spot = round(float(yahoo_spot_raw), 2)
+                cand_info = {
+                    "longName": price_mod.get("longName") or price_mod.get("shortName"),
+                    "sector": prof_mod.get("sector") or prof_mod.get("industry"),
+                    "trailingPE": _raw_num(summary_mod.get("trailingPE")),
+                    "forwardPE": _raw_num(stats_mod.get("forwardPE")),
+                    "returnOnEquity": _raw_num(fin_mod.get("returnOnEquity")),
+                    "returnOnAssets": _raw_num(fin_mod.get("returnOnAssets")),
+                    "operatingMargins": _raw_num(fin_mod.get("operatingMargins")),
+                    "revenueGrowth": _raw_num(fin_mod.get("revenueGrowth")),
+                    "earningsGrowth": _raw_num(fin_mod.get("earningsGrowth")),
+                    "earningsQuarterlyGrowth": _raw_num(fin_mod.get("earningsQuarterlyGrowth")),
+                    "marketCap": _raw_num(summary_mod.get("marketCap")) or _raw_num(price_mod.get("marketCap")),
+                    "sharesOutstanding": _raw_num(stats_mod.get("sharesOutstanding")) or _raw_num(stats_mod.get("impliedSharesOutstanding")),
+                    "beta": _raw_num(stats_mod.get("beta")) or _raw_num(summary_mod.get("beta")),
+                    "debtToEquity": _raw_num(fin_mod.get("debtToEquity")),
+                }
+                if cand_info.get("marketCap") or cand_info.get("trailingPE") or cand_info.get("returnOnEquity"):
+                    info = cand_info
+                    break
+            except Exception:
+                continue
+        if info:
+            break
+        if attempt < max_attempts - 1:
+            time.sleep(min(12.0, 2.0 * (attempt + 1)))
 
     if not info:
+        if strict:
+            raise RuntimeError(f"Fundamental data unavailable for {yahoo_sym} after {max_attempts} retries.")
         return {
             "fundamentals_status": "unavailable",
             "name": yahoo_sym.replace(".NS", ""),
@@ -414,19 +437,27 @@ def _fetch_yahoo_fundamentals_only(yahoo_sym: str, currency: str, spot: float) -
     }
 
 
-def _fetch_via_nse_mcp(sym: str, nse_sym: str, yahoo_sym: str) -> dict[str, Any] | None:
+def _fetch_via_nse_mcp(
+    sym: str,
+    nse_sym: str,
+    yahoo_sym: str,
+    *,
+    strict_fundamentals: bool = False,
+) -> dict[str, Any] | None:
     """Fetch live NSE quote & 1Y Bhavcopy OHLCV via Official NSE India MCP servers."""
     from .nse_mcp import fetch_nse_stock_history_1y, fetch_nse_stock_quote
 
     quote = fetch_nse_stock_quote(nse_sym)
     if not quote or float(quote.get("spot") or 0.0) <= 0:
+        if strict_fundamentals:
+            raise RuntimeError(f"Official NSE MCP quote unavailable for {nse_sym}.")
         return None
     candles, adjustments = fetch_nse_stock_history_1y(nse_sym)
     spot = round(float(quote["spot"]), 2)
     change_pct = round(float(quote.get("change_pct") or 0.0), 2)
     ret_1y = round(((spot - float(candles[0]["close"])) / max(1e-6, float(candles[0]["close"]))) * 100.0, 2)
 
-    fund = _fetch_yahoo_fundamentals_only(yahoo_sym, "INR", spot)
+    fund = _fetch_yahoo_fundamentals_only(yahoo_sym, "INR", spot, strict=strict_fundamentals)
     fund_live = fund["fundamentals_status"] == "live"
     source_desc = (
         "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
@@ -469,6 +500,7 @@ def _fetch_via_nse_mcp(sym: str, nse_sym: str, yahoo_sym: str) -> dict[str, Any]
         "price_source_category": "NSE_OFFICIAL_MCP",
         "ohlcv_source_category": "NSE_OFFICIAL_MCP",
         "fundamental_source_category": "YAHOO_LIVE_FEED" if fund_live else "UNAVAILABLE",
+        "fundamentals_status": fund["fundamentals_status"],
         "missing_fields": fund["missing_fields"],
         "proxy_fields": fund["proxy_fields"],
         "cache_hit": False,
@@ -477,8 +509,13 @@ def _fetch_via_nse_mcp(sym: str, nse_sym: str, yahoo_sym: str) -> dict[str, Any]
     }
 
 
-def fetch_live_market_snapshot(symbol: str, force_refresh: bool = False) -> dict[str, Any]:
-    """Fetch real OHLCV bars and quotes (Official NSE MCP primary for NSE, Yahoo for global/fundamentals)."""
+def fetch_live_market_snapshot(
+    symbol: str,
+    force_refresh: bool = False,
+    *,
+    strict_no_fallback: bool = False,
+) -> dict[str, Any]:
+    """Fetch real OHLCV bars and quotes (Official NSE MCP primary for NSE; fail upfront when strict_no_fallback=True)."""
     sym = symbol.upper().strip()
     now = time.time()
     if not force_refresh and sym in _LIVE_CACHE:
@@ -490,21 +527,29 @@ def fetch_live_market_snapshot(symbol: str, force_refresh: bool = False) -> dict
             return hit
 
     cfg = DEFAULT_SYMBOL_CONFIG.get(sym)
-    # 1. Try Official NSE MCP first for known NSE symbols or dynamic NSE candidates
-    if USE_NSE_MCP:
-        nse_candidate = None
-        yahoo_candidate = None
-        if cfg:
-            if cfg.get("exchange") == "NSE" and cfg.get("nse"):
-                nse_candidate = cfg["nse"]
-                yahoo_candidate = cfg["yahoo"]
-        elif "." not in sym or sym.endswith(".NS"):
-            nse_candidate = sym[:-3] if sym.endswith(".NS") else sym
-            yahoo_candidate = f"{nse_candidate}.NS"
+    nse_candidate = None
+    yahoo_candidate = None
+    if cfg:
+        if cfg.get("exchange") == "NSE" and cfg.get("nse"):
+            nse_candidate = cfg["nse"]
+            yahoo_candidate = cfg["yahoo"]
+    elif "." not in sym or sym.endswith(".NS"):
+        nse_candidate = sym[:-3] if sym.endswith(".NS") else sym
+        yahoo_candidate = f"{nse_candidate}.NS"
 
-        if nse_candidate and yahoo_candidate:
+    # 1. Official NSE MCP for NSE symbols
+    if nse_candidate and yahoo_candidate:
+        if strict_no_fallback and not USE_NSE_MCP:
+            raise RuntimeError("FINSISTANT_USE_NSE_MCP is disabled while strict_no_fallback=True.")
+        if USE_NSE_MCP:
+            if strict_no_fallback:
+                nse_snap = _fetch_via_nse_mcp(sym, nse_candidate, yahoo_candidate, strict_fundamentals=True)
+                if not nse_snap:
+                    raise RuntimeError(f"Official NSE MCP returned empty snapshot for {sym} ({nse_candidate}).")
+                _LIVE_CACHE[sym] = (now, nse_snap)
+                return nse_snap
             try:
-                nse_snap = _fetch_via_nse_mcp(sym, nse_candidate, yahoo_candidate)
+                nse_snap = _fetch_via_nse_mcp(sym, nse_candidate, yahoo_candidate, strict_fundamentals=False)
                 if nse_snap:
                     _LIVE_CACHE[sym] = (now, nse_snap)
                     return nse_snap

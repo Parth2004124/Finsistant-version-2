@@ -43,8 +43,21 @@ def detect_industry(name: str, sector: str = "") -> str:
     return "GENERAL"
 
 
-def calculate_fundamental_score(meta: dict[str, Any]) -> dict[str, Any]:
+def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = False) -> dict[str, Any]:
     """Calculate the StockSight V2 4-Pillar Fundamental Score (Max 100)."""
+    if str(meta.get("fundamentals_status", "")).lower() == "unavailable" or str(meta.get("fundamental_source_category", "")).upper() == "UNAVAILABLE":
+        raise ValueError("Fundamental data is unavailable; refusing to fabricate a default score.")
+
+    required_keys = ("sales_growth", "profit_growth", "opm", "roe", "roce", "pe", "mcap_cr")
+    if strict:
+        missing = [k for k in required_keys if meta.get(k) is None]
+        if missing:
+            raise ValueError(f"Missing required fundamental fields (strict=True): {missing}")
+        reported_missing = set(meta.get("missing_fields") or [])
+        core_missing = reported_missing & {"pe", "roe", "opm", "sales_growth", "profit_growth", "mcap_cr"}
+        if len(core_missing) >= 4:
+            raise ValueError(f"Insufficient live fundamental fields (missing={sorted(core_missing)}); refusing default score.")
+
     sales_growth = float(meta.get("sales_growth", 12.0))
     profit_growth = float(meta.get("profit_growth", 14.0))
     opm = float(meta.get("opm", 20.0))
@@ -212,8 +225,16 @@ def calculate_fundamental_score(meta: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def calculate_porters_score(meta: dict[str, Any]) -> dict[str, Any]:
+def calculate_porters_score(meta: dict[str, Any], *, strict: bool = False) -> dict[str, Any]:
     """Calculate StockSight V2 Porter's 5 Forces Qualitative Score (Max 100)."""
+    if str(meta.get("fundamentals_status", "")).lower() == "unavailable" or str(meta.get("fundamental_source_category", "")).upper() == "UNAVAILABLE":
+        raise ValueError("Fundamental data is unavailable; refusing to fabricate Porter's score.")
+    if strict:
+        required_keys = ("mcap_cr", "roce", "roe", "opm", "sales_growth", "profit_growth")
+        missing = [k for k in required_keys if meta.get(k) is None]
+        if missing:
+            raise ValueError(f"Missing required Porter's fundamental fields (strict=True): {missing}")
+
     mcap_cr = float(meta.get("mcap_cr", 45000.0))
     roce = float(meta.get("roce", 19.0))
     roe = float(meta.get("roe", 18.0))

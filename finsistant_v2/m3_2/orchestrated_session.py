@@ -17,6 +17,7 @@ from typing import Any
 
 import numpy as np
 
+from finsistant_v2.m3_1.adaptive_strategy_engine import AdaptiveRegimePolicy
 from finsistant_v2.m3_1.live_nse_eod_feed import fetch_completed_nse_eod_snapshot
 from finsistant_v2.m3_1.paper_trading_orchestrator import PaperTradingOrchestrator
 from finsistant_v2.m3_1.paper_trading_scheduler import PaperTradingScheduler
@@ -38,6 +39,29 @@ M32_REPORTS_DIR = REPO_ROOT / "reports" / "moreshwar_3_2"
 M32_PAPER_REPORTS_DIR = M32_REPORTS_DIR / "prospective_paper_trading"
 M32_SCAN_DIR = M32_REPORTS_DIR / "orchestrator_scan"
 RELEASE_VERSION_M3_2 = "3.2.0"
+MIN_EOD_UNIVERSE_BARS = 800
+
+# Moreshwar 3.2 aims to beat NIFTYBEES significantly via active AI stock picks,
+# so it holds 0% passive NIFTYBEES and deploys 90% into Tactical AI picks in BULL_TREND
+# (keeping M3.1 frozen at 60/30/10 as the conservative baseline).
+M32_ALPHA_REGIME_POLICY = AdaptiveRegimePolicy(
+    policy_id="M32_ACTIVE_ALPHA_0_90_10",
+    policy_name="Moreshwar 3.2 Active Alpha (BULL: 0% NIFTYBEES / 90% AI Picks / 10% Liquid)",
+    regime_source="SIMPLE_TREND",
+    regime_rules=(
+        ("BULL_TREND", 0.0, 90.0, 10.0, True, 0.0, 1.0),
+        ("BEAR_TREND", 0.0, 30.0, 70.0, False, 80.0, 0.7),
+    ),
+    allocation_confirm_days=3,
+)
+M32_EXEC_CFG_OVERRIDE: dict[str, Any] = {
+    "core_target_pct": 0.0,
+    "tactical_target_pct": 90.0,
+    "liquid_target_pct": 10.0,
+    "sweep_unused_tactical_to_core": False,
+    "max_tactical_positions": 8,
+    "max_single_stock_pct": 15.0,
+}
 
 
 def _utc_now_iso() -> str:
@@ -81,6 +105,8 @@ class OrchestratedSessionRunner:
             db_path=db_path,
             reports_dir=reports_dir,
             extra_admitted_strategy_ids=(ORCH_STRATEGY_ID,),
+            regime_policy_override=M32_ALPHA_REGIME_POLICY,
+            exec_cfg_override=M32_EXEC_CFG_OVERRIDE,
         )
         self.ledger = OrchestratorLearningLedger(learning_db_path)
         self.scanner = scanner or OrchestratorUniverseScanner(OrchestratorScanConfig())
@@ -105,6 +131,12 @@ class OrchestratedSessionRunner:
         snap = fetch_completed_nse_eod_snapshot(trading_date, extra_open_symbols=extra_open, include_histories=True)
         if snap is None:
             return None
+        eq_count = len(snap.get("equity_bars") or {})
+        if eq_count < MIN_EOD_UNIVERSE_BARS:
+            raise RuntimeError(
+                f"INCOMPLETE_EOD_UNIVERSE on {trading_date}: only {eq_count} equity bars loaded "
+                f"(minimum required {MIN_EOD_UNIVERSE_BARS}); failing upfront instead of scanning a broken subset."
+            )
         histories = snap.pop("equity_histories")
         nb_dates = snap.pop("niftybees_dates")
         nb_closes = snap.pop("niftybees_closes_full")
