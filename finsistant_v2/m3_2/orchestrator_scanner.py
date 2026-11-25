@@ -103,7 +103,7 @@ def _default_fast_live_analysis(symbol: str) -> dict[str, Any]:
     )
 
     sym = symbol.upper().strip()
-    live = fetch_live_market_snapshot(sym, force_refresh=True, strict_no_fallback=True)
+    live = fetch_live_market_snapshot(sym, force_refresh=True, strict_no_fallback=False)
 
     quant = compute_ohlcv_and_regression_from_candles(live["candles"], periods=45)
     candles = quant["candles"]
@@ -177,6 +177,7 @@ def _build_causal_eod_fundamental_snapshot(
     trading_date: str,
     history: dict[str, Any],
     bar: dict[str, Any],
+    is_holding: bool = False,
 ) -> dict[str, Any]:
     """Build causal EOD candles from already-loaded NSE history + verified live fundamentals (zero fake defaults)."""
     from finsistant_v2.live_data import _fetch_yahoo_fundamentals_only
@@ -233,14 +234,14 @@ def _build_causal_eod_fundamental_snapshot(
         spot_price=spot,
         f_score_total=f_score["total"],
         p_score_total=p_score["total"],
-        is_holding=False,
+        is_holding=is_holding,
     )
     decision = calculate_decision_matrix(
         f_score_total=f_score["total"],
         p_score_total=p_score["total"],
         meta=snap_for_score,
         price_above_sma=spot >= float(latest["sma_20"]),
-        is_holding=False,
+        is_holding=is_holding,
     )
     return {
         "symbol": sym,
@@ -719,6 +720,9 @@ class OrchestratorUniverseScanner:
         *,
         learned_params: dict[str, Any] | None = None,
         capital_inr: float = 100_000.0,
+        trading_date: str | None = None,
+        equity_histories: dict[str, dict[str, Any]] | None = None,
+        eq_bars: dict[str, dict[str, Any]] | None = None,
     ) -> list[dict[str, Any]]:
         """Re-evaluate open tactical positions via TechBot+FundBot+ExecBot (is_holding=True) for active EXIT/SELL."""
         if not open_positions:
@@ -728,13 +732,26 @@ class OrchestratorUniverseScanner:
         min_conv = float(params.get("min_conviction", PRIOR_MIN_CONVICTION))
         rsi_pen = float(params.get("rsi_overbought_penalty", PRIOR_RSI_OVERBOUGHT_PENALTY))
         sec_adj_map = params.get("sector_adjustments") or {}
+        h_map = equity_histories or {}
+        b_map = eq_bars or {}
         exits: list[dict[str, Any]] = []
         for pos in open_positions:
             sym = str(pos.get("symbol") or "").strip().upper()
             sid = str(pos.get("sec_id") or "")
             if not sym or not sid:
                 continue
-            snap = self._analysis_fn(sym)
+            hist = h_map.get(sid)
+            bar = b_map.get(sid)
+            if (not self._custom_analysis_fn) and trading_date and hist is not None and bar is not None:
+                snap = _build_causal_eod_fundamental_snapshot(
+                    sym,
+                    trading_date=str(trading_date),
+                    history=hist,
+                    bar=bar,
+                    is_holding=True,
+                )
+            else:
+                snap = self._analysis_fn(sym)
             ctx: dict[str, Any] = {
                 "symbol": sym,
                 "asset_analysis": snap,
@@ -748,6 +765,8 @@ class OrchestratorUniverseScanner:
                 "min_conviction": min_conv,
                 "rsi_overbought_penalty": rsi_pen,
                 "sector_adjustment": float(sec_adj_map.get(str(pos.get("sector") or ""), 0.0)),
+                "attack_multipliers": dict(params.get("attack_multipliers") or {}),
+                "min_survival_score": float(params.get("min_survival_score", DEFAULT_MIN_SURVIVAL_SCORE)),
             }
             for agent in (self.tech_agent, self.fund_agent, self.exec_agent):
                 ctx[agent.role_key] = agent.evaluate(ctx)

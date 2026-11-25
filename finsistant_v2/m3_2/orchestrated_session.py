@@ -181,6 +181,9 @@ class OrchestratedSessionRunner:
             snap_open,
             learned_params=upd,
             capital_inr=nav,
+            trading_date=trading_date,
+            equity_histories=histories,
+            eq_bars=snap["equity_bars"],
         )
         self.last_exit_signals = list(exit_signals)
         for ex in exit_signals:
