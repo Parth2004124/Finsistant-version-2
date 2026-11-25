@@ -29,7 +29,7 @@ jobs:
       - name: Run M3.1 and M3.2 regression test suites
         run: |
           set +e
-          python3 -m pytest -v --tb=short tests/m3_1 tests/m3_2 tests/test_release_audit.py > pytest_out.txt 2>&1
+          python3 -m pytest -v --tb=line tests/m3_1 tests/m3_2 tests/test_release_audit.py > pytest_out.txt 2>&1
           RC=$?
           cat pytest_out.txt
           cat pytest_out.txt >> "$GITHUB_STEP_SUMMARY"
@@ -37,10 +37,9 @@ jobs:
             python3 - <<'PY'
           from pathlib import Path
           lines = Path("pytest_out.txt").read_text(encoding="utf-8", errors="replace").splitlines()
-          summary = lines[-60:]
-          for ln in summary:
-              if ln.strip():
-                  print(f"::error::{ln[:400]}")
+          picked = [ln for ln in lines if ln.startswith(("FAILED ", "ERROR ", "E   ")) or "failed" in ln.lower() or "passed" in ln.lower()]
+          for ln in picked[-10:]:
+              print(f"::error::{ln[:400]}")
           PY
           fi
           exit "$RC"
