@@ -286,7 +286,6 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
             parse_nse_holiday_master({})
 
     def test_m32_ev_hurdle_enforced_and_active_tactical_sell_executes(self) -> None:
-        from finsistant_v2.m3_1.adaptive_strategy_engine import MarketRegime
         from finsistant_v2.m3_2.orchestrated_session import ORCH_STRATEGY_ID, OrchestratedSessionRunner
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -318,10 +317,10 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
 
                 snap = {
                     "trading_date": d,
-                    "data_timestamp": f"{d}T16:00:00+05:30",
-                    "regime": MarketRegime("BULL_TREND", px_nb, px_nb - 15.0, px_nb / (px_nb - 15.0) - 1.0, True),
-                    "niftybees": {"open": px_nb, "high": px_nb + 1, "low": px_nb - 1, "close": px_nb, "prev_close": px_nb - 0.5, "volume": 100_000.0, "atr_14": 2.5, "vol_20d": 0.01, "valid": True},
-                    "liquidbees": {"open": px_liq, "high": px_liq + 0.1, "low": px_liq - 0.1, "close": px_liq, "prev_close": px_liq - 0.1, "volume": 50_000.0, "atr_14": 0.2, "vol_20d": 0.001, "valid": True},
+                    "data_timestamp_utc": f"{d}T17:00:00+05:30",
+                    "niftybees_bar": {"open": px_nb, "high": px_nb + 1, "low": px_nb - 1, "close": px_nb, "prev_close": px_nb - 0.5, "volume": 4_000_000.0, "atr_14": 2.5, "vol_20d": 0.01, "valid": True},
+                    "liquidbees_bar": {"open": px_liq, "high": px_liq + 0.1, "low": px_liq - 0.1, "close": px_liq, "prev_close": px_liq - 0.1, "volume": 500_000.0, "atr_14": 0.2, "vol_20d": 0.001, "valid": True},
+                    "niftybees_close_history": [px_nb - 20.0] * 210 + [px_nb],
                     "equity_bars": {
                         "SEC_A": {
                             "sec_id": "SEC_A", "symbol": "ALPHACO", "sector": "IT", "industry": "Software",
@@ -334,9 +333,7 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
                     "family_e_candidates": cands,
                     "tactical_exit_signals": exits,
                     "pairwise_corr_map": {},
-                    "niftybees_dividend_per_unit": 0.0,
-                    "liquidbees_dividend_per_unit": 0.0,
-                    "equity_dividends": {},
+                    "diagnostic_index_available": False,
                 }
                 res = runner.orch.engine.run_daily_cycle(trading_date=d, market_data=snap, observation_mode="PROSPECTIVE_PAPER")
                 self.assertEqual(res["portfolio_state"]["core_qty"], 0)
