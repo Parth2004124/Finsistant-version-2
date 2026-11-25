@@ -181,11 +181,12 @@ class TestBloombergTradeAutomation(unittest.TestCase):
             "name": "Reliance Mock", "sector": "Energy", "pe": 20.0, "roe": 22.0,
             "roce": 24.0, "opm": 22.0, "sales_growth": 18.0, "profit_growth": 20.0, "mcap_cr": 50000.0,
         })
-        from finsistant_v2.scoring_engine import calculate_porters_score
+        from finsistant_v2.scoring_engine import calculate_moreshwar_levels, calculate_porters_score
         p_real = calculate_porters_score({
             "name": "Reliance Mock", "sector": "Energy", "roe": 22.0,
             "roce": 24.0, "opm": 22.0, "sales_growth": 18.0, "profit_growth": 20.0, "mcap_cr": 50000.0,
         })
+        m_real = calculate_moreshwar_levels(250.0, f_real["total"], p_real["total"], is_holding=False)
 
         def _fake_analysis(sym: str, is_holding: bool = False, force_refresh: bool = False):
             if sym == "TATAMOTORS":
@@ -204,7 +205,7 @@ class TestBloombergTradeAutomation(unittest.TestCase):
                 "fundamentals_status": "live",
                 "fundamental_score": f_real,
                 "porters_score": p_real,
-                "moreshwar_levels": {"entry": 250.0, "target": 295.0, "stop_loss": 225.0, "rr_ratio": 1.8},
+                "moreshwar_levels": m_real,
                 "decision_matrix": {"action": "BUY NOW", "rationale": "Strong fundamentals"},
                 "candles": candles,
             }
