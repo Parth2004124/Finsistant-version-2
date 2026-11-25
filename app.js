@@ -2241,6 +2241,9 @@ function renderIntelligenceViews() {
   renderMoreshwarV22Dashboard();
   renderMoreshwarV30Dashboard();
   renderMoreshwarV31Dashboard();
+  if (typeof window.renderMoreshwarV32Dashboard === "function") {
+    window.renderMoreshwarV32Dashboard();
+  }
   renderAuditLedger();
   renderReportsView();
 }
@@ -4245,7 +4248,10 @@ function wireMoreshwarV31Controls() {
     ]);
   };
 
-  // Always fetch latest Moreshwar 3.2 (Orchestrator 80-Session) & 3.1 (Frozen Baseline) live from local API or GitHub raw
+  window.renderMoreshwarV32Dashboard = renderMoreshwarV32Dashboard;
+  renderMoreshwarV32Dashboard();
+
+  // Always fetch latest MOVIQ 3.2 (Orchestrator 80-Session) & 3.1 (Frozen Baseline) live from local API or GitHub raw
   refreshMoreshwarV32FromSource();
   refreshMoreshwarV31FromSource();
 }

@@ -645,24 +645,24 @@ body.km-m32-seg-m31 #intelSectionV32 {
 }
 
 /* Hide low-priority middle columns in M3.2 shortlist on narrow phones so it fits 390px with ZERO horizontal scroll! */
-#mv32ShortlistBody tr td:nth-child(1),
+#mv32ShortlistBody tr td:nth-child(1):not([colspan]),
 #intelSectionV32 thead tr th:nth-child(1),
-#mv32ShortlistBody tr td:nth-child(4),
+#mv32ShortlistBody tr td:nth-child(4):not([colspan]),
 #intelSectionV32 thead tr th:nth-child(4),
-#mv32ShortlistBody tr td:nth-child(5),
+#mv32ShortlistBody tr td:nth-child(5):not([colspan]),
 #intelSectionV32 thead tr th:nth-child(5) {
   display: none !important;
 }
 
 /* Same clean 4-column fit for Reports Queued Orders table */
 #rptM32Panel thead tr th:nth-child(1),
-#rptM32QueueBody tr td:nth-child(1),
+#rptM32QueueBody tr td:nth-child(1):not([colspan]),
 #rptM32Panel thead tr th:nth-child(6),
-#rptM32QueueBody tr td:nth-child(6),
+#rptM32QueueBody tr td:nth-child(6):not([colspan]),
 #rptM31Panel thead tr th:nth-child(1),
-#rptM31QueueBody tr td:nth-child(1),
+#rptM31QueueBody tr td:nth-child(1):not([colspan]),
 #rptM31Panel thead tr th:nth-child(6),
-#rptM31QueueBody tr td:nth-child(6) {
+#rptM31QueueBody tr td:nth-child(6):not([colspan]) {
   display: none !important;
 }
 
