@@ -25,6 +25,22 @@ INDUSTRY_PROFILES: dict[str, dict[str, Any]] = {
 
 
 def detect_industry(name: str, sector: str = "") -> str:
+    sec_up = str(sector or "").upper()
+    if any(k in sec_up for k in ("FINANCIAL SERVICES", "BANK", "NBFC", "INSURANCE")):
+        return "BANKING"
+    if any(k in sec_up for k in ("INFORMATION TECHNOLOGY", "IT SERVICES", "SOFTWARE")):
+        return "IT"
+    if any(k in sec_up for k in ("FAST MOVING CONSUMER GOODS", "FMCG", "CONSUMER STAPLES")):
+        return "FMCG"
+    if any(k in sec_up for k in ("HEALTHCARE", "PHARMA")):
+        return "PHARMA"
+    if any(k in sec_up for k in ("AUTOMOBILE", "AUTO")):
+        return "AUTO"
+    if any(k in sec_up for k in ("POWER", "UTILITIES", "ENERGY")):
+        return "POWER"
+    if "REALTY" in sec_up or "REAL ESTATE" in sec_up:
+        return "REALTY"
+
     combined = f"{name} {sector}".upper()
     if any(k in combined for k in ["BANK", "FINANCE", "HDFC", "ICICI", "BAJAJ", "KOTAK", "SBI"]):
         return "BANKING"
@@ -43,36 +59,41 @@ def detect_industry(name: str, sector: str = "") -> str:
     return "GENERAL"
 
 
-def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = False) -> dict[str, Any]:
-    """Calculate the StockSight V2 4-Pillar Fundamental Score (Max 100)."""
+def _require_real_metric(meta: dict[str, Any], key: str) -> float:
+    val = meta.get(key)
+    if val is None:
+        raise ValueError(f"Missing required fundamental field '{key}' (refusing fake default).")
+    fval = float(val)
+    if fval != fval:  # NaN
+        raise ValueError(f"Invalid NaN fundamental field '{key}'.")
+    return fval
+
+
+def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = True) -> dict[str, Any]:
+    """Calculate the StockSight V2 4-Pillar Fundamental Score (Max 100). Zero fake defaults or score floors."""
     if str(meta.get("fundamentals_status", "")).lower() == "unavailable" or str(meta.get("fundamental_source_category", "")).upper() == "UNAVAILABLE":
         raise ValueError("Fundamental data is unavailable; refusing to fabricate a default score.")
 
-    required_keys = ("sales_growth", "profit_growth", "opm", "roe", "roce", "pe", "mcap_cr")
-    if strict:
-        missing = [k for k in required_keys if meta.get(k) is None]
-        if missing:
-            raise ValueError(f"Missing required fundamental fields (strict=True): {missing}")
-        reported_missing = set(meta.get("missing_fields") or [])
-        core_missing = reported_missing & {"pe", "roe", "opm", "sales_growth", "profit_growth", "mcap_cr"}
-        if len(core_missing) >= 4:
-            raise ValueError(f"Insufficient live fundamental fields (missing={sorted(core_missing)}); refusing default score.")
-
-    sales_growth = float(meta.get("sales_growth", 12.0))
-    profit_growth = float(meta.get("profit_growth", 14.0))
-    opm = float(meta.get("opm", 20.0))
-    roe = float(meta.get("roe", 18.0))
-    roce = float(meta.get("roce", 19.0))
-    pe = float(meta.get("pe", 24.0))
-    mcap_cr = float(meta.get("mcap_cr", 45000.0))
-    beta = float(meta.get("beta", 1.02))
-    ret_1y = float(meta.get("ret_1y", 18.0))
-    debt_to_equity = float(meta.get("debt_to_equity", 0.25))
     name = str(meta.get("name", ""))
     sector = str(meta.get("sector", ""))
-
     industry = detect_industry(name, sector)
     is_financial = industry == "BANKING"
+
+    sales_growth = _require_real_metric(meta, "sales_growth")
+    profit_growth = _require_real_metric(meta, "profit_growth")
+    roe = _require_real_metric(meta, "roe")
+    pe = _require_real_metric(meta, "pe")
+    mcap_cr = _require_real_metric(meta, "mcap_cr")
+    if mcap_cr <= 0:
+        raise ValueError("Invalid non-positive mcap_cr; refusing fake fundamental score.")
+    opm = float(meta["opm"]) if meta.get("opm") is not None else (0.0 if is_financial else _require_real_metric(meta, "opm"))
+    roce = float(meta["roce"]) if meta.get("roce") is not None else (roe if is_financial else _require_real_metric(meta, "roce"))
+    beta = float(meta["beta"]) if meta.get("beta") is not None else 1.0
+    ret_1y = float(meta["ret_1y"]) if meta.get("ret_1y") is not None else _require_real_metric(meta, "ret_1y")
+    debt_to_equity = float(meta["debt_to_equity"]) if meta.get("debt_to_equity") is not None else (None if is_financial else _require_real_metric(meta, "debt_to_equity"))
+    if strict and (not is_financial) and debt_to_equity is None:
+        raise ValueError("Missing required 'debt_to_equity' for non-financial company.")
+
     reasons: list[str] = []
 
     # A. Business Pillar (Max 40)
@@ -172,9 +193,11 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = False) -
         risk += 10
     elif beta < 1.3:
         risk += 5
+    if debt_to_equity is not None and debt_to_equity > 1.5 and not is_financial:
+        risk -= 5
+        reasons.append("High Leverage")
     risk = max(0.0, min(20.0, risk))
 
-    # Apply Industry Profile Normalization
     prof = INDUSTRY_PROFILES.get(industry, INDUSTRY_PROFILES["GENERAL"])
     raw_total = business + moat + management + risk
 
@@ -185,9 +208,8 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = False) -
         raw_total += 10
         reasons.append("Deep Value")
 
-    total = int(round(min(99.0, max(15.0, raw_total))))
+    total = int(round(min(99.0, max(0.0, raw_total))))
 
-    # Build NLP Narrative
     nlp_parts = []
     if pe < 18:
         nlp_parts.append(f"Attractive valuation at P/E {pe:.1f}x with value margin of safety.")
@@ -225,22 +247,20 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = False) -
     }
 
 
-def calculate_porters_score(meta: dict[str, Any], *, strict: bool = False) -> dict[str, Any]:
-    """Calculate StockSight V2 Porter's 5 Forces Qualitative Score (Max 100)."""
+def calculate_porters_score(meta: dict[str, Any], *, strict: bool = True) -> dict[str, Any]:
+    """Calculate StockSight V2 Porter's 5 Forces Qualitative Score (Max 100). Zero fake defaults."""
     if str(meta.get("fundamentals_status", "")).lower() == "unavailable" or str(meta.get("fundamental_source_category", "")).upper() == "UNAVAILABLE":
         raise ValueError("Fundamental data is unavailable; refusing to fabricate Porter's score.")
-    if strict:
-        required_keys = ("mcap_cr", "roce", "roe", "opm", "sales_growth", "profit_growth")
-        missing = [k for k in required_keys if meta.get(k) is None]
-        if missing:
-            raise ValueError(f"Missing required Porter's fundamental fields (strict=True): {missing}")
 
-    mcap_cr = float(meta.get("mcap_cr", 45000.0))
-    roce = float(meta.get("roce", 19.0))
-    roe = float(meta.get("roe", 18.0))
-    opm = float(meta.get("opm", 20.0))
-    sales_growth = float(meta.get("sales_growth", 12.0))
-    profit_growth = float(meta.get("profit_growth", 14.0))
+    industry = detect_industry(str(meta.get("name", "")), str(meta.get("sector", "")))
+    is_financial = industry == "BANKING"
+
+    mcap_cr = _require_real_metric(meta, "mcap_cr")
+    roe = _require_real_metric(meta, "roe")
+    roce = float(meta["roce"]) if meta.get("roce") is not None else (roe if is_financial else _require_real_metric(meta, "roce"))
+    opm = float(meta["opm"]) if meta.get("opm") is not None else (0.0 if is_financial else _require_real_metric(meta, "opm"))
+    sales_growth = _require_real_metric(meta, "sales_growth")
+    profit_growth = _require_real_metric(meta, "profit_growth")
 
     entrants = 20 if (mcap_cr > 10000 and roce > 20) else (15 if (mcap_cr > 5000 and roce > 15) else (10 if mcap_cr > 2000 else 5))
     suppliers = 20 if opm > 25 else (15 if opm > 18 else (10 if opm > 10 else 5))

@@ -154,87 +154,50 @@ def _fetch_via_yfinance(sym: str, yahoo_sym: str, exchange_hint: str) -> dict[st
         market_timestamp = f"{last_bar_date}{close_suffix}"
         market_ts_kind = "end_of_day_bar"
 
-    missing_fields: list[str] = []
-    proxy_fields: dict[str, str] = {}
-
-    raw_pe = info.get("trailingPE") or info.get("forwardPE")
-    if raw_pe is None:
-        missing_fields.append("pe")
-    pe = float(raw_pe or 0.0)
-
-    roe_raw = info.get("returnOnEquity")
-    roa_raw = info.get("returnOnAssets")
-    if roe_raw is None:
-        missing_fields.append("roe")
-    roe = round(float(roe_raw) * 100.0, 2) if roe_raw is not None else 0.0
-    if roa_raw is None and roe_raw is None:
-        missing_fields.append("roce")
-    else:
-        proxy_fields["roce"] = "Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by feed)"
-    roce = round(((float(roe_raw or 0.0) * 0.7) + (float(roa_raw or 0.0) * 0.3)) * 100.0, 2) if (roe_raw is not None or roa_raw is not None) else roe
-
-    opm_raw = info.get("operatingMargins")
-    if opm_raw is None:
-        missing_fields.append("opm")
-    opm = round(float(opm_raw or 0.0) * 100.0, 2)
-
-    rev_g_raw = info.get("revenueGrowth")
-    if rev_g_raw is None:
-        missing_fields.append("sales_growth")
-    sales_growth = round(float(rev_g_raw or 0.0) * 100.0, 2)
-
-    earn_g_raw = info.get("earningsGrowth") or info.get("earningsQuarterlyGrowth")
-    if earn_g_raw is None:
-        missing_fields.append("profit_growth")
-    profit_growth = round(float(earn_g_raw or 0.0) * 100.0, 2)
-
-    mcap_raw = float(info.get("marketCap") or 0.0)
-    if mcap_raw <= 0:
-        missing_fields.append("mcap_cr")
-    mcap_cr = round(mcap_raw / 1e7, 2) if currency == "INR" else round(mcap_raw / 1e6, 2)
-
-    beta_raw = info.get("beta")
-    if beta_raw is None:
-        proxy_fields["beta"] = "Defaulted to 1.0 (Beta unavailable from Yahoo quoteSummary)"
-    beta = round(float(beta_raw if beta_raw is not None else 1.0), 2)
-
-    de_raw = info.get("debtToEquity")
-    if de_raw is None:
-        missing_fields.append("debt_to_equity")
-    debt_to_equity = round(float(de_raw) / 100.0, 2) if de_raw is not None else 0.0
+    fund = _build_merged_fundamentals(
+        info,
+        yahoo_sym=yahoo_sym,
+        currency=currency,
+        spot=spot,
+        nse_sym=sym if exchange == "NSE" or yahoo_sym.endswith(".NS") else None,
+        yahoo_spot=round(spot, 2),
+        strict=False,
+    )
 
     return {
         "symbol": sym,
         "yahoo_symbol": yahoo_sym,
-        "name": str(info.get("longName") or info.get("shortName") or sym),
+        "name": fund["name"],
         "exchange": exchange,
         "currency": currency,
-        "sector": str(info.get("sector") or info.get("industry") or "Equity"),
+        "sector": fund["sector"],
         "asset_type": "STOCK",
         "setup_type": DEFAULT_SYMBOL_CONFIG.get(sym, {}).get("setup_type", "Live Market Scan"),
         "price": round(spot, 2),
         "last_candle_date": last_bar_date,
         "last_candle_close": round(float(candles[-1]["close"]), 2),
         "change_pct": change_pct,
-        "pe": round(pe, 2),
-        "roe": roe,
-        "roce": roce,
-        "opm": opm,
-        "sales_growth": sales_growth,
-        "profit_growth": profit_growth,
-        "mcap_cr": mcap_cr,
-        "beta": beta,
+        "pe": fund["pe"],
+        "roe": fund["roe"],
+        "roce": fund["roce"],
+        "opm": fund["opm"],
+        "sales_growth": fund["sales_growth"],
+        "profit_growth": fund["profit_growth"],
+        "mcap_cr": fund["mcap_cr"],
+        "beta": fund["beta"],
         "ret_1y": ret_1y,
-        "debt_to_equity": debt_to_equity,
+        "debt_to_equity": fund["debt_to_equity"],
         "candles": candles,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "market_timestamp": market_timestamp,
         "market_timestamp_kind": market_ts_kind,
-        "missing_fields": missing_fields,
-        "proxy_fields": proxy_fields,
+        "fundamentals_status": fund["fundamentals_status"],
+        "fundamental_source_category": fund["fundamental_source_category"],
+        "missing_fields": fund["missing_fields"],
+        "proxy_fields": fund["proxy_fields"],
         "cache_hit": False,
         "cache_age_seconds": 0.0,
-        "data_source": "Yahoo Finance Live (yfinance)",
+        "data_source": f"Yahoo Finance Live + {fund['fundamental_source_category']}",
     }
 
 
@@ -282,14 +245,168 @@ def _raw_num(val: Any) -> float | None:
     return None
 
 
-def _fetch_yahoo_fundamentals_only(yahoo_sym: str, currency: str, spot: float, *, strict: bool = False) -> dict[str, Any]:
-    """Fetch company-level fundamental ratios (NSE MCP does not publish company P/E or ROE)."""
-    missing_fields: list[str] = []
+def _build_merged_fundamentals(
+    info: dict[str, Any],
+    *,
+    yahoo_sym: str,
+    currency: str,
+    spot: float,
+    nse_sym: str | None = None,
+    yahoo_spot: float | None = None,
+    strict: bool = False,
+) -> dict[str, Any]:
+    """Build fundamental ratios using Yahoo first and Screener.in when Yahoo lacks data. Never coerces missing ratios to 0.0."""
     proxy_fields: dict[str, str] = {}
+
+    raw_pe = info.get("trailingPE") or info.get("forwardPE") if info else None
+    pe: float | None = round(float(raw_pe), 2) if raw_pe is not None else None
+
+    roe_raw = info.get("returnOnEquity") if info else None
+    roa_raw = info.get("returnOnAssets") if info else None
+    roe: float | None = round(float(roe_raw) * 100.0, 2) if roe_raw is not None else None
+    roce: float | None = None
+    if roe_raw is not None or roa_raw is not None:
+        roce = round(((float(roe_raw or 0.0) * 0.7) + (float(roa_raw or 0.0) * 0.3)) * 100.0, 2)
+        proxy_fields["roce"] = "Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
+
+    opm_raw = info.get("operatingMargins") if info else None
+    opm: float | None = round(float(opm_raw) * 100.0, 2) if opm_raw is not None else None
+
+    rev_g_raw = info.get("revenueGrowth") if info else None
+    sales_growth: float | None = round(float(rev_g_raw) * 100.0, 2) if rev_g_raw is not None else None
+
+    earn_g_raw = (info.get("earningsGrowth") or info.get("earningsQuarterlyGrowth")) if info else None
+    profit_growth: float | None = round(float(earn_g_raw) * 100.0, 2) if earn_g_raw is not None else None
+
+    mcap_raw = float(info.get("marketCap") or 0.0) if info else 0.0
+    if info and mcap_raw <= 0 and info.get("sharesOutstanding") and spot > 0:
+        mcap_raw = float(info["sharesOutstanding"]) * spot
+    mcap_cr: float | None = (
+        (round(mcap_raw / 1e7, 2) if currency == "INR" else round(mcap_raw / 1e6, 2))
+        if mcap_raw > 0
+        else None
+    )
+
+    beta_raw = info.get("beta") if info else None
+    beta: float | None = round(float(beta_raw), 2) if beta_raw is not None else None
+
+    de_raw = info.get("debtToEquity") if info else None
+    debt_to_equity: float | None = round(float(de_raw) / 100.0, 2) if de_raw is not None else None
+
+    name = str((info or {}).get("longName") or (info or {}).get("shortName") or (nse_sym or yahoo_sym.replace(".NS", "")))
+    sector_val = (info or {}).get("sector") or (info or {}).get("industry")
+    sector = str(sector_val) if sector_val else ""
+
+    used_yahoo = any(v is not None for v in (pe, roe, opm, sales_growth, profit_growth, mcap_cr))
+    used_screener = False
+
+    is_nse_stock = bool(nse_sym or yahoo_sym.endswith((".NS", ".BO")))
+    needs_screener = is_nse_stock and any(
+        v is None for v in (pe, roe, roce, opm, sales_growth, profit_growth, mcap_cr, debt_to_equity)
+    )
+    if needs_screener:
+        scr_sym = nse_sym or yahoo_sym.replace(".NS", "").replace(".BO", "")
+        try:
+            from .screener_data import fetch_screener_fundamentals
+
+            scr = fetch_screener_fundamentals(scr_sym)
+            if pe is None and scr.get("pe") is not None:
+                pe = scr["pe"]
+                used_screener = True
+            if roe is None and scr.get("roe") is not None:
+                roe = scr["roe"]
+                used_screener = True
+            if scr.get("roce") is not None and (roce is None or "roce" in proxy_fields):
+                roce = scr["roce"]
+                proxy_fields.pop("roce", None)
+                used_screener = True
+            if opm is None and scr.get("opm") is not None:
+                opm = scr["opm"]
+                used_screener = True
+            if sales_growth is None and scr.get("sales_growth") is not None:
+                sales_growth = scr["sales_growth"]
+                used_screener = True
+            if profit_growth is None and scr.get("profit_growth") is not None:
+                profit_growth = scr["profit_growth"]
+                used_screener = True
+            if mcap_cr is None and scr.get("mcap_cr") is not None:
+                mcap_cr = scr["mcap_cr"]
+                used_screener = True
+            if debt_to_equity is None and scr.get("debt_to_equity") is not None:
+                debt_to_equity = scr["debt_to_equity"]
+                used_screener = True
+            if (not sector) and scr.get("sector"):
+                sector = str(scr["sector"])
+            if (name == scr_sym) and scr.get("name"):
+                name = str(scr["name"])
+        except Exception as exc:
+            if not used_yahoo and strict:
+                raise RuntimeError(
+                    f"Both Yahoo Finance and Screener.in failed for {scr_sym}: {exc}"
+                ) from exc
+
+    vals = {
+        "pe": pe,
+        "roe": roe,
+        "roce": roce,
+        "opm": opm,
+        "sales_growth": sales_growth,
+        "profit_growth": profit_growth,
+        "mcap_cr": mcap_cr,
+        "debt_to_equity": debt_to_equity,
+    }
+    missing_fields = [k for k, v in vals.items() if v is None]
+    if beta is None:
+        missing_fields.append("beta")
+
+    has_any = any(v is not None for v in vals.values())
+    if not has_any:
+        if strict:
+            raise RuntimeError(f"Fundamental data unavailable from both Yahoo and Screener.in for {yahoo_sym}.")
+        fund_cat = "UNAVAILABLE"
+        status = "unavailable"
+    else:
+        status = "live"
+        if used_yahoo and used_screener:
+            fund_cat = "YAHOO_LIVE_FEED+SCREENER_IN"
+        elif used_screener:
+            fund_cat = "SCREENER_IN"
+        else:
+            fund_cat = "YAHOO_LIVE_FEED"
+
+    return {
+        "fundamentals_status": status,
+        "fundamental_source_category": fund_cat,
+        "name": name,
+        "sector": sector or "NSE Cash Equity",
+        "pe": pe,
+        "roe": roe,
+        "roce": roce,
+        "opm": opm,
+        "sales_growth": sales_growth,
+        "profit_growth": profit_growth,
+        "mcap_cr": mcap_cr,
+        "beta": beta,
+        "debt_to_equity": debt_to_equity,
+        "yahoo_spot": yahoo_spot,
+        "missing_fields": missing_fields,
+        "proxy_fields": proxy_fields,
+    }
+
+
+def _fetch_yahoo_fundamentals_only(
+    yahoo_sym: str,
+    currency: str,
+    spot: float,
+    *,
+    strict: bool = False,
+    nse_sym: str | None = None,
+) -> dict[str, Any]:
+    """Fetch company-level fundamental ratios (Yahoo primary, Screener.in when Yahoo is unavailable)."""
     info: dict[str, Any] = {}
     yahoo_spot: float | None = None
 
-    max_attempts = 5
+    max_attempts = 4
     for attempt in range(max_attempts):
         try:
             import yfinance as yf  # type: ignore
@@ -347,94 +464,17 @@ def _fetch_yahoo_fundamentals_only(yahoo_sym: str, currency: str, spot: float, *
         if info:
             break
         if attempt < max_attempts - 1:
-            time.sleep(min(12.0, 2.0 * (attempt + 1)))
+            time.sleep(min(10.0, 2.0 * (attempt + 1)))
 
-    if not info:
-        if strict:
-            raise RuntimeError(f"Fundamental data unavailable for {yahoo_sym} after {max_attempts} retries.")
-        return {
-            "fundamentals_status": "unavailable",
-            "name": yahoo_sym.replace(".NS", ""),
-            "sector": "NSE Cash Equity",
-            "pe": 0.0,
-            "roe": 0.0,
-            "roce": 0.0,
-            "opm": 0.0,
-            "sales_growth": 0.0,
-            "profit_growth": 0.0,
-            "mcap_cr": 0.0,
-            "beta": 1.0,
-            "debt_to_equity": 0.0,
-            "yahoo_spot": None,
-            "missing_fields": ["pe", "roe", "roce", "opm", "sales_growth", "profit_growth", "mcap_cr", "debt_to_equity"],
-            "proxy_fields": {"beta": "Defaulted to 1.0 (Fundamental enrichment unavailable)"},
-        }
-
-    raw_pe = info.get("trailingPE") or info.get("forwardPE")
-    if raw_pe is None:
-        missing_fields.append("pe")
-    pe = round(float(raw_pe or 0.0), 2)
-
-    roe_raw = info.get("returnOnEquity")
-    roa_raw = info.get("returnOnAssets")
-    if roe_raw is None:
-        missing_fields.append("roe")
-    roe = round(float(roe_raw) * 100.0, 2) if roe_raw is not None else 0.0
-    if roe_raw is None and roa_raw is None:
-        missing_fields.append("roce")
-    else:
-        proxy_fields["roce"] = "Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively)"
-    roce = round(((float(roe_raw or 0.0) * 0.7) + (float(roa_raw or 0.0) * 0.3)) * 100.0, 2) if (roe_raw is not None or roa_raw is not None) else roe
-
-    opm_raw = info.get("operatingMargins")
-    if opm_raw is None:
-        missing_fields.append("opm")
-    opm = round(float(opm_raw or 0.0) * 100.0, 2)
-
-    rev_g_raw = info.get("revenueGrowth")
-    if rev_g_raw is None:
-        missing_fields.append("sales_growth")
-    sales_growth = round(float(rev_g_raw or 0.0) * 100.0, 2)
-
-    earn_g_raw = info.get("earningsGrowth") or info.get("earningsQuarterlyGrowth")
-    if earn_g_raw is None:
-        missing_fields.append("profit_growth")
-    profit_growth = round(float(earn_g_raw or 0.0) * 100.0, 2)
-
-    mcap_raw = float(info.get("marketCap") or 0.0)
-    if mcap_raw <= 0 and info.get("sharesOutstanding") and spot > 0:
-        mcap_raw = float(info["sharesOutstanding"]) * spot
-    if mcap_raw <= 0:
-        missing_fields.append("mcap_cr")
-    mcap_cr = round(mcap_raw / 1e7, 2) if currency == "INR" else round(mcap_raw / 1e6, 2)
-
-    beta_raw = info.get("beta")
-    if beta_raw is None:
-        proxy_fields["beta"] = "Defaulted to 1.0 (Beta unavailable)"
-    beta = round(float(beta_raw if beta_raw is not None else 1.0), 2)
-
-    de_raw = info.get("debtToEquity")
-    if de_raw is None:
-        missing_fields.append("debt_to_equity")
-    debt_to_equity = round(float(de_raw) / 100.0, 2) if de_raw is not None else 0.0
-
-    return {
-        "fundamentals_status": "live",
-        "name": str(info.get("longName") or info.get("shortName") or yahoo_sym.replace(".NS", "")),
-        "sector": str(info.get("sector") or info.get("industry") or "NSE Cash Equity"),
-        "pe": pe,
-        "roe": roe,
-        "roce": roce,
-        "opm": opm,
-        "sales_growth": sales_growth,
-        "profit_growth": profit_growth,
-        "mcap_cr": mcap_cr,
-        "beta": beta,
-        "debt_to_equity": debt_to_equity,
-        "yahoo_spot": yahoo_spot,
-        "missing_fields": missing_fields,
-        "proxy_fields": proxy_fields,
-    }
+    return _build_merged_fundamentals(
+        info,
+        yahoo_sym=yahoo_sym,
+        currency=currency,
+        spot=spot,
+        nse_sym=nse_sym,
+        yahoo_spot=yahoo_spot,
+        strict=strict,
+    )
 
 
 def _fetch_via_nse_mcp(
@@ -457,10 +497,11 @@ def _fetch_via_nse_mcp(
     change_pct = round(float(quote.get("change_pct") or 0.0), 2)
     ret_1y = round(((spot - float(candles[0]["close"])) / max(1e-6, float(candles[0]["close"]))) * 100.0, 2)
 
-    fund = _fetch_yahoo_fundamentals_only(yahoo_sym, "INR", spot, strict=strict_fundamentals)
+    fund = _fetch_yahoo_fundamentals_only(yahoo_sym, "INR", spot, strict=strict_fundamentals, nse_sym=nse_sym)
     fund_live = fund["fundamentals_status"] == "live"
+    fund_cat = fund.get("fundamental_source_category", "YAHOO_LIVE_FEED" if fund_live else "UNAVAILABLE")
     source_desc = (
-        "Official NSE MCP (cm-market + bhavcopy) + Yahoo Fundamentals"
+        f"Official NSE MCP (cm-market + bhavcopy) + {fund_cat}"
         if fund_live
         else "Official NSE MCP (cm-market + bhavcopy)"
     )
@@ -499,7 +540,7 @@ def _fetch_via_nse_mcp(
         "secondary_source": "Yahoo Finance Spot",
         "price_source_category": "NSE_OFFICIAL_MCP",
         "ohlcv_source_category": "NSE_OFFICIAL_MCP",
-        "fundamental_source_category": "YAHOO_LIVE_FEED" if fund_live else "UNAVAILABLE",
+        "fundamental_source_category": fund_cat,
         "fundamentals_status": fund["fundamentals_status"],
         "missing_fields": fund["missing_fields"],
         "proxy_fields": fund["proxy_fields"],
@@ -654,98 +695,71 @@ def fetch_live_market_snapshot(
         exchange = "NSE"
 
     long_name = str(price_mod.get("longName") or price_mod.get("shortName") or meta.get("longName") or meta.get("shortName") or sym)
-    sector = str(prof_mod.get("sector") or prof_mod.get("industry") or "Equity")
-
-    missing_fields: list[str] = []
-    proxy_fields: dict[str, str] = {}
-
-    pe_raw = _raw_num(summary_mod.get("trailingPE")) or _raw_num(stats_mod.get("forwardPE"))
-    if pe_raw is None:
-        missing_fields.append("pe")
-    pe = pe_raw or 0.0
-
-    roe_raw = _raw_num(fin_mod.get("returnOnEquity"))
-    roa_raw = _raw_num(fin_mod.get("returnOnAssets"))
-    if roe_raw is None:
-        missing_fields.append("roe")
-    roe = round(roe_raw * 100.0, 2) if roe_raw is not None else 0.0
-    if roe_raw is None and roa_raw is None:
-        missing_fields.append("roce")
-    else:
-        proxy_fields["roce"] = "Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by feed)"
-    roce = round(((roe_raw or 0.0) * 0.7 + (roa_raw or 0.0) * 0.3) * 100.0, 2) if (roe_raw is not None or roa_raw is not None) else roe
-
-    opm_raw = _raw_num(fin_mod.get("operatingMargins"))
-    if opm_raw is None:
-        missing_fields.append("opm")
-    opm = round(opm_raw * 100.0, 2) if opm_raw is not None else 0.0
-
-    rev_g_raw = _raw_num(fin_mod.get("revenueGrowth"))
-    if rev_g_raw is None:
-        missing_fields.append("sales_growth")
-    sales_growth = round(rev_g_raw * 100.0, 2) if rev_g_raw is not None else 0.0
-
-    earn_g_raw = _raw_num(fin_mod.get("earningsGrowth")) or _raw_num(fin_mod.get("earningsQuarterlyGrowth"))
-    if earn_g_raw is None:
-        missing_fields.append("profit_growth")
-    profit_growth = round(earn_g_raw * 100.0, 2) if earn_g_raw is not None else 0.0
-
-    mcap_raw = _raw_num(summary_mod.get("marketCap")) or _raw_num(price_mod.get("marketCap"))
-    if mcap_raw is None:
-        shares = _raw_num(stats_mod.get("sharesOutstanding")) or _raw_num(stats_mod.get("impliedSharesOutstanding"))
-        if shares:
-            mcap_raw = shares * spot
-    if not mcap_raw:
-        missing_fields.append("mcap_cr")
-    mcap_cr = round((mcap_raw or 0.0) / 1e7, 2) if currency == "INR" else round((mcap_raw or 0.0) / 1e6, 2)
-
-    beta_raw = _raw_num(stats_mod.get("beta")) or _raw_num(summary_mod.get("beta"))
-    if beta_raw is None:
-        proxy_fields["beta"] = "Defaulted to 1.0 (Beta unavailable from Yahoo quoteSummary)"
-    beta = round(beta_raw if beta_raw is not None else 1.0, 2)
-
-    de_raw = _raw_num(fin_mod.get("debtToEquity"))
-    if de_raw is None:
-        missing_fields.append("debt_to_equity")
-    debt_to_equity = round((de_raw / 100.0), 2) if de_raw is not None else 0.0
+    sector = prof_mod.get("sector") or prof_mod.get("industry")
+    qs_info = {
+        "longName": long_name,
+        "sector": sector,
+        "trailingPE": _raw_num(summary_mod.get("trailingPE")),
+        "forwardPE": _raw_num(stats_mod.get("forwardPE")),
+        "returnOnEquity": _raw_num(fin_mod.get("returnOnEquity")),
+        "returnOnAssets": _raw_num(fin_mod.get("returnOnAssets")),
+        "operatingMargins": _raw_num(fin_mod.get("operatingMargins")),
+        "revenueGrowth": _raw_num(fin_mod.get("revenueGrowth")),
+        "earningsGrowth": _raw_num(fin_mod.get("earningsGrowth")),
+        "earningsQuarterlyGrowth": _raw_num(fin_mod.get("earningsQuarterlyGrowth")),
+        "marketCap": _raw_num(summary_mod.get("marketCap")) or _raw_num(price_mod.get("marketCap")),
+        "sharesOutstanding": _raw_num(stats_mod.get("sharesOutstanding")) or _raw_num(stats_mod.get("impliedSharesOutstanding")),
+        "beta": _raw_num(stats_mod.get("beta")) or _raw_num(summary_mod.get("beta")),
+        "debtToEquity": _raw_num(fin_mod.get("debtToEquity")),
+    }
+    fund = _build_merged_fundamentals(
+        qs_info,
+        yahoo_sym=yahoo_sym,
+        currency=currency,
+        spot=spot,
+        nse_sym=sym if exchange == "NSE" or yahoo_sym.endswith(".NS") else None,
+        yahoo_spot=round(spot, 2),
+        strict=strict_no_fallback,
+    )
 
     setup_type = DEFAULT_SYMBOL_CONFIG.get(sym, {}).get("setup_type", "Live Market Scan")
 
     snapshot = {
         "symbol": sym,
         "yahoo_symbol": yahoo_sym,
-        "name": long_name,
+        "name": fund["name"],
         "exchange": exchange,
         "currency": currency,
-        "sector": sector,
+        "sector": fund["sector"],
         "asset_type": "STOCK",
         "setup_type": setup_type,
         "price": round(spot, 2),
         "last_candle_date": last_bar_date,
         "last_candle_close": round(float(candles[-1]["close"]), 2),
         "change_pct": change_pct,
-        "pe": round(pe, 2),
-        "roe": roe,
-        "roce": roce,
-        "opm": opm,
-        "sales_growth": sales_growth,
-        "profit_growth": profit_growth,
-        "mcap_cr": mcap_cr,
-        "beta": beta,
+        "pe": fund["pe"],
+        "roe": fund["roe"],
+        "roce": fund["roce"],
+        "opm": fund["opm"],
+        "sales_growth": fund["sales_growth"],
+        "profit_growth": fund["profit_growth"],
+        "mcap_cr": fund["mcap_cr"],
+        "beta": fund["beta"],
         "ret_1y": ret_1y,
-        "debt_to_equity": debt_to_equity,
+        "debt_to_equity": fund["debt_to_equity"],
         "candles": candles,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "market_timestamp": market_timestamp,
         "market_timestamp_kind": market_ts_kind,
         "price_source_category": "YAHOO_LIVE_FEED",
         "ohlcv_source_category": "HISTORICAL_MARKET_DATA",
-        "fundamental_source_category": "YAHOO_LIVE_FEED",
-        "missing_fields": missing_fields,
-        "proxy_fields": proxy_fields,
+        "fundamental_source_category": fund["fundamental_source_category"],
+        "fundamentals_status": fund["fundamentals_status"],
+        "missing_fields": fund["missing_fields"],
+        "proxy_fields": fund["proxy_fields"],
         "cache_hit": False,
         "cache_age_seconds": 0.0,
-        "data_source": "Yahoo Finance Live",
+        "data_source": f"Yahoo Finance Live + {fund['fundamental_source_category']}",
     }
     _LIVE_CACHE[sym] = (now, snapshot)
     return snapshot

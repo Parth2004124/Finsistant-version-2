@@ -20,7 +20,10 @@ from datetime import date, datetime, timedelta, timezone
 import fcntl
 import json
 from pathlib import Path
+import time
 from typing import Any, Callable
+
+import requests
 
 from finsistant_v2.m3_1.paper_trading_orchestrator import PaperTradingOrchestrator
 from finsistant_v2.m3_1.prospective_paper_trading_engine import (
@@ -37,7 +40,20 @@ SCHEDULER_STATUSES = frozenset({
     "SAFE_MODE",
 })
 
-# Standard NSE Equity Market Holidays (extensible via constructor for 2026–2027 prospective sessions)
+NSE_HOLIDAY_MASTER_URL = "https://www.nseindia.com/api/holiday-master?type=trading"
+NSE_HOME_URL = "https://www.nseindia.com/"
+_NSE_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": NSE_HOME_URL,
+}
+
+# Explicit static reference set retained ONLY for offline deterministic unit tests that pass/omit holidays directly.
+# Production CLI execution MUST fetch official live dates via fetch_official_nse_holidays() (no silent fallback).
 DEFAULT_NSE_HOLIDAYS: frozenset[str] = frozenset({
     "2026-01-26",  # Republic Day
     "2026-03-03",  # Holi
@@ -63,6 +79,64 @@ DEFAULT_NSE_HOLIDAYS: frozenset[str] = frozenset({
     "2027-10-02",  # Gandhi Jayanti
     "2027-12-25",  # Christmas
 })
+
+
+def parse_nse_holiday_master(payload: dict[str, Any]) -> frozenset[str]:
+    """Parse Official NSE holiday-master JSON (`CM` Capital Market segment) into YYYY-MM-DD strings."""
+    if not isinstance(payload, dict):
+        raise RuntimeError("NSE_HOLIDAY_PARSE_ERROR: response payload is not a JSON object.")
+    cm_rows = payload.get("CM")
+    if not isinstance(cm_rows, list) or not cm_rows:
+        raise RuntimeError("NSE_HOLIDAY_PARSE_ERROR: missing or empty 'CM' segment in NSE holiday master.")
+    parsed: set[str] = set()
+    for row in cm_rows:
+        if not isinstance(row, dict):
+            continue
+        raw_dt = str(row.get("tradingDate") or "").strip()
+        if not raw_dt:
+            continue
+        dt_obj: date | None = None
+        for fmt in ("%d-%b-%Y", "%d-%B-%Y", "%Y-%m-%d"):
+            try:
+                dt_obj = datetime.strptime(raw_dt, fmt).date()
+                break
+            except ValueError:
+                continue
+        if dt_obj is not None:
+            parsed.add(dt_obj.isoformat())
+    if not parsed:
+        raise RuntimeError("NSE_HOLIDAY_PARSE_ERROR: parsed zero equity holiday dates from 'CM' segment.")
+    return frozenset(parsed)
+
+
+def fetch_official_nse_holidays(*, max_attempts: int = 4, timeout_sec: float = 12.0) -> frozenset[str]:
+    """Fetch official NSE Capital Market (CM) trading holidays with retries; fails loudly if unreachable."""
+    last_err: Exception | None = None
+    attempts = max(1, int(max_attempts))
+    for attempt in range(1, attempts + 1):
+        sess = requests.Session()
+        sess.headers.update(_NSE_HEADERS)
+        try:
+            # NSE holiday API typically sets required cookies on homepage visit first.
+            try:
+                sess.get(NSE_HOME_URL, timeout=timeout_sec)
+            except Exception:
+                pass
+            resp = sess.get(NSE_HOLIDAY_MASTER_URL, timeout=timeout_sec)
+            resp.raise_for_status()
+            return parse_nse_holiday_master(resp.json())
+        except Exception as exc:
+            last_err = exc
+            if attempt < attempts:
+                time.sleep(min(12.0, 1.5 * (2 ** (attempt - 1))))
+        finally:
+            try:
+                sess.close()
+            except Exception:
+                pass
+    raise RuntimeError(
+        f"OFFICIAL_NSE_HOLIDAY_API_FAILED after {attempts} attempts (no static fallback): {last_err}"
+    )
 
 
 def _utc_now_iso() -> str:

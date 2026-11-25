@@ -61,6 +61,8 @@ M32_EXEC_CFG_OVERRIDE: dict[str, Any] = {
     "sweep_unused_tactical_to_core": False,
     "max_tactical_positions": 8,
     "max_single_stock_pct": 15.0,
+    "hurdle_mode": "DYNAMIC_VOL",
+    "sizing_mode": "F_HYBRID_RISK_ALPHA",
 }
 
 
@@ -113,10 +115,12 @@ class OrchestratedSessionRunner:
         self.scan_dir = Path(scan_dir)
         self.reports_dir = Path(reports_dir)
         self.last_scan: dict[str, Any] | None = None
+        self.last_exit_signals: list[dict[str, Any]] = []
 
     # -- provider handed to PaperTradingScheduler -------------------------------------------------
     def market_data_provider(self, trading_date: str) -> dict[str, Any] | None:
         self.last_scan = None
+        self.last_exit_signals = []
         ledger_snap = self.orch.engine.get_full_ledger_snapshot()
         snap_open = ledger_snap.get("open_tactical_positions", [])
         extra_open = [
@@ -128,7 +132,12 @@ class OrchestratedSessionRunner:
             }
             for p in snap_open
         ]
-        snap = fetch_completed_nse_eod_snapshot(trading_date, extra_open_symbols=extra_open, include_histories=True)
+        snap = fetch_completed_nse_eod_snapshot(
+            trading_date,
+            extra_open_symbols=extra_open,
+            include_histories=True,
+            prefer_nse_bhavcopy=True,
+        )
         if snap is None:
             return None
         eq_count = len(snap.get("equity_bars") or {})
@@ -149,6 +158,13 @@ class OrchestratedSessionRunner:
         upd = self.ledger.update_weights(trading_date)
 
         nav = float(ledger_snap.get("portfolio_state", {}).get("last_nav_inr", 100_000.0) or 100_000.0)
+        exit_signals = self.scanner.evaluate_open_holdings(
+            snap_open,
+            learned_params=upd,
+            capital_inr=nav,
+        )
+        self.last_exit_signals = list(exit_signals)
+
         scan = self.scanner.scan(
             trading_date=trading_date,
             equity_histories=histories,
@@ -158,10 +174,12 @@ class OrchestratedSessionRunner:
         )
         scan["outcomes_matured_this_run"] = matured
         scan["trade_lessons_synced_pre_scan"] = new_lessons
+        scan["exit_signals"] = list(exit_signals)
         self.last_scan = scan
 
         snap["family_e_candidates"] = scan["candidates"]  # engine key; candidates are orchestrator picks
         snap["candidate_source"] = "ORCHESTRATOR_AGENT_CONSENSUS"
+        snap["tactical_exit_signals"] = exit_signals
         snap["pairwise_corr_map"] = pairwise_corr_for_candidates(scan["candidates"], histories)
         return snap
 
@@ -196,6 +214,8 @@ class OrchestratedSessionRunner:
             public["universe_tech_top100"] = scan["universe_tech"][:100]
             public["config_sha256"] = hashlib.sha256(json.dumps(scan["config"], sort_keys=True).encode()).hexdigest()
             public["queued_for_next_open"] = sorted(queued)
+            public["exit_signals"] = list(self.last_exit_signals)
+            public["allocation_policy"] = "0% NIFTYBEES / 90% Tactical AI Picks / 10% Liquid (BULL_TREND)"
             public["trade_lessons_synced_post_session"] = post_lessons
             self.scan_dir.mkdir(parents=True, exist_ok=True)
             text = json.dumps(public, indent=2, default=str)
@@ -209,6 +229,8 @@ class OrchestratedSessionRunner:
                     d["release_version"] = RELEASE_VERSION_M3_2
                     d["mission_target_sessions"] = MISSION_TARGET_SESSIONS
                     d["candidate_source"] = "ORCHESTRATOR_AGENT_CONSENSUS (Moreshwar 3.2)"
+                    d["allocation_policy"] = public["allocation_policy"]
+                    d["exit_signals"] = list(self.last_exit_signals)
                     d["orchestrator_scan_summary"] = public["stages"]
                     daily.write_text(json.dumps(d, indent=2, default=str), encoding="utf-8")
                 except Exception:
@@ -217,7 +239,10 @@ class OrchestratedSessionRunner:
         self.ledger.export_learning_json(
             self.scan_dir / "learning_report.json",
             paper_snapshot=paper_snap,
-            extra={"scanner_version": SCANNER_VERSION},
+            extra={
+                "scanner_version": SCANNER_VERSION,
+                "allocation_policy": "0% NIFTYBEES / 90% Tactical AI Picks / 10% Liquid (BULL_TREND)",
+            },
         )
 
     def build_dashboard_payload(self) -> dict[str, Any]:

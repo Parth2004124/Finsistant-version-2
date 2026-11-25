@@ -75,7 +75,7 @@ jobs:
       - name: Install minimal runtime dependencies (no broker SDKs)
         run: |
           python3 -m pip install --quiet --upgrade pip
-          python3 -m pip install --quiet numpy pandas yfinance python-dotenv pyotp "psycopg[binary]"
+          python3 -m pip install --quiet numpy pandas yfinance requests python-dotenv pyotp "psycopg[binary]"
 
       - name: Pre-run frozen configuration, safety & persistence verification
         env:
@@ -87,6 +87,7 @@ jobs:
         id: execute_paper
         env:
           M31_DATABASE_URL: ${{ secrets.M31_DATABASE_URL }}
+          M32_DATABASE_URL: ${{ secrets.M32_DATABASE_URL }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           WORKFLOW_MODE: ${{ github.event.inputs.mode || 'run-session' }}
           TRADING_DATE: ${{ github.event.inputs.trading_date || 'auto' }}
@@ -125,6 +126,7 @@ jobs:
       - name: Post-run four-ledger reconciliation & audit-chain verification (M3.1 & M3.2)
         env:
           M31_DATABASE_URL: ${{ secrets.M31_DATABASE_URL }}
+          M32_DATABASE_URL: ${{ secrets.M32_DATABASE_URL }}
         run: |
           python3 scripts/moreshwar_3_1_paper_ops.py reconcile
           python3 scripts/moreshwar_3_2_paper_ops.py reconcile
