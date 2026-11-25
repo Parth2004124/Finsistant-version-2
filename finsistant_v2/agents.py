@@ -15,6 +15,7 @@ import sys
 import time
 from typing import Any, Sequence
 
+from .adversarial_prosecutor import DEFAULT_MIN_SURVIVAL_SCORE, prosecute_trade_candidate
 from .config import FinsistantSettings, load_settings
 from .quant_engine import get_asset_full_analysis
 
@@ -200,8 +201,48 @@ class FundamentalAnalyst(BaseTradingAgent):
         }
 
 
+class AdversarialProsecutorAgent(BaseTradingAgent):
+    """BearProsecutor_1 — Ruthless Devil's Advocate trying to kill every weak BUY thesis."""
+
+    role_key = "prosecution"
+
+    def __init__(self, name: str = "BearProsecutor_1") -> None:
+        super().__init__(name=name)
+
+    def evaluate(self, context: dict[str, Any]) -> dict[str, Any]:
+        symbol = context.get("symbol", "")
+        snap = context.get("asset_analysis") or get_asset_full_analysis(symbol)
+        tech = context.get("technical") or {}
+        fund = context.get("fundamental") or {}
+        moreshwar = snap.get("moreshwar_levels") or {}
+
+        report = prosecute_trade_candidate(
+            symbol=symbol,
+            snap=snap,
+            tech_conf=float(tech.get("confidence", 0.5)),
+            fund_conf=float(fund.get("confidence", 0.5)),
+            rr_ratio=float(moreshwar.get("rr_ratio") or 0.0),
+            stop_loss=float(moreshwar.get("stop_loss") or 0.0),
+            target=float(moreshwar.get("target") or 0.0),
+            price=float(snap.get("price") or 0.0),
+            adv_20d_inr=context.get("adv_20d_inr"),
+            hl_range_pct=context.get("hl_range_pct"),
+            price_discrepancy_pct=context.get("price_discrepancy_pct"),
+            benchmark_candles=context.get("benchmark_candles"),
+            attack_multipliers=context.get("attack_multipliers"),
+            min_survival_score=float(context.get("min_survival_score", DEFAULT_MIN_SURVIVAL_SCORE)),
+        )
+        return {
+            "stage": "Adversarial Bear Prosecution",
+            "signal": "OUTLASTED" if report["outlasted"] else "VETOED",
+            "confidence": round(report["survival_score"] / 100.0, 3),
+            "summary": report["summary"],
+            "metrics": report,
+        }
+
+
 class ExecutionAgent(BaseTradingAgent):
-    """ExecBot_1 — Computes Moreshwar Levels, Decision Matrix, Auto-Risk Qty, and Kite Order Receipt."""
+    """ExecBot_1 — Computes Moreshwar Levels, Decision Matrix, Adversarial Survival Gate, and Order Receipt."""
 
     role_key = "execution"
 
@@ -209,7 +250,7 @@ class ExecutionAgent(BaseTradingAgent):
         super().__init__(name=name)
 
     def evaluate(self, context: dict[str, Any]) -> dict[str, Any]:
-        symbol = context.get("symbol", "RELIANCE")
+        symbol = context.get("symbol", "")
         snap = context.get("asset_analysis") or get_asset_full_analysis(symbol)
         tech = context.get("technical", {})
         fund = context.get("fundamental", {})
@@ -238,20 +279,46 @@ class ExecutionAgent(BaseTradingAgent):
         conviction = round(max(0.05, min(0.98, raw_conv - rsi_pen + sec_adj)), 3)
         min_conviction = float(context.get("min_conviction") or 0.60)
 
-        # Finsistant Auto-Risk Position Sizing: risk budget divided by (Entry - StopLoss), capped by single-stock cap
+        # Ensure every candidate receives brutal adversarial prosecution even if BearProsecutor_1 wasn't run separately
+        pros_step = context.get("prosecution")
+        if isinstance(pros_step, dict) and isinstance(pros_step.get("metrics"), dict):
+            prosecution = pros_step["metrics"]
+        else:
+            prosecution = prosecute_trade_candidate(
+                symbol=symbol,
+                snap=snap,
+                tech_conf=tech_conf,
+                fund_conf=fund_conf,
+                rr_ratio=float(moreshwar.get("rr_ratio") or 0.0),
+                stop_loss=stop_loss,
+                target=target,
+                price=price,
+                adv_20d_inr=context.get("adv_20d_inr"),
+                hl_range_pct=context.get("hl_range_pct"),
+                price_discrepancy_pct=context.get("price_discrepancy_pct"),
+                benchmark_candles=context.get("benchmark_candles"),
+                attack_multipliers=context.get("attack_multipliers"),
+                min_survival_score=float(context.get("min_survival_score", DEFAULT_MIN_SURVIVAL_SCORE)),
+            )
+
+        # Finsistant Auto-Risk Position Sizing: risk budget divided by (Entry - StopLoss), scaled by adversarial survival
         risk_budget_pct = float(context.get("risk_budget_pct") or (0.011 if agent_mode == "paper_trading" else 0.015))
         max_single_pct = float(context.get("max_single_stock_pct") or (15.0 if agent_mode == "paper_trading" else 22.0))
         risk_budget = capital * risk_budget_pct
         per_share_risk = max(1.0, abs(price - stop_loss))
         raw_qty = max(1, int(risk_budget // per_share_risk))
         max_affordable_qty = max(1, int((capital * (max_single_pct / 100.0)) // max(1.0, price)))
-        qty = min(raw_qty, max_affordable_qty)
+        base_qty = min(raw_qty, max_affordable_qty)
+        size_mult = float(prosecution.get("size_multiplier") or 0.0)
+        qty = max(1, int(round(base_qty * size_mult))) if size_mult > 0 else 0
         notional = round(qty * price, 2)
 
         matrix_action = decision["action"]
         price_above_sma = price >= float(snap.get("sma_20") or price)
         rr_ok = float(moreshwar.get("rr_ratio") or 0.0) >= 1.5
         sip_aligned = matrix_action == "SIP ONLY" and conviction >= max(0.72, min_conviction + 0.08) and price_above_sma
+        wants_buy = matrix_action in ("BUY NOW", "ADD") or sip_aligned
+        survived_prosecution = bool(prosecution.get("outlasted"))
 
         if active_trades >= max_trades and matrix_action in ("BUY NOW", "ADD", "SIP ONLY"):
             action = "HOLD"
@@ -259,17 +326,25 @@ class ExecutionAgent(BaseTradingAgent):
             qty = 0
             notional = 0.0
             reason = f"Guardrail triggered: Open trades ({active_trades}) reached MAX_CONCURRENT_TRADES ({max_trades})."
-        elif (matrix_action in ("BUY NOW", "ADD") or sip_aligned) and rr_ok and conviction >= min_conviction:
+        elif wants_buy and not survived_prosecution:
+            action = "HOLD"
+            signal = "KILLED_BY_ADVERSARY"
+            qty = 0
+            notional = 0.0
+            reason = f"NO-MERCY ADVERSARIAL VETO ({matrix_action} KILLED): {prosecution['summary']}"
+        elif wants_buy and rr_ok and conviction >= min_conviction and survived_prosecution:
             action = "BUY"
             signal = "APPROVED"
             reason = (
-                f"Decision Matrix: {matrix_action} ({conviction*100:.1f}% conviction >= {min_conviction*100:.0f}% bar). "
-                f"Auto-Risk sized {qty} shares ({currency} {notional:,.2f}) | "
-                f"MOVIQ Target {target:,.2f} / SL {stop_loss:,.2f} (R:R 1:{moreshwar['rr_ratio']})."
+                f"OUTLASTED PROSECUTION [{matrix_action}] (Survival {prosecution['survival_score']:.1f}/{prosecution['min_survival_score']:.1f}, "
+                f"Conv {conviction*100:.1f}%, Size x{size_mult:.2f}): {qty} sh ({currency} {notional:,.2f}) | "
+                f"Target {target:,.2f} / SL {stop_loss:,.2f} (R:R 1:{moreshwar['rr_ratio']})."
             )
         elif matrix_action in ("EXIT", "REDUCE", "AVOID") or conviction <= 0.44:
             action = "SELL"
             signal = "APPROVED"
+            qty = base_qty
+            notional = round(qty * price, 2)
             reason = (
                 f"Decision Matrix: {matrix_action} — Risk Warning triggered ({conviction*100:.1f}% score). "
                 f"Recommended exit/hedge to preserve capital."
@@ -280,8 +355,8 @@ class ExecutionAgent(BaseTradingAgent):
             qty = 0
             notional = 0.0
             reason = (
-                f"Quality Gate Hold ({matrix_action}, Conv {conviction*100:.1f}%, R:R 1:{moreshwar['rr_ratio']}): "
-                f"{decision.get('rationale', '')}"
+                f"Quality Gate Hold ({matrix_action}, Conv {conviction*100:.1f}%, R:R 1:{moreshwar['rr_ratio']}, "
+                f"Survival {prosecution['survival_score']:.1f}): {decision.get('rationale', '')}"
             )
 
         receipt = {
@@ -291,7 +366,7 @@ class ExecutionAgent(BaseTradingAgent):
             "decision_badge": matrix_action,
             "mode": agent_mode,
             "broker_bridge": "Zerodha Kite Connect",
-            "status": "QUEUED" if action in ("BUY", "SELL") else "STANDBY",
+            "status": "QUEUED" if action in ("BUY", "SELL") else ("KILLED" if signal == "KILLED_BY_ADVERSARY" else "STANDBY"),
             "quantity": qty,
             "entry_price": entry,
             "fill_price": price,
@@ -300,10 +375,11 @@ class ExecutionAgent(BaseTradingAgent):
             "take_profit": target,
             "rr_ratio": f"1 : {moreshwar['rr_ratio']}",
             "active_trades_slots": f"{active_trades + (1 if action in ('BUY', 'SELL') else 0)} / {max_trades}",
+            "prosecution": prosecution,
         }
 
         return {
-            "stage": "MOVIQ Levels & Kite Execution Bridge",
+            "stage": "MOVIQ Levels, Adversarial Survival & Execution",
             "signal": signal,
             "action": action,
             "decision_badge": matrix_action,
@@ -317,6 +393,7 @@ class ExecutionAgent(BaseTradingAgent):
             "summary": reason,
             "metrics": receipt,
             "order_receipt": receipt,
+            "prosecution": prosecution,
         }
 
 
@@ -372,6 +449,7 @@ class AgentRunner:
         is_holding: bool = False,
         asset_analysis: dict[str, Any] | None = None,
         learned_params: dict[str, Any] | None = None,
+        benchmark_candles: list[dict[str, Any]] | None = None,
     ) -> PipelineResult:
         t0 = time.perf_counter()
         symbol = symbol.upper().strip()
@@ -390,6 +468,8 @@ class AgentRunner:
         }
         if asset_analysis is not None:
             context["asset_analysis"] = asset_analysis
+        if benchmark_candles is not None:
+            context["benchmark_candles"] = benchmark_candles
         if learned_params:
             wt = float(learned_params.get("w_tech", 0.45))
             wf = float(learned_params.get("w_fund", 0.55))
@@ -398,6 +478,10 @@ class AgentRunner:
                 context["min_conviction"] = float(learned_params["min_conviction"])
             if "rsi_overbought_penalty" in learned_params:
                 context["rsi_overbought_penalty"] = float(learned_params["rsi_overbought_penalty"])
+            if "attack_multipliers" in learned_params:
+                context["attack_multipliers"] = dict(learned_params.get("attack_multipliers") or {})
+            if "min_survival_score" in learned_params:
+                context["min_survival_score"] = float(learned_params["min_survival_score"])
             sec_map = learned_params.get("sector_adjustments") or {}
             sec_name = str((asset_analysis or {}).get("sector") or "")
             if sec_name and sec_name in sec_map:

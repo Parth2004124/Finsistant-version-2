@@ -28,6 +28,11 @@ from typing import Any
 
 import numpy as np
 
+from finsistant_v2.adversarial_prosecutor import (
+    ATTACK_MULTIPLIER_MAX,
+    ATTACK_MULTIPLIER_MIN,
+    DEFAULT_MIN_SURVIVAL_SCORE,
+)
 from finsistant_v2.trade_automation import (
     compute_post_trade_tca,
     summarize_btca_and_feedback,
@@ -52,11 +57,13 @@ RSI_PEN_MIN, RSI_PEN_MAX = 0.0, 0.12
 SECTOR_ADJ_LIMIT = 0.05
 PRIOR_STOP_TIGHTEN_MULT = 1.0
 STOP_MULT_MIN, STOP_MULT_MAX = 0.80, 1.10
+SURVIVAL_FLOOR, SURVIVAL_CEIL = 48.0, 74.0
 
 MAX_WEIGHT_STEP = 0.03
 MAX_CONV_STEP = 0.02
 MAX_RSI_PEN_STEP = 0.02
 MAX_STOP_MULT_STEP = 0.05
+MAX_SURVIVAL_STEP = 4.0
 SHRINKAGE_K_TRADES = 6.0
 SHRINKAGE_K_SESSIONS = 8.0
 
@@ -125,6 +132,7 @@ class OrchestratorLearningLedger:
                     fundamental_total REAL, porters_total REAL, conviction REAL, exec_action TEXT,
                     eod_close REAL, queued INTEGER NOT NULL DEFAULT 0,
                     rsi_14 REAL, sector TEXT,
+                    prosecution_verdict TEXT, survival_score REAL, attack_ids_json TEXT,
                     PRIMARY KEY (trading_date, sec_id)
                 );
                 CREATE TABLE IF NOT EXISTS outcomes (
@@ -158,7 +166,12 @@ class OrchestratorLearningLedger:
                     lesson_summary TEXT NOT NULL,
                     recorded_at_utc TEXT NOT NULL,
                     mfe_giveback_pct REAL,
-                    pillar_attribution TEXT
+                    pillar_attribution TEXT,
+                    rupees_at_risk_inr REAL,
+                    pnl_per_1k_inr REAL,
+                    rupee_days REAL,
+                    survival_score REAL,
+                    attack_ids_json TEXT
                 );
                 CREATE TABLE IF NOT EXISTS weight_history (
                     trading_date TEXT PRIMARY KEY,
@@ -168,6 +181,10 @@ class OrchestratorLearningLedger:
                     rsi_overbought_penalty REAL NOT NULL DEFAULT 0.0,
                     sector_adjustments_json TEXT NOT NULL DEFAULT '{}',
                     stop_tighten_mult REAL NOT NULL DEFAULT 1.0,
+                    attack_multipliers_json TEXT NOT NULL DEFAULT '{}',
+                    min_survival_score REAL NOT NULL DEFAULT 52.0,
+                    total_rupees_invested_inr REAL NOT NULL DEFAULT 0.0,
+                    rupee_roic_pct REAL,
                     status TEXT NOT NULL,
                     matured_sessions INTEGER NOT NULL,
                     closed_trades INTEGER NOT NULL DEFAULT 0,
@@ -202,11 +219,29 @@ class OrchestratorLearningLedger:
             )
             # Safe schema migration for any existing v3.2 alpha DB created before extra columns
             self._ensure_columns(conn, "scan_universe", [("rsi_14", "REAL"), ("sector", "TEXT")])
-            self._ensure_columns(conn, "scan_shortlist", [("rsi_14", "REAL"), ("sector", "TEXT")])
+            self._ensure_columns(
+                conn,
+                "scan_shortlist",
+                [
+                    ("rsi_14", "REAL"),
+                    ("sector", "TEXT"),
+                    ("prosecution_verdict", "TEXT"),
+                    ("survival_score", "REAL"),
+                    ("attack_ids_json", "TEXT"),
+                ],
+            )
             self._ensure_columns(
                 conn,
                 "trade_lessons",
-                [("mfe_giveback_pct", "REAL"), ("pillar_attribution", "TEXT")],
+                [
+                    ("mfe_giveback_pct", "REAL"),
+                    ("pillar_attribution", "TEXT"),
+                    ("rupees_at_risk_inr", "REAL"),
+                    ("pnl_per_1k_inr", "REAL"),
+                    ("rupee_days", "REAL"),
+                    ("survival_score", "REAL"),
+                    ("attack_ids_json", "TEXT"),
+                ],
             )
             self._ensure_columns(
                 conn,
@@ -216,6 +251,10 @@ class OrchestratorLearningLedger:
                     ("rsi_overbought_penalty", "REAL NOT NULL DEFAULT 0.0"),
                     ("sector_adjustments_json", "TEXT NOT NULL DEFAULT '{}'"),
                     ("stop_tighten_mult", "REAL NOT NULL DEFAULT 1.0"),
+                    ("attack_multipliers_json", "TEXT NOT NULL DEFAULT '{}'"),
+                    ("min_survival_score", "REAL NOT NULL DEFAULT 52.0"),
+                    ("total_rupees_invested_inr", "REAL NOT NULL DEFAULT 0.0"),
+                    ("rupee_roic_pct", "REAL"),
                     ("closed_trades", "INTEGER NOT NULL DEFAULT 0"),
                     ("passed_trades", "INTEGER NOT NULL DEFAULT 0"),
                     ("failed_trades", "INTEGER NOT NULL DEFAULT 0"),
@@ -252,8 +291,9 @@ class OrchestratorLearningLedger:
             )
             conn.executemany(
                 "INSERT INTO scan_shortlist (trading_date, sec_id, symbol, tech_rank, status, tech_conf, fund_conf, "
-                "fundamental_total, porters_total, conviction, exec_action, eod_close, queued, rsi_14, sector) "
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "fundamental_total, porters_total, conviction, exec_action, eod_close, queued, rsi_14, sector, "
+                "prosecution_verdict, survival_score, attack_ids_json) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 [
                     (
                         dt,
@@ -271,6 +311,9 @@ class OrchestratorLearningLedger:
                         1 if r["symbol"] in queued else 0,
                         r.get("rsi_14"),
                         r.get("sector"),
+                        r.get("prosecution_verdict"),
+                        r.get("survival_score"),
+                        json.dumps(r.get("attack_ids") or []),
                     )
                     for r in scan["shortlist"]
                 ],
@@ -280,7 +323,7 @@ class OrchestratorLearningLedger:
             conn.close()
 
     # ------------------------------------------------------------------
-    # 2. Sync EVERY closed paper trade into per-trade post-mortem lessons
+    # 2. Sync EVERY closed paper trade into per-rupee post-mortem lessons
     # ------------------------------------------------------------------
     def sync_closed_trades(self, paper_db_path: Path) -> int:
         paper_db_path = Path(paper_db_path)
@@ -323,15 +366,21 @@ class OrchestratorLearningLedger:
                 mfe = float(pos["mfe_pct"]) if pos["mfe_pct"] is not None else None
                 outcome = "PASSED" if total_pnl > 0.0 else "FAILED"
 
-                # Join with exact shortlist / universe agent scores on or immediately before entry_date
+                # Per-rupee capital attribution metrics
+                rupees_at_risk = round(cost_basis * abs(min(0.0, float(mae or 0.0))) / 100.0, 2)
+                pnl_per_1k = round((total_pnl / max(1.0, cost_basis)) * 1000.0, 2)
+                rupee_days = round(cost_basis * max(1, bars_held), 2)
+
+                # Join with exact shortlist / universe agent scores & adversarial objections on or before entry_date
                 sl = conn.execute(
-                    "SELECT trading_date, tech_conf, fund_conf, conviction, rsi_14, sector FROM scan_shortlist "
-                    "WHERE sec_id=? AND trading_date < ? ORDER BY trading_date DESC LIMIT 1",
+                    "SELECT trading_date, tech_conf, fund_conf, conviction, rsi_14, sector, survival_score, attack_ids_json "
+                    "FROM scan_shortlist WHERE sec_id=? AND trading_date < ? ORDER BY trading_date DESC LIMIT 1",
                     (sec_id, entry_dt),
                 ).fetchone()
                 if sl is None:
                     sl = conn.execute(
-                        "SELECT trading_date, tech_conf, NULL AS fund_conf, NULL AS conviction, rsi_14, sector "
+                        "SELECT trading_date, tech_conf, NULL AS fund_conf, NULL AS conviction, rsi_14, sector, "
+                        "NULL AS survival_score, '[]' AS attack_ids_json "
                         "FROM scan_universe WHERE sec_id=? AND trading_date <= ? ORDER BY trading_date DESC LIMIT 1",
                         (sec_id, entry_dt),
                     ).fetchone()
@@ -341,24 +390,39 @@ class OrchestratorLearningLedger:
                 f_c = float(sl["fund_conf"]) if (sl and sl["fund_conf"] is not None) else None
                 conv = float(sl["conviction"]) if (sl and sl["conviction"] is not None) else None
                 rsi = float(sl["rsi_14"]) if (sl and sl["rsi_14"] is not None) else None
+                surv_score = float(sl["survival_score"]) if (sl and sl["survival_score"] is not None) else None
+                try:
+                    attack_ids = json.loads((sl["attack_ids_json"] if sl else None) or "[]")
+                    if not isinstance(attack_ids, list):
+                        attack_ids = []
+                except Exception:
+                    attack_ids = []
+                attack_ids_json = json.dumps(attack_ids)
                 sector = str(pos["sector"] or (sl["sector"] if sl else "UNKNOWN_SECTOR"))
 
-                # Concrete deterministic post-mortem lesson
-                parts = [f"{outcome} ({ret_pct:+.2f}% / ₹{total_pnl:+,.2f} in {bars_held}d via {exit_reason})"]
+                # Concrete deterministic per-rupee post-mortem lesson
+                parts = [
+                    f"{outcome} ({ret_pct:+.2f}% / ₹{total_pnl:+,.2f} on ₹{cost_basis:,.0f} = ₹{pnl_per_1k:+.2f}/₹1k in {bars_held}d via {exit_reason})"
+                ]
                 if t_c is not None and f_c is not None:
                     parts.append(f"Tech={t_c:.2f}, Fund={f_c:.2f}, Conv={conv:.2f}" if conv is not None else f"Tech={t_c:.2f}, Fund={f_c:.2f}")
+                if attack_ids:
+                    parts.append(
+                        f"Objections [{', '.join(attack_ids)}] "
+                        + ("predicted ₹ loss -> escalating prosecutor multiplier" if outcome == "FAILED" else "survived cleanly")
+                    )
                 if outcome == "FAILED":
                     if rsi is not None and rsi > 72.0:
                         parts.append(f"Overbought entry RSI={rsi:.1f} -> reinforces RSI guard")
                     if t_c is not None and f_c is not None and abs(t_c - f_c) >= 0.10:
                         weaker = "TechBot" if t_c > f_c else "FundBot"
-                        parts.append(f"{weaker} over-scored a losing trade -> penalizing weight")
+                        parts.append(f"{weaker} over-scored ₹{cost_basis:,.0f} losing trade -> rupee-weighted penalty")
                     if conv is not None and conv < 0.68:
                         parts.append("Low-conviction entry failed -> nudges min_conviction upward")
                 else:
                     if t_c is not None and f_c is not None and abs(t_c - f_c) >= 0.08:
                         stronger = "TechBot" if t_c > f_c else "FundBot"
-                        parts.append(f"{stronger} led winning trade -> reinforcing weight")
+                        parts.append(f"{stronger} led ₹{total_pnl:+,.0f} winning trade -> reinforcing weight")
                 mfe_giveback = round(max(0.0, float(mfe) - ret_pct), 3) if mfe is not None else None
                 if mfe_giveback is not None and mfe_giveback > 4.0:
                     parts.append(f"Peak MFE +{mfe:.1f}% vs exit {ret_pct:+.1f}% (gave back {mfe_giveback:.1f}%)")
@@ -372,7 +436,12 @@ class OrchestratorLearningLedger:
 
                 lesson_txt = " · ".join(parts)
                 conn.execute(
-                    "INSERT INTO trade_lessons VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    "INSERT INTO trade_lessons ("
+                    "position_id, sec_id, symbol, sector, signal_date, entry_date, exit_date, bars_held, exit_reason, "
+                    "cost_basis_inr, realized_pnl_inr, dividends_inr, total_pnl_inr, return_pct, mae_pct, mfe_pct, "
+                    "outcome, tech_conf, fund_conf, conviction, rsi_14, lesson_summary, recorded_at_utc, "
+                    "mfe_giveback_pct, pillar_attribution, rupees_at_risk_inr, pnl_per_1k_inr, rupee_days, survival_score, attack_ids_json"
+                    ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     (
                         pid,
                         sec_id,
@@ -399,6 +468,11 @@ class OrchestratorLearningLedger:
                         _utc_now_iso(),
                         mfe_giveback,
                         pillar_attr,
+                        rupees_at_risk,
+                        pnl_per_1k,
+                        rupee_days,
+                        surv_score,
+                        attack_ids_json,
                     ),
                 )
                 added += 1
@@ -481,6 +555,48 @@ class OrchestratorLearningLedger:
         gross_loss = abs(sum(float(r["total_pnl_inr"]) for r in failed))
         pf = round(gross_win / gross_loss, 3) if gross_loss > 0 else (None if not passed else 9.99)
         total_pnl = sum(float(r["total_pnl_inr"]) for r in rows)
+        total_invested = sum(float(r.get("cost_basis_inr") or 0.0) for r in rows)
+        rupee_roic = round((total_pnl / total_invested) * 100.0, 3) if total_invested > 0 else None
+        pnl_per_1k = round((total_pnl / total_invested) * 1000.0, 2) if total_invested > 0 else None
+        total_at_risk = sum(
+            float(r["rupees_at_risk_inr"])
+            if r.get("rupees_at_risk_inr") is not None
+            else (float(r.get("cost_basis_inr") or 0.0) * abs(min(0.0, float(r.get("mae_pct") or 0.0))) / 100.0)
+            for r in rows
+        )
+        total_rupee_days = sum(
+            float(r["rupee_days"])
+            if r.get("rupee_days") is not None
+            else float(r.get("cost_basis_inr") or 0.0) * max(1, int(r.get("bars_held") or 1))
+            for r in rows
+        )
+
+        # Track real rupees gained/lost per adversarial objection raised at entry
+        atk_map: dict[str, dict[str, Any]] = {}
+        for r in rows:
+            try:
+                atk_ids = json.loads(r.get("attack_ids_json") or "[]")
+            except Exception:
+                atk_ids = []
+            if not isinstance(atk_ids, list):
+                atk_ids = []
+            cb = float(r.get("cost_basis_inr") or 0.0)
+            pnl = float(r.get("total_pnl_inr") or 0.0)
+            for aid in atk_ids:
+                bucket = atk_map.setdefault(
+                    str(aid),
+                    {"attack_id": str(aid), "trades": 0, "failed_trades": 0, "rupees_invested_inr": 0.0, "net_rupee_pnl_inr": 0.0, "rupees_lost_inr": 0.0},
+                )
+                bucket["trades"] += 1
+                bucket["rupees_invested_inr"] = round(bucket["rupees_invested_inr"] + cb, 2)
+                bucket["net_rupee_pnl_inr"] = round(bucket["net_rupee_pnl_inr"] + pnl, 2)
+                if pnl <= 0:
+                    bucket["failed_trades"] += 1
+                    bucket["rupees_lost_inr"] = round(bucket["rupees_lost_inr"] + abs(pnl), 2)
+        for b in atk_map.values():
+            inv = float(b["rupees_invested_inr"] or 0.0)
+            b["roic_pct"] = round((float(b["net_rupee_pnl_inr"]) / inv) * 100.0, 2) if inv > 0 else 0.0
+        atk_list = sorted(atk_map.values(), key=lambda x: (x["net_rupee_pnl_inr"], -x["rupees_lost_inr"]))
 
         return {
             "total_closed_trades": len(rows),
@@ -488,10 +604,16 @@ class OrchestratorLearningLedger:
             "failed_trades": len(failed),
             "win_rate_pct": round((len(passed) / len(rows)) * 100.0, 2) if rows else None,
             "profit_factor": pf,
+            "total_rupees_invested_inr": round(total_invested, 2),
             "total_realized_pnl_inr": round(total_pnl, 2),
+            "rupee_roic_pct": rupee_roic,
+            "pnl_per_1000_rupees_inr": pnl_per_1k,
+            "total_rupees_at_risk_inr": round(total_at_risk, 2),
+            "total_rupee_days": round(total_rupee_days, 2),
             "expectancy_per_trade_inr": round(total_pnl / len(rows), 2) if rows else None,
             "avg_win_pct": round(float(np.mean([r["return_pct"] for r in passed])), 2) if passed else None,
             "avg_loss_pct": round(float(np.mean([r["return_pct"] for r in failed])), 2) if failed else None,
+            "attack_rupee_attribution": atk_list,
             "recent_lessons": rows[:25],
         }
 
@@ -589,6 +711,10 @@ class OrchestratorLearningLedger:
                 "rsi_overbought_penalty": PRIOR_RSI_OVERBOUGHT_PENALTY,
                 "sector_adjustments": {},
                 "stop_tighten_mult": PRIOR_STOP_TIGHTEN_MULT,
+                "attack_multipliers": {},
+                "min_survival_score": DEFAULT_MIN_SURVIVAL_SCORE,
+                "total_rupees_invested_inr": 0.0,
+                "rupee_roic_pct": None,
                 "tca_hurdle_adder_bps": float(self.btca_report().get("tca_hurdle_adder_bps") or 0.0),
                 "status": "SESSION 1/80 · PRIOR_FIXED (awaiting first closed trades & matured outcomes)",
             }
@@ -597,11 +723,22 @@ class OrchestratorLearningLedger:
         except Exception:
             sec_adj = {}
         r_keys = r.keys() if hasattr(r, "keys") else ()
+        try:
+            atk_mult = json.loads(r["attack_multipliers_json"] or "{}") if "attack_multipliers_json" in r_keys else {}
+        except Exception:
+            atk_mult = {}
         stop_mult = (
             float(r["stop_tighten_mult"])
             if ("stop_tighten_mult" in r_keys and r["stop_tighten_mult"] is not None)
             else PRIOR_STOP_TIGHTEN_MULT
         )
+        min_surv = (
+            float(r["min_survival_score"])
+            if ("min_survival_score" in r_keys and r["min_survival_score"] is not None)
+            else DEFAULT_MIN_SURVIVAL_SCORE
+        )
+        tot_inv = float(r["total_rupees_invested_inr"] or 0.0) if "total_rupees_invested_inr" in r_keys else 0.0
+        r_roic = float(r["rupee_roic_pct"]) if ("rupee_roic_pct" in r_keys and r["rupee_roic_pct"] is not None) else None
         return {
             "w_tech": float(r["w_tech"]),
             "w_fund": float(r["w_fund"]),
@@ -609,6 +746,10 @@ class OrchestratorLearningLedger:
             "rsi_overbought_penalty": float(r["rsi_overbought_penalty"]),
             "sector_adjustments": sec_adj if isinstance(sec_adj, dict) else {},
             "stop_tighten_mult": _clamp(stop_mult, STOP_MULT_MIN, STOP_MULT_MAX),
+            "attack_multipliers": atk_mult if isinstance(atk_mult, dict) else {},
+            "min_survival_score": _clamp(min_surv, SURVIVAL_FLOOR, SURVIVAL_CEIL),
+            "total_rupees_invested_inr": round(tot_inv, 2),
+            "rupee_roic_pct": r_roic,
             "tca_hurdle_adder_bps": float(self.btca_report().get("tca_hurdle_adder_bps") or 0.0),
             "status": str(r["status"]),
         }
@@ -618,13 +759,15 @@ class OrchestratorLearningLedger:
         return (p["w_tech"], p["w_fund"]), p["status"]
 
     def update_weights(self, trading_date: str) -> dict[str, Any]:
-        """Update agent weights, conviction bar, RSI guard, sector bias, and stop scaling from real outcomes & closed trades."""
+        """Update agent weights, conviction bar, RSI guard, sector bias, stops, and adversarial rules from every rupee invested."""
         report = self.learning_report()
         prev = self.current_params()
         w_t_prev = float(prev["w_tech"])
         min_conv_prev = float(prev["min_conviction"])
         rsi_pen_prev = float(prev["rsi_overbought_penalty"])
         stop_mult_prev = float(prev.get("stop_tighten_mult", PRIOR_STOP_TIGHTEN_MULT))
+        min_surv_prev = float(prev.get("min_survival_score", DEFAULT_MIN_SURVIVAL_SCORE))
+        prev_atk_mult = dict(prev.get("attack_multipliers") or {})
 
         conn = self._connect()
         try:
@@ -646,25 +789,30 @@ class OrchestratorLearningLedger:
         n_fail = n_trades - n_pass
         n_ic = int(report["sessions_with_both_ics"])
         ic_t, ic_f = report["mean_ic_tech"], report["mean_ic_fund"]
+        ct_sum = report.get("closed_trades") or {}
+        total_rupees_invested = float(ct_sum.get("total_rupees_invested_inr") or 0.0)
+        net_rupee_pnl = float(ct_sum.get("total_realized_pnl_inr") or 0.0)
+        rupee_roic_pct = ct_sum.get("rupee_roic_pct")
 
         notes: list[str] = []
 
-        # (A) Agent blend weight (w_tech vs w_fund) — combines closed-trade profit attribution + matured IC
+        # (A) Rupee-weighted Agent blend weight (w_tech vs w_fund) + matured IC
         trade_delta = 0.0
         if n_trades > 0:
-            # Profit-weighted attribution: if TechBot scored higher than FundBot on wins (or lower on losses), shift toward TechBot
-            num, den = 0.0, 0.0
+            num, den, count_t = 0.0, 0.0, 0.0
             for r in lessons:
                 if r["tech_conf"] is None or r["fund_conf"] is None:
                     continue
+                rupee_w = max(100.0, float(r.get("cost_basis_inr") or 0.0))
                 ret_clipped = _clamp(float(r["return_pct"]) / 10.0, -1.5, 1.5)
                 diff_agent = float(r["tech_conf"]) - float(r["fund_conf"])
-                num += ret_clipped * diff_agent
-                den += 1.0
-            if den > 0:
-                shrink_t = den / (den + SHRINKAGE_K_TRADES)
+                num += rupee_w * ret_clipped * diff_agent
+                den += rupee_w
+                count_t += 1.0
+            if den > 0 and count_t > 0:
+                shrink_t = count_t / (count_t + SHRINKAGE_K_TRADES)
                 trade_delta = _clamp((num / den) * 1.2 * shrink_t, -0.20, 0.20)
-                notes.append(f"trade_attr_delta={trade_delta:+.3f} (n={int(den)})")
+                notes.append(f"rupee_attr_delta={trade_delta:+.3f} (₹{den:,.0f} across n={int(count_t)})")
 
         ic_delta = 0.0
         if n_ic > 0 and ic_t is not None and ic_f is not None:
@@ -677,17 +825,18 @@ class OrchestratorLearningLedger:
             new_min_conv = min_conv_prev
             new_rsi_pen = rsi_pen_prev
             new_stop_mult = stop_mult_prev
+            new_min_surv = min_surv_prev
+            new_atk_mult = prev_atk_mult
             sector_adj: dict[str, float] = {}
-            status = "OBSERVING (0 closed trades, 0 matured sessions) — priors active"
+            status = "OBSERVING (0 closed trades, ₹0 closed basis) — adversarial priors active"
             notes.append("No closed trades or matured 5D outcomes yet; priors held.")
         else:
-            # Blend trade attribution (60% once trades exist) and IC (40%)
             combined_delta = (0.60 * trade_delta + 0.40 * ic_delta) if (n_trades > 0 and n_ic > 0) else (trade_delta or ic_delta)
             target_t = _clamp(PRIOR_W_TECH + combined_delta, W_TECH_MIN, W_TECH_MAX)
             step_t = _clamp(target_t - w_t_prev, -MAX_WEIGHT_STEP, MAX_WEIGHT_STEP)
             new_t = _clamp(w_t_prev + step_t, W_TECH_MIN, W_TECH_MAX)
 
-            # (B) Adaptive min_conviction bar from closed trades
+            # (B) Adaptive min_conviction bar from closed trades & rupee ROIC
             target_conv = PRIOR_MIN_CONVICTION
             if n_trades > 0:
                 low_c = [r for r in lessons if r["conviction"] is not None and float(r["conviction"]) < 0.70]
@@ -697,48 +846,64 @@ class OrchestratorLearningLedger:
                 overall_wr = n_pass / n_trades
                 shrink_c = n_trades / (n_trades + SHRINKAGE_K_TRADES)
                 if low_wr is not None and low_wr < 0.45 and (hi_wr is None or hi_wr > low_wr + 0.10):
-                    # Low-conviction trades are failing -> raise the entry bar
                     target_conv = PRIOR_MIN_CONVICTION + 0.12 * shrink_c
                     notes.append(f"low_conv_wr={low_wr:.0%} -> tightening min_conviction")
-                elif overall_wr >= 0.60 and (report["closed_trades"]["profit_factor"] or 0.0) >= 1.4:
-                    # Strong win rate & profit factor -> allow slightly broader high-profit deployment
+                elif overall_wr >= 0.60 and (ct_sum.get("profit_factor") or 0.0) >= 1.4 and net_rupee_pnl > 0:
                     target_conv = PRIOR_MIN_CONVICTION - 0.04 * shrink_c
                     notes.append(f"strong_wr={overall_wr:.0%} -> deploying conviction bar")
-                elif overall_wr < 0.45:
+                elif overall_wr < 0.45 or (total_rupees_invested > 0 and net_rupee_pnl < 0):
                     target_conv = PRIOR_MIN_CONVICTION + 0.10 * shrink_c
-                    notes.append(f"weak_wr={overall_wr:.0%} -> tightening min_conviction")
+                    notes.append(f"net_rupee_loss (₹{net_rupee_pnl:+,.0f}) -> tightening min_conviction")
             target_conv = _clamp(target_conv, MIN_CONV_FLOOR, MIN_CONV_CEIL)
             new_min_conv = _clamp(min_conv_prev + _clamp(target_conv - min_conv_prev, -MAX_CONV_STEP, MAX_CONV_STEP), MIN_CONV_FLOOR, MIN_CONV_CEIL)
 
-            # (C) Overbought RSI (>72) guard from closed trades & matured shortlist
-            ob_rets = [float(r["return_pct"]) / 100.0 for r in lessons if r["rsi_14"] is not None and float(r["rsi_14"]) > 72.0]
-            ob_rets += [float(r["excess"]) for r in shortlist_obs if r["rsi_14"] is not None and float(r["rsi_14"]) > 72.0]
-            norm_rets = [float(r["return_pct"]) / 100.0 for r in lessons if r["rsi_14"] is not None and float(r["rsi_14"]) <= 72.0]
-            norm_rets += [float(r["excess"]) for r in shortlist_obs if r["rsi_14"] is not None and float(r["rsi_14"]) <= 72.0]
+            # (C) Overbought RSI (>72) guard weighted by actual rupees deployed + shortlist outcomes
+            ob_vals: list[tuple[float, float]] = [
+                (_clamp(float(r["return_pct"]) / 100.0, -0.25, 0.25), max(100.0, float(r.get("cost_basis_inr") or 0.0)))
+                for r in lessons
+                if r["rsi_14"] is not None and float(r["rsi_14"]) > 72.0
+            ] + [
+                (_clamp(float(r["excess"]), -0.25, 0.25), 5000.0)
+                for r in shortlist_obs
+                if r["rsi_14"] is not None and float(r["rsi_14"]) > 72.0
+            ]
+            norm_vals: list[tuple[float, float]] = [
+                (_clamp(float(r["return_pct"]) / 100.0, -0.25, 0.25), max(100.0, float(r.get("cost_basis_inr") or 0.0)))
+                for r in lessons
+                if r["rsi_14"] is not None and float(r["rsi_14"]) <= 72.0
+            ] + [
+                (_clamp(float(r["excess"]), -0.25, 0.25), 5000.0)
+                for r in shortlist_obs
+                if r["rsi_14"] is not None and float(r["rsi_14"]) <= 72.0
+            ]
             target_rsi_pen = PRIOR_RSI_OVERBOUGHT_PENALTY
-            if len(ob_rets) >= 2 and norm_rets:
-                gap = float(np.mean(norm_rets)) - float(np.mean(ob_rets))
+            if len(ob_vals) >= 2 and norm_vals:
+                ob_w = sum(v * w for v, w in ob_vals) / max(1.0, sum(w for _, w in ob_vals))
+                norm_w = sum(v * w for v, w in norm_vals) / max(1.0, sum(w for _, w in norm_vals))
+                gap = norm_w - ob_w
                 if gap > 0.005:
-                    shrink_r = len(ob_rets) / (len(ob_rets) + 5.0)
+                    shrink_r = len(ob_vals) / (len(ob_vals) + 5.0)
                     target_rsi_pen = _clamp(gap * 2.5 * shrink_r, RSI_PEN_MIN, RSI_PEN_MAX)
                     notes.append(f"rsi>72 underperformed by {gap*100:.2f}% -> pen={target_rsi_pen:.3f}")
             new_rsi_pen = _clamp(rsi_pen_prev + _clamp(target_rsi_pen - rsi_pen_prev, -MAX_RSI_PEN_STEP, MAX_RSI_PEN_STEP), RSI_PEN_MIN, RSI_PEN_MAX)
 
-            # (D) Per-sector Bayesian edge calibration
-            sec_buckets: dict[str, list[float]] = {}
+            # (D) Per-sector rupee-weighted Bayesian edge calibration
+            sec_buckets: dict[str, list[tuple[float, float]]] = {}
             for r in lessons:
                 sec = str(r.get("sector") or "")
                 if sec and sec != "UNKNOWN_SECTOR":
-                    sec_buckets.setdefault(sec, []).append(_clamp(float(r["return_pct"]) / 100.0, -0.15, 0.15))
+                    sec_buckets.setdefault(sec, []).append(
+                        (_clamp(float(r["return_pct"]) / 100.0, -0.15, 0.15), max(100.0, float(r.get("cost_basis_inr") or 0.0)))
+                    )
             for r in shortlist_obs:
                 sec = str(r.get("sector") or "")
                 if sec and sec != "UNKNOWN_SECTOR":
-                    sec_buckets.setdefault(sec, []).append(_clamp(float(r["excess"]), -0.15, 0.15) * 0.5)
+                    sec_buckets.setdefault(sec, []).append((_clamp(float(r["excess"]), -0.15, 0.15) * 0.5, 4000.0))
             sector_adj = {}
-            for sec, vals in sec_buckets.items():
-                if len(vals) >= 2:
-                    mean_v = float(np.mean(vals))
-                    shrink = len(vals) / (len(vals) + 4.0)
+            for sec, vw_list in sec_buckets.items():
+                if len(vw_list) >= 2:
+                    mean_v = sum(v * w for v, w in vw_list) / max(1.0, sum(w for _, w in vw_list))
+                    shrink = len(vw_list) / (len(vw_list) + 4.0)
                     adj = round(_clamp(mean_v * 0.8 * shrink, -SECTOR_ADJ_LIMIT, SECTOR_ADJ_LIMIT), 4)
                     if abs(adj) >= 0.003:
                         sector_adj[sec] = adj
@@ -771,7 +936,46 @@ class OrchestratorLearningLedger:
                 STOP_MULT_MAX,
             )
 
-            status = f"LEARNING ACTIVE ({n_pass} passed / {n_fail} failed trades · {n_ic} matured sessions)"
+            # (F) Per-rupee Adversarial Attack Escalation & Survival Bar Hardening
+            new_atk_mult: dict[str, float] = {}
+            for row in ct_sum.get("attack_rupee_attribution") or []:
+                aid = str(row["attack_id"])
+                inv = float(row.get("rupees_invested_inr") or 0.0)
+                pnl = float(row.get("net_rupee_pnl_inr") or 0.0)
+                t_cnt = int(row.get("trades") or 0)
+                fail_cnt = int(row.get("failed_trades") or 0)
+                if inv <= 0 or t_cnt == 0:
+                    continue
+                shrink_a = t_cnt / (t_cnt + 3.0)
+                if pnl < 0:
+                    # Objection was flagged, we invested rupees anyway, and LOST -> escalate damage multiplier permanently
+                    loss_ratio = min(0.25, abs(pnl) / inv)
+                    mult = _clamp(1.0 + shrink_a * (0.20 + loss_ratio * 4.5), 1.05, ATTACK_MULTIPLIER_MAX)
+                    new_atk_mult[aid] = round(mult, 4)
+                    notes.append(f"₹{abs(pnl):,.0f} lost under {aid} ({fail_cnt}/{t_cnt} failed) -> x{mult:.2f}")
+                elif t_cnt >= 3 and fail_cnt == 0 and (pnl / inv) >= 0.04:
+                    mult = _clamp(1.0 - 0.18 * shrink_a, ATTACK_MULTIPLIER_MIN, 1.0)
+                    new_atk_mult[aid] = round(mult, 4)
+
+            target_surv = DEFAULT_MIN_SURVIVAL_SCORE
+            marginal = [r for r in lessons if r.get("survival_score") is not None and float(r["survival_score"]) < 62.0]
+            if marginal:
+                marg_pnl = sum(float(r.get("total_pnl_inr") or 0.0) for r in marginal)
+                marg_inv = sum(float(r.get("cost_basis_inr") or 0.0) for r in marginal)
+                if marg_inv > 0 and marg_pnl < 0:
+                    shrink_ms = len(marginal) / (len(marginal) + 3.0)
+                    target_surv = DEFAULT_MIN_SURVIVAL_SCORE + min(18.0, (abs(marg_pnl) / marg_inv) * 100.0 * 1.2 * shrink_ms + 3.0)
+                    notes.append(f"marginal survival lost ₹{abs(marg_pnl):,.0f} -> raising min_survival_score")
+            elif total_rupees_invested > 0 and net_rupee_pnl < 0:
+                target_surv = DEFAULT_MIN_SURVIVAL_SCORE + 5.0 * (n_trades / (n_trades + 4.0))
+            target_surv = _clamp(target_surv, SURVIVAL_FLOOR, SURVIVAL_CEIL)
+            new_min_surv = round(
+                _clamp(min_surv_prev + _clamp(target_surv - min_surv_prev, -MAX_SURVIVAL_STEP, MAX_SURVIVAL_STEP), SURVIVAL_FLOOR, SURVIVAL_CEIL),
+                2,
+            )
+
+            roic_str = f" · ROIC {rupee_roic_pct:+.2f}% on ₹{total_rupees_invested:,.0f}" if rupee_roic_pct is not None else ""
+            status = f"LEARNING ACTIVE ({n_pass} passed / {n_fail} failed · {n_ic} matured sessions{roic_str})"
 
         new_f = round(1.0 - new_t, 4)
         new_t = round(new_t, 4)
@@ -785,8 +989,9 @@ class OrchestratorLearningLedger:
             conn.execute(
                 "INSERT OR REPLACE INTO weight_history "
                 "(trading_date, w_tech, w_fund, min_conviction, rsi_overbought_penalty, sector_adjustments_json, stop_tighten_mult, "
+                "attack_multipliers_json, min_survival_score, total_rupees_invested_inr, rupee_roic_pct, "
                 "status, matured_sessions, closed_trades, passed_trades, failed_trades, ic_tech, ic_fund, note, recorded_at_utc) "
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     str(trading_date),
                     new_t,
@@ -795,6 +1000,10 @@ class OrchestratorLearningLedger:
                     new_rsi_pen,
                     json.dumps(sector_adj, sort_keys=True),
                     new_stop_mult,
+                    json.dumps(new_atk_mult, sort_keys=True),
+                    new_min_surv,
+                    round(total_rupees_invested, 2),
+                    rupee_roic_pct,
                     status,
                     n_ic,
                     n_trades,
@@ -817,6 +1026,10 @@ class OrchestratorLearningLedger:
             "rsi_overbought_penalty": new_rsi_pen,
             "sector_adjustments": sector_adj,
             "stop_tighten_mult": new_stop_mult,
+            "attack_multipliers": new_atk_mult,
+            "min_survival_score": new_min_surv,
+            "total_rupees_invested_inr": round(total_rupees_invested, 2),
+            "rupee_roic_pct": rupee_roic_pct,
             "status": status,
             "note": note_str,
             "learning": report,
