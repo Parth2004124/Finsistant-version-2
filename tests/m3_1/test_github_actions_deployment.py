@@ -26,7 +26,10 @@ import pytest
 
 from finsistant_v2.m3_1.live_nse_eod_feed import compute_family_e_candidates_from_bars
 from finsistant_v2.m3_1.paper_trading_orchestrator import PaperTradingOrchestrator
-from finsistant_v2.m3_1.paper_trading_scheduler import PaperTradingScheduler
+from finsistant_v2.m3_1.paper_trading_scheduler import (
+    PaperTradingScheduler,
+    resolve_pending_auto_sessions,
+)
 from finsistant_v2.m3_1.persistent_storage_adapter import (
     DEFAULT_STORAGE_CONFIG_PATH,
     DatabaseExecutionLock,
@@ -350,4 +353,39 @@ def test_full_pit_universe_no_subset_and_real_data_ui_guards():
     assert root_js == (REPO_ROOT / "mobile-app" / "app" / "src" / "main" / "assets" / "app.js").read_text(encoding="utf-8")
     assert "portfolio_snapshot.json" in root_js
     assert "paper_trading_daily_report.csv" in root_js
+
+
+def test_ga_auto_session_catchup_after_cron_delay_and_holiday(tmp_path: Path) -> None:
+    db_file = tmp_path / "catchup_paper.db"
+    rep_dir = tmp_path / "rep"
+    sched_dir = tmp_path / "sched"
+
+    orch = PaperTradingOrchestrator(db_path=db_file, reports_dir=rep_dir, prospective_start_date="2026-11-19")
+    sched = PaperTradingScheduler(orchestrator=orch, state_dir=sched_dir)
+
+    # Fresh DB before any completed session: first eligible session is 2026-11-20
+    assert resolve_pending_auto_sessions(orch, "2026-11-20") == ["2026-11-20"]
+
+    res_d1 = sched.run_scheduled_session(
+        trading_date="2026-11-20",
+        market_data_provider=lambda d: _build_offline_eod_snapshot(d),
+    )
+    assert res_d1["scheduler_status"] == "COMPLETED"
+
+    # Delayed Monday cron firing after midnight IST on Tuesday holiday (2026-11-24) MUST catch up 2026-11-23
+    assert resolve_pending_auto_sessions(orch, "2026-11-24") == ["2026-11-23"]
+
+    # Delayed cron firing on Wednesday (2026-11-25) MUST return 2026-11-23 first, then 2026-11-25
+    assert resolve_pending_auto_sessions(orch, "2026-11-25") == ["2026-11-23", "2026-11-25"]
+
+    res_d2 = sched.run_scheduled_session(
+        trading_date="2026-11-23",
+        market_data_provider=lambda d: _build_offline_eod_snapshot(d, px_shift=2.0),
+    )
+    assert res_d2["scheduler_status"] == "COMPLETED"
+
+    # Once 2026-11-23 is complete, running on holiday 2026-11-24 has nothing pending
+    assert resolve_pending_auto_sessions(orch, "2026-11-24") == []
+    # And on 2026-11-25 only 2026-11-25 remains
+    assert resolve_pending_auto_sessions(orch, "2026-11-25") == ["2026-11-25"]
 

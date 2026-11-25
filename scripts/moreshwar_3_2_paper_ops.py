@@ -21,7 +21,10 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from finsistant_v2.m3_1.live_nse_eod_feed import current_ist_date_str
-from finsistant_v2.m3_1.paper_trading_scheduler import is_eligible_nse_trading_day
+from finsistant_v2.m3_1.paper_trading_scheduler import (
+    is_eligible_nse_trading_day,
+    resolve_pending_auto_sessions,
+)
 from finsistant_v2.m3_1.prospective_paper_trading_engine import HISTORICAL_DB_END_DATE
 from finsistant_v2.m3_2.orchestrated_session import OrchestratedSessionRunner
 
@@ -37,29 +40,55 @@ def main() -> int:
     args = ap.parse_args()
 
     if args.command == "run-session":
-        dt = current_ist_date_str() if str(args.date).lower().strip() == "auto" else str(args.date).strip()
-        if dt <= HISTORICAL_DB_END_DATE:
-            print(json.dumps({"trading_date": dt, "skipped": True, "reason": "HISTORICAL_CUTOFF_GUARD"}, indent=2))
-            return 0
-        ok, why = is_eligible_nse_trading_day(dt)
-        if not ok:
-            print(json.dumps({"trading_date": dt, "skipped": True, "reason": why}, indent=2))
+        raw_date = str(args.date).strip()
+        is_auto = raw_date.lower() == "auto"
+        target_dt = current_ist_date_str() if is_auto else raw_date
+        if target_dt <= HISTORICAL_DB_END_DATE:
+            print(json.dumps({"trading_date": target_dt, "skipped": True, "reason": "HISTORICAL_CUTOFF_GUARD"}, indent=2))
             return 0
         runner = OrchestratedSessionRunner()
-        res = runner.run_session(dt, mark_missed=bool(args.mark_missed))
-        recon = runner.orch.engine.reconcile_portfolio()
-        chain = runner.orch.engine.verify_audit_chain()
-        scan = runner.last_scan or {}
-        print(json.dumps({
-            "scheduler_status": res.get("scheduler_status") or res.get("status"),
-            "orchestrator_stages": scan.get("stages"),
-            "weights": scan.get("weights"),
-            "paper_candidates": [c["symbol"] for c in scan.get("candidates", [])],
-            "reconciliation_passed": recon["passed"],
-            "reconciliation_diff_inr": recon["reconciliation_diff_inr"],
-            "audit_chain_valid": chain["valid"],
-        }, indent=2, default=str))
-        return 0 if (recon["passed"] and chain["valid"]) else 1
+        if is_auto:
+            dates_to_run = resolve_pending_auto_sessions(runner.orch, target_dt)
+            if not dates_to_run:
+                _, why = is_eligible_nse_trading_day(target_dt)
+                print(json.dumps({"trading_date": target_dt, "skipped": True, "reason": why}, indent=2))
+                return 0
+        else:
+            ok, why = is_eligible_nse_trading_day(target_dt)
+            if not ok:
+                print(json.dumps({"trading_date": target_dt, "skipped": True, "reason": why}, indent=2))
+                return 0
+            dates_to_run = [target_dt]
+
+        session_outputs: list[dict] = []
+        overall_ok = True
+        for dt in dates_to_run:
+            if dt <= HISTORICAL_DB_END_DATE:
+                continue
+            res = runner.run_session(dt, mark_missed=bool(args.mark_missed))
+            recon = runner.orch.engine.reconcile_portfolio()
+            chain = runner.orch.engine.verify_audit_chain()
+            scan = runner.last_scan or {}
+            status = res.get("scheduler_status") or res.get("status")
+            session_outputs.append({
+                "trading_date": dt,
+                "scheduler_status": status,
+                "orchestrator_stages": scan.get("stages"),
+                "weights": scan.get("weights"),
+                "paper_candidates": [c["symbol"] for c in scan.get("candidates", [])],
+                "reconciliation_passed": recon["passed"],
+                "reconciliation_diff_inr": recon["reconciliation_diff_inr"],
+                "audit_chain_valid": chain["valid"],
+            })
+            if not (recon["passed"] and chain["valid"]):
+                overall_ok = False
+                break
+            if res.get("waiting") or status in ("WAITING_FOR_DATA", "SAFE_MODE", "FAILED"):
+                break
+
+        out = session_outputs[-1] if len(session_outputs) == 1 else {"sessions": session_outputs}
+        print(json.dumps(out, indent=2, default=str))
+        return 0 if overall_ok else 1
 
     runner = OrchestratedSessionRunner()
     if args.command == "reconcile":
