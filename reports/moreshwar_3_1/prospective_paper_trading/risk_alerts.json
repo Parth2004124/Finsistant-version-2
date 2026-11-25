@@ -1,44 +1,31 @@
 {
-  "generated_at_utc": "2026-11-25T00:12:59.403701+00:00",
-  "as_of_date": "2026-11-23",
-  "overall_health": "WARNING",
+  "generated_at_utc": "2026-11-25T13:40:04.557634+00:00",
+  "as_of_date": "2026-11-25",
+  "overall_health": "HEALTHY",
   "should_enter_safe_mode": false,
   "safe_mode_triggers": [],
   "alert_counts": {
     "CRITICAL": 0,
-    "WARNING": 1,
+    "WARNING": 0,
     "INFO": 1
   },
   "alerts": [
     {
-      "alert_id": "ALT-8F0A0B3FEA",
+      "alert_id": "ALT-EE623AE75F",
       "code": "DIAGNOSTIC_INDEX_DATA_BOUNDARY",
       "severity": "INFO",
-      "timestamp": "2026-11-25T00:12:59.400777+00:00",
-      "as_of_date": "2026-11-23",
+      "timestamp": "2026-11-25T13:40:04.553292+00:00",
+      "as_of_date": "2026-11-25",
       "affected_component": "market_data_validation",
       "observed_value": "PARTIAL_DIAGNOSTIC_ONLY",
       "threshold": "OK",
       "description": "DIAGNOSTIC_INDEX_BARS_UNAVAILABLE_POST_2025-10-10: India VIX / GS 10Yr / sector indices are unavailable and NOT fabricated.",
       "recommended_operational_action": "Continue trading strictly on 100%-coverage daily_bars; do not fabricate VIX/GS10Y.",
       "resolution_status": "OPEN"
-    },
-    {
-      "alert_id": "ALT-2BF50BAD0B",
-      "code": "UNEXPECTED_ALLOCATION_DEVIATION",
-      "severity": "WARNING",
-      "timestamp": "2026-11-25T00:12:59.400795+00:00",
-      "as_of_date": "2026-11-23",
-      "affected_component": "capital_allocation",
-      "observed_value": 12.93,
-      "threshold": 12.0,
-      "description": "Core NIFTYBEES allocation (72.9%) deviates by 12.9 pp from target (60.0%).",
-      "recommended_operational_action": "Verify 8.5% rebalance band trigger and pending next-session Core rebalance order.",
-      "resolution_status": "OPEN"
     }
   ],
   "prompt4_advisory_health": {
-    "date": "2026-11-23",
+    "date": "2026-11-25",
     "advisory_status": "NORMAL_OPERATING",
     "live_execution_enabled": false,
     "alerts": []

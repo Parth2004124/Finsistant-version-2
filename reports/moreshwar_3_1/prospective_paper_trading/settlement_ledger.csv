@@ -1,1 +1,2 @@
 settlement_id,order_id,trade_date,settlement_date,due_session_counter,symbol,amount_inr,status,settled_on_date,observation_mode
+SET-M31P-20261125-CORS-001,M31P-20261125-CORS-001,2026-11-25,T+1,4,NIFTYBEES,11640.3772,PENDING,,PROSPECTIVE_PAPER
