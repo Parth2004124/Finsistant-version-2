@@ -65,9 +65,11 @@ class _McpEndpointSession:
         self._opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self._cookie_jar))
         self._session_id: str | None = None
         self._session_ts: float = 0.0
+        self._circuit_open_until: float = 0.0
+        self._circuit_reason: str = ""
         self._req_id = 0
 
-    def _post(self, body: dict[str, Any], include_session: bool = True, timeout: float = 12.0) -> tuple[Any, dict[str, Any]]:
+    def _post(self, body: dict[str, Any], include_session: bool = True, timeout: float = 7.0) -> tuple[Any, dict[str, Any]]:
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json, text/event-stream",
@@ -111,16 +113,21 @@ class _McpEndpointSession:
         self._session_id = sid
         self._session_ts = now
         try:
-            self._post({"jsonrpc": "2.0", "method": "notifications/initialized"}, include_session=True, timeout=6.0)
+            self._post({"jsonrpc": "2.0", "method": "notifications/initialized"}, include_session=True, timeout=4.0)
         except Exception:
             pass
 
-    def call_tool(self, tool_name: str, arguments: dict[str, Any], timeout: float = 18.0) -> dict[str, Any]:
+    def call_tool(self, tool_name: str, arguments: dict[str, Any], timeout: float = 8.0) -> dict[str, Any]:
         import time as _time
 
         with self._lock:
+            now_mono = _time.monotonic()
+            if now_mono < self._circuit_open_until:
+                raise RuntimeError(f"NSE MCP '{self.name}' cooldown active ({self._circuit_reason})")
+
             last_err: Exception | None = None
-            max_attempts = 5
+            max_attempts = 2
+            transport_failure = False
             for attempt in range(max_attempts):
                 try:
                     self._ensure_session()
@@ -142,15 +149,22 @@ class _McpEndpointSession:
                     txt = content[0].get("text", "") if content and isinstance(content[0], dict) else ""
                     data = json.loads(txt) if txt.strip().startswith("{") else {"raw": txt}
                     if res.get("isError"):
-                        raise RuntimeError(f"NSE MCP tool error ({tool_name}): {data}")
+                        raise ValueError(f"NSE MCP tool error ({tool_name}): {data}")
+                    self._circuit_open_until = 0.0
                     return data
-                except (urllib.error.HTTPError, urllib.error.URLError, RuntimeError, TimeoutError, ValueError, OSError) as exc:
+                except ValueError as exc:
+                    # Symbol/argument-level error from responding endpoint — do not trip endpoint circuit breaker
+                    raise exc
+                except (urllib.error.HTTPError, urllib.error.URLError, RuntimeError, TimeoutError, OSError) as exc:
                     last_err = exc
-                    # Force clean re-initialize on retry if session expired or transient error
+                    transport_failure = True
                     self._session_id = None
                     if attempt < max_attempts - 1:
-                        _time.sleep(min(12.0, 1.5 * (2 ** attempt)))
+                        _time.sleep(0.8)
                         continue
+            if transport_failure:
+                self._circuit_open_until = _time.monotonic() + 300.0
+                self._circuit_reason = str(last_err)[:120]
             raise last_err or RuntimeError(f"NSE MCP tool call failed: {tool_name}")
 
 
