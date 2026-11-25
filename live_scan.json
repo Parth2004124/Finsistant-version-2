@@ -15,7 +15,7 @@
     "login_url": "https://kite.zerodha.com/connect/login?v=3&api_key=dn5f72ctu7ey0jtr"
   },
   "gemini_status": "Gemini Unavailable (GEMINI_API_KEY not configured)",
-  "generated_at": "2026-11-25T13:08:28.998823+00:00",
+  "generated_at": "2026-11-25T13:38:35.520281+00:00",
   "portfolio": {
     "stats": {
       "invested": 0.0,
@@ -38,7 +38,7 @@
   "pipelines": {},
   "gemini_critiques": {},
   "provenance": {
-    "generated_at": "2026-11-25T13:08:56.002731+00:00",
+    "generated_at": "2026-11-25T13:39:00.610756+00:00",
     "taxonomy": {
       "NSE_OFFICIAL_MCP": {
         "code": "NSE_OFFICIAL_MCP",
@@ -109,7 +109,7 @@
         "code": "NSE_OFFICIAL_MCP",
         "status": "FALLBACK / OFF",
         "market_timestamp": null,
-        "retrieval_timestamp": "2026-11-25T13:08:56.002731+00:00",
+        "retrieval_timestamp": "2026-11-25T13:39:00.610756+00:00",
         "detail": "0/0 symbols live via cm-market & bhavcopy"
       },
       {
@@ -117,7 +117,7 @@
         "code": "YAHOO_LIVE_FEED",
         "status": "ACTIVE",
         "market_timestamp": null,
-        "retrieval_timestamp": "2026-11-25T13:08:56.002731+00:00",
+        "retrieval_timestamp": "2026-11-25T13:39:00.610756+00:00",
         "detail": "0 global spot + company ratios \u00b7 0 stale \u00b7 0 partial"
       },
       {
@@ -125,15 +125,15 @@
         "code": "HISTORICAL_MARKET_DATA",
         "status": "ACTIVE",
         "market_timestamp": "2026-11-25T10:00:00+00:00",
-        "retrieval_timestamp": "2026-11-25T13:08:55.952505+00:00",
+        "retrieval_timestamp": "2026-11-25T13:39:00.561260+00:00",
         "detail": "1Y OHLCV bars + Nifty 50 (246 bars \u00b7 Historical Market Data (yfinance))"
       },
       {
         "category": "Broker API (Zerodha Kite)",
         "code": "BROKER_API",
         "status": "CONNECTED",
-        "market_timestamp": "2026-11-25T13:08:28.954139+00:00",
-        "retrieval_timestamp": "2026-11-25T13:08:28.954139+00:00",
+        "market_timestamp": "2026-11-25T13:38:35.474017+00:00",
+        "retrieval_timestamp": "2026-11-25T13:38:35.474017+00:00",
         "detail": "Zerodha Kite Live (0 holdings \u00b7 auto_totp_login)"
       },
       {
@@ -141,7 +141,7 @@
         "code": "CACHED_DATABASE",
         "status": "PERSISTENT",
         "market_timestamp": null,
-        "retrieval_timestamp": "2026-11-25T13:08:55.961891+00:00",
+        "retrieval_timestamp": "2026-11-25T13:39:00.570854+00:00",
         "detail": "Audit Ledger: 281 records \u00b7 Cache hits: 0"
       },
       {
@@ -149,7 +149,7 @@
         "code": "INTERNAL_CALCULATION",
         "status": "DETERMINISTIC",
         "market_timestamp": null,
-        "retrieval_timestamp": "2026-11-25T13:08:56.002731+00:00",
+        "retrieval_timestamp": "2026-11-25T13:39:00.610756+00:00",
         "detail": "StockSight V2, Porter's 5 Forces, MOVIQ Levels, Poly-Reg2, Backtester (ROCE proxied via ROE/ROA)"
       },
       {
@@ -157,14 +157,14 @@
         "code": "AI_ANALYTICAL_ESTIMATE",
         "status": "UNAVAILABLE",
         "market_timestamp": null,
-        "retrieval_timestamp": "2026-11-25T13:08:56.002731+00:00",
+        "retrieval_timestamp": "2026-11-25T13:39:00.610756+00:00",
         "detail": "Gemini CRO audited 0/0 assets (analytical estimate only, never simulated fills)"
       }
     ],
     "assets": {}
   },
   "backtest": {
-    "generated_at": "2026-11-25T13:08:55.995693+00:00",
+    "generated_at": "2026-11-25T13:39:00.605263+00:00",
     "symbols_evaluated": [],
     "selectivity_metrics": {
       "bars_evaluated": 0,
@@ -501,7 +501,7 @@
     }
   },
   "moreshwar_v2_research": {
-    "generated_at": "2026-11-25T13:08:55.996599+00:00",
+    "generated_at": "2026-11-25T13:39:00.605860+00:00",
     "promoted_to_production": false,
     "promotion_status": "SHADOW_RESEARCH_ONLY (Moreshwar 1.0 remains active pending user review)",
     "date_span": {
@@ -24594,7 +24594,7 @@
   "watchlist_source": "AWAITING_M32_FULL_UNIVERSE_SCAN",
   "moreshwar_v3_1": {
     "release_version": "3.1.0-rc1",
-    "generated_at_utc": "2026-11-25T13:08:56.008135+00:00",
+    "generated_at_utc": "2026-11-25T13:39:00.616124+00:00",
     "banner": "PAPER TRADING ONLY \u2014 LIVE TRADING DISABLED",
     "safety_banner_lines": [
       "MOVIQ 3.1 \u2014 PAPER TRADING ONLY.",
@@ -24617,7 +24617,7 @@
       "canonical_payload_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
       "canonical_prefix_16": "47a30f4bbd004c5f",
       "raw_file_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
-      "verified_at_utc": "2026-11-25T13:08:56.003285+00:00",
+      "verified_at_utc": "2026-11-25T13:39:00.611287+00:00",
       "selected_policy_id": "G_SIMPLE_TREND_BASELINE",
       "execution_config_id": "EXP_E_COMBINED_EXEC_INTEL",
       "admitted_tactical_strategies": [
@@ -26288,7 +26288,7 @@
             "alert_id": "ALT-8F0A0B3FEA",
             "code": "DIAGNOSTIC_INDEX_DATA_BOUNDARY",
             "severity": "INFO",
-            "timestamp": "2026-11-25T13:08:56.008036+00:00",
+            "timestamp": "2026-11-25T13:39:00.616026+00:00",
             "as_of_date": "2026-11-23",
             "affected_component": "market_data_validation",
             "observed_value": "PARTIAL_DIAGNOSTIC_ONLY",
@@ -26301,7 +26301,7 @@
             "alert_id": "ALT-2BF50BAD0B",
             "code": "UNEXPECTED_ALLOCATION_DEVIATION",
             "severity": "WARNING",
-            "timestamp": "2026-11-25T13:08:56.008054+00:00",
+            "timestamp": "2026-11-25T13:39:00.616045+00:00",
             "as_of_date": "2026-11-23",
             "affected_component": "capital_allocation",
             "observed_value": 12.93,
@@ -26397,7 +26397,7 @@
   },
   "moreshwar_v3_2": {
     "release_version": "3.2.0",
-    "generated_at_utc": "2026-11-25T13:08:56.023432+00:00",
+    "generated_at_utc": "2026-11-25T13:39:00.630674+00:00",
     "banner": "PAPER TRADING ONLY \u2014 LIVE TRADING DISABLED",
     "safety_banner_lines": [
       "MOVIQ 3.1 \u2014 PAPER TRADING ONLY.",
@@ -26420,7 +26420,7 @@
       "canonical_payload_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
       "canonical_prefix_16": "47a30f4bbd004c5f",
       "raw_file_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
-      "verified_at_utc": "2026-11-25T13:08:56.017005+00:00",
+      "verified_at_utc": "2026-11-25T13:39:00.625151+00:00",
       "selected_policy_id": "G_SIMPLE_TREND_BASELINE",
       "execution_config_id": "EXP_E_COMBINED_EXEC_INTEL",
       "admitted_tactical_strategies": [
@@ -27919,7 +27919,7 @@
     }
   },
   "ems_blotter": {
-    "generated_at_utc": "2026-11-25T13:08:56.042425+00:00",
+    "generated_at_utc": "2026-11-25T13:39:00.649515+00:00",
     "desk_status": "ACTIVE",
     "kill_switch_reasons": [],
     "counts": {
@@ -28076,7 +28076,7 @@
     }
   ],
   "audit_trail": {
-    "updated_at": "2026-11-25T13:08:55.961891+00:00",
+    "updated_at": "2026-11-25T13:39:00.570854+00:00",
     "total_records": 281,
     "last_market_timestamp": "2026-11-25T09:59:09+00:00",
     "engine_versions": {
@@ -37965,7 +37965,7 @@
       "Finsistant Execution Terminal (TechSight Queue + Polynomial Regression + Stocky AI)",
       "Multi-Agent Orchestrator (TechBot_1 + FundBot_1 + ExecBot_1)"
     ],
-    "timestamp": "2026-11-25T13:08:56.042754+00:00",
+    "timestamp": "2026-11-25T13:39:00.649875+00:00",
     "environment": "production",
     "agent_mode": "paper_trading",
     "default_currency": "INR",
