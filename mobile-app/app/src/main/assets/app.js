@@ -4226,7 +4226,7 @@ function wireMoreshwarV31Controls() {
               <td>${decPill}</td>
             </tr>`;
           }).join("")
-        : `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">No scan shortlist available yet.</td></tr>`;
+        : `<tr><td colspan="7" style="display:table-cell !important;padding:18px 8px;text-align:center;color:#8D99AA;">No scan shortlist available yet — trigger Daily Paper Trading scan to populate real M3.2 picks.</td></tr>`;
     }
 
     const adapEl = document.getElementById("mv32AdaptiveParams");
@@ -4301,12 +4301,25 @@ function wireMoreshwarV31Controls() {
   }
 
   async function refreshMoreshwarV32FromSource() {
+    const renderOfflineM32State = () => {
+      if (appState.moreshwarV32 && typeof appState.moreshwarV32 === "object") {
+        renderMoreshwarV32Dashboard();
+        return;
+      }
+      const slBody = document.getElementById("mv32ShortlistBody");
+      if (slBody) {
+        slBody.innerHTML = `<tr><td colspan="7" style="display:table-cell !important;padding:18px 8px;text-align:center;color:#E57373;">MOVIQ 3.2 scan unavailable (device offline and no cached M3.2 scan yet). Connect and swipe down to retry.</td></tr>`;
+      }
+    };
+
     if (isCloudOrMobileAssetHost()) {
       const cloud = await fetchM32CloudFallback();
       if (cloud) {
         appState._moreshwarV32LiveLoaded = true;
         appState.moreshwarV32 = cloud;
         renderMoreshwarV32Dashboard();
+      } else {
+        renderOfflineM32State();
       }
       return;
     }
@@ -4327,6 +4340,8 @@ function wireMoreshwarV31Controls() {
       appState._moreshwarV32LiveLoaded = true;
       appState.moreshwarV32 = cloud;
       renderMoreshwarV32Dashboard();
+    } else {
+      renderOfflineM32State();
     }
   }
 

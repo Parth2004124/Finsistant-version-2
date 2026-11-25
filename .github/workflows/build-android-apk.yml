@@ -30,6 +30,12 @@ jobs:
         with:
           gradle-version: "8.7"
 
+      - name: Sync latest live_scan.json into Android assets
+        run: |
+          if [ -f live_scan.json ]; then
+            cp live_scan.json mobile-app/app/src/main/assets/live_scan.json
+          fi
+
       - name: Build Finsistant V2 Android APK
         working-directory: mobile-app
         run: gradle assembleDebug --no-daemon
