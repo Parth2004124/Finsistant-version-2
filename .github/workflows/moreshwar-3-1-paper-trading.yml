@@ -95,34 +95,50 @@ jobs:
           MARK_MISSED: ${{ github.event.inputs.mark_missed_if_unavailable || 'false' }}
           RECOVERY_NOTE: ${{ github.event.inputs.recovery_note || 'manual_workflow_validated_recovery' }}
         run: |
-          set -euo pipefail
-          BEFORE_CNT=$(python3 -c 'import json; from pathlib import Path; p=Path("reports/moreshwar_3_1/prospective_paper_trading/prospective_validation_progress.json"); print(json.loads(p.read_text()).get("completed_unseen_sessions",0) if p.exists() else 0)')
-          if [ "$WORKFLOW_MODE" = "verify" ] || [ "$WORKFLOW_MODE" = "test-notify" ]; then
-            python3 scripts/moreshwar_3_1_paper_ops.py status
-          elif [ "$WORKFLOW_MODE" = "reconcile" ]; then
-            python3 scripts/moreshwar_3_1_paper_ops.py reconcile
-          elif [ "$WORKFLOW_MODE" = "recover" ]; then
-            python3 scripts/moreshwar_3_1_paper_ops.py recover --note "$RECOVERY_NOTE"
-          else
-            EXTRA_FLAG=""
-            if [ "$MARK_MISSED" = "true" ]; then
-              EXTRA_FLAG="--mark-missed"
+          set +e
+          (
+            set -euo pipefail
+            BEFORE_CNT=$(python3 -c 'import json; from pathlib import Path; p=Path("reports/moreshwar_3_1/prospective_paper_trading/prospective_validation_progress.json"); print(json.loads(p.read_text()).get("completed_unseen_sessions",0) if p.exists() else 0)')
+            if [ "$WORKFLOW_MODE" = "verify" ] || [ "$WORKFLOW_MODE" = "test-notify" ]; then
+              python3 scripts/moreshwar_3_1_paper_ops.py status
+            elif [ "$WORKFLOW_MODE" = "reconcile" ]; then
+              python3 scripts/moreshwar_3_1_paper_ops.py reconcile
+            elif [ "$WORKFLOW_MODE" = "recover" ]; then
+              python3 scripts/moreshwar_3_1_paper_ops.py recover --note "$RECOVERY_NOTE"
+            else
+              EXTRA_FLAG=""
+              if [ "$MARK_MISSED" = "true" ]; then
+                EXTRA_FLAG="--mark-missed"
+              fi
+              python3 scripts/moreshwar_3_1_paper_ops.py run-session \
+                --date "$TRADING_DATE" \
+                --fetch-live-eod \
+                --run-id "gha-${GITHUB_RUN_ID}" \
+                $EXTRA_FLAG
+              python3 scripts/moreshwar_3_2_paper_ops.py run-session \
+                --date "$TRADING_DATE" \
+                $EXTRA_FLAG
             fi
-            python3 scripts/moreshwar_3_1_paper_ops.py run-session \
-              --date "$TRADING_DATE" \
-              --fetch-live-eod \
-              --run-id "gha-${GITHUB_RUN_ID}" \
-              $EXTRA_FLAG
-            python3 scripts/moreshwar_3_2_paper_ops.py run-session \
-              --date "$TRADING_DATE" \
-              $EXTRA_FLAG
-          fi
-          AFTER_CNT=$(python3 -c 'import json; from pathlib import Path; p=Path("reports/moreshwar_3_1/prospective_paper_trading/prospective_validation_progress.json"); print(json.loads(p.read_text()).get("completed_unseen_sessions",0) if p.exists() else 0)')
-          if [ "$AFTER_CNT" -gt "$BEFORE_CNT" ]; then
-            echo "newly_completed=true" >> "$GITHUB_OUTPUT"
-          else
+            AFTER_CNT=$(python3 -c 'import json; from pathlib import Path; p=Path("reports/moreshwar_3_1/prospective_paper_trading/prospective_validation_progress.json"); print(json.loads(p.read_text()).get("completed_unseen_sessions",0) if p.exists() else 0)')
+            if [ "$AFTER_CNT" -gt "$BEFORE_CNT" ]; then
+              echo "newly_completed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "newly_completed=false" >> "$GITHUB_OUTPUT"
+            fi
+          ) > paper_run.log 2>&1
+          RC=$?
+          cat paper_run.log
+          if [ "$RC" -ne 0 ]; then
             echo "newly_completed=false" >> "$GITHUB_OUTPUT"
+            python3 - <<'PY'
+          from pathlib import Path
+          lines = [ln for ln in Path("paper_run.log").read_text(encoding="utf-8", errors="replace").splitlines() if ln.strip()]
+          for ln in lines[-15:]:
+              print(f"::error::{ln[:400]}")
+          PY
           fi
+          rm -f paper_run.log
+          exit "$RC"
 
       - name: Post-run four-ledger reconciliation & audit-chain verification (M3.1 & M3.2)
         env:
