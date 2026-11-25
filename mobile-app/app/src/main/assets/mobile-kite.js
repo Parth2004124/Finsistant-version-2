@@ -88,7 +88,7 @@
       wl.className = "km-watchlist-wrap";
       wl.innerHTML = `
         <div class="km-mission-strip" id="kmMissionBanner">
-          <div><strong id="kmBannerMission">M3.2 Mock Test · 1 / 80</strong> · <span id="kmBannerNav">₹1,00,000</span></div>
+          <div><strong id="kmBannerMission">M3.2 Mock Test · -- / 80</strong> · <span id="kmBannerNav">--</span></div>
           <span class="km-link">Open &#8250;</span>
         </div>
         <div class="km-search-bar">
@@ -346,7 +346,14 @@
     lastRenderedSig = sig;
 
     if (!filtered.length) {
-      rowsEl.innerHTML = `<div style="padding:28px 16px;text-align:center;color:#647184;">Loading live NSE orchestrator picks...</div>`;
+      const errTxt = (typeof appState !== "undefined" && appState && appState.errorMsg) ? appState.errorMsg : "";
+      const wlSrc = (typeof appState !== "undefined" && appState && appState.watchlistSource) ? appState.watchlistSource : "";
+      const emptyMsg = errTxt
+        ? esc(errTxt)
+        : (wlSrc === "AWAITING_M32_FULL_UNIVERSE_SCAN"
+          ? "Awaiting MOVIQ 3.2 full-universe NSE scan — zero hardcoded fallback picks."
+          : "Loading live NSE orchestrator picks...");
+      rowsEl.innerHTML = `<div style="padding:28px 16px;text-align:center;color:#8D99AA;font-size:13px;line-height:1.5;">${emptyMsg}</div>`;
       return;
     }
 
@@ -411,6 +418,7 @@
   }
 
   // Expose native Android MainActivity.kt hooks
+  window.renderKiteWatchlist = renderKiteWatchlist;
   window.getActiveMobileTab = () => activeTab;
   window.switchMobileTab = (tab) => switchMobileTab(tab === "picks" ? "mission" : tab);
   window.handleFinsistantMobileBack = () => {

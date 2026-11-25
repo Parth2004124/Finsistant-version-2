@@ -89,8 +89,8 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = True) ->
     pe = float(raw_pe) if raw_pe is not None else -1.0  # Loss/negative TTM EPS genuinely omits P/E on Screener/Yahoo
     opm = float(meta["opm"]) if meta.get("opm") is not None else (0.0 if is_financial else _require_real_metric(meta, "opm"))
     roce = float(meta["roce"]) if meta.get("roce") is not None else (roe if is_financial else _require_real_metric(meta, "roce"))
-    beta = float(meta["beta"]) if meta.get("beta") is not None else 1.0
-    ret_1y = float(meta["ret_1y"]) if meta.get("ret_1y") is not None else 0.0
+    beta = float(meta["beta"]) if meta.get("beta") is not None else None
+    ret_1y = float(meta["ret_1y"]) if meta.get("ret_1y") is not None else None
     debt_to_equity = float(meta["debt_to_equity"]) if meta.get("debt_to_equity") is not None else None
 
     reasons: list[str] = []
@@ -156,7 +156,7 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = True) ->
 
     if profit_growth > sales_growth:
         moat += 5
-    if ret_1y > 40:
+    if ret_1y is not None and ret_1y > 40:
         moat = max(moat + 5, 18.0)
     moat = min(20.0, moat)
 
@@ -188,11 +188,11 @@ def calculate_fundamental_score(meta: dict[str, Any], *, strict: bool = True) ->
     elif mcap_cr > 2000:
         risk += 5
 
-    if ret_1y > 40:
+    if ret_1y is not None and ret_1y > 40:
         risk += 10
-    elif beta < 1.1:
+    elif beta is not None and beta < 1.1:
         risk += 10
-    elif beta < 1.3:
+    elif beta is not None and beta < 1.3:
         risk += 5
     if debt_to_equity is not None and debt_to_equity > 1.5 and not is_financial:
         risk -= 5
@@ -336,8 +336,8 @@ def calculate_decision_matrix(
     else:
         conviction = "Weak"
 
-    sales_g = float(meta.get("sales_growth", 10.0))
-    profit_g = float(meta.get("profit_growth", 10.0))
+    sales_g = _require_real_metric(meta, "sales_growth")
+    profit_g = _require_real_metric(meta, "profit_growth")
     trajectory = "Deteriorating" if (sales_g < 0 or profit_g < 0) else "Improving/Flat"
     timing = "Favourable" if price_above_sma else "Unfavourable"
 

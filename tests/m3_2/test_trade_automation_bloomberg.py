@@ -226,6 +226,58 @@ class TestBloombergTradeAutomation(unittest.TestCase):
             exc_syms = [e["symbol"] for e in blotter["exception_queue"]]
             self.assertIn("TATAMOTORS", exc_syms)
 
+    def test_no_legacy_fallback_watchlist_when_m32_scan_empty(self) -> None:
+        import json
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        import server
+        import finsistant_v2.m3_2.orchestrated_session as m32_sess
+
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp)
+            scan_dir = p / "scan"
+            paper_dir = p / "paper"
+            scan_dir.mkdir()
+            paper_dir.mkdir()
+            (scan_dir / "latest_scan.json").write_text(json.dumps({"shortlist": [], "candidates": [], "queued_for_next_open": []}), encoding="utf-8")
+            (paper_dir / "portfolio_snapshot.json").write_text(json.dumps({"open_holdings": [], "pending_next_session_orders": []}), encoding="utf-8")
+            with (
+                patch.object(m32_sess, "M32_SCAN_DIR", scan_dir),
+                patch.object(m32_sess, "M32_PAPER_REPORTS_DIR", paper_dir),
+            ):
+                syms, src = server._load_dynamic_orchestrator_symbols()
+                self.assertEqual(syms, [])
+                self.assertEqual(src, "AWAITING_M32_FULL_UNIVERSE_SCAN")
+
+    def test_scoring_engine_no_fake_growth_or_beta_defaults(self) -> None:
+        from finsistant_v2.scoring_engine import calculate_decision_matrix, calculate_fundamental_score
+
+        meta_no_beta = {
+            "name": "Test Corp",
+            "sector": "IT",
+            "sales_growth": 15.0,
+            "profit_growth": 18.0,
+            "roe": 20.0,
+            "roce": 22.0,
+            "opm": 24.0,
+            "mcap_cr": 10000.0,
+            "pe": 20.0,
+            "beta": None,
+            "ret_1y": 10.0,
+        }
+        fs = calculate_fundamental_score(meta_no_beta)
+        self.assertIsNone(fs["ratios"]["beta"])
+        self.assertEqual(fs["risk"], 10)  # mcap_cr > 5000 (+10), zero fabricated beta bonus
+
+        with self.assertRaises(ValueError):
+            calculate_decision_matrix(
+                f_score_total=70,
+                p_score_total=70,
+                meta={"sales_growth": None, "profit_growth": 12.0},
+                price_above_sma=True,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

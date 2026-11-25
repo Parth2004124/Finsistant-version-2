@@ -53,14 +53,14 @@ def _build_m32_adapters() -> tuple[PersistentStorageAdapter, PersistentStorageAd
         database_url=db_url,
         lock_name=M32_LOCK_NAME,
         advisory_lock_key=M32_POSTGRES_ADVISORY_LOCK_KEY,
-        ledger_id="m3_2_primary",
+        ledger_id="m3_2_v2_primary",
     )
     learn_adapter = PersistentStorageAdapter(
         db_path=M32_LEARNING_DB_PATH,
         database_url=db_url,
         lock_name=M32_LEARNING_LOCK_NAME,
         advisory_lock_key=M32_LEARNING_ADVISORY_LOCK_KEY,
-        ledger_id="m3_2_learning",
+        ledger_id="m3_2_v2_learning",
     )
     return paper_adapter, learn_adapter
 
