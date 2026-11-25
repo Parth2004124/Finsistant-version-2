@@ -335,17 +335,24 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
                     "pairwise_corr_map": {},
                     "diagnostic_index_available": False,
                 }
-                res = runner.orch.engine.run_daily_cycle(trading_date=d, market_data=snap, observation_mode="PROSPECTIVE_PAPER")
-                self.assertEqual(res["portfolio_state"]["core_qty"], 0)
+                res = runner.orch.run_daily_cycle(
+                    trading_date=d,
+                    market_snapshot=snap,
+                    observation_mode="PROSPECTIVE_PAPER",
+                    export_reports=False,
+                )
+                exec_res = res["execution_result"]
+                ledger_snap = runner.orch.engine.get_full_ledger_snapshot()
+                self.assertEqual(ledger_snap["portfolio_state"]["core_qty"], 0)
                 if i == 0:
-                    rej = [s for s in res["signals"] if s.get("reason") == "BELOW_EV_HURDLE"]
+                    rej = [s for s in exec_res["signals"] if s.get("reason") == "BELOW_EV_HURDLE"]
                     self.assertTrue(rej, "Low-EV candidate must be rejected when hurdle_mode=DYNAMIC_VOL (no LEARNING_PHASE bypass).")
                 elif i == 2:
-                    self.assertGreaterEqual(len(res["open_tactical_positions"]), 1)
-                    pend_kinds = [p.get("kind") for p in res["pending_orders"]]
+                    self.assertGreaterEqual(len(ledger_snap["open_tactical_positions"]), 1)
+                    pend_kinds = [p.get("kind") for p in exec_res["pending_next_session_orders"]]
                     self.assertIn("TACTICAL_SELL", pend_kinds)
                 elif i == 3:
-                    self.assertEqual(len(res["open_tactical_positions"]), 0)
+                    self.assertEqual(len(ledger_snap["open_tactical_positions"]), 0)
             lessons_added = runner.ledger.sync_closed_trades(runner.orch.engine.db_path)
             self.assertEqual(lessons_added, 1)
             upd = runner.ledger.update_weights(dates[-1])
