@@ -14,8 +14,8 @@
     "access_token_active": true,
     "login_url": "https://kite.zerodha.com/connect/login?v=3&api_key=dn5f72ctu7ey0jtr"
   },
-  "gemini_status": "Gemini Live (gemini-2.5-flash \u00b7 9/9 analyzed \u00b7 9 recalibrated)",
-  "generated_at": "2026-11-25T12:42:21.532538+00:00",
+  "gemini_status": "Gemini Unavailable (GEMINI_API_KEY not configured)",
+  "generated_at": "2026-11-25T12:58:10.487035+00:00",
   "portfolio": {
     "stats": {
       "invested": 0.0,
@@ -38,7 +38,7 @@
   "pipelines": {},
   "gemini_critiques": {},
   "provenance": {
-    "generated_at": "2026-11-25T12:42:51.017821+00:00",
+    "generated_at": "2026-11-25T12:58:36.114955+00:00",
     "taxonomy": {
       "NSE_OFFICIAL_MCP": {
         "code": "NSE_OFFICIAL_MCP",
@@ -90,24 +90,18 @@
       "BROKER_CONFIRMED": "Broker-Confirmed Execution / Holding Price"
     },
     "summary": {
-      "total_assets": 9,
+      "total_assets": 0,
       "nse_mcp_count": 0,
       "stale_count": 0,
-      "delayed_count": 1,
-      "partial_fundamentals_count": 3,
+      "delayed_count": 0,
+      "partial_fundamentals_count": 0,
       "discrepancy_count": 0,
       "broker_connected": true,
-      "gemini_live_count": 9
+      "gemini_live_count": 0
     },
     "stale_symbols": [],
-    "delayed_symbols": [
-      "NVDA"
-    ],
-    "partial_symbols": [
-      "HDFCBANK",
-      "ICICIBANK",
-      "SBIN"
-    ],
+    "delayed_symbols": [],
+    "partial_symbols": [],
     "discrepancies": [],
     "feeds": [
       {
@@ -115,31 +109,31 @@
         "code": "NSE_OFFICIAL_MCP",
         "status": "FALLBACK / OFF",
         "market_timestamp": null,
-        "retrieval_timestamp": "2026-11-25T12:42:51.017821+00:00",
-        "detail": "0/9 symbols live via cm-market & bhavcopy"
+        "retrieval_timestamp": "2026-11-25T12:58:36.114955+00:00",
+        "detail": "0/0 symbols live via cm-market & bhavcopy"
       },
       {
         "category": "Yahoo Finance Live Feed (US Equities & Ratios)",
         "code": "YAHOO_LIVE_FEED",
         "status": "ACTIVE",
-        "market_timestamp": "2026-11-25T09:59:09+00:00",
-        "retrieval_timestamp": "2026-11-25T12:38:41.939867+00:00",
-        "detail": "9 global spot + company ratios \u00b7 0 stale \u00b7 3 partial"
+        "market_timestamp": null,
+        "retrieval_timestamp": "2026-11-25T12:58:36.114955+00:00",
+        "detail": "0 global spot + company ratios \u00b7 0 stale \u00b7 0 partial"
       },
       {
         "category": "Historical Market Data",
         "code": "HISTORICAL_MARKET_DATA",
         "status": "ACTIVE",
         "market_timestamp": "2026-11-25T10:00:00+00:00",
-        "retrieval_timestamp": "2026-11-25T12:42:46.032253+00:00",
+        "retrieval_timestamp": "2026-11-25T12:58:36.075112+00:00",
         "detail": "1Y OHLCV bars + Nifty 50 (246 bars \u00b7 Historical Market Data (yfinance))"
       },
       {
         "category": "Broker API (Zerodha Kite)",
         "code": "BROKER_API",
         "status": "CONNECTED",
-        "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-        "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
+        "market_timestamp": "2026-11-25T12:58:10.464030+00:00",
+        "retrieval_timestamp": "2026-11-25T12:58:10.464030+00:00",
         "detail": "Zerodha Kite Live (0 holdings \u00b7 auto_totp_login)"
       },
       {
@@ -147,1136 +141,80 @@
         "code": "CACHED_DATABASE",
         "status": "PERSISTENT",
         "market_timestamp": null,
-        "retrieval_timestamp": "2026-11-25T12:42:46.063036+00:00",
+        "retrieval_timestamp": "2026-11-25T12:58:36.082661+00:00",
         "detail": "Audit Ledger: 281 records \u00b7 Cache hits: 0"
       },
       {
         "category": "Internally Calculated Indicators",
         "code": "INTERNAL_CALCULATION",
         "status": "DETERMINISTIC",
-        "market_timestamp": "2026-11-25T09:59:09+00:00",
-        "retrieval_timestamp": "2026-11-25T12:42:51.017821+00:00",
+        "market_timestamp": null,
+        "retrieval_timestamp": "2026-11-25T12:58:36.114955+00:00",
         "detail": "StockSight V2, Porter's 5 Forces, MOVIQ Levels, Poly-Reg2, Backtester (ROCE proxied via ROE/ROA)"
       },
       {
         "category": "AI-Generated Analytical Estimates",
         "code": "AI_ANALYTICAL_ESTIMATE",
-        "status": "LIVE",
-        "market_timestamp": "2026-11-25T09:59:09+00:00",
-        "retrieval_timestamp": "2026-11-25T12:41:42.492755+00:00",
-        "detail": "Gemini CRO audited 9/9 assets (analytical estimate only, never simulated fills)"
+        "status": "UNAVAILABLE",
+        "market_timestamp": null,
+        "retrieval_timestamp": "2026-11-25T12:58:36.114955+00:00",
+        "detail": "Gemini CRO audited 0/0 assets (analytical estimate only, never simulated fills)"
       }
     ],
-    "assets": {
-      "RELIANCE": {
-        "symbol": "RELIANCE",
-        "overall_status": "VERIFIED LIVE",
-        "freshness": "LIVE",
-        "is_stale": false,
-        "is_delayed": false,
-        "market_timestamp": "2026-11-25T09:59:09+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:38:41.939867+00:00",
-        "market_age_hours": 2.73,
-        "retrieval_age_hours": 0.07,
-        "cache_hit": false,
-        "missing_fields": [],
-        "proxy_fields": {},
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 1373.9,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:38:41.939867+00:00",
-            "market_age_hours": 2.73,
-            "retrieval_age_hours": 0.07,
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "247 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-25T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:38:41.939867+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-25."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "0 missing / 0 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:38:41.939867+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": []
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 75.98 | 30D Reg 1668.02",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:38:41.939867+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 72/100 | Porter 65/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:38:41.939867+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "CAUTIOUS ACCUMULATE",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:42.492755+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      },
-      "TCS": {
-        "symbol": "TCS",
-        "overall_status": "VERIFIED LIVE",
-        "freshness": "LIVE",
-        "is_stale": false,
-        "is_delayed": false,
-        "market_timestamp": "2026-11-25T09:59:13+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:39:08.461893+00:00",
-        "market_age_hours": 2.73,
-        "retrieval_age_hours": 0.06,
-        "cache_hit": false,
-        "missing_fields": [],
-        "proxy_fields": {},
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 2517.3,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:39:08.461893+00:00",
-            "market_age_hours": 2.73,
-            "retrieval_age_hours": 0.06,
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "247 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-25T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:39:08.461893+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-25."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "0 missing / 0 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:39:08.461893+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": []
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 51.98 | 30D Reg 2262.96",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:39:08.461893+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 80/100 | Porter 85/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:39:08.461893+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "CAUTIOUS ACCUMULATE",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:44.989915+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      },
-      "HDFCBANK": {
-        "symbol": "HDFCBANK",
-        "overall_status": "PARTIAL",
-        "freshness": "LIVE",
-        "is_stale": false,
-        "is_delayed": false,
-        "market_timestamp": "2026-11-25T09:59:09+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:39:34.966175+00:00",
-        "market_age_hours": 2.73,
-        "retrieval_age_hours": 0.05,
-        "cache_hit": false,
-        "missing_fields": [
-          "debt_to_equity"
-        ],
-        "proxy_fields": {},
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 846.2,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:39:34.966175+00:00",
-            "market_age_hours": 2.73,
-            "retrieval_age_hours": 0.05,
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "247 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-25T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:39:34.966175+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-25."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "1 missing / 0 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:39:34.966175+00:00",
-            "freshness": "PARTIAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": [
-              "Missing fields defaulted/omitted: debt_to_equity"
-            ]
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 78.68 | 30D Reg 1045.98",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:39:34.966175+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 70/100 | Porter 75/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:39:34.966175+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "CAUTIOUS ACCUMULATE",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:44.990201+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash-lite"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      },
-      "ICICIBANK": {
-        "symbol": "ICICIBANK",
-        "overall_status": "PARTIAL",
-        "freshness": "LIVE",
-        "is_stale": false,
-        "is_delayed": false,
-        "market_timestamp": "2026-11-25T09:59:09+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:40:01.502200+00:00",
-        "market_age_hours": 2.73,
-        "retrieval_age_hours": 0.05,
-        "cache_hit": false,
-        "missing_fields": [
-          "debt_to_equity"
-        ],
-        "proxy_fields": {},
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 1640.0,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:40:01.502200+00:00",
-            "market_age_hours": 2.73,
-            "retrieval_age_hours": 0.05,
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "247 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-25T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:01.502200+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-25."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "1 missing / 0 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:01.502200+00:00",
-            "freshness": "PARTIAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": [
-              "Missing fields defaulted/omitted: debt_to_equity"
-            ]
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 78.9 | 30D Reg 1943.84",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:01.502200+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 85/100 | Porter 85/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:01.502200+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "CAUTIOUS ACCUMULATE",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:51.952391+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash-lite"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      },
-      "INFY": {
-        "symbol": "INFY",
-        "overall_status": "VERIFIED LIVE",
-        "freshness": "LIVE",
-        "is_stale": false,
-        "is_delayed": false,
-        "market_timestamp": "2026-11-25T09:59:09+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:40:26.286832+00:00",
-        "market_age_hours": 2.73,
-        "retrieval_age_hours": 0.04,
-        "cache_hit": false,
-        "missing_fields": [],
-        "proxy_fields": {
-          "roce": "Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
-        },
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 1130.0,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:40:26.286832+00:00",
-            "market_age_hours": 2.73,
-            "retrieval_age_hours": 0.04,
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "247 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-25T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:26.286832+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-25."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "0 missing / 1 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:26.286832+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": [
-              "roce: Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
-            ]
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 45.68 | 30D Reg 1065.2",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:26.286832+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 62/100 | Porter 65/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:26.286832+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "WAIT FOR PULLBACK",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:09+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:54.621928+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash-lite"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      },
-      "NVDA": {
-        "symbol": "NVDA",
-        "overall_status": "DELAYED / EOD",
-        "freshness": "DELAYED / EOD",
-        "is_stale": false,
-        "is_delayed": true,
-        "market_timestamp": "2026-11-24T21:00:01+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:40:26.611278+00:00",
-        "market_age_hours": 15.71,
-        "retrieval_age_hours": 0.04,
-        "cache_hit": false,
-        "missing_fields": [],
-        "proxy_fields": {
-          "roce": "Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
-        },
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 155.38,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-24T21:00:01+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:40:26.611278+00:00",
-            "market_age_hours": 15.71,
-            "retrieval_age_hours": 0.04,
-            "freshness": "DELAYED / EOD",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "251 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-24T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:26.611278+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-24."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "0 missing / 1 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-24T21:00:01+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:26.611278+00:00",
-            "freshness": "DELAYED / EOD",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": [
-              "roce: Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
-            ]
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 34.41 | 30D Reg 59.29",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-24T21:00:01+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:26.611278+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 80/100 | Porter 99/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-24T21:00:01+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:26.611278+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "HIGH RISK / AVOID",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-24T21:00:01+00:00",
-            "retrieval_timestamp": "2026-11-25T12:42:01.753975+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash-lite"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      },
-      "ZEEL": {
-        "symbol": "ZEEL",
-        "overall_status": "VERIFIED LIVE",
-        "freshness": "LIVE",
-        "is_stale": false,
-        "is_delayed": false,
-        "market_timestamp": "2026-11-25T10:00:01+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:40:51.312086+00:00",
-        "market_age_hours": 2.71,
-        "retrieval_age_hours": 0.03,
-        "cache_hit": false,
-        "missing_fields": [],
-        "proxy_fields": {
-          "roce": "Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
-        },
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 67.21,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-25T10:00:01+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:40:51.312086+00:00",
-            "market_age_hours": 2.71,
-            "retrieval_age_hours": 0.03,
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "247 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-25T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:51.312086+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-25."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "0 missing / 1 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-25T10:00:01+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:51.312086+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": [
-              "roce: Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
-            ]
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 59.95 | 30D Reg 79.64",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T10:00:01+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:51.312086+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 38/100 | Porter 40/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T10:00:01+00:00",
-            "retrieval_timestamp": "2026-11-25T12:40:51.312086+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "HIGH RISK / AVOID",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T10:00:01+00:00",
-            "retrieval_timestamp": "2026-11-25T12:42:04.318888+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash-lite"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      },
-      "ITC": {
-        "symbol": "ITC",
-        "overall_status": "VERIFIED LIVE",
-        "freshness": "LIVE",
-        "is_stale": false,
-        "is_delayed": false,
-        "market_timestamp": "2026-11-25T09:59:13+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:41:16.123035+00:00",
-        "market_age_hours": 2.73,
-        "retrieval_age_hours": 0.03,
-        "cache_hit": false,
-        "missing_fields": [],
-        "proxy_fields": {
-          "roce": "Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
-        },
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 309.25,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:41:16.123035+00:00",
-            "market_age_hours": 2.73,
-            "retrieval_age_hours": 0.03,
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "247 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-25T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:16.123035+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-25."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "0 missing / 1 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:16.123035+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": [
-              "roce: Derived internally via 0.7*ROE + 0.3*ROA blend (ROCE not published natively by Yahoo)"
-            ]
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 81.76 | 30D Reg 359.3",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:16.123035+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 62/100 | Porter 70/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:16.123035+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "WAIT FOR PULLBACK",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:42:11.330907+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash-lite"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      },
-      "SBIN": {
-        "symbol": "SBIN",
-        "overall_status": "PARTIAL",
-        "freshness": "LIVE",
-        "is_stale": false,
-        "is_delayed": false,
-        "market_timestamp": "2026-11-25T09:59:13+00:00",
-        "market_timestamp_kind": "exchange_quote",
-        "retrieval_timestamp": "2026-11-25T12:41:42.491746+00:00",
-        "market_age_hours": 2.73,
-        "retrieval_age_hours": 0.02,
-        "cache_hit": false,
-        "missing_fields": [
-          "debt_to_equity"
-        ],
-        "proxy_fields": {},
-        "discrepancies": [],
-        "metrics": {
-          "spot_price": {
-            "label": "Spot Price",
-            "value": 1138.15,
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "MARKET_FEED",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "market_timestamp_kind": "exchange_quote",
-            "retrieval_timestamp": "2026-11-25T12:41:42.491746+00:00",
-            "market_age_hours": 2.73,
-            "retrieval_age_hours": 0.02,
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Exchange quote timestamp differs from retrieval timestamp"
-          },
-          "ohlcv_history": {
-            "label": "1Y Daily OHLCV History",
-            "value": "247 bars",
-            "source_category": "HISTORICAL_MARKET_DATA",
-            "source_label": "Historical Market Data",
-            "price_classification": "HISTORICAL_EOD",
-            "market_timestamp": "2026-11-25T10:00:00+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:42.491746+00:00",
-            "freshness": "HISTORICAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "notes": "Covers bars ending 2026-11-25."
-          },
-          "fundamental_ratios": {
-            "label": "Fundamental Ratios (P/E, ROE, OPM, Growth)",
-            "value": "1 missing / 0 proxied",
-            "source_category": "YAHOO_LIVE_FEED",
-            "source_label": "Yahoo Finance Live Feed (US Equities & Ratios)",
-            "price_classification": "COMPUTED_METRIC",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:42.491746+00:00",
-            "freshness": "PARTIAL",
-            "is_stale": false,
-            "is_delayed": true,
-            "warnings": [
-              "Missing fields defaulted/omitted: debt_to_equity"
-            ]
-          },
-          "technical_indicators": {
-            "label": "RSI-14, MACD, SMA-20, EMA-12/26, Degree-2 Poly Reg",
-            "value": "RSI 84.15 | 30D Reg 1422.37",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:42.491746+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Computed locally by quant_engine.py from real historical bars."
-          },
-          "stocksight_and_moreshwar": {
-            "label": "StockSight V2 Score & MOVIQ Entry/TP/SL",
-            "value": "Fund 90/100 | Porter 70/100",
-            "source_category": "INTERNAL_CALCULATION",
-            "source_label": "Internally Calculated Indicators",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:41:42.491746+00:00",
-            "freshness": "COMPUTED",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Analytical model targets \u2014 NOT broker-confirmed execution prices."
-          },
-          "gemini_cro": {
-            "label": "Gemini Critical Analyst & Recalibration",
-            "value": "CAUTIOUS ACCUMULATE",
-            "source_category": "AI_ANALYTICAL_ESTIMATE",
-            "source_label": "AI-Generated Analytical Estimates",
-            "price_classification": "ANALYTICAL_ESTIMATE",
-            "market_timestamp": "2026-11-25T09:59:13+00:00",
-            "retrieval_timestamp": "2026-11-25T12:42:11.854737+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "Model: gemini-2.5-flash-lite"
-          },
-          "broker_execution": {
-            "label": "Zerodha Kite Holding / Execution Price",
-            "value": "NO_BROKER_FILL",
-            "avg_cost": null,
-            "source_category": "BROKER_API",
-            "source_label": "Broker API (Zerodha Kite)",
-            "price_classification": "UNAVAILABLE",
-            "market_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "retrieval_timestamp": "2026-11-25T12:34:18.507130+00:00",
-            "freshness": "LIVE",
-            "is_stale": false,
-            "is_delayed": false,
-            "notes": "No real broker fill recorded (simulated fills excluded)"
-          }
-        }
-      }
-    }
+    "assets": {}
   },
   "backtest": {
-    "generated_at": "2026-11-25T12:42:46.654508+00:00",
-    "symbols_evaluated": [
-      "RELIANCE",
-      "TCS",
-      "HDFCBANK",
-      "ICICIBANK",
-      "INFY",
-      "NVDA",
-      "ZEEL",
-      "ITC",
-      "SBIN"
-    ],
+    "generated_at": "2026-11-25T12:58:36.110672+00:00",
+    "symbols_evaluated": [],
     "selectivity_metrics": {
-      "bars_evaluated": 303,
-      "unfiltered_candidate_windows": 189,
-      "quality_gated_signals": 59,
-      "recalibrated_active_signals": 20,
-      "noisy_candidates_filtered": 130,
-      "noise_reduction_pct": 68.8
+      "bars_evaluated": 0,
+      "unfiltered_candidate_windows": 0,
+      "quality_gated_signals": 0,
+      "recalibrated_active_signals": 0,
+      "noisy_candidates_filtered": 0,
+      "noise_reduction_pct": 0.0
     },
     "tracks": {
       "original_ai_signals": {
         "label": "Original AI Signals (Pre-CRO)",
         "is_simulated": true,
         "metrics": {
-          "total_signals": 59,
-          "winners": 15,
-          "losers": 44,
+          "total_signals": 0,
+          "winners": 0,
+          "losers": 0,
           "breakeven": 0,
-          "win_rate_pct": 25.42,
-          "avg_return_pct": -0.76,
-          "cumulative_return_pct": -10.99,
-          "avg_mfe_pct": 3.93,
-          "avg_mae_pct": -3.15,
-          "avg_holding_days": 7.3,
-          "sharpe_ratio": -1.89,
-          "sortino_ratio": -2.46,
-          "max_drawdown_pct": 15.27,
-          "profit_factor": 0.68,
-          "realized_rr_ratio": 1.99
+          "win_rate_pct": 0.0,
+          "avg_return_pct": 0.0,
+          "cumulative_return_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "profit_factor": 0.0,
+          "realized_rr_ratio": 0.0
         }
       },
       "recalibrated_ai_signals": {
         "label": "Recalibrated AI Signals (Post-CRO)",
         "is_simulated": true,
         "metrics": {
-          "total_signals": 20,
-          "winners": 4,
-          "losers": 16,
+          "total_signals": 0,
+          "winners": 0,
+          "losers": 0,
           "breakeven": 0,
-          "win_rate_pct": 20.0,
-          "avg_return_pct": -0.97,
-          "cumulative_return_pct": -3.6,
-          "avg_mfe_pct": 3.67,
-          "avg_mae_pct": -3.39,
-          "avg_holding_days": 6.0,
-          "sharpe_ratio": -2.19,
-          "sortino_ratio": -2.92,
-          "max_drawdown_pct": 6.86,
-          "profit_factor": 0.65,
-          "realized_rr_ratio": 2.29
+          "win_rate_pct": 0.0,
+          "avg_return_pct": 0.0,
+          "cumulative_return_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "profit_factor": 0.0,
+          "realized_rr_ratio": 0.0
         }
       },
       "actual_executed_trades": {
@@ -1306,683 +244,15 @@
     "benchmark": {
       "symbol": "NIFTY 50 (^NSEI)",
       "available": true,
-      "benchmark_return_pct": -1.09,
-      "alpha_original_pct": -8.34,
-      "alpha_recalibrated_pct": -2.51,
-      "beta": 0.1,
-      "start_date": "2026-01-30",
-      "end_date": "2026-11-09"
+      "benchmark_return_pct": 0.0,
+      "alpha_original_pct": 0.0,
+      "alpha_recalibrated_pct": 0.0,
+      "beta": null,
+      "start_date": "2025-11-25",
+      "end_date": "2026-11-25"
     },
-    "equity_curve": [
-      {
-        "date": "2026-01-30",
-        "original_nav": 100.0,
-        "recalibrated_nav": 100.0,
-        "benchmark_nav": 100.0
-      },
-      {
-        "date": "2026-02-04",
-        "original_nav": 98.88,
-        "recalibrated_nav": 99.56,
-        "benchmark_nav": 101.8
-      },
-      {
-        "date": "2026-02-09",
-        "original_nav": 100.77,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 102.16
-      },
-      {
-        "date": "2026-02-12",
-        "original_nav": 100.77,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 101.92
-      },
-      {
-        "date": "2026-02-17",
-        "original_nav": 98.38,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 101.6
-      },
-      {
-        "date": "2026-02-20",
-        "original_nav": 98.38,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 100.99
-      },
-      {
-        "date": "2026-02-25",
-        "original_nav": 97.53,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 100.64
-      },
-      {
-        "date": "2026-03-02",
-        "original_nav": 96.16,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 98.2
-      },
-      {
-        "date": "2026-03-06",
-        "original_nav": 96.7,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 96.56
-      },
-      {
-        "date": "2026-03-11",
-        "original_nav": 96.7,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 94.26
-      },
-      {
-        "date": "2026-03-16",
-        "original_nav": 96.7,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 92.45
-      },
-      {
-        "date": "2026-03-19",
-        "original_nav": 96.7,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 90.84
-      },
-      {
-        "date": "2026-03-24",
-        "original_nav": 96.7,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 90.49
-      },
-      {
-        "date": "2026-03-30",
-        "original_nav": 95.87,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 88.19
-      },
-      {
-        "date": "2026-04-06",
-        "original_nav": 95.87,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 90.71
-      },
-      {
-        "date": "2026-04-09",
-        "original_nav": 95.87,
-        "recalibrated_nav": 101.47,
-        "benchmark_nav": 93.9
-      },
-      {
-        "date": "2026-04-15",
-        "original_nav": 95.37,
-        "recalibrated_nav": 101.03,
-        "benchmark_nav": 95.7
-      },
-      {
-        "date": "2026-04-20",
-        "original_nav": 95.37,
-        "recalibrated_nav": 101.03,
-        "benchmark_nav": 96.23
-      },
-      {
-        "date": "2026-04-23",
-        "original_nav": 95.37,
-        "recalibrated_nav": 101.03,
-        "benchmark_nav": 95.47
-      },
-      {
-        "date": "2026-04-28",
-        "original_nav": 98.48,
-        "recalibrated_nav": 100.52,
-        "benchmark_nav": 94.77
-      },
-      {
-        "date": "2026-05-04",
-        "original_nav": 95.67,
-        "recalibrated_nav": 99.5,
-        "benchmark_nav": 95.26
-      },
-      {
-        "date": "2026-05-07",
-        "original_nav": 95.12,
-        "recalibrated_nav": 99.5,
-        "benchmark_nav": 96.07
-      },
-      {
-        "date": "2026-05-12",
-        "original_nav": 93.76,
-        "recalibrated_nav": 98.93,
-        "benchmark_nav": 92.33
-      },
-      {
-        "date": "2026-05-15",
-        "original_nav": 93.76,
-        "recalibrated_nav": 98.93,
-        "benchmark_nav": 93.38
-      },
-      {
-        "date": "2026-05-20",
-        "original_nav": 93.76,
-        "recalibrated_nav": 98.93,
-        "benchmark_nav": 93.44
-      },
-      {
-        "date": "2026-05-25",
-        "original_nav": 95.53,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 94.91
-      },
-      {
-        "date": "2026-05-29",
-        "original_nav": 94.2,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 93.0
-      },
-      {
-        "date": "2026-06-03",
-        "original_nav": 94.2,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 92.44
-      },
-      {
-        "date": "2026-06-08",
-        "original_nav": 94.2,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 91.32
-      },
-      {
-        "date": "2026-06-11",
-        "original_nav": 92.98,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 91.47
-      },
-      {
-        "date": "2026-06-16",
-        "original_nav": 94.88,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 94.74
-      },
-      {
-        "date": "2026-06-19",
-        "original_nav": 94.88,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 94.84
-      },
-      {
-        "date": "2026-06-24",
-        "original_nav": 94.88,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 94.87
-      },
-      {
-        "date": "2026-06-30",
-        "original_nav": 94.88,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 94.25
-      },
-      {
-        "date": "2026-07-03",
-        "original_nav": 95.86,
-        "recalibrated_nav": 100.8,
-        "benchmark_nav": 95.85
-      },
-      {
-        "date": "2026-07-08",
-        "original_nav": 96.08,
-        "recalibrated_nav": 100.1,
-        "benchmark_nav": 94.32
-      },
-      {
-        "date": "2026-07-13",
-        "original_nav": 96.08,
-        "recalibrated_nav": 100.1,
-        "benchmark_nav": 95.62
-      },
-      {
-        "date": "2026-07-16",
-        "original_nav": 96.08,
-        "recalibrated_nav": 100.1,
-        "benchmark_nav": 95.07
-      },
-      {
-        "date": "2026-07-21",
-        "original_nav": 93.71,
-        "recalibrated_nav": 99.42,
-        "benchmark_nav": 95.53
-      },
-      {
-        "date": "2026-07-24",
-        "original_nav": 93.71,
-        "recalibrated_nav": 99.42,
-        "benchmark_nav": 93.87
-      },
-      {
-        "date": "2026-07-29",
-        "original_nav": 94.26,
-        "recalibrated_nav": 98.06,
-        "benchmark_nav": 95.77
-      },
-      {
-        "date": "2026-08-03",
-        "original_nav": 94.31,
-        "recalibrated_nav": 98.33,
-        "benchmark_nav": 97.84
-      },
-      {
-        "date": "2026-08-06",
-        "original_nav": 93.83,
-        "recalibrated_nav": 97.91,
-        "benchmark_nav": 97.3
-      },
-      {
-        "date": "2026-08-11",
-        "original_nav": 93.41,
-        "recalibrated_nav": 97.91,
-        "benchmark_nav": 96.65
-      },
-      {
-        "date": "2026-08-14",
-        "original_nav": 92.45,
-        "recalibrated_nav": 96.9,
-        "benchmark_nav": 96.23
-      },
-      {
-        "date": "2026-08-19",
-        "original_nav": 91.92,
-        "recalibrated_nav": 96.9,
-        "benchmark_nav": 95.09
-      },
-      {
-        "date": "2026-08-24",
-        "original_nav": 91.4,
-        "recalibrated_nav": 96.35,
-        "benchmark_nav": 95.65
-      },
-      {
-        "date": "2026-08-27",
-        "original_nav": 90.18,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 95.14
-      },
-      {
-        "date": "2026-09-01",
-        "original_nav": 90.18,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 95.0
-      },
-      {
-        "date": "2026-09-04",
-        "original_nav": 89.32,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 94.38
-      },
-      {
-        "date": "2026-09-09",
-        "original_nav": 88.15,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 92.54
-      },
-      {
-        "date": "2026-09-15",
-        "original_nav": 88.15,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 91.3
-      },
-      {
-        "date": "2026-09-18",
-        "original_nav": 88.15,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 92.2
-      },
-      {
-        "date": "2026-09-23",
-        "original_nav": 88.15,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 92.6
-      },
-      {
-        "date": "2026-09-28",
-        "original_nav": 88.15,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 89.97
-      },
-      {
-        "date": "2026-10-01",
-        "original_nav": 88.15,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 88.55
-      },
-      {
-        "date": "2026-10-07",
-        "original_nav": 88.15,
-        "recalibrated_nav": 95.84,
-        "benchmark_nav": 89.27
-      },
-      {
-        "date": "2026-10-12",
-        "original_nav": 87.3,
-        "recalibrated_nav": 94.91,
-        "benchmark_nav": 88.32
-      },
-      {
-        "date": "2026-10-15",
-        "original_nav": 88.6,
-        "recalibrated_nav": 94.91,
-        "benchmark_nav": 90.82
-      },
-      {
-        "date": "2026-10-21",
-        "original_nav": 87.7,
-        "recalibrated_nav": 94.91,
-        "benchmark_nav": 90.09
-      },
-      {
-        "date": "2026-10-26",
-        "original_nav": 88.67,
-        "recalibrated_nav": 94.91,
-        "benchmark_nav": 89.86
-      },
-      {
-        "date": "2026-10-29",
-        "original_nav": 87.46,
-        "recalibrated_nav": 94.51,
-        "benchmark_nav": 90.59
-      },
-      {
-        "date": "2026-11-03",
-        "original_nav": 87.46,
-        "recalibrated_nav": 94.51,
-        "benchmark_nav": 94.04
-      },
-      {
-        "date": "2026-11-06",
-        "original_nav": 88.79,
-        "recalibrated_nav": 94.51,
-        "benchmark_nav": 98.85
-      },
-      {
-        "date": "2026-11-09",
-        "original_nav": 90.57,
-        "recalibrated_nav": 96.4,
-        "benchmark_nav": 98.91
-      }
-    ],
-    "recent_backtest_trades": [
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-30",
-        "entry_date": "2026-11-02",
-        "exit_date": "2026-11-09",
-        "entry_idx": 231,
-        "exit_idx": 236,
-        "entry_price": 965.48,
-        "exit_price": 1045.26,
-        "planned_tp": 1045.78,
-        "planned_sl": 945.41,
-        "exit_reason": "TARGET_HIT",
-        "holding_days": 6,
-        "gross_return_pct": 8.26,
-        "cost_pct": 0.35,
-        "net_return_pct": 8.01,
-        "weighted_return_pct": 8.01,
-        "mfe_pct": 8.61,
-        "mae_pct": -0.44,
-        "weight": 1.0,
-        "symbol": "SBIN",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-14",
-        "entry_date": "2026-10-15",
-        "exit_date": "2026-11-05",
-        "entry_idx": 220,
-        "exit_idx": 234,
-        "entry_price": 1342.77,
-        "exit_price": 1456.3,
-        "planned_tp": 1457.03,
-        "planned_sl": 1322.61,
-        "exit_reason": "TARGET_HIT",
-        "holding_days": 15,
-        "gross_return_pct": 8.45,
-        "cost_pct": 0.35,
-        "net_return_pct": 8.2,
-        "weighted_return_pct": 8.2,
-        "mfe_pct": 11.81,
-        "mae_pct": -0.05,
-        "weight": 1.0,
-        "symbol": "ICICIBANK",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-28",
-        "entry_date": "2026-10-29",
-        "exit_date": "2026-11-04",
-        "entry_idx": 229,
-        "exit_idx": 233,
-        "entry_price": 2491.24,
-        "exit_price": 2446.42,
-        "planned_tp": 2696.77,
-        "planned_sl": 2447.65,
-        "exit_reason": "STOP_LOSS",
-        "holding_days": 5,
-        "gross_return_pct": -1.8,
-        "cost_pct": 0.35,
-        "net_return_pct": -2.05,
-        "weighted_return_pct": -2.05,
-        "mfe_pct": 2.35,
-        "mae_pct": -2.86,
-        "weight": 1.0,
-        "symbol": "TCS",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-26",
-        "entry_date": "2026-10-27",
-        "exit_date": "2026-10-28",
-        "entry_idx": 227,
-        "exit_idx": 228,
-        "entry_price": 1195.6,
-        "exit_price": 1157.41,
-        "planned_tp": 1277.37,
-        "planned_sl": 1157.99,
-        "exit_reason": "STOP_LOSS",
-        "holding_days": 2,
-        "gross_return_pct": -3.19,
-        "cost_pct": 0.35,
-        "net_return_pct": -3.44,
-        "weighted_return_pct": -3.44,
-        "mfe_pct": 0.73,
-        "mae_pct": -3.28,
-        "weight": 1.0,
-        "symbol": "RELIANCE",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-26",
-        "entry_date": "2026-10-27",
-        "exit_date": "2026-10-27",
-        "entry_idx": 227,
-        "exit_idx": 227,
-        "entry_price": 2515.36,
-        "exit_price": 2470.02,
-        "planned_tp": 2723.28,
-        "planned_sl": 2471.25,
-        "exit_reason": "STOP_LOSS",
-        "holding_days": 1,
-        "gross_return_pct": -1.8,
-        "cost_pct": 0.35,
-        "net_return_pct": -2.05,
-        "weighted_return_pct": -2.05,
-        "mfe_pct": 0.78,
-        "mae_pct": -1.99,
-        "weight": 1.0,
-        "symbol": "TCS",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-19",
-        "entry_date": "2026-10-21",
-        "exit_date": "2026-10-23",
-        "entry_idx": 223,
-        "exit_idx": 225,
-        "entry_price": 1212.61,
-        "exit_price": 1173.89,
-        "planned_tp": 1295.53,
-        "planned_sl": 1174.47,
-        "exit_reason": "STOP_LOSS",
-        "holding_days": 3,
-        "gross_return_pct": -3.19,
-        "cost_pct": 0.35,
-        "net_return_pct": -3.44,
-        "weighted_return_pct": -3.44,
-        "mfe_pct": 1.79,
-        "mae_pct": -4.08,
-        "weight": 1.0,
-        "symbol": "RELIANCE",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-15",
-        "entry_date": "2026-10-16",
-        "exit_date": "2026-10-23",
-        "entry_idx": 221,
-        "exit_idx": 225,
-        "entry_price": 2383.19,
-        "exit_price": 2578.52,
-        "planned_tp": 2579.81,
-        "planned_sl": 2341.49,
-        "exit_reason": "TARGET_HIT",
-        "holding_days": 5,
-        "gross_return_pct": 8.2,
-        "cost_pct": 0.35,
-        "net_return_pct": 7.95,
-        "weighted_return_pct": 7.95,
-        "mfe_pct": 10.15,
-        "mae_pct": -0.31,
-        "weight": 1.0,
-        "symbol": "TCS",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-16",
-        "entry_date": "2026-10-19",
-        "exit_date": "2026-10-21",
-        "entry_idx": 222,
-        "exit_idx": 223,
-        "entry_price": 733.77,
-        "exit_price": 705.73,
-        "planned_tp": 806.76,
-        "planned_sl": 706.08,
-        "exit_reason": "STOP_LOSS",
-        "holding_days": 2,
-        "gross_return_pct": -3.82,
-        "cost_pct": 0.35,
-        "net_return_pct": -4.07,
-        "weighted_return_pct": -4.07,
-        "mfe_pct": 0.0,
-        "mae_pct": -4.84,
-        "weight": 1.0,
-        "symbol": "HDFCBANK",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-12",
-        "entry_date": "2026-10-13",
-        "exit_date": "2026-10-14",
-        "entry_idx": 218,
-        "exit_idx": 219,
-        "entry_price": 2157.98,
-        "exit_price": 2334.43,
-        "planned_tp": 2335.59,
-        "planned_sl": 2120.3,
-        "exit_reason": "TARGET_HIT",
-        "holding_days": 2,
-        "gross_return_pct": 8.18,
-        "cost_pct": 0.35,
-        "net_return_pct": 7.93,
-        "weighted_return_pct": 7.93,
-        "mfe_pct": 8.24,
-        "mae_pct": -0.14,
-        "weight": 1.0,
-        "symbol": "TCS",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-10-09",
-        "entry_date": "2026-10-12",
-        "exit_date": "2026-10-13",
-        "entry_idx": 217,
-        "exit_idx": 218,
-        "entry_price": 1353.48,
-        "exit_price": 1332.51,
-        "planned_tp": 1468.1,
-        "planned_sl": 1333.17,
-        "exit_reason": "STOP_LOSS",
-        "holding_days": 2,
-        "gross_return_pct": -1.55,
-        "cost_pct": 0.35,
-        "net_return_pct": -1.8,
-        "weighted_return_pct": -1.8,
-        "mfe_pct": 0.82,
-        "mae_pct": -1.78,
-        "weight": 1.0,
-        "symbol": "ICICIBANK",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-09-22",
-        "entry_date": "2026-09-23",
-        "exit_date": "2026-10-13",
-        "entry_idx": 206,
-        "exit_idx": 220,
-        "entry_price": 228.14,
-        "exit_price": 228.41,
-        "planned_tp": 317.36,
-        "planned_sl": 217.68,
-        "exit_reason": "HORIZON_14D",
-        "holding_days": 15,
-        "gross_return_pct": 0.11,
-        "cost_pct": 0.35,
-        "net_return_pct": -0.14,
-        "weighted_return_pct": -0.14,
-        "mfe_pct": 6.67,
-        "mae_pct": -3.09,
-        "weight": 1.0,
-        "symbol": "NVDA",
-        "action": "BUY NOW"
-      },
-      {
-        "status": "CLOSED",
-        "signal_date": "2026-09-16",
-        "entry_date": "2026-09-17",
-        "exit_date": "2026-10-08",
-        "entry_idx": 201,
-        "exit_idx": 215,
-        "entry_price": 717.86,
-        "exit_price": 691.9,
-        "planned_tp": 789.99,
-        "planned_sl": 690.5,
-        "exit_reason": "HORIZON_14D",
-        "holding_days": 15,
-        "gross_return_pct": -3.62,
-        "cost_pct": 0.35,
-        "net_return_pct": -3.87,
-        "weighted_return_pct": -3.87,
-        "mfe_pct": 4.38,
-        "mae_pct": -3.81,
-        "weight": 1.0,
-        "symbol": "HDFCBANK",
-        "action": "BUY NOW"
-      }
-    ],
+    "equity_curve": [],
+    "recent_backtest_trades": [],
     "decision_quality_answers": {
       "sample_context": {
         "total_records": 281,
@@ -2017,63 +287,63 @@
         }
       },
       "top_contributing_agent": {
-        "winner": "FundBot_1",
-        "winner_role": "StockSight V2 4-Pillar & Porter Moat",
-        "cum_return_lift_pct": 13.98,
-        "drawdown_saved_pct": 11.28,
-        "summary": "FundBot_1 ranks #1 on Decision Quality Contribution (Cum Return Lift +13.98%, DD Saved +11.28%).",
+        "winner": "Gemini_CRO",
+        "winner_role": "Adversarial Critique & Recalibration",
+        "cum_return_lift_pct": 0.0,
+        "drawdown_saved_pct": 0.0,
+        "summary": "Gemini_CRO ranks #1 on Decision Quality Contribution (Cum Return Lift +0.00%, DD Saved +0.00%).",
         "ranking": [
+          {
+            "agent": "Gemini_CRO",
+            "role": "Adversarial Critique & Recalibration",
+            "cum_return_lift_pct": 0.0,
+            "win_rate_lift_pct": 0.0,
+            "drawdown_saved_pct": 0.0,
+            "profit_factor_lift": 0.0,
+            "quality_contribution_index": 0.0,
+            "verdict": "NEUTRAL",
+            "basis_note": "Full Recalibrated AI vs Pre-CRO Original AI on identical gated entries.",
+            "live_settled_calls": 40,
+            "live_precision_pct": 45.0,
+            "rank": 1
+          },
           {
             "agent": "FundBot_1",
             "role": "StockSight V2 4-Pillar & Porter Moat",
-            "cum_return_lift_pct": 13.98,
-            "win_rate_lift_pct": -5.35,
-            "drawdown_saved_pct": 11.28,
-            "profit_factor_lift": 0.12,
-            "quality_contribution_index": 20.22,
-            "verdict": "POSITIVE CONTRIBUTOR",
+            "cum_return_lift_pct": 0.0,
+            "win_rate_lift_pct": 0.0,
+            "drawdown_saved_pct": 0.0,
+            "profit_factor_lift": 0.0,
+            "quality_contribution_index": 0.0,
+            "verdict": "NEUTRAL",
             "basis_note": "With FundBot quality gates vs Ablated FundBot (ignoring F/P quality filter).",
             "live_settled_calls": 37,
             "live_precision_pct": 37.8,
-            "rank": 1
+            "rank": 2
           },
           {
             "agent": "TechBot_1",
             "role": "Technical Timing & Poly-Regression",
-            "cum_return_lift_pct": 12.13,
-            "win_rate_lift_pct": 3.2,
-            "drawdown_saved_pct": 12.43,
-            "profit_factor_lift": -0.02,
-            "quality_contribution_index": 18.24,
-            "verdict": "POSITIVE CONTRIBUTOR",
+            "cum_return_lift_pct": 0.0,
+            "win_rate_lift_pct": 0.0,
+            "drawdown_saved_pct": 0.0,
+            "profit_factor_lift": 0.0,
+            "quality_contribution_index": 0.0,
+            "verdict": "NEUTRAL",
             "basis_note": "With SMA-20/RSI/MACD timing vs Ablated TechBot (unconditional timing).",
             "live_settled_calls": 18,
             "live_precision_pct": 44.4,
-            "rank": 2
-          },
-          {
-            "agent": "Gemini_CRO",
-            "role": "Adversarial Critique & Recalibration",
-            "cum_return_lift_pct": 7.39,
-            "win_rate_lift_pct": -5.42,
-            "drawdown_saved_pct": 8.41,
-            "profit_factor_lift": -0.03,
-            "quality_contribution_index": 11.44,
-            "verdict": "POSITIVE CONTRIBUTOR",
-            "basis_note": "Full Recalibrated AI vs Pre-CRO Original AI on identical gated entries.",
-            "live_settled_calls": 40,
-            "live_precision_pct": 45.0,
             "rank": 3
           },
           {
             "agent": "ExecBot_1",
             "role": "Moreshwar Dynamic Levels & Stops",
-            "cum_return_lift_pct": 2.8,
-            "win_rate_lift_pct": -6.49,
-            "drawdown_saved_pct": 3.07,
-            "profit_factor_lift": 0.08,
-            "quality_contribution_index": 4.74,
-            "verdict": "POSITIVE CONTRIBUTOR",
+            "cum_return_lift_pct": 0.0,
+            "win_rate_lift_pct": 0.0,
+            "drawdown_saved_pct": 0.0,
+            "profit_factor_lift": 0.0,
+            "quality_contribution_index": 0.0,
+            "verdict": "NEUTRAL",
             "basis_note": "Moreshwar dynamic TP/SL vs Fixed 1:2 (5% SL / 10% TP) on identical entries.",
             "live_settled_calls": 18,
             "live_precision_pct": 38.9,
@@ -2082,33 +352,33 @@
         ]
       },
       "gemini_intervention_audit": {
-        "total_interventions": 46,
+        "total_interventions": 0,
         "blocks": {
-          "total": 36,
-          "prevented_bad_trades": 27,
-          "prevented_rate_pct": 75.0,
-          "avg_loss_avoided_pct": 3.33,
-          "unnecessarily_blocked_good_trades": 9,
-          "missed_good_rate_pct": 25.0,
-          "avg_upside_missed_pct": 7.16
+          "total": 0,
+          "prevented_bad_trades": 0,
+          "prevented_rate_pct": 0.0,
+          "avg_loss_avoided_pct": 0.0,
+          "unnecessarily_blocked_good_trades": 0,
+          "missed_good_rate_pct": 0.0,
+          "avg_upside_missed_pct": 0.0
         },
         "downgrades": {
-          "total": 10,
-          "beneficial_downgrades": 8,
-          "unnecessary_downgrades": 2,
+          "total": 0,
+          "beneficial_downgrades": 0,
+          "unnecessary_downgrades": 0,
           "preserved_winners": 0,
           "neutral": 0,
-          "unfilled_pullbacks": 3
+          "unfilled_pullbacks": 0
         },
         "combined_scorecard": {
-          "bad_trades_prevented": 35,
-          "prevention_rate_pct": 76.1,
-          "good_trades_unnecessarily_downgraded": 11,
-          "unnecessary_downgrade_rate_pct": 23.9,
+          "bad_trades_prevented": 0,
+          "prevention_rate_pct": 0.0,
+          "good_trades_unnecessarily_downgraded": 0,
+          "unnecessary_downgrade_rate_pct": 0.0,
           "preserved_winners": 0,
           "preserved_rate_pct": 0.0,
-          "net_intervention_value_pct": 30.62,
-          "headline": "Prevented 35/46 bad setups (76.1%) vs 11/46 unnecessary downgrades/blocks (23.9%)."
+          "net_intervention_value_pct": 0,
+          "headline": "Prevented 0/0 bad setups (0.0%) vs 0/0 unnecessary downgrades/blocks (0.0%)."
         },
         "live_ledger_audit": {
           "settled_interventions": 24,
@@ -2119,125 +389,125 @@
         }
       },
       "moreshwar_vs_benchmarks": {
-        "verdict": "MIXED (LOWER DRAWDOWN ONLY)",
+        "verdict": "UNDERPERFORMS BENCHMARKS",
         "beats_nifty50": false,
-        "spread_vs_nifty50_pct": -9.9,
+        "spread_vs_nifty50_pct": 0.0,
         "beats_equal_weight_universe": false,
-        "spread_vs_equal_weight_pct": -2.29,
-        "beats_simple_sma_strategy": true,
-        "spread_vs_sma_strategy_pct": 6.98,
-        "beats_fixed_1to2_same_entries": true,
-        "spread_vs_fixed_1to2_pct": 2.8,
+        "spread_vs_equal_weight_pct": 0.0,
+        "beats_simple_sma_strategy": false,
+        "spread_vs_sma_strategy_pct": 0.0,
+        "beats_fixed_1to2_same_entries": false,
+        "spread_vs_fixed_1to2_pct": 0.0,
         "rows": [
           {
             "strategy": "Moreshwar Mathematical Model (Orig)",
-            "signals": 59,
-            "win_rate_pct": 25.42,
-            "cumulative_return_pct": -10.99,
-            "sharpe": -1.89,
-            "max_drawdown_pct": 15.27,
-            "profit_factor": 0.68
+            "signals": 0,
+            "win_rate_pct": 0.0,
+            "cumulative_return_pct": 0.0,
+            "sharpe": 0.0,
+            "max_drawdown_pct": 0.0,
+            "profit_factor": 0.0
           },
           {
             "strategy": "Recalibrated Moreshwar (+ Gemini CRO)",
-            "signals": 20,
-            "win_rate_pct": 20.0,
-            "cumulative_return_pct": -3.6,
-            "sharpe": -2.19,
-            "max_drawdown_pct": 6.86,
-            "profit_factor": 0.65
+            "signals": 0,
+            "win_rate_pct": 0.0,
+            "cumulative_return_pct": 0.0,
+            "sharpe": 0.0,
+            "max_drawdown_pct": 0.0,
+            "profit_factor": 0.0
           },
           {
             "strategy": "Nifty 50 (^NSEI) Buy & Hold",
             "signals": 1,
             "win_rate_pct": 0.0,
-            "cumulative_return_pct": -1.09,
+            "cumulative_return_pct": 0.0,
             "sharpe": null,
             "max_drawdown_pct": null,
             "profit_factor": null
           },
           {
             "strategy": "Equal-Weight Universe Buy & Hold",
-            "signals": 9,
-            "win_rate_pct": 22.2,
-            "cumulative_return_pct": -8.7,
+            "signals": 0,
+            "win_rate_pct": 0.0,
+            "cumulative_return_pct": 0.0,
             "sharpe": null,
             "max_drawdown_pct": null,
             "profit_factor": null
           },
           {
             "strategy": "Simple SMA-20 + Fixed 1:2 (5%/10%)",
-            "signals": 66,
-            "win_rate_pct": 31.82,
-            "cumulative_return_pct": -17.97,
-            "sharpe": -1.89,
-            "max_drawdown_pct": 24.87,
-            "profit_factor": 0.64
+            "signals": 0,
+            "win_rate_pct": 0.0,
+            "cumulative_return_pct": 0.0,
+            "sharpe": 0.0,
+            "max_drawdown_pct": 0.0,
+            "profit_factor": 0.0
           },
           {
             "strategy": "Matrix Entries + Fixed 1:2 Exits",
-            "signals": 47,
-            "win_rate_pct": 31.91,
-            "cumulative_return_pct": -13.79,
-            "sharpe": -2.06,
-            "max_drawdown_pct": 18.34,
-            "profit_factor": 0.6
+            "signals": 0,
+            "win_rate_pct": 0.0,
+            "cumulative_return_pct": 0.0,
+            "sharpe": 0.0,
+            "max_drawdown_pct": 0.0,
+            "profit_factor": 0.0
           }
         ],
-        "diagnostic": "Moreshwar cumulative -10.99% (25.42% win, 40 stop-outs vs 7 targets) vs Nifty 50 -1.09%, Equal-Weight -8.70%, Simple SMA-20 -17.97%, and Fixed 1:2 Same Entries -13.79%. Moreshwar's dynamic score-scaled exits outperformed fixed 1:2 exits on identical entries."
+        "diagnostic": "Moreshwar cumulative +0.00% (0.0% win, 0 stop-outs vs 0 targets) vs Nifty 50 +0.00%, Equal-Weight +0.00%, Simple SMA-20 +0.00%, and Fixed 1:2 Same Entries +0.00%. Notice: Moreshwar's `downside_pts = 100 - X` compresses stop-losses to ~1.5%-3.5% on high-scoring stocks, driving frequent volatility stop-outs compared to wider fixed 5%/10% exits."
       }
     },
     "agent_attribution": {
       "TechBot_1": {
         "role": "Technical Timing & Poly-Regression",
-        "bull_signals": 102,
-        "bull_win_rate_pct": 35.3,
-        "bull_avg_14d_return_pct": -1.47,
-        "bear_avg_14d_return_pct": 0.07,
-        "timing_spread_pct": -1.54
+        "bull_signals": 0,
+        "bull_win_rate_pct": 0.0,
+        "bull_avg_14d_return_pct": 0.0,
+        "bear_avg_14d_return_pct": 0.0,
+        "timing_spread_pct": 0.0
       },
       "FundBot_1": {
         "role": "StockSight V2 4-Pillar & Porter Moat",
-        "high_quality_windows": 60,
-        "high_quality_avg_14d_pct": 0.45,
-        "weak_quality_windows": 10,
-        "weak_quality_avg_14d_pct": 0.85,
-        "quality_alpha_spread_pct": -0.4,
+        "high_quality_windows": 0,
+        "high_quality_avg_14d_pct": 0.0,
+        "weak_quality_windows": 0,
+        "weak_quality_avg_14d_pct": 0.0,
+        "quality_alpha_spread_pct": 0.0,
         "caveat": "Uses current trailing Yahoo fundamentals across 1Y bars (historical PIT fundamentals unavailable via free feed)."
       },
       "ExecBot_1": {
         "role": "Moreshwar Levels & Auto-Risk Sizing",
-        "target_hits": 7,
-        "stop_losses_triggered": 40,
-        "realized_rr_ratio": 1.99,
-        "profit_factor": 0.68
+        "target_hits": 0,
+        "stop_losses_triggered": 0,
+        "realized_rr_ratio": 0.0,
+        "profit_factor": 0.0
       },
       "Gemini_CRO": {
         "role": "Critical Review & Recalibration",
-        "deferred_or_blocked_signals": 36,
-        "avoided_losing_trades": 27,
-        "deferred_avg_counterfactual_pct": -0.71,
-        "unfilled_overbought_pullbacks": 3,
-        "win_rate_delta_pct": -5.42,
-        "drawdown_reduction_pct": 8.41,
-        "sharpe_delta": -0.3
+        "deferred_or_blocked_signals": 0,
+        "avoided_losing_trades": 0,
+        "deferred_avg_counterfactual_pct": 0.0,
+        "unfilled_overbought_pullbacks": 0,
+        "win_rate_delta_pct": 0.0,
+        "drawdown_reduction_pct": 0.0,
+        "sharpe_delta": 0.0
       }
     },
     "methodology_disclosure": {
       "look_ahead_bias_prevention": "Signals at day t strictly consume candles[:t+1]; fills occur on bar t+1 open (or t+1..t+3 low for pullbacks). Conservative intrabar SL-before-TP ordering.",
-      "survivorship_bias_control": "Evaluates full configured universe (9 assets) including weak/breakdown names (e.g., ZEEL, TATAMOTORS).",
+      "survivorship_bias_control": "Evaluates full configured universe (0 assets) including weak/breakdown names (e.g., ZEEL, TATAMOTORS).",
       "transaction_costs": "Entry slippage 5.0 bps + Exit slippage 5.0 bps + Statutory/Brokerage 25.0 bps (0.35% total friction per closed trade).",
       "separation_guarantee": "Walk-forward backtest returns are labeled strictly as historical simulations and isolated from actual Zerodha Kite executed trades."
     }
   },
   "moreshwar_v2_research": {
-    "generated_at": "2026-11-25T12:42:51.014820+00:00",
+    "generated_at": "2026-11-25T12:58:36.111159+00:00",
     "promoted_to_production": false,
     "promotion_status": "SHADOW_RESEARCH_ONLY (Moreshwar 1.0 remains active pending user review)",
     "date_span": {
-      "start": "2026-01-29",
-      "end": "2026-11-25",
-      "trading_days": 214
+      "start": null,
+      "end": null,
+      "trading_days": 0
     },
     "config": {
       "atr_period": 14,
@@ -2252,209 +522,209 @@
     "models_comparison": [
       {
         "model": "Model A: Original Baseline (Moreshwar 1.0)",
-        "total_return_pct": -7.41,
-        "annualised_return_pct": -8.67,
-        "win_rate_pct": 27.78,
-        "profit_factor": 0.82,
-        "sharpe_ratio": -1.26,
-        "sortino_ratio": -1.68,
-        "max_drawdown_pct": 15.79,
-        "avg_holding_days": 6.4,
-        "avg_winning_trade_pct": 6.34,
-        "avg_losing_trade_pct": -2.89,
-        "avg_mae_pct": -2.86,
-        "avg_mfe_pct": 3.59,
-        "total_trades": 90,
-        "transaction_costs_pct": 6.73,
-        "capital_utilisation_pct": 56.9,
-        "stop_loss_freq_pct": 66.7,
-        "target_hit_freq_pct": 12.2,
-        "horizon_exit_freq_pct": 21.1,
-        "rejected_trades": 22,
+        "total_return_pct": 0.0,
+        "annualised_return_pct": 0.0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "sharpe_ratio": 0.0,
+        "sortino_ratio": 0.0,
+        "max_drawdown_pct": 0.0,
+        "avg_holding_days": 0.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": 0.0,
+        "avg_mfe_pct": 0.0,
+        "total_trades": 0,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 0.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
         "regime_blocked_trades": 0,
-        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+        "fundamental_integrity": "UNKNOWN"
       },
       {
         "model": "Model B: ATR Stops Only",
-        "total_return_pct": -9.19,
-        "annualised_return_pct": -10.73,
-        "win_rate_pct": 35.62,
-        "profit_factor": 0.77,
-        "sharpe_ratio": -1.24,
-        "sortino_ratio": -1.69,
-        "max_drawdown_pct": 18.67,
-        "avg_holding_days": 8.3,
-        "avg_winning_trade_pct": 6.37,
-        "avg_losing_trade_pct": -3.98,
-        "avg_mae_pct": -3.54,
-        "avg_mfe_pct": 4.25,
-        "total_trades": 73,
-        "transaction_costs_pct": 5.38,
-        "capital_utilisation_pct": 64.1,
-        "stop_loss_freq_pct": 46.6,
-        "target_hit_freq_pct": 16.4,
-        "horizon_exit_freq_pct": 37.0,
-        "rejected_trades": 35,
+        "total_return_pct": 0.0,
+        "annualised_return_pct": 0.0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "sharpe_ratio": 0.0,
+        "sortino_ratio": 0.0,
+        "max_drawdown_pct": 0.0,
+        "avg_holding_days": 0.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": 0.0,
+        "avg_mfe_pct": 0.0,
+        "total_trades": 0,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 0.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
         "regime_blocked_trades": 0,
-        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+        "fundamental_integrity": "UNKNOWN"
       },
       {
         "model": "Model C: ATR Stops + Vol Sizing",
-        "total_return_pct": -4.15,
-        "annualised_return_pct": -4.87,
-        "win_rate_pct": 37.33,
-        "profit_factor": 0.87,
-        "sharpe_ratio": -0.99,
-        "sortino_ratio": -1.39,
-        "max_drawdown_pct": 13.07,
-        "avg_holding_days": 8.6,
-        "avg_winning_trade_pct": 6.01,
-        "avg_losing_trade_pct": -3.9,
-        "avg_mae_pct": -3.43,
-        "avg_mfe_pct": 4.33,
-        "total_trades": 75,
-        "transaction_costs_pct": 4.48,
-        "capital_utilisation_pct": 51.4,
-        "stop_loss_freq_pct": 42.7,
-        "target_hit_freq_pct": 16.0,
-        "horizon_exit_freq_pct": 41.3,
-        "rejected_trades": 6,
+        "total_return_pct": 0.0,
+        "annualised_return_pct": 0.0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "sharpe_ratio": 0.0,
+        "sortino_ratio": 0.0,
+        "max_drawdown_pct": 0.0,
+        "avg_holding_days": 0.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": 0.0,
+        "avg_mfe_pct": 0.0,
+        "total_trades": 0,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 0.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
         "regime_blocked_trades": 0,
-        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+        "fundamental_integrity": "UNKNOWN"
       },
       {
         "model": "Model D: ATR + Sizing + Nifty Regime",
-        "total_return_pct": -2.3,
-        "annualised_return_pct": -2.71,
-        "win_rate_pct": 38.89,
-        "profit_factor": 0.89,
-        "sharpe_ratio": -0.94,
-        "sortino_ratio": -1.32,
-        "max_drawdown_pct": 8.9,
-        "avg_holding_days": 9.6,
-        "avg_winning_trade_pct": 5.59,
-        "avg_losing_trade_pct": -3.81,
-        "avg_mae_pct": -3.37,
-        "avg_mfe_pct": 4.69,
-        "total_trades": 54,
-        "transaction_costs_pct": 3.23,
-        "capital_utilisation_pct": 40.8,
-        "stop_loss_freq_pct": 38.9,
-        "target_hit_freq_pct": 13.0,
-        "horizon_exit_freq_pct": 48.1,
-        "rejected_trades": 122,
-        "regime_blocked_trades": 114,
-        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+        "total_return_pct": 0.0,
+        "annualised_return_pct": 0.0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "sharpe_ratio": 0.0,
+        "sortino_ratio": 0.0,
+        "max_drawdown_pct": 0.0,
+        "avg_holding_days": 0.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": 0.0,
+        "avg_mfe_pct": 0.0,
+        "total_trades": 0,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 0.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "UNKNOWN"
       },
       {
         "model": "Model E: Complete Moreshwar 2.0 (Clean Causal)",
-        "total_return_pct": -7.16,
-        "annualised_return_pct": -8.37,
-        "win_rate_pct": 28.81,
-        "profit_factor": 0.67,
-        "sharpe_ratio": -1.9,
-        "sortino_ratio": -2.54,
-        "max_drawdown_pct": 11.57,
-        "avg_holding_days": 9.9,
-        "avg_winning_trade_pct": 7.13,
-        "avg_losing_trade_pct": -4.66,
-        "avg_mae_pct": -4.39,
-        "avg_mfe_pct": 4.75,
-        "total_trades": 59,
-        "transaction_costs_pct": 2.53,
-        "capital_utilisation_pct": 33.5,
-        "stop_loss_freq_pct": 49.2,
-        "target_hit_freq_pct": 16.9,
-        "horizon_exit_freq_pct": 33.9,
-        "rejected_trades": 190,
-        "regime_blocked_trades": 144,
-        "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+        "total_return_pct": 0.0,
+        "annualised_return_pct": 0.0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "sharpe_ratio": 0.0,
+        "sortino_ratio": 0.0,
+        "max_drawdown_pct": 0.0,
+        "avg_holding_days": 0.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": 0.0,
+        "avg_mfe_pct": 0.0,
+        "total_trades": 0,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 0.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "UNKNOWN"
       },
       {
         "model": "Model E-Ref: Moreshwar 2.0 + Static Fund Warning",
-        "total_return_pct": -3.13,
-        "annualised_return_pct": -3.67,
-        "win_rate_pct": 37.29,
-        "profit_factor": 0.87,
-        "sharpe_ratio": -1.1,
-        "sortino_ratio": -1.53,
-        "max_drawdown_pct": 9.68,
-        "avg_holding_days": 9.0,
-        "avg_winning_trade_pct": 5.68,
-        "avg_losing_trade_pct": -3.8,
-        "avg_mae_pct": -3.47,
-        "avg_mfe_pct": 4.27,
-        "total_trades": 59,
-        "transaction_costs_pct": 3.37,
-        "capital_utilisation_pct": 38.6,
-        "stop_loss_freq_pct": 40.7,
-        "target_hit_freq_pct": 18.6,
-        "horizon_exit_freq_pct": 40.7,
-        "rejected_trades": 120,
-        "regime_blocked_trades": 115,
-        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+        "total_return_pct": 0.0,
+        "annualised_return_pct": 0.0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "sharpe_ratio": 0.0,
+        "sortino_ratio": 0.0,
+        "max_drawdown_pct": 0.0,
+        "avg_holding_days": 0.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": 0.0,
+        "avg_mfe_pct": 0.0,
+        "total_trades": 0,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 0.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
+        "regime_blocked_trades": 0,
+        "fundamental_integrity": "UNKNOWN"
       },
       {
         "model": "Model F: Fixed 5% / 10% Benchmark",
-        "total_return_pct": -7.19,
-        "annualised_return_pct": -8.41,
-        "win_rate_pct": 37.31,
-        "profit_factor": 0.81,
-        "sharpe_ratio": -1.14,
-        "sortino_ratio": -1.53,
-        "max_drawdown_pct": 14.31,
-        "avg_holding_days": 9.6,
-        "avg_winning_trade_pct": 5.6,
-        "avg_losing_trade_pct": -4.05,
-        "avg_mae_pct": -3.7,
-        "avg_mfe_pct": 4.35,
-        "total_trades": 67,
-        "transaction_costs_pct": 4.92,
-        "capital_utilisation_pct": 63.6,
-        "stop_loss_freq_pct": 38.8,
-        "target_hit_freq_pct": 16.4,
-        "horizon_exit_freq_pct": 44.8,
-        "rejected_trades": 26,
+        "total_return_pct": 0.0,
+        "annualised_return_pct": 0.0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "sharpe_ratio": 0.0,
+        "sortino_ratio": 0.0,
+        "max_drawdown_pct": 0.0,
+        "avg_holding_days": 0.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": 0.0,
+        "avg_mfe_pct": 0.0,
+        "total_trades": 0,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 0.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
         "regime_blocked_trades": 0,
-        "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+        "fundamental_integrity": "UNKNOWN"
       },
       {
         "model": "Simple SMA-20 + Fixed 1:2 Benchmark",
-        "total_return_pct": -16.86,
-        "annualised_return_pct": -19.54,
-        "win_rate_pct": 32.53,
-        "profit_factor": 0.65,
-        "sharpe_ratio": -1.69,
-        "sortino_ratio": -2.25,
-        "max_drawdown_pct": 23.62,
-        "avg_holding_days": 9.5,
-        "avg_winning_trade_pct": 6.57,
-        "avg_losing_trade_pct": -4.6,
-        "avg_mae_pct": -4.4,
-        "avg_mfe_pct": 4.54,
-        "total_trades": 83,
-        "transaction_costs_pct": 5.18,
-        "capital_utilisation_pct": 72.1,
-        "stop_loss_freq_pct": 48.2,
-        "target_hit_freq_pct": 16.9,
-        "horizon_exit_freq_pct": 34.9,
-        "rejected_trades": 99,
+        "total_return_pct": 0.0,
+        "annualised_return_pct": 0.0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "sharpe_ratio": 0.0,
+        "sortino_ratio": 0.0,
+        "max_drawdown_pct": 0.0,
+        "avg_holding_days": 0.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": 0.0,
+        "avg_mae_pct": 0.0,
+        "avg_mfe_pct": 0.0,
+        "total_trades": 0,
+        "transaction_costs_pct": 0.0,
+        "capital_utilisation_pct": 0.0,
+        "stop_loss_freq_pct": 0.0,
+        "target_hit_freq_pct": 0.0,
+        "horizon_exit_freq_pct": 0.0,
+        "rejected_trades": 0,
         "regime_blocked_trades": 0,
-        "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+        "fundamental_integrity": "UNKNOWN"
       },
       {
         "model": "Nifty 50 (^NSEI) Buy & Hold",
-        "total_return_pct": 1.58,
-        "annualised_return_pct": 1.97,
-        "win_rate_pct": 100.0,
+        "total_return_pct": -0.25,
+        "annualised_return_pct": -0.26,
+        "win_rate_pct": 0.0,
         "profit_factor": null,
-        "sharpe_ratio": -0.21,
-        "sortino_ratio": -0.3,
-        "max_drawdown_pct": 14.34,
-        "avg_holding_days": 202.0,
-        "avg_winning_trade_pct": 1.58,
-        "avg_losing_trade_pct": 0.0,
-        "avg_mae_pct": -14.34,
+        "sharpe_ratio": -0.39,
+        "sortino_ratio": -0.54,
+        "max_drawdown_pct": 15.56,
+        "avg_holding_days": 246.0,
+        "avg_winning_trade_pct": 0.0,
+        "avg_losing_trade_pct": -0.25,
+        "avg_mae_pct": -15.56,
         "avg_mfe_pct": null,
         "total_trades": 1,
         "transaction_costs_pct": 0.0,
@@ -2472,965 +742,257 @@
         "model": "Model A: Original Baseline (Moreshwar 1.0)",
         "metrics": {
           "model": "Model A: Original Baseline (Moreshwar 1.0)",
-          "total_return_pct": -7.41,
-          "annualised_return_pct": -8.67,
-          "win_rate_pct": 27.78,
-          "profit_factor": 0.82,
-          "sharpe_ratio": -1.26,
-          "sortino_ratio": -1.68,
-          "max_drawdown_pct": 15.79,
-          "avg_holding_days": 6.4,
-          "avg_winning_trade_pct": 6.34,
-          "avg_losing_trade_pct": -2.89,
-          "avg_mae_pct": -2.86,
-          "avg_mfe_pct": 3.59,
-          "total_trades": 90,
-          "transaction_costs_pct": 6.73,
-          "capital_utilisation_pct": 56.9,
-          "stop_loss_freq_pct": 66.7,
-          "target_hit_freq_pct": 12.2,
-          "horizon_exit_freq_pct": 21.1,
-          "rejected_trades": 22,
+          "total_return_pct": 0.0,
+          "annualised_return_pct": 0.0,
+          "win_rate_pct": 0.0,
+          "profit_factor": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "total_trades": 0,
+          "transaction_costs_pct": 0.0,
+          "capital_utilisation_pct": 0.0,
+          "stop_loss_freq_pct": 0.0,
+          "target_hit_freq_pct": 0.0,
+          "horizon_exit_freq_pct": 0.0,
+          "rejected_trades": 0,
           "regime_blocked_trades": 0,
-          "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+          "fundamental_integrity": "UNKNOWN"
         },
-        "regimes": {
-          "BULLISH": {
-            "trades": 14,
-            "win_rate_pct": 28.57,
-            "avg_return_pct": -0.65,
-            "total_pnl": -1592.47
-          },
-          "NEUTRAL": {
-            "trades": 22,
-            "win_rate_pct": 40.91,
-            "avg_return_pct": 0.34,
-            "total_pnl": 133.94
-          },
-          "BEARISH": {
-            "trades": 38,
-            "win_rate_pct": 23.68,
-            "avg_return_pct": -0.58,
-            "total_pnl": -5380.51
-          },
-          "HIGH_VOLATILITY": {
-            "trades": 16,
-            "win_rate_pct": 18.75,
-            "avg_return_pct": -0.36,
-            "total_pnl": -575.92
-          }
-        },
-        "by_stock": {
-          "HDFCBANK": {
-            "trades": 11,
-            "win_rate_pct": 27.27,
-            "avg_return_pct": -1.05,
-            "total_pnl": -2878.67
-          },
-          "ICICIBANK": {
-            "trades": 17,
-            "win_rate_pct": 35.29,
-            "avg_return_pct": 0.93,
-            "total_pnl": 986.29
-          },
-          "NVDA": {
-            "trades": 13,
-            "win_rate_pct": 38.46,
-            "avg_return_pct": -0.26,
-            "total_pnl": 437.77
-          },
-          "RELIANCE": {
-            "trades": 17,
-            "win_rate_pct": 17.65,
-            "avg_return_pct": -1.89,
-            "total_pnl": -7660.56
-          },
-          "SBIN": {
-            "trades": 16,
-            "win_rate_pct": 31.25,
-            "avg_return_pct": 0.38,
-            "total_pnl": 2687.87
-          },
-          "TCS": {
-            "trades": 16,
-            "win_rate_pct": 18.75,
-            "avg_return_pct": -0.26,
-            "total_pnl": -987.66
-          }
-        },
-        "by_sector": {
-          "Energy": {
-            "trades": 17,
-            "win_rate_pct": 17.65,
-            "avg_return_pct": -1.89,
-            "total_pnl": -7660.56
-          },
-          "Financial Services": {
-            "trades": 44,
-            "win_rate_pct": 31.82,
-            "avg_return_pct": 0.23,
-            "total_pnl": 795.49
-          },
-          "Technology": {
-            "trades": 29,
-            "win_rate_pct": 27.59,
-            "avg_return_pct": -0.26,
-            "total_pnl": -549.89
-          }
-        }
+        "regimes": {},
+        "by_stock": {},
+        "by_sector": {}
       },
       "model_b": {
         "model": "Model B: ATR Stops Only",
         "metrics": {
           "model": "Model B: ATR Stops Only",
-          "total_return_pct": -9.19,
-          "annualised_return_pct": -10.73,
-          "win_rate_pct": 35.62,
-          "profit_factor": 0.77,
-          "sharpe_ratio": -1.24,
-          "sortino_ratio": -1.69,
-          "max_drawdown_pct": 18.67,
-          "avg_holding_days": 8.3,
-          "avg_winning_trade_pct": 6.37,
-          "avg_losing_trade_pct": -3.98,
-          "avg_mae_pct": -3.54,
-          "avg_mfe_pct": 4.25,
-          "total_trades": 73,
-          "transaction_costs_pct": 5.38,
-          "capital_utilisation_pct": 64.1,
-          "stop_loss_freq_pct": 46.6,
-          "target_hit_freq_pct": 16.4,
-          "horizon_exit_freq_pct": 37.0,
-          "rejected_trades": 35,
+          "total_return_pct": 0.0,
+          "annualised_return_pct": 0.0,
+          "win_rate_pct": 0.0,
+          "profit_factor": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "total_trades": 0,
+          "transaction_costs_pct": 0.0,
+          "capital_utilisation_pct": 0.0,
+          "stop_loss_freq_pct": 0.0,
+          "target_hit_freq_pct": 0.0,
+          "horizon_exit_freq_pct": 0.0,
+          "rejected_trades": 0,
           "regime_blocked_trades": 0,
-          "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+          "fundamental_integrity": "UNKNOWN"
         },
-        "regimes": {
-          "BULLISH": {
-            "trades": 11,
-            "win_rate_pct": 36.36,
-            "avg_return_pct": -1.0,
-            "total_pnl": -3896.77
-          },
-          "NEUTRAL": {
-            "trades": 18,
-            "win_rate_pct": 44.44,
-            "avg_return_pct": 0.45,
-            "total_pnl": 1190.31
-          },
-          "BEARISH": {
-            "trades": 32,
-            "win_rate_pct": 34.38,
-            "avg_return_pct": -0.5,
-            "total_pnl": -4402.63
-          },
-          "HIGH_VOLATILITY": {
-            "trades": 12,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -0.23,
-            "total_pnl": -2081.67
-          }
-        },
-        "by_stock": {
-          "HDFCBANK": {
-            "trades": 10,
-            "win_rate_pct": 30.0,
-            "avg_return_pct": -1.39,
-            "total_pnl": -5111.4
-          },
-          "ICICIBANK": {
-            "trades": 13,
-            "win_rate_pct": 46.15,
-            "avg_return_pct": 1.2,
-            "total_pnl": 3121.41
-          },
-          "NVDA": {
-            "trades": 12,
-            "win_rate_pct": 41.67,
-            "avg_return_pct": 0.04,
-            "total_pnl": 1730.48
-          },
-          "RELIANCE": {
-            "trades": 16,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -1.61,
-            "total_pnl": -7279.18
-          },
-          "SBIN": {
-            "trades": 13,
-            "win_rate_pct": 38.46,
-            "avg_return_pct": 0.58,
-            "total_pnl": -122.23
-          },
-          "TCS": {
-            "trades": 9,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": -0.61,
-            "total_pnl": -1529.84
-          }
-        },
-        "by_sector": {
-          "Energy": {
-            "trades": 16,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -1.61,
-            "total_pnl": -7279.18
-          },
-          "Financial Services": {
-            "trades": 36,
-            "win_rate_pct": 38.89,
-            "avg_return_pct": 0.26,
-            "total_pnl": -2112.22
-          },
-          "Technology": {
-            "trades": 21,
-            "win_rate_pct": 38.1,
-            "avg_return_pct": -0.24,
-            "total_pnl": 200.64
-          }
-        }
+        "regimes": {},
+        "by_stock": {},
+        "by_sector": {}
       },
       "model_c": {
         "model": "Model C: ATR Stops + Vol Sizing",
         "metrics": {
           "model": "Model C: ATR Stops + Vol Sizing",
-          "total_return_pct": -4.15,
-          "annualised_return_pct": -4.87,
-          "win_rate_pct": 37.33,
-          "profit_factor": 0.87,
-          "sharpe_ratio": -0.99,
-          "sortino_ratio": -1.39,
-          "max_drawdown_pct": 13.07,
-          "avg_holding_days": 8.6,
-          "avg_winning_trade_pct": 6.01,
-          "avg_losing_trade_pct": -3.9,
-          "avg_mae_pct": -3.43,
-          "avg_mfe_pct": 4.33,
-          "total_trades": 75,
-          "transaction_costs_pct": 4.48,
-          "capital_utilisation_pct": 51.4,
-          "stop_loss_freq_pct": 42.7,
-          "target_hit_freq_pct": 16.0,
-          "horizon_exit_freq_pct": 41.3,
-          "rejected_trades": 6,
+          "total_return_pct": 0.0,
+          "annualised_return_pct": 0.0,
+          "win_rate_pct": 0.0,
+          "profit_factor": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "total_trades": 0,
+          "transaction_costs_pct": 0.0,
+          "capital_utilisation_pct": 0.0,
+          "stop_loss_freq_pct": 0.0,
+          "target_hit_freq_pct": 0.0,
+          "horizon_exit_freq_pct": 0.0,
+          "rejected_trades": 0,
           "regime_blocked_trades": 0,
-          "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+          "fundamental_integrity": "UNKNOWN"
         },
-        "regimes": {
-          "BULLISH": {
-            "trades": 12,
-            "win_rate_pct": 41.67,
-            "avg_return_pct": -0.39,
-            "total_pnl": -1546.76
-          },
-          "NEUTRAL": {
-            "trades": 19,
-            "win_rate_pct": 42.11,
-            "avg_return_pct": 0.22,
-            "total_pnl": 154.84
-          },
-          "BEARISH": {
-            "trades": 32,
-            "win_rate_pct": 34.38,
-            "avg_return_pct": -0.58,
-            "total_pnl": -3285.95
-          },
-          "HIGH_VOLATILITY": {
-            "trades": 12,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": 0.36,
-            "total_pnl": 526.62
-          }
-        },
-        "by_stock": {
-          "HDFCBANK": {
-            "trades": 10,
-            "win_rate_pct": 30.0,
-            "avg_return_pct": -1.39,
-            "total_pnl": -3576.51
-          },
-          "ICICIBANK": {
-            "trades": 13,
-            "win_rate_pct": 46.15,
-            "avg_return_pct": 1.06,
-            "total_pnl": 2552.56
-          },
-          "NVDA": {
-            "trades": 12,
-            "win_rate_pct": 41.67,
-            "avg_return_pct": 0.35,
-            "total_pnl": 1359.09
-          },
-          "RELIANCE": {
-            "trades": 16,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -1.51,
-            "total_pnl": -4520.58
-          },
-          "SBIN": {
-            "trades": 14,
-            "win_rate_pct": 42.86,
-            "avg_return_pct": 0.79,
-            "total_pnl": 1042.64
-          },
-          "TCS": {
-            "trades": 10,
-            "win_rate_pct": 40.0,
-            "avg_return_pct": -0.58,
-            "total_pnl": -1008.45
-          }
-        },
-        "by_sector": {
-          "Energy": {
-            "trades": 16,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -1.51,
-            "total_pnl": -4520.58
-          },
-          "Financial Services": {
-            "trades": 37,
-            "win_rate_pct": 40.54,
-            "avg_return_pct": 0.3,
-            "total_pnl": 18.69
-          },
-          "Technology": {
-            "trades": 22,
-            "win_rate_pct": 40.91,
-            "avg_return_pct": -0.07,
-            "total_pnl": 350.64
-          }
-        }
+        "regimes": {},
+        "by_stock": {},
+        "by_sector": {}
       },
       "model_d": {
         "model": "Model D: ATR + Sizing + Nifty Regime",
         "metrics": {
           "model": "Model D: ATR + Sizing + Nifty Regime",
-          "total_return_pct": -2.3,
-          "annualised_return_pct": -2.71,
-          "win_rate_pct": 38.89,
-          "profit_factor": 0.89,
-          "sharpe_ratio": -0.94,
-          "sortino_ratio": -1.32,
-          "max_drawdown_pct": 8.9,
-          "avg_holding_days": 9.6,
-          "avg_winning_trade_pct": 5.59,
-          "avg_losing_trade_pct": -3.81,
-          "avg_mae_pct": -3.37,
-          "avg_mfe_pct": 4.69,
-          "total_trades": 54,
-          "transaction_costs_pct": 3.23,
-          "capital_utilisation_pct": 40.8,
-          "stop_loss_freq_pct": 38.9,
-          "target_hit_freq_pct": 13.0,
-          "horizon_exit_freq_pct": 48.1,
-          "rejected_trades": 122,
-          "regime_blocked_trades": 114,
-          "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+          "total_return_pct": 0.0,
+          "annualised_return_pct": 0.0,
+          "win_rate_pct": 0.0,
+          "profit_factor": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "total_trades": 0,
+          "transaction_costs_pct": 0.0,
+          "capital_utilisation_pct": 0.0,
+          "stop_loss_freq_pct": 0.0,
+          "target_hit_freq_pct": 0.0,
+          "horizon_exit_freq_pct": 0.0,
+          "rejected_trades": 0,
+          "regime_blocked_trades": 0,
+          "fundamental_integrity": "UNKNOWN"
         },
-        "regimes": {
-          "BULLISH": {
-            "trades": 14,
-            "win_rate_pct": 42.86,
-            "avg_return_pct": -0.06,
-            "total_pnl": -1065.19
-          },
-          "NEUTRAL": {
-            "trades": 26,
-            "win_rate_pct": 42.31,
-            "avg_return_pct": -0.08,
-            "total_pnl": -137.52
-          },
-          "BEARISH": {
-            "trades": 0,
-            "win_rate_pct": 0.0,
-            "avg_return_pct": 0.0,
-            "total_pnl": 0.0
-          },
-          "HIGH_VOLATILITY": {
-            "trades": 14,
-            "win_rate_pct": 28.57,
-            "avg_return_pct": -0.39,
-            "total_pnl": -1100.24
-          }
-        },
-        "by_stock": {
-          "HDFCBANK": {
-            "trades": 9,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": -0.91,
-            "total_pnl": -2813.35
-          },
-          "ICICIBANK": {
-            "trades": 9,
-            "win_rate_pct": 44.44,
-            "avg_return_pct": 0.86,
-            "total_pnl": 1359.05
-          },
-          "NVDA": {
-            "trades": 10,
-            "win_rate_pct": 40.0,
-            "avg_return_pct": 0.77,
-            "total_pnl": 2991.89
-          },
-          "RELIANCE": {
-            "trades": 12,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -1.75,
-            "total_pnl": -3886.64
-          },
-          "SBIN": {
-            "trades": 9,
-            "win_rate_pct": 55.56,
-            "avg_return_pct": 1.4,
-            "total_pnl": 1229.89
-          },
-          "TCS": {
-            "trades": 5,
-            "win_rate_pct": 40.0,
-            "avg_return_pct": -1.41,
-            "total_pnl": -1183.79
-          }
-        },
-        "by_sector": {
-          "Energy": {
-            "trades": 12,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -1.75,
-            "total_pnl": -3886.64
-          },
-          "Financial Services": {
-            "trades": 27,
-            "win_rate_pct": 44.44,
-            "avg_return_pct": 0.45,
-            "total_pnl": -224.41
-          },
-          "Technology": {
-            "trades": 15,
-            "win_rate_pct": 40.0,
-            "avg_return_pct": 0.04,
-            "total_pnl": 1808.1
-          }
-        }
+        "regimes": {},
+        "by_stock": {},
+        "by_sector": {}
       },
       "model_e_causal": {
         "model": "Model E: Complete Moreshwar 2.0 (Clean Causal)",
         "metrics": {
           "model": "Model E: Complete Moreshwar 2.0 (Clean Causal)",
-          "total_return_pct": -7.16,
-          "annualised_return_pct": -8.37,
-          "win_rate_pct": 28.81,
-          "profit_factor": 0.67,
-          "sharpe_ratio": -1.9,
-          "sortino_ratio": -2.54,
-          "max_drawdown_pct": 11.57,
-          "avg_holding_days": 9.9,
-          "avg_winning_trade_pct": 7.13,
-          "avg_losing_trade_pct": -4.66,
-          "avg_mae_pct": -4.39,
-          "avg_mfe_pct": 4.75,
-          "total_trades": 59,
-          "transaction_costs_pct": 2.53,
-          "capital_utilisation_pct": 33.5,
-          "stop_loss_freq_pct": 49.2,
-          "target_hit_freq_pct": 16.9,
-          "horizon_exit_freq_pct": 33.9,
-          "rejected_trades": 190,
-          "regime_blocked_trades": 144,
-          "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+          "total_return_pct": 0.0,
+          "annualised_return_pct": 0.0,
+          "win_rate_pct": 0.0,
+          "profit_factor": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "total_trades": 0,
+          "transaction_costs_pct": 0.0,
+          "capital_utilisation_pct": 0.0,
+          "stop_loss_freq_pct": 0.0,
+          "target_hit_freq_pct": 0.0,
+          "horizon_exit_freq_pct": 0.0,
+          "rejected_trades": 0,
+          "regime_blocked_trades": 0,
+          "fundamental_integrity": "UNKNOWN"
         },
-        "regimes": {
-          "BULLISH": {
-            "trades": 15,
-            "win_rate_pct": 20.0,
-            "avg_return_pct": -1.32,
-            "total_pnl": -2665.12
-          },
-          "NEUTRAL": {
-            "trades": 31,
-            "win_rate_pct": 35.48,
-            "avg_return_pct": -1.36,
-            "total_pnl": -1614.62
-          },
-          "BEARISH": {
-            "trades": 0,
-            "win_rate_pct": 0.0,
-            "avg_return_pct": 0.0,
-            "total_pnl": 0.0
-          },
-          "HIGH_VOLATILITY": {
-            "trades": 13,
-            "win_rate_pct": 23.08,
-            "avg_return_pct": -0.96,
-            "total_pnl": -2877.57
-          }
-        },
-        "by_stock": {
-          "HDFCBANK": {
-            "trades": 7,
-            "win_rate_pct": 42.86,
-            "avg_return_pct": -0.19,
-            "total_pnl": -564.3
-          },
-          "ICICIBANK": {
-            "trades": 7,
-            "win_rate_pct": 42.86,
-            "avg_return_pct": 1.16,
-            "total_pnl": 1530.73
-          },
-          "INFY": {
-            "trades": 6,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": -0.57,
-            "total_pnl": -1053.06
-          },
-          "ITC": {
-            "trades": 5,
-            "win_rate_pct": 20.0,
-            "avg_return_pct": -1.3,
-            "total_pnl": -896.3
-          },
-          "NVDA": {
-            "trades": 6,
-            "win_rate_pct": 16.67,
-            "avg_return_pct": -1.71,
-            "total_pnl": -520.81
-          },
-          "RELIANCE": {
-            "trades": 9,
-            "win_rate_pct": 11.11,
-            "avg_return_pct": -2.83,
-            "total_pnl": -4012.88
-          },
-          "SBIN": {
-            "trades": 8,
-            "win_rate_pct": 50.0,
-            "avg_return_pct": 0.3,
-            "total_pnl": 291.65
-          },
-          "TCS": {
-            "trades": 4,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -0.65,
-            "total_pnl": -243.66
-          },
-          "ZEEL": {
-            "trades": 7,
-            "win_rate_pct": 14.29,
-            "avg_return_pct": -5.06,
-            "total_pnl": -1688.68
-          }
-        },
-        "by_sector": {
-          "Communication Services": {
-            "trades": 7,
-            "win_rate_pct": 14.29,
-            "avg_return_pct": -5.06,
-            "total_pnl": -1688.68
-          },
-          "Consumer Defensive": {
-            "trades": 5,
-            "win_rate_pct": 20.0,
-            "avg_return_pct": -1.3,
-            "total_pnl": -896.3
-          },
-          "Energy": {
-            "trades": 9,
-            "win_rate_pct": 11.11,
-            "avg_return_pct": -2.83,
-            "total_pnl": -4012.88
-          },
-          "Financial Services": {
-            "trades": 22,
-            "win_rate_pct": 45.45,
-            "avg_return_pct": 0.42,
-            "total_pnl": 1258.08
-          },
-          "Technology": {
-            "trades": 16,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -1.02,
-            "total_pnl": -1817.53
-          }
-        }
+        "regimes": {},
+        "by_stock": {},
+        "by_sector": {}
       },
       "model_e_static_ref": {
         "model": "Model E-Ref: Moreshwar 2.0 + Static Fund Warning",
         "metrics": {
           "model": "Model E-Ref: Moreshwar 2.0 + Static Fund Warning",
-          "total_return_pct": -3.13,
-          "annualised_return_pct": -3.67,
-          "win_rate_pct": 37.29,
-          "profit_factor": 0.87,
-          "sharpe_ratio": -1.1,
-          "sortino_ratio": -1.53,
-          "max_drawdown_pct": 9.68,
-          "avg_holding_days": 9.0,
-          "avg_winning_trade_pct": 5.68,
-          "avg_losing_trade_pct": -3.8,
-          "avg_mae_pct": -3.47,
-          "avg_mfe_pct": 4.27,
-          "total_trades": 59,
-          "transaction_costs_pct": 3.37,
-          "capital_utilisation_pct": 38.6,
-          "stop_loss_freq_pct": 40.7,
-          "target_hit_freq_pct": 18.6,
-          "horizon_exit_freq_pct": 40.7,
-          "rejected_trades": 120,
-          "regime_blocked_trades": 115,
-          "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+          "total_return_pct": 0.0,
+          "annualised_return_pct": 0.0,
+          "win_rate_pct": 0.0,
+          "profit_factor": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "total_trades": 0,
+          "transaction_costs_pct": 0.0,
+          "capital_utilisation_pct": 0.0,
+          "stop_loss_freq_pct": 0.0,
+          "target_hit_freq_pct": 0.0,
+          "horizon_exit_freq_pct": 0.0,
+          "rejected_trades": 0,
+          "regime_blocked_trades": 0,
+          "fundamental_integrity": "UNKNOWN"
         },
-        "regimes": {
-          "BULLISH": {
-            "trades": 17,
-            "win_rate_pct": 29.41,
-            "avg_return_pct": -0.73,
-            "total_pnl": -2476.93
-          },
-          "NEUTRAL": {
-            "trades": 27,
-            "win_rate_pct": 44.44,
-            "avg_return_pct": 0.08,
-            "total_pnl": 1453.59
-          },
-          "BEARISH": {
-            "trades": 0,
-            "win_rate_pct": 0.0,
-            "avg_return_pct": 0.0,
-            "total_pnl": 0.0
-          },
-          "HIGH_VOLATILITY": {
-            "trades": 15,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": -0.37,
-            "total_pnl": -2101.9
-          }
-        },
-        "by_stock": {
-          "HDFCBANK": {
-            "trades": 9,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": -1.12,
-            "total_pnl": -2149.78
-          },
-          "ICICIBANK": {
-            "trades": 11,
-            "win_rate_pct": 36.36,
-            "avg_return_pct": 0.74,
-            "total_pnl": 1446.31
-          },
-          "NVDA": {
-            "trades": 12,
-            "win_rate_pct": 41.67,
-            "avg_return_pct": 0.42,
-            "total_pnl": 1844.22
-          },
-          "RELIANCE": {
-            "trades": 11,
-            "win_rate_pct": 18.18,
-            "avg_return_pct": -2.3,
-            "total_pnl": -5583.12
-          },
-          "SBIN": {
-            "trades": 11,
-            "win_rate_pct": 54.55,
-            "avg_return_pct": 1.06,
-            "total_pnl": 1900.97
-          },
-          "TCS": {
-            "trades": 5,
-            "win_rate_pct": 40.0,
-            "avg_return_pct": -1.07,
-            "total_pnl": -583.84
-          }
-        },
-        "by_sector": {
-          "Energy": {
-            "trades": 11,
-            "win_rate_pct": 18.18,
-            "avg_return_pct": -2.3,
-            "total_pnl": -5583.12
-          },
-          "Financial Services": {
-            "trades": 31,
-            "win_rate_pct": 41.94,
-            "avg_return_pct": 0.31,
-            "total_pnl": 1197.5
-          },
-          "Technology": {
-            "trades": 17,
-            "win_rate_pct": 41.18,
-            "avg_return_pct": -0.02,
-            "total_pnl": 1260.38
-          }
-        }
+        "regimes": {},
+        "by_stock": {},
+        "by_sector": {}
       },
       "model_f": {
         "model": "Model F: Fixed 5% / 10% Benchmark",
         "metrics": {
           "model": "Model F: Fixed 5% / 10% Benchmark",
-          "total_return_pct": -7.19,
-          "annualised_return_pct": -8.41,
-          "win_rate_pct": 37.31,
-          "profit_factor": 0.81,
-          "sharpe_ratio": -1.14,
-          "sortino_ratio": -1.53,
-          "max_drawdown_pct": 14.31,
-          "avg_holding_days": 9.6,
-          "avg_winning_trade_pct": 5.6,
-          "avg_losing_trade_pct": -4.05,
-          "avg_mae_pct": -3.7,
-          "avg_mfe_pct": 4.35,
-          "total_trades": 67,
-          "transaction_costs_pct": 4.92,
-          "capital_utilisation_pct": 63.6,
-          "stop_loss_freq_pct": 38.8,
-          "target_hit_freq_pct": 16.4,
-          "horizon_exit_freq_pct": 44.8,
-          "rejected_trades": 26,
+          "total_return_pct": 0.0,
+          "annualised_return_pct": 0.0,
+          "win_rate_pct": 0.0,
+          "profit_factor": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "total_trades": 0,
+          "transaction_costs_pct": 0.0,
+          "capital_utilisation_pct": 0.0,
+          "stop_loss_freq_pct": 0.0,
+          "target_hit_freq_pct": 0.0,
+          "horizon_exit_freq_pct": 0.0,
+          "rejected_trades": 0,
           "regime_blocked_trades": 0,
-          "fundamental_integrity": "INCOMPLETE_STATIC_WARNING (Current Snapshot Reused Across Past Bars)"
+          "fundamental_integrity": "UNKNOWN"
         },
-        "regimes": {
-          "BULLISH": {
-            "trades": 9,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": -0.39,
-            "total_pnl": -717.08
-          },
-          "NEUTRAL": {
-            "trades": 19,
-            "win_rate_pct": 36.84,
-            "avg_return_pct": -1.11,
-            "total_pnl": -5620.63
-          },
-          "BEARISH": {
-            "trades": 27,
-            "win_rate_pct": 40.74,
-            "avg_return_pct": -0.1,
-            "total_pnl": -18.88
-          },
-          "HIGH_VOLATILITY": {
-            "trades": 12,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": -0.23,
-            "total_pnl": -835.44
-          }
-        },
-        "by_stock": {
-          "HDFCBANK": {
-            "trades": 9,
-            "win_rate_pct": 22.22,
-            "avg_return_pct": -2.8,
-            "total_pnl": -5735.07
-          },
-          "ICICIBANK": {
-            "trades": 12,
-            "win_rate_pct": 50.0,
-            "avg_return_pct": 0.57,
-            "total_pnl": 526.12
-          },
-          "NVDA": {
-            "trades": 14,
-            "win_rate_pct": 50.0,
-            "avg_return_pct": 0.44,
-            "total_pnl": 1336.78
-          },
-          "RELIANCE": {
-            "trades": 10,
-            "win_rate_pct": 10.0,
-            "avg_return_pct": -2.21,
-            "total_pnl": -5110.96
-          },
-          "SBIN": {
-            "trades": 12,
-            "win_rate_pct": 41.67,
-            "avg_return_pct": 1.07,
-            "total_pnl": 3847.77
-          },
-          "TCS": {
-            "trades": 10,
-            "win_rate_pct": 40.0,
-            "avg_return_pct": -0.88,
-            "total_pnl": -2056.67
-          }
-        },
-        "by_sector": {
-          "Energy": {
-            "trades": 10,
-            "win_rate_pct": 10.0,
-            "avg_return_pct": -2.21,
-            "total_pnl": -5110.96
-          },
-          "Financial Services": {
-            "trades": 33,
-            "win_rate_pct": 39.39,
-            "avg_return_pct": -0.17,
-            "total_pnl": -1361.18
-          },
-          "Technology": {
-            "trades": 24,
-            "win_rate_pct": 45.83,
-            "avg_return_pct": -0.11,
-            "total_pnl": -719.89
-          }
-        }
+        "regimes": {},
+        "by_stock": {},
+        "by_sector": {}
       },
       "sma_bench": {
         "model": "Simple SMA-20 + Fixed 1:2 Benchmark",
         "metrics": {
           "model": "Simple SMA-20 + Fixed 1:2 Benchmark",
-          "total_return_pct": -16.86,
-          "annualised_return_pct": -19.54,
-          "win_rate_pct": 32.53,
-          "profit_factor": 0.65,
-          "sharpe_ratio": -1.69,
-          "sortino_ratio": -2.25,
-          "max_drawdown_pct": 23.62,
-          "avg_holding_days": 9.5,
-          "avg_winning_trade_pct": 6.57,
-          "avg_losing_trade_pct": -4.6,
-          "avg_mae_pct": -4.4,
-          "avg_mfe_pct": 4.54,
-          "total_trades": 83,
-          "transaction_costs_pct": 5.18,
-          "capital_utilisation_pct": 72.1,
-          "stop_loss_freq_pct": 48.2,
-          "target_hit_freq_pct": 16.9,
-          "horizon_exit_freq_pct": 34.9,
-          "rejected_trades": 99,
+          "total_return_pct": 0.0,
+          "annualised_return_pct": 0.0,
+          "win_rate_pct": 0.0,
+          "profit_factor": 0.0,
+          "sharpe_ratio": 0.0,
+          "sortino_ratio": 0.0,
+          "max_drawdown_pct": 0.0,
+          "avg_holding_days": 0.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": 0.0,
+          "avg_mae_pct": 0.0,
+          "avg_mfe_pct": 0.0,
+          "total_trades": 0,
+          "transaction_costs_pct": 0.0,
+          "capital_utilisation_pct": 0.0,
+          "stop_loss_freq_pct": 0.0,
+          "target_hit_freq_pct": 0.0,
+          "horizon_exit_freq_pct": 0.0,
+          "rejected_trades": 0,
           "regime_blocked_trades": 0,
-          "fundamental_integrity": "CAUSAL_CLEAN (Historical Fundamentals Marked Unavailable)"
+          "fundamental_integrity": "UNKNOWN"
         },
-        "regimes": {
-          "BULLISH": {
-            "trades": 10,
-            "win_rate_pct": 20.0,
-            "avg_return_pct": -2.29,
-            "total_pnl": -4009.84
-          },
-          "NEUTRAL": {
-            "trades": 20,
-            "win_rate_pct": 30.0,
-            "avg_return_pct": -1.88,
-            "total_pnl": -7322.34
-          },
-          "BEARISH": {
-            "trades": 40,
-            "win_rate_pct": 35.0,
-            "avg_return_pct": -0.54,
-            "total_pnl": -7250.91
-          },
-          "HIGH_VOLATILITY": {
-            "trades": 13,
-            "win_rate_pct": 38.46,
-            "avg_return_pct": 0.15,
-            "total_pnl": 1726.25
-          }
-        },
-        "by_stock": {
-          "HDFCBANK": {
-            "trades": 9,
-            "win_rate_pct": 22.22,
-            "avg_return_pct": -2.8,
-            "total_pnl": -4656.94
-          },
-          "ICICIBANK": {
-            "trades": 9,
-            "win_rate_pct": 44.44,
-            "avg_return_pct": 0.31,
-            "total_pnl": -76.91
-          },
-          "INFY": {
-            "trades": 9,
-            "win_rate_pct": 33.33,
-            "avg_return_pct": -1.33,
-            "total_pnl": -2818.15
-          },
-          "ITC": {
-            "trades": 8,
-            "win_rate_pct": 12.5,
-            "avg_return_pct": -2.98,
-            "total_pnl": -3868.14
-          },
-          "NVDA": {
-            "trades": 12,
-            "win_rate_pct": 41.67,
-            "avg_return_pct": -0.02,
-            "total_pnl": -183.98
-          },
-          "RELIANCE": {
-            "trades": 11,
-            "win_rate_pct": 27.27,
-            "avg_return_pct": -0.97,
-            "total_pnl": -2548.29
-          },
-          "SBIN": {
-            "trades": 6,
-            "win_rate_pct": 50.0,
-            "avg_return_pct": -0.17,
-            "total_pnl": -1298.29
-          },
-          "TCS": {
-            "trades": 8,
-            "win_rate_pct": 25.0,
-            "avg_return_pct": -1.33,
-            "total_pnl": -2315.31
-          },
-          "ZEEL": {
-            "trades": 11,
-            "win_rate_pct": 36.36,
-            "avg_return_pct": 0.06,
-            "total_pnl": 909.17
-          }
-        },
-        "by_sector": {
-          "Communication Services": {
-            "trades": 11,
-            "win_rate_pct": 36.36,
-            "avg_return_pct": 0.06,
-            "total_pnl": 909.17
-          },
-          "Consumer Defensive": {
-            "trades": 8,
-            "win_rate_pct": 12.5,
-            "avg_return_pct": -2.98,
-            "total_pnl": -3868.14
-          },
-          "Energy": {
-            "trades": 11,
-            "win_rate_pct": 27.27,
-            "avg_return_pct": -0.97,
-            "total_pnl": -2548.29
-          },
-          "Financial Services": {
-            "trades": 24,
-            "win_rate_pct": 37.5,
-            "avg_return_pct": -0.97,
-            "total_pnl": -6032.14
-          },
-          "Technology": {
-            "trades": 29,
-            "win_rate_pct": 34.48,
-            "avg_return_pct": -0.79,
-            "total_pnl": -5317.44
-          }
-        }
+        "regimes": {},
+        "by_stock": {},
+        "by_sector": {}
       },
       "nifty_bh": {
         "model": "Nifty 50 (^NSEI) Buy & Hold",
         "metrics": {
           "model": "Nifty 50 (^NSEI) Buy & Hold",
-          "total_return_pct": 1.58,
-          "annualised_return_pct": 1.97,
-          "win_rate_pct": 100.0,
+          "total_return_pct": -0.25,
+          "annualised_return_pct": -0.26,
+          "win_rate_pct": 0.0,
           "profit_factor": null,
-          "sharpe_ratio": -0.21,
-          "sortino_ratio": -0.3,
-          "max_drawdown_pct": 14.34,
-          "avg_holding_days": 202.0,
-          "avg_winning_trade_pct": 1.58,
-          "avg_losing_trade_pct": 0.0,
-          "avg_mae_pct": -14.34,
+          "sharpe_ratio": -0.39,
+          "sortino_ratio": -0.54,
+          "max_drawdown_pct": 15.56,
+          "avg_holding_days": 246.0,
+          "avg_winning_trade_pct": 0.0,
+          "avg_losing_trade_pct": -0.25,
+          "avg_mae_pct": -15.56,
           "avg_mfe_pct": null,
           "total_trades": 1,
           "transaction_costs_pct": 0.0,
@@ -27032,7 +24594,7 @@
   "watchlist_source": "AWAITING_M32_FULL_UNIVERSE_SCAN",
   "moreshwar_v3_1": {
     "release_version": "3.1.0-rc1",
-    "generated_at_utc": "2026-11-25T12:42:51.022091+00:00",
+    "generated_at_utc": "2026-11-25T12:58:36.119443+00:00",
     "banner": "PAPER TRADING ONLY \u2014 LIVE TRADING DISABLED",
     "safety_banner_lines": [
       "MOVIQ 3.1 \u2014 PAPER TRADING ONLY.",
@@ -27055,7 +24617,7 @@
       "canonical_payload_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
       "canonical_prefix_16": "47a30f4bbd004c5f",
       "raw_file_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
-      "verified_at_utc": "2026-11-25T12:42:51.018573+00:00",
+      "verified_at_utc": "2026-11-25T12:58:36.115409+00:00",
       "selected_policy_id": "G_SIMPLE_TREND_BASELINE",
       "execution_config_id": "EXP_E_COMBINED_EXEC_INTEL",
       "admitted_tactical_strategies": [
@@ -28726,7 +26288,7 @@
             "alert_id": "ALT-8F0A0B3FEA",
             "code": "DIAGNOSTIC_INDEX_DATA_BOUNDARY",
             "severity": "INFO",
-            "timestamp": "2026-11-25T12:42:51.022025+00:00",
+            "timestamp": "2026-11-25T12:58:36.119365+00:00",
             "as_of_date": "2026-11-23",
             "affected_component": "market_data_validation",
             "observed_value": "PARTIAL_DIAGNOSTIC_ONLY",
@@ -28739,7 +26301,7 @@
             "alert_id": "ALT-2BF50BAD0B",
             "code": "UNEXPECTED_ALLOCATION_DEVIATION",
             "severity": "WARNING",
-            "timestamp": "2026-11-25T12:42:51.022039+00:00",
+            "timestamp": "2026-11-25T12:58:36.119380+00:00",
             "as_of_date": "2026-11-23",
             "affected_component": "capital_allocation",
             "observed_value": 12.93,
@@ -28835,7 +26397,7 @@
   },
   "moreshwar_v3_2": {
     "release_version": "3.2.0",
-    "generated_at_utc": "2026-11-25T12:42:51.031433+00:00",
+    "generated_at_utc": "2026-11-25T12:58:36.141927+00:00",
     "banner": "PAPER TRADING ONLY \u2014 LIVE TRADING DISABLED",
     "safety_banner_lines": [
       "MOVIQ 3.1 \u2014 PAPER TRADING ONLY.",
@@ -28858,7 +26420,7 @@
       "canonical_payload_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
       "canonical_prefix_16": "47a30f4bbd004c5f",
       "raw_file_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
-      "verified_at_utc": "2026-11-25T12:42:51.027665+00:00",
+      "verified_at_utc": "2026-11-25T12:58:36.127018+00:00",
       "selected_policy_id": "G_SIMPLE_TREND_BASELINE",
       "execution_config_id": "EXP_E_COMBINED_EXEC_INTEL",
       "admitted_tactical_strategies": [
@@ -30357,193 +27919,17 @@
     }
   },
   "ems_blotter": {
-    "generated_at_utc": "2026-11-25T12:42:51.042589+00:00",
+    "generated_at_utc": "2026-11-25T12:58:36.157808+00:00",
     "desk_status": "ACTIVE",
     "kill_switch_reasons": [],
     "counts": {
-      "routed": 5,
+      "routed": 0,
       "compliance_blocked": 0,
-      "exceptions": 1
+      "exceptions": 0
     },
-    "routed_orders": [
-      {
-        "symbol": "RELIANCE",
-        "side": "BUY",
-        "qty": 10,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "VOLATILITY_ADJUSTED",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 1373.9,
-          "order_notional_inr": 13739.0,
-          "adv_20d_inr": 28083860364.65,
-          "adv_participation_pct": 0.0,
-          "hl_range_pct": 2.71,
-          "daily_vol_frac": 0.0285,
-          "est_impact_bps": 2.04,
-          "est_spread_bps": 13.55,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 43.59,
-          "difficulty_score": 29.7,
-          "difficulty_tier": "MODERATE",
-          "selected_algo": "VOLATILITY_ADJUSTED"
-        },
-        "evaluated_at_utc": "2026-11-25T12:38:41.940931+00:00"
-      },
-      {
-        "symbol": "TCS",
-        "side": "BUY",
-        "qty": 5,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "NEXT_SESSION_OPEN",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 2517.3,
-          "order_notional_inr": 12586.5,
-          "adv_20d_inr": 8728705611.97,
-          "adv_participation_pct": 0.0001,
-          "hl_range_pct": 1.87,
-          "daily_vol_frac": 0.01563,
-          "est_impact_bps": 2.04,
-          "est_spread_bps": 9.35,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 39.39,
-          "difficulty_score": 18.1,
-          "difficulty_tier": "LOW",
-          "selected_algo": "NEXT_SESSION_OPEN"
-        },
-        "evaluated_at_utc": "2026-11-25T12:39:08.462936+00:00"
-      },
-      {
-        "symbol": "HDFCBANK",
-        "side": "BUY",
-        "qty": 17,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "NEXT_SESSION_OPEN",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 846.2,
-          "order_notional_inr": 14385.4,
-          "adv_20d_inr": 32752057146.82,
-          "adv_participation_pct": 0.0,
-          "hl_range_pct": 2.24,
-          "daily_vol_frac": 0.01813,
-          "est_impact_bps": 2.03,
-          "est_spread_bps": 11.2,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 41.23,
-          "difficulty_score": 21.3,
-          "difficulty_tier": "LOW",
-          "selected_algo": "NEXT_SESSION_OPEN"
-        },
-        "evaluated_at_utc": "2026-11-25T12:39:34.967164+00:00"
-      },
-      {
-        "symbol": "ICICIBANK",
-        "side": "BUY",
-        "qty": 9,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "NEXT_SESSION_OPEN",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 1640.0,
-          "order_notional_inr": 14760.0,
-          "adv_20d_inr": 27252396185.99,
-          "adv_participation_pct": 0.0001,
-          "hl_range_pct": 2.01,
-          "daily_vol_frac": 0.02058,
-          "est_impact_bps": 2.03,
-          "est_spread_bps": 10.05,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 40.08,
-          "difficulty_score": 21.7,
-          "difficulty_tier": "LOW",
-          "selected_algo": "NEXT_SESSION_OPEN"
-        },
-        "evaluated_at_utc": "2026-11-25T12:40:01.503246+00:00"
-      },
-      {
-        "symbol": "SBIN",
-        "side": "BUY",
-        "qty": 13,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "NEXT_SESSION_OPEN",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 1138.15,
-          "order_notional_inr": 14795.95,
-          "adv_20d_inr": 19190941323.33,
-          "adv_participation_pct": 0.0001,
-          "hl_range_pct": 1.92,
-          "daily_vol_frac": 0.01533,
-          "est_impact_bps": 2.03,
-          "est_spread_bps": 9.6,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 39.63,
-          "difficulty_score": 18.2,
-          "difficulty_tier": "LOW",
-          "selected_algo": "NEXT_SESSION_OPEN"
-        },
-        "evaluated_at_utc": "2026-11-25T12:41:42.492721+00:00"
-      }
-    ],
+    "routed_orders": [],
     "compliance_blocked_orders": [],
-    "exception_queue": [
-      {
-        "exception_type": "FAILED_DATA_UNAVAILABLE",
-        "symbol": "TATAMOTORS",
-        "source": "INITIALIZE_LIVE_FEED",
-        "reasons": [
-          "Missing required fundamental field 'profit_growth' (refusing fake default)."
-        ],
-        "timestamp_utc": "2026-11-25T12:36:58.406575+00:00"
-      }
-    ],
+    "exception_queue": [],
     "rbld_rules": [
       {
         "rule_id": "RBLD_01_DATA_INTEGRITY",
@@ -30690,7 +28076,7 @@
     }
   ],
   "audit_trail": {
-    "updated_at": "2026-11-25T12:42:46.063036+00:00",
+    "updated_at": "2026-11-25T12:58:36.082661+00:00",
     "total_records": 281,
     "last_market_timestamp": "2026-11-25T09:59:09+00:00",
     "engine_versions": {
@@ -40579,7 +37965,7 @@
       "Finsistant Execution Terminal (TechSight Queue + Polynomial Regression + Stocky AI)",
       "Multi-Agent Orchestrator (TechBot_1 + FundBot_1 + ExecBot_1)"
     ],
-    "timestamp": "2026-11-25T12:42:51.042860+00:00",
+    "timestamp": "2026-11-25T12:58:36.158153+00:00",
     "environment": "production",
     "agent_mode": "paper_trading",
     "default_currency": "INR",
