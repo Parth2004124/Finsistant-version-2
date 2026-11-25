@@ -195,6 +195,7 @@ def _build_causal_eod_fundamental_snapshot(
     spot = round(float(bar["close"]), 2)
     prev_close = float(candles[-2]["close"]) if len(candles) >= 2 else spot
     change_pct = round(((spot - prev_close) / max(1e-6, prev_close)) * 100.0, 2)
+    ret_1y = round(((spot - float(candles[0]["close"])) / max(1e-6, float(candles[0]["close"]))) * 100.0, 2) if candles else 0.0
 
     with _SCAN_FUND_LOCK:
         cached_fund = _SCAN_FUNDAMENTALS_CACHE.get(sym)
@@ -221,6 +222,7 @@ def _build_causal_eod_fundamental_snapshot(
         "profit_growth": fund.get("profit_growth"),
         "mcap_cr": fund.get("mcap_cr"),
         "beta": fund.get("beta"),
+        "ret_1y": ret_1y,
         "debt_to_equity": fund.get("debt_to_equity"),
     }
     f_score = calculate_fundamental_score(snap_for_score, strict=True)
