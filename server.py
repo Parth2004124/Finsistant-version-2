@@ -390,15 +390,37 @@ def _initialize_platform_state(force_refresh: bool = False, force_token_refresh:
     dyn_symbols, watchlist_source = _load_dynamic_orchestrator_symbols(max_symbols=12)
     globals()["WATCHLIST_SOURCE"] = watchlist_source
     symbols = list(dict.fromkeys(dyn_symbols + extra_symbols + list(kite_holdings_map.keys())))
-    for sym in symbols:
+
+    if force_refresh or not BENCHMARK_CACHE.get("candles"):
+        try:
+            BENCHMARK_CACHE.clear()
+            BENCHMARK_CACHE.update(fetch_benchmark_candles("^NSEI", force_refresh=force_refresh))
+        except Exception:
+            pass
+
+    if symbols:
+        from concurrent.futures import ThreadPoolExecutor
+
+        def _fetch_one(sym: str) -> tuple[str, dict[str, Any] | None, str | None]:
+            kh = kite_holdings_map.get(sym)
+            is_h = int(kh["qty"]) > 0 if kh else False
+            try:
+                return sym, get_asset_full_analysis(sym, is_holding=is_h, force_refresh=force_refresh), None
+            except Exception as exc:
+                return sym, None, str(exc)
+
+        with ThreadPoolExecutor(max_workers=min(4, len(symbols))) as pool:
+            results = list(pool.map(_fetch_one, symbols))
+    else:
+        results = []
+
+    for sym, snap, err_msg in results:
+        if snap is None:
+            EMS_BLOTTER.record_data_exception(sym, err_msg or "Live feed failed", source="INITIALIZE_LIVE_FEED")
+            continue
         kh = kite_holdings_map.get(sym)
         qty = int(kh["qty"]) if kh else 0
         avg = float(kh["avg_price"]) if kh else 0.0
-        try:
-            snap = get_asset_full_analysis(sym, is_holding=(qty > 0), force_refresh=force_refresh)
-        except Exception as exc:
-            EMS_BLOTTER.record_data_exception(sym, str(exc), source="INITIALIZE_LIVE_FEED")
-            continue
         ANALYSIS_CACHE[sym] = snap
         try:
             raw_hist = fetch_live_market_snapshot(sym, force_refresh=False)
@@ -450,11 +472,13 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
     for sym in list(PORTFOLIO_STATE.keys()):
         p_item = PORTFOLIO_STATE[sym]
         is_held = int(p_item.get("qty", 0)) > 0
-        try:
-            snap = get_asset_full_analysis(sym, is_holding=is_held, force_refresh=force_refresh)
-        except Exception as exc:
-            EMS_BLOTTER.record_data_exception(sym, str(exc), source="SCAN_REFRESH_GATE")
-            continue
+        snap = None if force_refresh else ANALYSIS_CACHE.get(sym)
+        if snap is None:
+            try:
+                snap = get_asset_full_analysis(sym, is_holding=is_held, force_refresh=force_refresh)
+            except Exception as exc:
+                EMS_BLOTTER.record_data_exception(sym, str(exc), source="SCAN_REFRESH_GATE")
+                continue
         ANALYSIS_CACHE[sym] = snap
         try:
             raw_hist = fetch_live_market_snapshot(sym, force_refresh=False)
@@ -483,6 +507,7 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
             is_holding=is_held,
             asset_analysis=snap,
             learned_params=m32_params,
+            benchmark_candles=BENCHMARK_CACHE.get("candles"),
         )
         PIPELINE_CACHE[sym] = run.model_dump()
 
