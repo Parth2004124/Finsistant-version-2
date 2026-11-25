@@ -1,7 +1,612 @@
 {
   "version": 1,
-  "updated_at": "2026-11-25T12:31:53.680000+00:00",
+  "updated_at": "2026-11-25T12:42:46.063036+00:00",
   "records": [
+    {
+      "audit_id": "fnv2-aud-20261125-INFY-ea453135",
+      "signature": "ea4531352ac02b51",
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "currency": "INR",
+      "created_at": "2026-11-25T12:42:46.062850+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062850+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T09:59:09+00:00",
+      "retrieval_timestamp": "2026-11-25T12:40:26.286832+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 62,
+        "business": 17,
+        "moat": 15,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 65,
+        "technical_score": 32.0,
+        "composite_score": 63.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BEARISH",
+          "confidence_pct": 32.0,
+          "summary": "Spot 1,130.00 vs 20D SMA 1,140.64 (Downward Curve, 30D Reg Target 1,065.20). RSI(14)=45.68, MACD=+2.61 vs Sig=+11.00."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "NEUTRAL",
+          "confidence_pct": 63.5,
+          "summary": "Fundamental 62/100 (Bus 17/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 65/100 [IT]. Attractive valuation at P/E 15.1x with value margin of safety. High capital efficiency (ROE 29.9%, ROCE 25.8%) underscores durable moat."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "STANDBY",
+          "confidence_pct": 39.3,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (39.3% conviction). Sized 0 shares (INR 0.00) | Entry 1,081.13 \u00b7 TP 1,169.84 / SL 1,068.86 (R:R 1:7.23)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1130.0,
+        "change_pct": 2.41,
+        "rsi_14": 45.68,
+        "sma_20": 1140.64,
+        "projected_30d_target": 1065.2,
+        "regression_curve": "Downward Curve",
+        "data_source": "Yahoo Finance Live + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "WAIT",
+        "entry": 1103.19,
+        "target": 1201.76,
+        "stop_loss": 1088.76,
+        "rr_ratio": 1.74,
+        "qty": 0,
+        "conviction": 49.3
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "WAIT FOR PULLBACK",
+        "risk_rating": "MEDIUM",
+        "bull_case": "The suggested channel breakout setup, with a target of \u20b91201.76 and R:R of 1:1.74, is supported by a strong fundamental score of 62/100 and high moat components.",
+        "objections_raised": "The Degree-2 Polynomial Regression is in a downward curve targeting \u20b91065.20, conflicting with the bullish channel breakout, while the technical telemetry shows a bearish signal with RSI at 45.68 and MACD below its signal line.",
+        "rationale": "Given the conflicting signals between the bullish channel breakout and the bearish technical indicators/regression curve, a 'WATCH' stance is appropriate. The execution engine will await a pullback to a more favorable entry point, with a reduced target and tightened stop-loss to manage risk, while down-sizing the position size.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-25T12:41:54.621928+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 1081.13,
+        "target": 1169.84,
+        "stop_loss": 1068.86,
+        "rr_ratio": 7.23,
+        "qty": 0,
+        "conviction": 39.3,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -4.32
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.66,
+        "stop_delta_pct": -1.83,
+        "qty_delta": 0,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The Degree-2 Polynomial Regression is in a downward curve targeting \u20b91065.20, conflicting with the bullish channel breakout, while the technical telemetry shows a bearish signal with RSI at 45.68 and MACD below its signal line."
+        ],
+        "summary": "Applied CRO Calibration (INFY): WAIT -> LIMIT PULLBACK | Entry \u20b91103.19 -> \u20b91081.13 | TP \u20b91201.76 -> \u20b91169.84 | SL \u20b91088.76 -> \u20b91068.86 (R:R 1:1.74 -> 1:7.23) | Qty 0 -> 0 sh (0.50x) | Conviction 49.3% -> 39.3%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1130.0,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-25T12:42:46.062850+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-ICICIBANK-7d5dd425",
+      "signature": "7d5dd425c4bc204a",
+      "symbol": "ICICIBANK",
+      "name": "ICICI Bank Limited",
+      "currency": "INR",
+      "created_at": "2026-11-25T12:42:46.062828+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062828+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T09:59:09+00:00",
+      "retrieval_timestamp": "2026-11-25T12:40:01.502200+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 85,
+        "business": 40,
+        "moat": 15,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 85,
+        "technical_score": 94.0,
+        "composite_score": 85.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.0,
+          "summary": "Spot 1,640.00 vs 20D SMA 1,522.50 (Upward Curve, 30D Reg Target 1,943.84). RSI(14)=78.9, MACD=+64.01 vs Sig=+58.95."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 85.0,
+          "summary": "Fundamental 85/100 (Bus 40/40, Moat 15/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [BANKING]. Balanced valuation at P/E 20.1x. High capital efficiency (ROE 16.5%, ROCE 7.2%) underscores durable moat. Strong top-line expansion (15.8% YoY) & profit growth (22.1% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 79.1,
+          "summary": "CRO Recalibrated: LIMIT PULLBACK (79.1% conviction). Sized 4 shares (INR 6,428.80) | Entry 1,607.20 \u00b7 TP 1,732.66 / SL 1,586.29 (R:R 1:6.0)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1640.0,
+        "change_pct": 3.44,
+        "rsi_14": 78.9,
+        "sma_20": 1522.5,
+        "projected_30d_target": 1943.84,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live + YAHOO_LIVE_FEED+SCREENER_IN"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1640.0,
+        "target": 1779.4,
+        "stop_loss": 1615.4,
+        "rr_ratio": 5.67,
+        "qty": 9,
+        "conviction": 89.1
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "ICICI Bank exhibits strong momentum with a 94% bullish technical signal, RSI at 78.9, and a robust fundamental score of 85/100, indicating solid business and moat.",
+        "objections_raised": "The current RSI of 78.9 suggests technical overextension, while the 30D Polynomial Regression Target of \u20b91943.84 appears overly optimistic given the current R:R of 1:5.67 and a Beta of 0.19 which is low for a financial services stock.",
+        "rationale": "Despite strong momentum, the overbought RSI and aggressive target necessitate a more cautious approach. We will reduce position size and implement a discount entry to capture potential pullbacks, while tightening the stop-loss to manage risk more effectively.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-25T12:41:51.952391+00:00"
+      },
+      "final_decision": {
+        "action": "LIMIT PULLBACK",
+        "entry": 1607.2,
+        "target": 1732.66,
+        "stop_loss": 1586.29,
+        "rr_ratio": 6.0,
+        "qty": 4,
+        "conviction": 79.1,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.63,
+        "stop_delta_pct": -1.8,
+        "qty_delta": -5,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The current RSI of 78.9 suggests technical overextension, while the 30D Polynomial Regression Target of \u20b91943.84 appears overly optimistic given the current R:R of 1:5.67 and a Beta of 0.19 which is low for a financial services stock."
+        ],
+        "summary": "Applied CRO Calibration (ICICIBANK): BUY NOW -> LIMIT PULLBACK | Entry \u20b91640.0 -> \u20b91607.2 | TP \u20b91779.4 -> \u20b91732.66 | SL \u20b91615.4 -> \u20b91586.29 (R:R 1:5.67 -> 1:6.0) | Qty 9 -> 4 sh (0.50x) | Conviction 89.1% -> 79.1%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1640.0,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-25T12:42:46.062828+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-HDFCBANK-37b9cbc7",
+      "signature": "37b9cbc75aeda01a",
+      "symbol": "HDFCBANK",
+      "name": "HDFC Bank Limited",
+      "currency": "INR",
+      "created_at": "2026-11-25T12:42:46.062806+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062806+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T09:59:09+00:00",
+      "retrieval_timestamp": "2026-11-25T12:39:34.966175+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 70,
+        "business": 35,
+        "moat": 5,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 94.0,
+        "composite_score": 72.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.0,
+          "summary": "Spot 846.20 vs 20D SMA 772.23 (Upward Curve, 30D Reg Target 1,045.98). RSI(14)=78.68, MACD=+31.57 vs Sig=+25.69."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 72.5,
+          "summary": "Fundamental 70/100 (Bus 35/40, Moat 5/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [BANKING]. Balanced valuation at P/E 18.5x. Strong top-line expansion (80.8% YoY) & profit growth (21.3% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 72.2,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (72.2% conviction). Sized 8 shares (INR 6,634.24) | Entry 829.28 \u00b7 TP 894.53 / SL 805.90 (R:R 1:2.79)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 846.2,
+        "change_pct": 3.47,
+        "rsi_14": 78.68,
+        "sma_20": 772.23,
+        "projected_30d_target": 1045.98,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live + YAHOO_LIVE_FEED+SCREENER_IN"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 846.2,
+        "target": 918.7,
+        "stop_loss": 818.7,
+        "rr_ratio": 2.64,
+        "qty": 17,
+        "conviction": 82.2
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "HDFCBANK exhibits strong upward momentum with a 3.47% gain today, supported by a high conviction BUY signal (94%) and a robust fundamental score of 70/100, driven by strong sales growth of 80.8%.",
+        "objections_raised": "The current RSI of 78.68 indicates significant overbought conditions, potentially limiting immediate upside and increasing the risk of a short-term pullback, despite the positive regression curve.",
+        "rationale": "Given the overbought RSI, a cautious approach is warranted. The trade will be resized to mitigate risk, and the entry will be adjusted to capture a potential pullback, while the target will be slightly trimmed to reflect current market conditions.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-25T12:41:44.990201+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 829.28,
+        "target": 894.53,
+        "stop_loss": 805.9,
+        "rr_ratio": 2.79,
+        "qty": 8,
+        "conviction": 72.2,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.63,
+        "stop_delta_pct": -1.56,
+        "qty_delta": -9,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 15.0% to constrain downside MAE.",
+          "Trimmed target upside by 10.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The current RSI of 78.68 indicates significant overbought conditions, potentially limiting immediate upside and increasing the risk of a short-term pullback, despite the positive regression curve."
+        ],
+        "summary": "Applied CRO Calibration (HDFCBANK): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b9846.2 -> \u20b9829.28 | TP \u20b9918.7 -> \u20b9894.53 | SL \u20b9818.7 -> \u20b9805.9 (R:R 1:2.64 -> 1:2.79) | Qty 17 -> 8 sh (0.50x) | Conviction 82.2% -> 72.2%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 846.2,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-25T12:42:46.062806+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-TCS-33b29df4",
+      "signature": "33b29df47845112d",
+      "symbol": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "currency": "INR",
+      "created_at": "2026-11-25T12:42:46.062778+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062778+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T09:59:13+00:00",
+      "retrieval_timestamp": "2026-11-25T12:39:08.461893+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 80,
+        "business": 30,
+        "moat": 20,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 85,
+        "technical_score": 65.0,
+        "composite_score": 82.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 65.0,
+          "summary": "Spot 2,517.30 vs 20D SMA 2,452.66 (Downward Curve, 30D Reg Target 2,262.96). RSI(14)=51.98, MACD=+27.44 vs Sig=+37.74."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 82.5,
+          "summary": "Fundamental 80/100 (Bus 30/40, Moat 20/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [IT]. Attractive valuation at P/E 17.6x with value margin of safety. High capital efficiency (ROE 45.6%, ROCE 63.0%) underscores durable moat."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 59.6,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (59.6% conviction). Sized 2 shares (INR 4,959.08) | Entry 2,479.54 \u00b7 TP 2,656.25 / SL 2,444.26 (R:R 1:5.01)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 2517.3,
+        "change_pct": 2.33,
+        "rsi_14": 51.98,
+        "sma_20": 2452.66,
+        "projected_30d_target": 2262.96,
+        "regression_curve": "Downward Curve",
+        "data_source": "Yahoo Finance Live + YAHOO_LIVE_FEED+SCREENER_IN"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 2517.3,
+        "target": 2725.2,
+        "stop_loss": 2473.2,
+        "rr_ratio": 4.71,
+        "qty": 5,
+        "conviction": 74.6
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "TCS exhibits strong fundamentals with a Total Fundamental Score of 80/100, including a perfect Moat score of 20/20 and robust ROE of 45.57%, alongside a favorable R:R of 1:4.71 at suggested MOVIQ levels.",
+        "objections_raised": "The Degree-2 Polynomial Regression shows a downward curve with a 30D Quant Target of \u20b92262.96, conflicting with the 'BUY NOW' signal and suggesting potential downside, while the MACD (27.44) is below its Signal (37.736), indicating weakening momentum despite the spot price being above the 20D SMA.",
+        "rationale": "Given the strong fundamental moat and attractive R:R, a cautious accumulation is warranted. However, the conflicting downward regression curve and weakening MACD necessitate a lower entry point, a tighter stop-loss, and a haircut to the target to mitigate downside risk and align with a more conservative outlook. The position size will also be reduced.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-25T12:41:44.989915+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 2479.54,
+        "target": 2656.25,
+        "stop_loss": 2444.26,
+        "rr_ratio": 5.01,
+        "qty": 2,
+        "conviction": 59.6,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -1.5
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -1.5,
+        "target_delta_pct": -2.53,
+        "stop_delta_pct": -1.17,
+        "qty_delta": -3,
+        "conviction_delta": -15.0,
+        "reasons": [
+          "Applied 1.5% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 20.0% to constrain downside MAE.",
+          "Trimmed target upside by 15.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.50x based on conviction & risk.",
+          "Objection: The Degree-2 Polynomial Regression shows a downward curve with a 30D Quant Target of \u20b92262.96, conflicting with the 'BUY NOW' signal and suggesting potential downside, while the MACD (27.44) is below its Signal (37.736), indicating weakening momentum despite the spot price being above the 20D SMA."
+        ],
+        "summary": "Applied CRO Calibration (TCS): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b92517.3 -> \u20b92479.54 | TP \u20b92725.2 -> \u20b92656.25 | SL \u20b92473.2 -> \u20b92444.26 (R:R 1:4.71 -> 1:5.01) | Qty 5 -> 2 sh (0.50x) | Conviction 74.6% -> 59.6%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 2517.3,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-25T12:42:46.062778+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-RELIANCE-f5af75f4",
+      "signature": "f5af75f49fc5fb95",
+      "symbol": "RELIANCE",
+      "name": "Reliance Industries Limited",
+      "currency": "INR",
+      "created_at": "2026-11-25T12:42:46.062712+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062712+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T09:59:09+00:00",
+      "retrieval_timestamp": "2026-11-25T12:38:41.939867+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 72,
+        "business": 32,
+        "moat": 10,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 65,
+        "technical_score": 94.0,
+        "composite_score": 68.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.0,
+          "summary": "Spot 1,373.90 vs 20D SMA 1,306.54 (Upward Curve, 30D Reg Target 1,668.02). RSI(14)=75.98, MACD=+41.12 vs Sig=+37.76."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 68.5,
+          "summary": "Fundamental 72/100 (Bus 32/40, Moat 10/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 65/100 [POWER]. Balanced valuation at P/E 22.6x. Strong top-line expansion (29.8% YoY) & profit growth (40.7% YoY)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 70.0,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (70.0% conviction). Sized 8 shares (INR 10,771.36) | Entry 1,346.42 \u00b7 TP 1,435.58 / SL 1,307.59 (R:R 1:2.3)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1373.9,
+        "change_pct": 1.7,
+        "rsi_14": 75.98,
+        "sma_20": 1306.54,
+        "projected_30d_target": 1668.02,
+        "regression_curve": "Upward Curve",
+        "data_source": "Yahoo Finance Live + YAHOO_LIVE_FEED+SCREENER_IN"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1373.9,
+        "target": 1467.75,
+        "stop_loss": 1330.75,
+        "rr_ratio": 2.17,
+        "qty": 10,
+        "conviction": 80.0
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "Reliance shows strong sales growth (29.8%) and profit growth (40.7%), with a robust fundamental score of 72/100, indicating underlying business strength. The 30D Quant Target of \u20b91668.02 suggests significant upside potential from the current spot price.",
+        "objections_raised": "The RSI at 75.98 indicates the asset is significantly overbought, increasing the risk of a near-term pullback. A low Beta of 0.18, while suggesting stability, might also imply slower upside capture in a broader market rally, and the low OPM of 11.22% is a concern for profitability.",
+        "rationale": "While the fundamental strength and upward regression curve are positive, the extremely high RSI (75.98) flags technical overextension, necessitating a more cautious approach. We will recalibrate to a 'CAUTIOUS ACCUMULATE' stance, seeking a discounted entry to mitigate pullback risk, tightening the stop-loss, and slightly trimming the target to reflect potential resistance at current levels. The trade size will be reduced to reflect increased risk.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-25T12:41:42.492755+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 1346.42,
+        "target": 1435.58,
+        "stop_loss": 1307.59,
+        "rr_ratio": 2.3,
+        "qty": 8,
+        "conviction": 70.0,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -2.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -2.0,
+        "target_delta_pct": -2.19,
+        "stop_delta_pct": -1.74,
+        "qty_delta": -2,
+        "conviction_delta": -10.0,
+        "reasons": [
+          "Applied 2.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 5.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The RSI at 75.98 indicates the asset is significantly overbought, increasing the risk of a near-term pullback. A low Beta of 0.18, while suggesting stability, might also imply slower upside capture in a broader market rally, and the low OPM of 11.22% is a concern for profitability."
+        ],
+        "summary": "Applied CRO Calibration (RELIANCE): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b91373.9 -> \u20b91346.42 | TP \u20b91467.75 -> \u20b91435.58 | SL \u20b91330.75 -> \u20b91307.59 (R:R 1:2.17 -> 1:2.3) | Qty 10 -> 8 sh (0.75x) | Conviction 80.0% -> 70.0%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1373.9,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-25T12:42:46.062712+00:00"
+      }
+    },
     {
       "audit_id": "fnv2-aud-20261125-ITC-98f963db",
       "signature": "98f963db740b1b73",
@@ -9,7 +614,7 @@
       "name": "ITC Limited",
       "currency": "INR",
       "created_at": "2026-11-25T12:31:53.679847+00:00",
-      "last_seen_at": "2026-11-25T12:31:53.679847+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062910+00:00",
       "market_date": "2026-11-25",
       "market_timestamp": "2026-11-25T09:59:13+00:00",
       "retrieval_timestamp": "2026-11-25T12:30:19.115513+00:00",
@@ -115,12 +720,15 @@
         "latest_mark_price": 309.25,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 9.89,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.679847+00:00"
+        "marked_at": "2026-11-25T12:42:46.061371+00:00",
+        "original_counterfactual_pct": 7.7,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -130,7 +738,7 @@
       "name": "NVIDIA Corporation",
       "currency": "USD",
       "created_at": "2026-11-25T12:31:53.679793+00:00",
-      "last_seen_at": "2026-11-25T12:31:53.679793+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062869+00:00",
       "market_date": "2026-11-24",
       "market_timestamp": "2026-11-24T21:00:01+00:00",
       "retrieval_timestamp": "2026-11-25T12:29:30.484424+00:00",
@@ -234,11 +842,14 @@
         "mark_date": "2026-11-24",
         "realized_return_pct": null,
         "unrealized_return_pct": 0.0,
-        "counterfactual_return_pct": 0.0,
+        "counterfactual_return_pct": 4.59,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.679793+00:00"
+        "marked_at": "2026-11-25T12:42:46.061415+00:00",
+        "original_counterfactual_pct": 4.59,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -355,11 +966,14 @@
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
         "unrealized_return_pct": 0.0,
-        "counterfactual_return_pct": 0.0,
+        "counterfactual_return_pct": 2.43,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.679768+00:00"
+        "marked_at": "2026-11-25T12:42:46.061435+00:00",
+        "original_counterfactual_pct": 2.43,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -475,12 +1089,15 @@
         "latest_mark_price": 1640.0,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.679746+00:00"
+        "marked_at": "2026-11-25T12:42:46.061454+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -596,12 +1213,15 @@
         "latest_mark_price": 846.2,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.679716+00:00"
+        "marked_at": "2026-11-25T12:42:46.061472+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -717,12 +1337,15 @@
         "latest_mark_price": 2517.3,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.679681+00:00"
+        "marked_at": "2026-11-25T12:42:46.061487+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -838,12 +1461,15 @@
         "latest_mark_price": 1373.9,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.679604+00:00"
+        "marked_at": "2026-11-25T12:42:46.061505+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -853,7 +1479,7 @@
       "name": "State Bank of India",
       "currency": "INR",
       "created_at": "2026-11-25T11:53:50.462745+00:00",
-      "last_seen_at": "2026-11-25T12:31:53.679880+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062936+00:00",
       "market_date": "2026-11-25",
       "market_timestamp": "2026-11-25T09:59:13+00:00",
       "retrieval_timestamp": "2026-11-25T11:53:02.343180+00:00",
@@ -964,7 +1590,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.677875+00:00",
+        "marked_at": "2026-11-25T12:42:46.061531+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1088,7 +1714,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.677929+00:00",
+        "marked_at": "2026-11-25T12:42:46.061542+00:00",
         "original_counterfactual_pct": 7.7,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1101,7 +1727,7 @@
       "name": "Zee Entertainment Enterprises Limited",
       "currency": "INR",
       "created_at": "2026-11-25T11:53:50.462697+00:00",
-      "last_seen_at": "2026-11-25T12:31:53.679816+00:00",
+      "last_seen_at": "2026-11-25T12:42:46.062888+00:00",
       "market_date": "2026-11-25",
       "market_timestamp": "2026-11-25T10:00:01+00:00",
       "retrieval_timestamp": "2026-11-25T11:52:11.336351+00:00",
@@ -1209,7 +1835,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.677953+00:00",
+        "marked_at": "2026-11-25T12:42:46.061556+00:00",
         "original_counterfactual_pct": 11.11,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1333,7 +1959,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.677974+00:00",
+        "marked_at": "2026-11-25T12:42:46.061563+00:00",
         "original_counterfactual_pct": 4.59,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1454,7 +2080,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.677995+00:00",
+        "marked_at": "2026-11-25T12:42:46.061570+00:00",
         "original_counterfactual_pct": 2.43,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1578,7 +2204,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678014+00:00",
+        "marked_at": "2026-11-25T12:42:46.061576+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1702,7 +2328,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678034+00:00",
+        "marked_at": "2026-11-25T12:42:46.061582+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1826,7 +2452,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678066+00:00",
+        "marked_at": "2026-11-25T12:42:46.061588+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1950,7 +2576,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678085+00:00",
+        "marked_at": "2026-11-25T12:42:46.061594+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2074,7 +2700,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678096+00:00",
+        "marked_at": "2026-11-25T12:42:46.061600+00:00",
         "original_counterfactual_pct": -0.06,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2198,7 +2824,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678105+00:00",
+        "marked_at": "2026-11-25T12:42:46.061606+00:00",
         "original_counterfactual_pct": 7.68,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2319,7 +2945,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678114+00:00",
+        "marked_at": "2026-11-25T12:42:46.061612+00:00",
         "original_counterfactual_pct": 10.78,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2441,7 +3067,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678123+00:00",
+        "marked_at": "2026-11-25T12:42:46.061618+00:00",
         "original_counterfactual_pct": 4.59,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2564,7 +3190,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678130+00:00",
+        "marked_at": "2026-11-25T12:42:46.061624+00:00",
         "original_counterfactual_pct": 2.57,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2688,7 +3314,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678138+00:00",
+        "marked_at": "2026-11-25T12:42:46.061629+00:00",
         "original_counterfactual_pct": 0.12,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2812,7 +3438,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678146+00:00",
+        "marked_at": "2026-11-25T12:42:46.061635+00:00",
         "original_counterfactual_pct": 0.2,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2936,7 +3562,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678153+00:00",
+        "marked_at": "2026-11-25T12:42:46.061641+00:00",
         "original_counterfactual_pct": 0.39,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -3060,7 +3686,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T12:31:53.678162+00:00",
+        "marked_at": "2026-11-25T12:42:46.061647+00:00",
         "original_counterfactual_pct": 0.06,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -18445,7 +19071,7 @@
         "mfe_pct": 4.02,
         "mae_pct": -0.71,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678192+00:00",
+        "marked_at": "2026-11-25T12:42:46.061664+00:00",
         "original_counterfactual_status": "STOP_HIT",
         "original_counterfactual_pct": -2.36,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -18564,7 +19190,7 @@
         "mfe_pct": 13.01,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678224+00:00",
+        "marked_at": "2026-11-25T12:42:46.061689+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 11.64,
         "cro_verdict": "NO_INTERVENTION"
@@ -18683,7 +19309,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678250+00:00",
+        "marked_at": "2026-11-25T12:42:46.061708+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 4.82,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -18807,7 +19433,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678264+00:00",
+        "marked_at": "2026-11-25T12:42:46.061719+00:00",
         "original_counterfactual_status": "STOP_HIT",
         "original_counterfactual_pct": -2.99,
         "cro_verdict": "PREVENTED_BAD_TRADE"
@@ -19176,7 +19802,7 @@
         "mfe_pct": 4.23,
         "mae_pct": -1.31,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678278+00:00",
+        "marked_at": "2026-11-25T12:42:46.061730+00:00",
         "original_counterfactual_status": "STOP_HIT",
         "original_counterfactual_pct": -3.6,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -19424,7 +20050,7 @@
         "mfe_pct": 3.81,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678295+00:00",
+        "marked_at": "2026-11-25T12:42:46.061744+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": -0.26,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -19548,7 +20174,7 @@
         "mfe_pct": 3.49,
         "mae_pct": -1.22,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678326+00:00",
+        "marked_at": "2026-11-25T12:42:46.061758+00:00",
         "original_counterfactual_pct": -2.36,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -19672,7 +20298,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678343+00:00",
+        "marked_at": "2026-11-25T12:42:46.061769+00:00",
         "original_counterfactual_pct": 11.64,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -19796,7 +20422,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678354+00:00",
+        "marked_at": "2026-11-25T12:42:46.061778+00:00",
         "original_counterfactual_pct": -2.99,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PREVENTED_BAD_TRADE"
@@ -20041,7 +20667,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678365+00:00",
+        "marked_at": "2026-11-25T12:42:46.061786+00:00",
         "original_counterfactual_pct": 5.07,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -20165,7 +20791,7 @@
         "mfe_pct": 3.19,
         "mae_pct": -0.84,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678377+00:00",
+        "marked_at": "2026-11-25T12:42:46.061796+00:00",
         "original_counterfactual_pct": -1.85,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -20413,7 +21039,7 @@
         "mfe_pct": 4.02,
         "mae_pct": -0.71,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678393+00:00",
+        "marked_at": "2026-11-25T12:42:46.061809+00:00",
         "original_counterfactual_pct": -2.36,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -20537,7 +21163,7 @@
         "mfe_pct": 17.11,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678407+00:00",
+        "marked_at": "2026-11-25T12:42:46.061819+00:00",
         "original_counterfactual_pct": 11.64,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -20659,7 +21285,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678423+00:00",
+        "marked_at": "2026-11-25T12:42:46.061831+00:00",
         "original_counterfactual_pct": -2.99,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PREVENTED_BAD_TRADE"
@@ -20907,7 +21533,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678433+00:00",
+        "marked_at": "2026-11-25T12:42:46.061839+00:00",
         "original_counterfactual_pct": 5.07,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -21155,7 +21781,7 @@
         "mfe_pct": 4.23,
         "mae_pct": -1.31,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678445+00:00",
+        "marked_at": "2026-11-25T12:42:46.061848+00:00",
         "original_counterfactual_pct": -3.6,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -21527,7 +22153,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678461+00:00",
+        "marked_at": "2026-11-25T12:42:46.061861+00:00",
         "original_counterfactual_pct": -2.99,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PREVENTED_BAD_TRADE"
@@ -21775,7 +22401,7 @@
         "mfe_pct": 3.69,
         "mae_pct": -1.81,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678471+00:00",
+        "marked_at": "2026-11-25T12:42:46.061869+00:00",
         "original_counterfactual_pct": -3.6,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -22023,7 +22649,7 @@
         "mfe_pct": 3.49,
         "mae_pct": -1.22,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678486+00:00",
+        "marked_at": "2026-11-25T12:42:46.061880+00:00",
         "original_counterfactual_pct": -2.36,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -22147,7 +22773,7 @@
         "mfe_pct": 15.32,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678499+00:00",
+        "marked_at": "2026-11-25T12:42:46.061891+00:00",
         "original_counterfactual_pct": 11.64,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -22268,7 +22894,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678514+00:00",
+        "marked_at": "2026-11-25T12:42:46.061903+00:00",
         "original_counterfactual_pct": 4.82,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -22389,7 +23015,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678524+00:00",
+        "marked_at": "2026-11-25T12:42:46.061912+00:00",
         "original_counterfactual_pct": -2.99,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PREVENTED_BAD_TRADE"
@@ -22634,7 +23260,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678534+00:00",
+        "marked_at": "2026-11-25T12:42:46.061920+00:00",
         "original_counterfactual_pct": 5.07,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -22758,7 +23384,7 @@
         "mfe_pct": 3.19,
         "mae_pct": -0.84,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678544+00:00",
+        "marked_at": "2026-11-25T12:42:46.061928+00:00",
         "original_counterfactual_pct": -1.85,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -22882,7 +23508,7 @@
         "mfe_pct": 4.23,
         "mae_pct": -1.31,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678557+00:00",
+        "marked_at": "2026-11-25T12:42:46.061940+00:00",
         "original_counterfactual_pct": -3.6,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -23130,7 +23756,7 @@
         "mfe_pct": 3.81,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T12:31:53.678571+00:00",
+        "marked_at": "2026-11-25T12:42:46.061951+00:00",
         "original_counterfactual_pct": -0.26,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -23254,7 +23880,7 @@
         "mfe_pct": 4.8,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678585+00:00",
+        "marked_at": "2026-11-25T12:42:46.061963+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": -1.07,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -23378,7 +24004,7 @@
         "mfe_pct": 15.16,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678603+00:00",
+        "marked_at": "2026-11-25T12:42:46.061977+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 11.48,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -23499,7 +24125,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678621+00:00",
+        "marked_at": "2026-11-25T12:42:46.061992+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 4.88,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -23865,7 +24491,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678634+00:00",
+        "marked_at": "2026-11-25T12:42:46.062002+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 4.6,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -23989,7 +24615,7 @@
         "mfe_pct": 4.42,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678646+00:00",
+        "marked_at": "2026-11-25T12:42:46.062011+00:00",
         "original_counterfactual_status": "STOP_HIT",
         "original_counterfactual_pct": -1.85,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -24113,7 +24739,7 @@
         "mfe_pct": 6.75,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678662+00:00",
+        "marked_at": "2026-11-25T12:42:46.062025+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 2.45,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -24361,7 +24987,7 @@
         "mfe_pct": 4.8,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678679+00:00",
+        "marked_at": "2026-11-25T12:42:46.062039+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 1.21,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -24485,7 +25111,7 @@
         "mfe_pct": 4.3,
         "mae_pct": -0.44,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678696+00:00",
+        "marked_at": "2026-11-25T12:42:46.062053+00:00",
         "original_counterfactual_pct": -2.36,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -24606,7 +25232,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678712+00:00",
+        "marked_at": "2026-11-25T12:42:46.062066+00:00",
         "original_counterfactual_pct": 4.3,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -25097,7 +25723,7 @@
         "mfe_pct": 4.65,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678726+00:00",
+        "marked_at": "2026-11-25T12:42:46.062077+00:00",
         "original_counterfactual_pct": 1.93,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -25221,7 +25847,7 @@
         "mfe_pct": 7.85,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678743+00:00",
+        "marked_at": "2026-11-25T12:42:46.062089+00:00",
         "original_counterfactual_pct": 2.97,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -25469,7 +26095,7 @@
         "mfe_pct": 3.42,
         "mae_pct": -0.09,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678761+00:00",
+        "marked_at": "2026-11-25T12:42:46.062103+00:00",
         "original_counterfactual_pct": -0.12,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -25588,7 +26214,7 @@
         "mfe_pct": 12.24,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678779+00:00",
+        "marked_at": "2026-11-25T12:42:46.062116+00:00",
         "original_counterfactual_pct": 10.88,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -25707,7 +26333,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678795+00:00",
+        "marked_at": "2026-11-25T12:42:46.062129+00:00",
         "original_counterfactual_pct": 4.3,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -26064,7 +26690,7 @@
         "mfe_pct": 7.7,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678808+00:00",
+        "marked_at": "2026-11-25T12:42:46.062138+00:00",
         "original_counterfactual_pct": 5.65,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -26183,7 +26809,7 @@
         "mfe_pct": 2.55,
         "mae_pct": -1.45,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678825+00:00",
+        "marked_at": "2026-11-25T12:42:46.062150+00:00",
         "original_counterfactual_pct": 2.94,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -26307,7 +26933,7 @@
         "mfe_pct": 7.85,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678843+00:00",
+        "marked_at": "2026-11-25T12:42:46.062162+00:00",
         "original_counterfactual_pct": 2.97,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -26555,7 +27181,7 @@
         "mfe_pct": 3.95,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678861+00:00",
+        "marked_at": "2026-11-25T12:42:46.062175+00:00",
         "original_counterfactual_pct": -0.12,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -26679,7 +27305,7 @@
         "mfe_pct": 4.3,
         "mae_pct": -0.44,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678878+00:00",
+        "marked_at": "2026-11-25T12:42:46.062188+00:00",
         "original_counterfactual_pct": -2.36,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -26803,7 +27429,7 @@
         "mfe_pct": 18.4,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678895+00:00",
+        "marked_at": "2026-11-25T12:42:46.062200+00:00",
         "original_counterfactual_pct": 10.88,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -26925,7 +27551,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678912+00:00",
+        "marked_at": "2026-11-25T12:42:46.062213+00:00",
         "original_counterfactual_pct": -2.87,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PREVENTED_BAD_TRADE"
@@ -27046,7 +27672,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678921+00:00",
+        "marked_at": "2026-11-25T12:42:46.062219+00:00",
         "original_counterfactual_pct": 5.65,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -27170,7 +27796,7 @@
         "mfe_pct": 5.18,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678934+00:00",
+        "marked_at": "2026-11-25T12:42:46.062236+00:00",
         "original_counterfactual_pct": 1.93,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -27666,7 +28292,7 @@
         "mfe_pct": 4.3,
         "mae_pct": -0.44,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678955+00:00",
+        "marked_at": "2026-11-25T12:42:46.062250+00:00",
         "original_counterfactual_pct": -2.36,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -27790,7 +28416,7 @@
         "mfe_pct": 14.54,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678971+00:00",
+        "marked_at": "2026-11-25T12:42:46.062261+00:00",
         "original_counterfactual_pct": 10.88,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -27911,7 +28537,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.678989+00:00",
+        "marked_at": "2026-11-25T12:42:46.062274+00:00",
         "original_counterfactual_pct": 4.3,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -28035,7 +28661,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679001+00:00",
+        "marked_at": "2026-11-25T12:42:46.062282+00:00",
         "original_counterfactual_status": "STOP_HIT",
         "original_counterfactual_pct": -2.9,
         "cro_verdict": "PREVENTED_BAD_TRADE"
@@ -28407,7 +29033,7 @@
         "mfe_pct": 4.65,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679013+00:00",
+        "marked_at": "2026-11-25T12:42:46.062289+00:00",
         "original_counterfactual_pct": 1.93,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -28531,7 +29157,7 @@
         "mfe_pct": 6.75,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679029+00:00",
+        "marked_at": "2026-11-25T12:42:46.062302+00:00",
         "original_counterfactual_pct": 2.97,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -28879,7 +29505,7 @@
         "mfe_pct": 7.25,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679048+00:00",
+        "marked_at": "2026-11-25T12:42:46.062315+00:00",
         "original_counterfactual_pct": 5.68,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -28998,7 +29624,7 @@
         "mfe_pct": 4.52,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679064+00:00",
+        "marked_at": "2026-11-25T12:42:46.062327+00:00",
         "original_counterfactual_pct": 3.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -29098,7 +29724,7 @@
         "mfe_pct": 7.25,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679080+00:00",
+        "marked_at": "2026-11-25T12:42:46.062339+00:00",
         "original_counterfactual_pct": 5.68,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -29336,7 +29962,7 @@
         "mfe_pct": 12.24,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679097+00:00",
+        "marked_at": "2026-11-25T12:42:46.062351+00:00",
         "original_counterfactual_pct": 10.88,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -29455,7 +30081,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679113+00:00",
+        "marked_at": "2026-11-25T12:42:46.062363+00:00",
         "original_counterfactual_pct": 4.3,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -29693,7 +30319,7 @@
         "mfe_pct": 7.7,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679124+00:00",
+        "marked_at": "2026-11-25T12:42:46.062371+00:00",
         "original_counterfactual_pct": 5.65,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -29812,7 +30438,7 @@
         "mfe_pct": 2.55,
         "mae_pct": -1.45,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679140+00:00",
+        "marked_at": "2026-11-25T12:42:46.062383+00:00",
         "original_counterfactual_pct": 2.94,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -29931,7 +30557,7 @@
         "mfe_pct": 4.61,
         "mae_pct": -0.94,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679157+00:00",
+        "marked_at": "2026-11-25T12:42:46.062394+00:00",
         "original_counterfactual_pct": 5.26,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -30169,7 +30795,7 @@
         "mfe_pct": 4.52,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679174+00:00",
+        "marked_at": "2026-11-25T12:42:46.062407+00:00",
         "original_counterfactual_pct": 3.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "NO_INTERVENTION"
@@ -30407,7 +31033,7 @@
         "mfe_pct": 12.24,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679190+00:00",
+        "marked_at": "2026-11-25T12:42:46.062419+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 10.88,
         "cro_verdict": "NO_INTERVENTION"
@@ -30526,7 +31152,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679208+00:00",
+        "marked_at": "2026-11-25T12:42:46.062432+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 4.3,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -30883,7 +31509,7 @@
         "mfe_pct": 7.7,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679222+00:00",
+        "marked_at": "2026-11-25T12:42:46.062442+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 5.65,
         "cro_verdict": "NO_INTERVENTION"
@@ -31002,7 +31628,7 @@
         "mfe_pct": 2.55,
         "mae_pct": -1.45,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679240+00:00",
+        "marked_at": "2026-11-25T12:42:46.062456+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 2.94,
         "cro_verdict": "NO_INTERVENTION"
@@ -31121,7 +31747,7 @@
         "mfe_pct": 4.61,
         "mae_pct": -2.14,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679259+00:00",
+        "marked_at": "2026-11-25T12:42:46.062469+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 5.26,
         "cro_verdict": "NO_INTERVENTION"
@@ -31359,7 +31985,7 @@
         "mfe_pct": 4.52,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679278+00:00",
+        "marked_at": "2026-11-25T12:42:46.062484+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 3.0,
         "cro_verdict": "NO_INTERVENTION"
@@ -31483,7 +32109,7 @@
         "mfe_pct": 4.33,
         "mae_pct": -0.41,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679296+00:00",
+        "marked_at": "2026-11-25T12:42:46.062497+00:00",
         "original_counterfactual_pct": -2.36,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -31607,7 +32233,7 @@
         "mfe_pct": 16.42,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679327+00:00",
+        "marked_at": "2026-11-25T12:42:46.062510+00:00",
         "original_counterfactual_pct": 10.98,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -31728,7 +32354,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679347+00:00",
+        "marked_at": "2026-11-25T12:42:46.062524+00:00",
         "original_counterfactual_pct": 4.82,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -32224,7 +32850,7 @@
         "mfe_pct": 5.51,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679361+00:00",
+        "marked_at": "2026-11-25T12:42:46.062535+00:00",
         "original_counterfactual_pct": 2.25,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -32596,7 +33222,7 @@
         "mfe_pct": 4.53,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679382+00:00",
+        "marked_at": "2026-11-25T12:42:46.062549+00:00",
         "original_counterfactual_pct": -0.08,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -32720,7 +33346,7 @@
         "mfe_pct": 5.73,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679402+00:00",
+        "marked_at": "2026-11-25T12:42:46.062563+00:00",
         "original_counterfactual_pct": -0.71,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -32844,7 +33470,7 @@
         "mfe_pct": 18.71,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679419+00:00",
+        "marked_at": "2026-11-25T12:42:46.062576+00:00",
         "original_counterfactual_pct": 11.4,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -32965,7 +33591,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679436+00:00",
+        "marked_at": "2026-11-25T12:42:46.062588+00:00",
         "original_counterfactual_pct": 4.98,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -33086,7 +33712,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 4,
-        "marked_at": "2026-11-25T12:31:53.679447+00:00",
+        "marked_at": "2026-11-25T12:42:46.062595+00:00",
         "original_counterfactual_pct": -7.31,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PREVENTED_BAD_TRADE"
@@ -33458,7 +34084,7 @@
         "mfe_pct": 5.99,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679459+00:00",
+        "marked_at": "2026-11-25T12:42:46.062603+00:00",
         "original_counterfactual_pct": 2.72,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -33582,7 +34208,7 @@
         "mfe_pct": 7.64,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679475+00:00",
+        "marked_at": "2026-11-25T12:42:46.062615+00:00",
         "original_counterfactual_pct": 3.83,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -33830,13 +34456,13 @@
         "mfe_pct": 4.22,
         "mae_pct": 0.0,
         "holding_days": 3,
-        "marked_at": "2026-11-25T12:31:53.679492+00:00",
+        "marked_at": "2026-11-25T12:42:46.062627+00:00",
         "original_counterfactual_pct": 0.65,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
       }
     }
   ],
-  "last_scan_new_records": 7,
-  "total_records": 276
+  "last_scan_new_records": 5,
+  "total_records": 281
 }
