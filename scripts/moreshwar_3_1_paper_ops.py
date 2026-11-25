@@ -101,7 +101,7 @@ def run_prelaunch_verification() -> dict:
     guard = PaperOnlyExecutionGuard()
     root_html = (REPO_ROOT / "index.html").read_text(encoding="utf-8")
     ui_safety_ok = (
-        "MORESHWAR 3.1 — PAPER TRADING ONLY." in root_html
+        "MOVIQ 3.1 — PAPER TRADING ONLY." in root_html
         and "LIVE TRADING: DISABLED." in root_html
         and "BROKER ORDER PLACEMENT: DISABLED." in root_html
         and "AUTOMATIC CAPITAL DEPLOYMENT: DISABLED." in root_html
