@@ -27,6 +27,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import math
+import threading
 from typing import Any, Callable
 
 from finsistant_v2.agents import (
@@ -45,6 +46,9 @@ PRIOR_MIN_CONVICTION = 0.60
 PRIOR_RSI_OVERBOUGHT_PENALTY = 0.0
 MISSION_TARGET_SESSIONS = 80
 
+_SCAN_FUNDAMENTALS_CACHE: dict[str, dict[str, Any]] = {}
+_SCAN_FUND_LOCK = threading.Lock()
+
 
 @dataclass(frozen=True)
 class OrchestratorScanConfig:
@@ -57,8 +61,8 @@ class OrchestratorScanConfig:
     max_price_discrepancy_pct: float = 5.0  # live agent price vs EOD bar; larger => excluded
     stop_ratio_min: float = 0.08
     stop_ratio_max: float = 0.14
-    max_workers: int = 2
-    max_retries_per_symbol: int = 4
+    max_workers: int = 4
+    max_retries_per_symbol: int = 2
     min_agents_ok_ratio: float = 0.80
 
     def as_dict(self) -> dict[str, Any]:
@@ -165,6 +169,122 @@ def _default_fast_live_analysis(symbol: str) -> dict[str, Any]:
     }
 
 
+def _build_causal_eod_fundamental_snapshot(
+    symbol: str,
+    *,
+    trading_date: str,
+    history: dict[str, Any],
+    bar: dict[str, Any],
+) -> dict[str, Any]:
+    """Build causal EOD candles from already-loaded NSE history + verified live fundamentals (zero fake defaults)."""
+    from finsistant_v2.live_data import _fetch_yahoo_fundamentals_only
+    from finsistant_v2.scoring_engine import (
+        calculate_decision_matrix,
+        calculate_fundamental_score,
+        calculate_moreshwar_levels,
+        calculate_porters_score,
+    )
+
+    sym = symbol.upper().strip()
+    nse_sym = sym[:-3] if sym.endswith(".NS") else sym
+    yahoo_sym = f"{nse_sym}.NS"
+    candles_raw = _candles_from_history(history, 250)
+    quant = compute_ohlcv_and_regression_from_candles(candles_raw, periods=45)
+    candles = quant["candles"]
+    latest = candles[-1]
+    spot = round(float(bar["close"]), 2)
+    prev_close = float(candles[-2]["close"]) if len(candles) >= 2 else spot
+    change_pct = round(((spot - prev_close) / max(1e-6, prev_close)) * 100.0, 2)
+
+    with _SCAN_FUND_LOCK:
+        cached_fund = _SCAN_FUNDAMENTALS_CACHE.get(sym)
+    if cached_fund is None:
+        fund = _fetch_yahoo_fundamentals_only(yahoo_sym, "INR", spot, strict=True, nse_sym=nse_sym)
+        if not fund or str(fund.get("fundamentals_status", "")).lower() == "unavailable" or str(fund.get("fundamental_source_category", "")).upper() == "UNAVAILABLE":
+            raise RuntimeError(f"Fundamental data unavailable for {sym} (refusing default score).")
+        with _SCAN_FUND_LOCK:
+            _SCAN_FUNDAMENTALS_CACHE[sym] = dict(fund)
+    else:
+        fund = dict(cached_fund)
+
+    snap_for_score = {
+        "symbol": sym,
+        "name": fund.get("name") or sym,
+        "sector": str(bar.get("sector") or fund.get("sector") or "General"),
+        "asset_type": "STOCK",
+        "price": spot,
+        "pe": fund.get("pe"),
+        "roe": fund.get("roe"),
+        "roce": fund.get("roce"),
+        "opm": fund.get("opm"),
+        "sales_growth": fund.get("sales_growth"),
+        "profit_growth": fund.get("profit_growth"),
+        "mcap_cr": fund.get("mcap_cr"),
+        "beta": fund.get("beta"),
+        "debt_to_equity": fund.get("debt_to_equity"),
+    }
+    f_score = calculate_fundamental_score(snap_for_score, strict=True)
+    p_score = calculate_porters_score(snap_for_score, strict=True)
+    moreshwar = calculate_moreshwar_levels(
+        spot_price=spot,
+        f_score_total=f_score["total"],
+        p_score_total=p_score["total"],
+        is_holding=False,
+    )
+    decision = calculate_decision_matrix(
+        f_score_total=f_score["total"],
+        p_score_total=p_score["total"],
+        meta=snap_for_score,
+        price_above_sma=spot >= float(latest["sma_20"]),
+        is_holding=False,
+    )
+    return {
+        "symbol": sym,
+        "yahoo_symbol": yahoo_sym,
+        "nse_symbol": nse_sym,
+        "name": snap_for_score["name"],
+        "exchange": "NSE",
+        "currency": "INR",
+        "sector": snap_for_score["sector"],
+        "asset_type": "STOCK",
+        "setup_type": "Live NSE EOD + Verified Fundamentals",
+        "price": spot,
+        "last_candle_date": str(trading_date),
+        "last_candle_close": round(float(latest["close"]), 2),
+        "history_bars_count": len(candles),
+        "change_pct": change_pct,
+        "fetched_at": _utc_now_iso(),
+        "market_timestamp": f"{trading_date}T10:00:00+00:00",
+        "market_timestamp_kind": "exchange_eod_bhavcopy",
+        "missing_fields": list(fund.get("missing_fields") or []),
+        "proxy_fields": dict(fund.get("proxy_fields") or {}),
+        "cache_hit": cached_fund is not None,
+        "cache_age_seconds": 0.0,
+        "price_source_category": "NSE_OFFICIAL_BHAVCOPY",
+        "ohlcv_source_category": "HISTORICAL_MARKET_DATA",
+        "fundamental_source_category": fund.get("fundamental_source_category", "YAHOO_LIVE_FEED"),
+        "fundamentals_status": fund.get("fundamentals_status", "live"),
+        "data_source": f"Official NSE EOD Bhavcopy ({trading_date}) + {fund.get('fundamental_source_category', 'YAHOO_LIVE_FEED')}",
+        "rsi_14": float(latest["rsi_14"]),
+        "macd": float(latest["macd"]),
+        "macd_signal": float(latest["macd_signal"]),
+        "sma_20": float(latest["sma_20"]),
+        "ema_12": float(latest["ema_12"]),
+        "ema_26": float(latest["ema_26"]),
+        "bb_upper": float(latest["bb_upper"]),
+        "bb_lower": float(latest["bb_lower"]),
+        "projected_30d_target": quant["projected_30d_target"],
+        "regression_std_dev": quant["regression_std_dev"],
+        "regression_curve": quant["regression_curve"],
+        "future_projection": quant["future_projection"],
+        "fundamental_score": f_score,
+        "porters_score": p_score,
+        "moreshwar_levels": moreshwar,
+        "decision_matrix": decision,
+        "candles": candles,
+    }
+
+
 class OrchestratorUniverseScanner:
     """TechBot full-universe scan -> shortlist -> parallel FundBot + ExecBot -> ranked paper candidates."""
 
@@ -175,6 +295,7 @@ class OrchestratorUniverseScanner:
         analysis_fn: Callable[[str], dict[str, Any]] | None = None,
     ) -> None:
         self.cfg = config or OrchestratorScanConfig()
+        self._custom_analysis_fn = analysis_fn is not None
         self._analysis_fn = analysis_fn or _default_fast_live_analysis
         self.tech_agent = TechnicalAnalyst()
         self.fund_agent = FundamentalAnalyst()
@@ -282,6 +403,9 @@ class OrchestratorUniverseScanner:
         *,
         learned_params: dict[str, Any],
         capital_inr: float,
+        trading_date: str | None = None,
+        history: dict[str, Any] | None = None,
+        bar: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         weights = (float(learned_params.get("w_tech", PRIOR_W_TECH)), float(learned_params.get("w_fund", PRIOR_W_FUND)))
         min_conv = float(learned_params.get("min_conviction", PRIOR_MIN_CONVICTION))
@@ -303,12 +427,21 @@ class OrchestratorUniverseScanner:
         }
         import time as _time
 
+        use_causal_fast_path = (not self._custom_analysis_fn) and (history is not None) and (bar is not None) and bool(trading_date)
         last_exc: Exception | None = None
         snap: dict[str, Any] | None = None
         max_attempts = max(1, int(self.cfg.max_retries_per_symbol))
         for attempt in range(max_attempts):
             try:
-                cand_snap = self._analysis_fn(r["symbol"])
+                if use_causal_fast_path:
+                    cand_snap = _build_causal_eod_fundamental_snapshot(
+                        r["symbol"],
+                        trading_date=str(trading_date),
+                        history=history,  # type: ignore[arg-type]
+                        bar=bar,  # type: ignore[arg-type]
+                    )
+                else:
+                    cand_snap = self._analysis_fn(r["symbol"])
                 if not cand_snap or str(cand_snap.get("fundamentals_status", "")).lower() == "unavailable" or str(cand_snap.get("fundamental_source_category", "")).upper() == "UNAVAILABLE":
                     raise RuntimeError(f"Fundamental data unavailable for {r['symbol']} (refusing default score).")
                 snap = cand_snap
@@ -316,7 +449,7 @@ class OrchestratorUniverseScanner:
             except Exception as exc:
                 last_exc = exc
                 if attempt < max_attempts - 1:
-                    _time.sleep(min(15.0, 2.0 * (attempt + 1)))
+                    _time.sleep(min(8.0, 1.5 * (attempt + 1)))
 
         if snap is None:
             row["status"] = "FAILED_DATA_UNAVAILABLE"
@@ -393,6 +526,9 @@ class OrchestratorUniverseScanner:
         learned_params: dict[str, Any] | None = None,
         weights: tuple[float, float] | None = None,
         capital_inr: float = 100_000.0,
+        trading_date: str | None = None,
+        equity_histories: dict[str, dict[str, Any]] | None = None,
+        eq_bars: dict[str, dict[str, Any]] | None = None,
     ) -> list[dict[str, Any]]:
         params = dict(learned_params or {})
         if weights is not None:
@@ -405,14 +541,35 @@ class OrchestratorUniverseScanner:
         params.setdefault("sector_adjustments", {})
         params.setdefault("stop_tighten_mult", 1.0)
 
+        h_map = equity_histories or {}
+        b_map = eq_bars or {}
+
         workers = max(1, min(self.cfg.max_workers, len(shortlist)))
         if workers <= 1:
-            return [self._evaluate_one_shortlisted(r, learned_params=params, capital_inr=capital_inr) for r in shortlist]
+            return [
+                self._evaluate_one_shortlisted(
+                    r,
+                    learned_params=params,
+                    capital_inr=capital_inr,
+                    trading_date=trading_date,
+                    history=h_map.get(str(r["sec_id"])),
+                    bar=b_map.get(str(r["sec_id"])),
+                )
+                for r in shortlist
+            ]
 
         by_idx: dict[int, dict[str, Any]] = {}
         with ThreadPoolExecutor(max_workers=workers) as pool:
             futs = {
-                pool.submit(self._evaluate_one_shortlisted, r, learned_params=params, capital_inr=capital_inr): idx
+                pool.submit(
+                    self._evaluate_one_shortlisted,
+                    r,
+                    learned_params=params,
+                    capital_inr=capital_inr,
+                    trading_date=trading_date,
+                    history=h_map.get(str(r["sec_id"])),
+                    bar=b_map.get(str(r["sec_id"])),
+                ): idx
                 for idx, r in enumerate(shortlist)
             }
             for fut in as_completed(futs):
@@ -451,7 +608,14 @@ class OrchestratorUniverseScanner:
             sector_adjustments=params["sector_adjustments"],
         )
         shortlist = self.shortlist(tech_rows)
-        agent_rows = self.run_agents_on_shortlist(shortlist, learned_params=params, capital_inr=capital_inr)
+        agent_rows = self.run_agents_on_shortlist(
+            shortlist,
+            learned_params=params,
+            capital_inr=capital_inr,
+            trading_date=trading_date,
+            equity_histories=equity_histories,
+            eq_bars=eq_bars,
+        )
 
         buys = [r for r in agent_rows if r["status"] == "AGENTS_OK" and r["exec_action"] == "BUY"]
         buys.sort(key=lambda r: (-r["conviction"], r["tech_rank"]))

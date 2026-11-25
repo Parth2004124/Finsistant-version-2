@@ -448,30 +448,60 @@ def fetch_completed_nse_eod_snapshot(
             seen_sids.add(sid)
 
     # 3. Batch-download equity histories with retries (and override target_date bar from NSE Bhavcopy when active)
+    import hashlib
+    import os
+    import pickle
+
+    cache_dir_env = os.getenv("FINSISTANT_EOD_BATCH_CACHE_DIR", "").strip()
+    cache_dir_path = Path(cache_dir_env) if cache_dir_env else None
+    batch_end_str = end_str
+    if cache_dir_path is not None:
+        cache_dir_path.mkdir(parents=True, exist_ok=True)
+        # Fetch through max(target_date, today IST) + 2d once per workflow run; downstream code slices <= dt cleanly.
+        today_cap = max(dt_obj, datetime.now(IST_OFFSET).date())
+        batch_end_str = (today_cap + timedelta(days=2)).isoformat()
+
     equity_histories: dict[str, dict[str, Any]] = {}
     chunk_size = 100
     for i in range(0, len(uni_items), chunk_size):
         chunk = uni_items[i : i + chunk_size]
         tickers = [str(u["yf_ticker"]) for u in chunk]
         raw_batch = None
-        for attempt in range(3):
-            try:
-                raw_batch = yf.download(
-                    tickers,
-                    start=start_str,
-                    end=end_str,
-                    group_by="ticker",
-                    auto_adjust=False,
-                    actions=True,
-                    progress=False,
-                    threads=True,
-                )
-                if raw_batch is not None and not getattr(raw_batch, "empty", True):
-                    break
-            except Exception:
-                raw_batch = None
-            if attempt < 2:
-                _time.sleep(2.0 * (attempt + 1))
+        cache_file = None
+        if cache_dir_path is not None:
+            sig = hashlib.sha256(f"{start_str[:7]}|{batch_end_str}|{','.join(tickers)}".encode("utf-8")).hexdigest()[:16]
+            cache_file = cache_dir_path / f"chunk_{i}_{sig}.pkl"
+            if cache_file.exists():
+                try:
+                    with cache_file.open("rb") as fh:
+                        raw_batch = pickle.load(fh)
+                except Exception:
+                    raw_batch = None
+        if raw_batch is None:
+            for attempt in range(3):
+                try:
+                    raw_batch = yf.download(
+                        tickers,
+                        start=start_str,
+                        end=batch_end_str,
+                        group_by="ticker",
+                        auto_adjust=False,
+                        actions=True,
+                        progress=False,
+                        threads=True,
+                    )
+                    if raw_batch is not None and not getattr(raw_batch, "empty", True):
+                        break
+                except Exception:
+                    raw_batch = None
+                if attempt < 2:
+                    _time.sleep(2.0 * (attempt + 1))
+            if raw_batch is not None and cache_file is not None:
+                try:
+                    with cache_file.open("wb") as fh:
+                        pickle.dump(raw_batch, fh)
+                except Exception:
+                    pass
         if raw_batch is None:
             continue
         single = len(tickers) == 1
