@@ -6,7 +6,16 @@ Merges:
 3. Multi-Agent Trading Orchestrator (AgentRunner: TechBot_1, FundBot_1, ExecBot_1)
 """
 
-from .agents import AgentMessage, AgentRunner, ExecutionAgent, FundamentalAnalyst, PipelineResult, TechnicalAnalyst
+from .adversarial_prosecutor import DEFAULT_MIN_SURVIVAL_SCORE, prosecute_trade_candidate
+from .agents import (
+    AdversarialProsecutorAgent,
+    AgentMessage,
+    AgentRunner,
+    ExecutionAgent,
+    FundamentalAnalyst,
+    PipelineResult,
+    TechnicalAnalyst,
+)
 from .audit_ledger import (
     ENGINE_VERSIONS,
     build_audit_dashboard_view,
@@ -57,6 +66,9 @@ from .scoring_engine import (
 from .stocky_ai import StockyAssistant
 
 __all__ = [
+    "AdversarialProsecutorAgent",
+    "DEFAULT_MIN_SURVIVAL_SCORE",
+    "prosecute_trade_candidate",
     "AgentRunner",
     "AgentMessage",
     "PipelineResult",

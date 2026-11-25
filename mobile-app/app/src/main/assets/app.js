@@ -464,10 +464,12 @@ function renderAllViews() {
     <div>• Multi-Agent Verdict: <strong style="color: var(--accent-emerald);">${d.action}</strong> (${convPct}% Conviction)</div>
   `;
 
-  // 3-Agent Cards from real pipeline messages
-  const mTech = msgs[0] || {};
-  const mFund = msgs[1] || {};
-  const mExec = msgs[2] || {};
+  // Multi-Agent Cards from real pipeline messages (matches 3-agent and 4-agent with BearProsecutor_1)
+  const mTech = msgs.find((x) => x.agent_role === "TechnicalAnalyst") || msgs[0] || {};
+  const mFund = msgs.find((x) => x.agent_role === "FundamentalAnalyst") || msgs[1] || {};
+  const mPros = msgs.find((x) => x.agent_role === "AdversarialProsecutorAgent") || null;
+  const mExec = msgs.find((x) => x.agent_role === "ExecutionAgent") || msgs[msgs.length - 1] || {};
+  const prosData = (mPros && mPros.metrics) || (pipe && pipe.order_receipt && pipe.order_receipt.prosecution) || null;
 
   const stamp = appState.generatedAt ? new Date(appState.generatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "";
   document.getElementById("pipelineMetaText").textContent = `Live Orchestration Scan (${stamp}) · ${(appState.queue.buys || []).length} Queued Picks · ${(appState.queue.sells || []).length} Sell Warnings`;
@@ -490,7 +492,7 @@ function renderAllViews() {
   document.getElementById("agExecBar").style.width = `${Math.min(100, Number(convPct))}%`;
   document.getElementById("agExecDesc").textContent = mExec.summary || "";
 
-  // Gemini Critical Trade Analyst Panel (fills center blank space)
+  // Gemini / Adversarial Bear Prosecutor Panel
   const gTitleEl = document.getElementById("geminiPanelTitle");
   const gSubEl = document.getElementById("geminiPanelSub");
   const gRiskEl = document.getElementById("geminiRiskBadge");
@@ -507,7 +509,7 @@ function renderAllViews() {
   const gRecalSumEl = document.getElementById("geminiRecalSummary");
 
   if (gTitleEl && crit) {
-    gTitleEl.textContent = `Gemini Critical Trade Analyst — ${active.symbol}`;
+    gTitleEl.textContent = `Gemini Critical Trade Analyst & Bear Prosecutor — ${active.symbol}`;
     if (crit.status === "live") {
       const stance = String(crit.stance || "MONITOR").toUpperCase();
       const risk = String(crit.risk_rating || "MEDIUM").toUpperCase();
@@ -517,7 +519,10 @@ function renderAllViews() {
       gStanceEl.textContent = stance;
       gStanceEl.className = `tag-pill ${stance.includes("BUY") ? "tag-target" : (stance.includes("AVOID") || stance.includes("EXIT")) ? "tag-stop" : "tag-score"}`;
       gBullEl.textContent = crit.bull_case || "No material upside catalyst highlighted.";
-      gRisksEl.textContent = crit.critical_risks || "No major risk anomalies flagged.";
+      const prosRiskText = prosData && Array.isArray(prosData.attacks) && prosData.attacks.length
+        ? ` | BearProsecutor (${prosData.verdict}, Surv ${prosData.survival_score}): ${prosData.attacks.map((a) => `[${a.severity}] ${a.title} (${a.evidence})`).join(" ; ")}`
+        : "";
+      gRisksEl.textContent = (crit.critical_risks || "No major risk anomalies flagged.") + prosRiskText;
       const cStamp = crit.generated_at ? new Date(crit.generated_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
       gStampEl.textContent = `${crit.model || "gemini-2.5-flash"}${cStamp ? ` · ${cStamp}` : ""}`;
       gBodyEl.textContent = crit.rationale || "";
@@ -534,6 +539,27 @@ function renderAllViews() {
         rTpSlEl.textContent = `${fmtCurrency(a.target, cur, 2)} / ${fmtCurrency(a.stop_loss, cur, 2)} (1:${a.rr_ratio})`;
         rQtyEl.textContent = `${a.qty} sh (${a.conviction}%)`;
         gRecalSumEl.textContent = recal.summary || "";
+      }
+    } else if (prosData) {
+      gSubEl.textContent = `Deterministic Adversarial Bear Prosecutor (${prosData.attack_count || 0} negative objections tested)`;
+      gRiskEl.textContent = `DAMAGE: -${Number(prosData.total_damage_pts || 0).toFixed(1)} pts`;
+      gRiskEl.className = `tag-pill ${prosData.fatal_count > 0 || !prosData.outlasted ? "tag-stop" : "tag-score"}`;
+      gStanceEl.textContent = `${prosData.verdict} (${prosData.survival_score}/${prosData.min_survival_score})`;
+      gStanceEl.className = `tag-pill ${prosData.outlasted ? "tag-target" : "tag-stop"}`;
+      gBullEl.textContent = `Quant defense ${Number(prosData.raw_defense_score || 0).toFixed(1)} pts: ${d.action} (${f.total}/100 Fundamental, ${p.total}/100 Porter, Spot ${fmtCurrency(active.price, cur, 2)} → TP ${fmtCurrency(m.target, cur, 2)}).`;
+      gRisksEl.textContent = Array.isArray(prosData.attacks) && prosData.attacks.length
+        ? prosData.attacks.map((a) => `[${a.severity}] ${a.title}: ${a.prosecution_case} (${a.evidence})`).join(" | ")
+        : "No structural bear defects triggered across all 10 prosecution vectors.";
+      gStampEl.textContent = "ADVERSARIAL QUANT GATE";
+      gBodyEl.textContent = prosData.summary || "";
+      if (gRecalBadgeEl) {
+        gRecalBadgeEl.textContent = prosData.outlasted ? "OUTLASTED" : "KILLED BY BEAR";
+        gRecalBadgeEl.className = `tag-pill ${prosData.outlasted ? "tag-target" : "tag-stop"}`;
+        rActEl.textContent = d.action;
+        rEntEl.textContent = fmtCurrency(m.entry_price, cur, 2);
+        rTpSlEl.textContent = `${fmtCurrency(m.target, cur, 2)} / ${fmtCurrency(m.stop_loss, cur, 2)}`;
+        rQtyEl.textContent = `${execQty} sh (${convPct}%)`;
+        gRecalSumEl.textContent = prosData.summary || "Adversarial prosecution verdict recorded without simulated fallback.";
       }
     } else {
       gSubEl.textContent = appState.geminiStatus || "Gemini live key check required";
@@ -552,7 +578,7 @@ function renderAllViews() {
         rEntEl.textContent = fmtCurrency(m.entry_price, cur, 2);
         rTpSlEl.textContent = `${fmtCurrency(m.target, cur, 2)} / ${fmtCurrency(m.stop_loss, cur, 2)}`;
         rQtyEl.textContent = `${execQty} sh (${convPct}%)`;
-        gRecalSumEl.textContent = "Raw quant parameters preserved (no simulated recalibration applied while GEMINI_API_KEY is invalid/unconfigured).";
+        gRecalSumEl.textContent = "Raw quant parameters preserved (no simulated recalibration applied).";
       }
     }
   } else if (gTitleEl) {
@@ -4150,19 +4176,19 @@ function wireMoreshwarV31Controls() {
         <div class="kpi-mini-sub">${fmtPct(retPct)} (${pnlInr >= 0 ? "+" : ""}${fmtInr(pnlInr)})${alpha != null ? ` · α ${fmtPct(alpha)}` : ""}</div>
       </div>
       <div class="kpi-mini-card">
-        <div class="kpi-mini-lbl">PASSED / FAILED TRADES</div>
+        <div class="kpi-mini-lbl">PASSED / FAILED &amp; ROIC</div>
         <div class="kpi-mini-val">${passed} PASS / ${failed} FAIL</div>
-        <div class="kpi-mini-sub">${wr != null ? `Win ${Number(wr).toFixed(1)}% · PF ${pf ?? "—"}` : "Awaiting first trade exits"}</div>
+        <div class="kpi-mini-sub">${ct.rupee_roic_pct != null ? `ROIC ${fmtPct(ct.rupee_roic_pct)} · ₹${Number(ct.pnl_per_1000_rupees_inr || 0).toFixed(1)}/₹1k` : (wr != null ? `Win ${Number(wr).toFixed(1)}% · PF ${pf ?? "—"}` : "Awaiting first rupee exits")}</div>
       </div>
       <div class="kpi-mini-card">
         <div class="kpi-mini-lbl">FULL-UNIVERSE SCAN</div>
         <div class="kpi-mini-val">${Number(stages.valid_eod_bars || 0).toLocaleString("en-IN")} NSE</div>
-        <div class="kpi-mini-sub">${stages.shortlisted ?? 0} shortlist → ${stages.exec_buy_approved ?? 0} BUY → ${(scan.queued_for_next_open || []).length} queued</div>
+        <div class="kpi-mini-sub">${stages.shortlisted ?? 0} short → ${stages.adversarial_killed ?? 0} killed → ${(scan.queued_for_next_open || []).length} queued</div>
       </div>
       <div class="kpi-mini-card">
-        <div class="kpi-mini-lbl">ADAPTIVE WEIGHTS</div>
+        <div class="kpi-mini-lbl">ADAPTIVE BRAIN &amp; BEAR BAR</div>
         <div class="kpi-mini-val">${Math.round(Number(w.w_tech ?? 0.45) * 100)}% / ${Math.round(Number(w.w_fund ?? 0.55) * 100)}%</div>
-        <div class="kpi-mini-sub">Bar ${Math.round(Number(w.min_conviction ?? 0.6) * 100)}% · RSI Pen -${Math.round(Number(w.rsi_overbought_penalty ?? 0) * 100)}%</div>
+        <div class="kpi-mini-sub">Conv ≥${Math.round(Number(w.min_conviction ?? 0.6) * 100)}% · Surv ≥${Number(w.min_survival_score ?? 52).toFixed(0)}</div>
       </div>
     `;
     const kpiEl = document.getElementById("mv32Kpis");
@@ -4172,27 +4198,31 @@ function wireMoreshwarV31Controls() {
 
     const funnelSub = document.getElementById("mv32FunnelSub");
     if (funnelSub && scan.trading_date) {
-      funnelSub.textContent = `Session ${scan.trading_date}: ${stages.valid_eod_bars || 0} real NSE stocks → ${stages.tech_bullish || 0} TechBot bullish → ${stages.shortlisted || 0} shortlisted → ${stages.agents_ok || 0} Fund+Exec verified → ${stages.exec_buy_approved || 0} BUY → ${(scan.queued_for_next_open || []).length} queued`;
+      funnelSub.textContent = `Session ${scan.trading_date}: ${stages.valid_eod_bars || 0} NSE → ${stages.tech_bullish || 0} Tech bullish → ${stages.shortlisted || 0} short → ${stages.adversarial_killed ?? 0} killed by BearProsecutor → ${stages.exec_buy_approved || 0} OUTLASTED → ${(scan.queued_for_next_open || []).length} queued`;
     }
 
     const slBody = document.getElementById("mv32ShortlistBody");
     if (slBody) {
       const shortlist = Array.isArray(scan.shortlist) ? scan.shortlist : [];
-      const sorted = [...shortlist].sort((a, b) => (b.queued_for_next_open ? 1 : 0) - (a.queued_for_next_open ? 1 : 0) || Number(b.conviction || 0) - Number(a.conviction || 0));
+      const sorted = [...shortlist].sort((a, b) => (b.queued_for_next_open ? 1 : 0) - (a.queued_for_next_open ? 1 : 0) || Number(b.survival_score ?? 0) - Number(a.survival_score ?? 0) || Number(b.conviction || 0) - Number(a.conviction || 0));
       slBody.innerHTML = sorted.length
         ? sorted.slice(0, 12).map((r) => {
+            const isKilled = r.exec_signal === "KILLED_BY_ADVERSARY" || r.prosecution_verdict === "KILLED_BY_ADVERSARY";
+            const survSub = r.survival_score != null ? `<div style="font-size:10px;color:${isKilled ? "var(--accent-crimson)" : "var(--accent-emerald)"};">Surv ${Number(r.survival_score).toFixed(1)} · Dmg -${Number(r.damage_pts || 0).toFixed(0)}</div>` : "";
             const decPill = r.queued_for_next_open
-              ? `<span class="tag-pill tag-target">QUEUED OPEN</span>`
-              : r.exec_action === "BUY"
-                ? `<span class="tag-pill tag-entry">BUY (CAP)</span>`
-                : `<span class="tag-pill tag-score">${escHtml(r.exec_action || r.status)}</span>`;
+              ? `<span class="tag-pill tag-target">OUTLASTED · QUEUED</span>`
+              : isKilled
+                ? `<span class="tag-pill tag-stop">KILLED BY BEAR</span>`
+                : r.exec_action === "BUY"
+                  ? `<span class="tag-pill tag-entry">BUY (CAP)</span>`
+                  : `<span class="tag-pill tag-score">${escHtml(r.exec_action || r.status)}</span>`;
             return `<tr>
               <td>#${r.tech_rank ?? "—"}</td>
               <td><strong>${escHtml(r.symbol)}</strong><div style="font-size:10px;color:var(--text-muted);">${escHtml(r.sector || "")}</div></td>
               <td>₹${Number(r.eod_close || 0).toFixed(2)}</td>
               <td>${r.tech_conf != null ? Number(r.tech_conf).toFixed(2) : "—"}</td>
               <td>${r.fund_conf != null ? Number(r.fund_conf).toFixed(2) : "—"}</td>
-              <td><strong>${r.conviction != null ? (Number(r.conviction) * 100).toFixed(1) + "%" : "—"}</strong></td>
+              <td><strong>${r.conviction != null ? (Number(r.conviction) * 100).toFixed(1) + "%" : "—"}</strong>${survSub}</td>
               <td>${decPill}</td>
             </tr>`;
           }).join("")
@@ -4205,13 +4235,19 @@ function wireMoreshwarV31Controls() {
       const secTxt = Object.keys(secAdj).length
         ? Object.entries(secAdj).map(([k, v]) => `${escHtml(k)} ${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)}%`).join(", ")
         : "None yet (neutral)";
+      const atkMults = w.attack_multipliers || {};
+      const atkTxt = Object.keys(atkMults).length
+        ? Object.entries(atkMults).map(([k, v]) => `<code>${escHtml(k)} ×${Number(v).toFixed(2)}</code>`).join(" ")
+        : "Prior 1.00× (escalates automatically on every rupee lost under an ignored objection)";
       const gates = m.graduation_gates || {};
       const gatePills = Object.entries(gates).map(([k, ok]) =>
         `<span class="tag-pill ${ok ? "tag-target" : "tag-score"}" style="font-size:10px;">${ok ? "PASS" : "WAIT"} ${escHtml(k.replace(/_/g, " "))}</span>`
       ).join(" ");
       adapEl.innerHTML =
         `<div><strong>Status:</strong> ${escHtml(w.status || "OBSERVING")}</div>` +
-        `<div><strong>Active Brain:</strong> TechBot <code>${Number(w.w_tech ?? 0.45).toFixed(2)}</code> · FundBot <code>${Number(w.w_fund ?? 0.55).toFixed(2)}</code> · Min Conviction <code>${(Number(w.min_conviction ?? 0.6) * 100).toFixed(0)}%</code> · RSI&gt;72 Guard <code>-${(Number(w.rsi_overbought_penalty ?? 0) * 100).toFixed(1)}%</code></div>` +
+        `<div><strong>Active Brain:</strong> TechBot <code>${Number(w.w_tech ?? 0.45).toFixed(2)}</code> · FundBot <code>${Number(w.w_fund ?? 0.55).toFixed(2)}</code> · Min Conviction <code>${(Number(w.min_conviction ?? 0.6) * 100).toFixed(0)}%</code> · Min Bear Survival <code>${Number(w.min_survival_score ?? 52).toFixed(1)}</code></div>` +
+        `<div><strong>Per-Rupee Ledger:</strong> Invested <code>${fmtInr(ct.total_rupees_invested_inr || 0)}</code> · Net P&amp;L <code>${fmtInr(ct.total_realized_pnl_inr || 0)}</code>${ct.pnl_per_1000_rupees_inr != null ? ` · <code>₹${Number(ct.pnl_per_1000_rupees_inr).toFixed(2)}/₹1k</code>` : ""}</div>` +
+        `<div><strong>Adversarial Multipliers:</strong> ${atkTxt}</div>` +
         `<div><strong>Sector Calibration:</strong> ${secTxt}</div>` +
         `<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">${gatePills}</div>`;
     }
@@ -4221,13 +4257,13 @@ function wireMoreshwarV31Controls() {
       const lessons = Array.isArray(ct.recent_lessons) ? ct.recent_lessons : [];
       lesBody.innerHTML = lessons.length
         ? lessons.slice(0, 10).map((l) => `<tr>
-            <td><strong>${escHtml(l.symbol)}</strong><div style="font-size:10px;color:var(--text-muted);">${escHtml(l.exit_date)}</div></td>
+            <td><strong>${escHtml(l.symbol)}</strong><div style="font-size:10px;color:var(--text-muted);">${escHtml(l.exit_date)} · ₹${Number(l.cost_basis_inr || 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}</div></td>
             <td><span class="tag-pill ${l.outcome === "PASSED" ? "tag-target" : "tag-stop"}">${escHtml(l.outcome)}</span></td>
             <td style="color:${Number(l.return_pct) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${fmtPct(l.return_pct)}</td>
             <td>${escHtml(l.exit_reason || "—")}</td>
             <td style="font-size:11px;">${escHtml(l.lesson_summary || "")}</td>
           </tr>`).join("")
-        : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No closed trades yet — every exited paper trade will automatically log a PASSED/FAILED post-mortem and update agent weights.</td></tr>`;
+        : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No closed trades yet — every rupee invested and exited automatically logs a PASSED/FAILED post-mortem and hardens agent weights &amp; Bear Prosecutor multipliers.</td></tr>`;
     }
 
     const rptBrief = document.getElementById("rptM32Brief");
