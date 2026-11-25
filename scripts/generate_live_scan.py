@@ -55,7 +55,7 @@ def main() -> None:
         _update_watchlist_config(add_sym, remove_sym)
 
     server._initialize_platform_state(force_refresh=True, force_token_refresh=force_kite)
-    default_sym = next(iter(server.PORTFOLIO_STATE.keys()), "NTPC")
+    default_sym = next(iter(server.PORTFOLIO_STATE.keys()), "")
     active_sym = add_sym if add_sym and add_sym in server.PORTFOLIO_STATE else default_sym
     payload = server._build_full_state_payload(active_sym)
     out_path = ROOT_DIR / "live_scan.json"

@@ -221,8 +221,8 @@ def _load_dynamic_orchestrator_symbols(max_symbols: int = 12) -> tuple[list[str]
             pass
 
     if ordered:
-        return ordered[:max_symbols], f"MORESHWAR_3_2_FULL_UNIVERSE_SCAN ({scan_date or 'latest'})"
-    return list(ASSET_UNIVERSE.keys()), "LEGACY_FALLBACK_NO_M32_SCAN"
+        return ordered[:max_symbols], f"MOVIQ_3_2_FULL_UNIVERSE_SCAN ({scan_date or 'latest'})"
+    return [], "AWAITING_M32_FULL_UNIVERSE_SCAN"
 
 
 def _refresh_analytics_and_audit(force_new_for_symbol: str | None = None, force_benchmark: bool = False) -> None:
@@ -425,7 +425,7 @@ def _initialize_platform_state(force_refresh: bool = False, force_token_refresh:
             "moreshwar": snap["moreshwar_levels"],
         }
 
-    if not PORTFOLIO_STATE:
+    if symbols and not PORTFOLIO_STATE:
         raise RuntimeError(f"ALL_SYMBOLS_FAILED_LIVE_SCAN: {EMS_BLOTTER.exceptions[:5]}")
 
     _scan_and_populate_queue(force_refresh=False)
@@ -637,7 +637,7 @@ def _scan_and_populate_queue(force_refresh: bool = True) -> list[dict[str, Any]]
     return TRADE_QUEUE
 
 
-def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]:
+def _build_full_state_payload(active_symbol: str = "") -> dict[str, Any]:
     holdings = []
     watchlist = []
     invested_total = 0.0
@@ -672,32 +672,29 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
     is_held = PORTFOLIO_STATE.get(active_symbol, {}).get("qty", 0) > 0
     active_analysis = ANALYSIS_CACHE.get(active_symbol)
     if not active_analysis:
-        try:
-            active_analysis = get_asset_full_analysis(active_symbol, is_holding=is_held)
-        except Exception:
-            ls_fallback_path = BASE_DIR / "live_scan.json"
-            if ls_fallback_path.exists():
-                try:
-                    ls_payload = json.loads(ls_fallback_path.read_text(encoding="utf-8"))
-                    ANALYSIS_CACHE.update(ls_payload.get("assets") or {})
-                    PIPELINE_CACHE.update(ls_payload.get("pipelines") or {})
-                    GEMINI_CRITIQUES.update(ls_payload.get("gemini_critiques") or {})
-                except Exception:
-                    pass
-            active_analysis = ANALYSIS_CACHE.get(active_symbol) or next(iter(ANALYSIS_CACHE.values()), {})
-    ANALYSIS_CACHE[active_symbol] = active_analysis
+        if PORTFOLIO_STATE:
+            try:
+                active_analysis = get_asset_full_analysis(active_symbol, is_holding=is_held)
+                ANALYSIS_CACHE[active_symbol] = active_analysis
+            except Exception:
+                active_analysis = next(iter(ANALYSIS_CACHE.values()), {})
+        else:
+            active_analysis = {}
 
     active_pipeline = PIPELINE_CACHE.get(active_symbol)
-
     if not active_pipeline:
-        active_pipeline = runner.run_pipeline(
-            symbol=active_symbol,
-            timeframe="1D",
-            capital=CASH_BALANCE if CASH_BALANCE > 0 else 100000.0,
-            active_trades=len([t for t in EXECUTED_LOG if t.get("side") == "BUY"]),
-            is_holding=is_held,
-        ).model_dump()
-        PIPELINE_CACHE[active_symbol] = active_pipeline
+        if active_analysis:
+            active_pipeline = runner.run_pipeline(
+                symbol=active_symbol,
+                timeframe="1D",
+                capital=CASH_BALANCE if CASH_BALANCE > 0 else 100000.0,
+                active_trades=len([t for t in EXECUTED_LOG if t.get("side") == "BUY"]),
+                is_holding=is_held,
+                asset_analysis=active_analysis,
+            ).model_dump()
+            PIPELINE_CACHE[active_symbol] = active_pipeline
+        else:
+            active_pipeline = {}
 
     weighted_health = (
         round(
@@ -714,23 +711,26 @@ def _build_full_state_payload(active_symbol: str = "RELIANCE") -> dict[str, Any]
 
     active_critique = GEMINI_CRITIQUES.get(active_symbol)
     if not active_critique:
-        active_pick = next((t for t in TRADE_QUEUE if t.get("symbol") == active_symbol), None)
-        active_critique = analyze_trade_with_gemini(
-            active_symbol,
-            active_analysis,
-            pipeline=active_pipeline,
-            trade_pick=active_pick,
-            api_key=os.getenv("GEMINI_API_KEY", "").strip() or runner.settings.gemini_api_key,
-        )
-        apply_trade_recalibration(
-            symbol=active_symbol,
-            analysis=active_analysis,
-            pipeline=active_pipeline,
-            trade_pick=active_pick,
-            critique=active_critique,
-            is_holding=is_held,
-        )
-        GEMINI_CRITIQUES[active_symbol] = active_critique
+        if active_analysis:
+            active_pick = next((t for t in TRADE_QUEUE if t.get("symbol") == active_symbol), None)
+            active_critique = analyze_trade_with_gemini(
+                active_symbol,
+                active_analysis,
+                pipeline=active_pipeline,
+                trade_pick=active_pick,
+                api_key=os.getenv("GEMINI_API_KEY", "").strip() or runner.settings.gemini_api_key,
+            )
+            apply_trade_recalibration(
+                symbol=active_symbol,
+                analysis=active_analysis,
+                pipeline=active_pipeline,
+                trade_pick=active_pick,
+                critique=active_critique,
+                is_holding=is_held,
+            )
+            GEMINI_CRITIQUES[active_symbol] = active_critique
+        else:
+            active_critique = {}
 
     live_critiques = [c for c in GEMINI_CRITIQUES.values() if c.get("status") == "live"]
     recal_count = len([c for c in live_critiques if (c.get("recalibration") or {}).get("applied")])

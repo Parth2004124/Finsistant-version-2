@@ -42,7 +42,9 @@ from finsistant_v2.m3_1.paper_trading_orchestrator import (
     PaperTradingOrchestrator,
 )
 from finsistant_v2.m3_1.paper_trading_scheduler import (
+    DEFAULT_NSE_HOLIDAYS,
     PaperTradingScheduler,
+    fetch_official_nse_holidays,
     is_eligible_nse_trading_day,
     list_eligible_nse_sessions_between,
     resolve_pending_auto_sessions,
@@ -361,6 +363,7 @@ def main() -> int:
     run_p.add_argument("--date", default="auto", help="NSE trading date YYYY-MM-DD or 'auto' (IST today; must be > 2026-11-19)")
     run_p.add_argument("--fetch-live-eod", action="store_true", help="Fetch real completed post-close NSE EOD bars via yfinance (zero fabrication)")
     run_p.add_argument("--mark-missed", action="store_true", help="Mark session as MISSED if completed EOD data is unavailable")
+    run_p.add_argument("--offline-holidays", action="store_true", help="Only for offline deterministic test runs.")
     run_p.add_argument("--run-id", default="", help="Optional workflow run ID for database-level execution locking")
 
     args = parser.parse_args()
@@ -472,8 +475,9 @@ def main() -> int:
                 "reason": f"HISTORICAL_CUTOFF_GUARD: {target_dt} <= {HISTORICAL_DB_END_DATE} (prospective sessions must be strictly after {HISTORICAL_DB_END_DATE}).",
             }, indent=2))
             return 0
+        nse_holidays = DEFAULT_NSE_HOLIDAYS if args.offline_holidays else fetch_official_nse_holidays()
         if not is_auto:
-            ok, cal_reason = is_eligible_nse_trading_day(target_dt)
+            ok, cal_reason = is_eligible_nse_trading_day(target_dt, holidays=nse_holidays)
             if not ok:
                 print(json.dumps({"trading_date": target_dt, "skipped": True, "reason": cal_reason}, indent=2))
                 return 0
@@ -481,9 +485,9 @@ def main() -> int:
         pull_info = storage.pull_durable_ledger(owner_run_id=run_id)
         orch = PaperTradingOrchestrator()
         if is_auto:
-            dates_to_run = resolve_pending_auto_sessions(orch, target_dt)
+            dates_to_run = resolve_pending_auto_sessions(orch, target_dt, holidays=nse_holidays)
             if not dates_to_run:
-                _, cal_reason = is_eligible_nse_trading_day(target_dt)
+                _, cal_reason = is_eligible_nse_trading_day(target_dt, holidays=nse_holidays)
                 storage.close_without_push()
                 print(json.dumps({"trading_date": target_dt, "skipped": True, "reason": cal_reason}, indent=2))
                 return 0
@@ -494,7 +498,7 @@ def main() -> int:
         try:
             lock_info = storage.db_lock.acquire(owner_run_id=run_id, trading_date=dates_to_run[-1])
             lock_acquired = True
-            sched = PaperTradingScheduler(orchestrator=orch)
+            sched = PaperTradingScheduler(orchestrator=orch, holidays=nse_holidays)
 
             if args.fetch_live_eod:
                 def provider(d: str) -> dict | None:
