@@ -1,7 +1,1354 @@
 {
   "version": 1,
-  "updated_at": "2026-11-25T18:34:57.990708+00:00",
+  "updated_at": "2026-11-26T02:00:38.060627+00:00",
   "records": [
+    {
+      "audit_id": "fnv2-aud-20261125-MINDACORP-2eb613b0",
+      "signature": "2eb613b003652972",
+      "symbol": "MINDACORP",
+      "name": "Minda Corporation Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060528+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060528+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:50.012582+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 65,
+        "business": 32,
+        "moat": 8,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 70.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 716.90 vs 20D SMA 694.82 (Upward Curve, 30D Reg Target 922.88). RSI(14)=58.7, MACD=+20.62 vs Sig=+17.65."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 70.0,
+          "summary": "Fundamental 65/100 (Bus 32/40, Moat 8/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [FMCG]. Balanced valuation at P/E 30.7x. High capital efficiency (ROE 20.0%, ROCE 15.9%) underscores durable moat. Strong top-line expansion (42.6% YoY) & profit growth (69.2% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 69.3,
+          "summary": "OUTLASTED 2 bear objection(s) (-23.0 dmg pts): Survival 69.3 >= 52.0 (Size x0.79)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 81.7,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 69.3/52.0, Conv 81.7%, Size x0.79): 16 sh (INR 11,470.40) | Target 786.90 / SL 686.90 (R:R 1:2.33)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 716.9,
+        "change_pct": -1.42,
+        "rsi_14": 58.7,
+        "sma_20": 694.82,
+        "projected_30d_target": 922.88,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 697.4,
+        "target": 786.9,
+        "stop_loss": 686.9,
+        "rr_ratio": 2.33,
+        "qty": 16,
+        "conviction": 81.7
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 5h59m24.455534608s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 5h59m24.455534608s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T02:00:21.766191+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 716.9,
+        "target": 786.9,
+        "stop_loss": 686.9,
+        "rr_ratio": 2.33,
+        "qty": 16,
+        "conviction": 81.7,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 2.8,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 716.9,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060528+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-HDFCAMC-3d86bcc9",
+      "signature": "3d86bcc96014c929",
+      "symbol": "HDFCAMC",
+      "name": "HDFC Asset Management Company Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060504+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060504+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:50.032506+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash-lite"
+      },
+      "scores": {
+        "fundamental_total": 63,
+        "business": 25,
+        "moat": 13,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 85,
+        "technical_score": 96.0,
+        "composite_score": 74.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 2,671.30 vs 20D SMA 2,563.68 (Upward Curve, 30D Reg Target 3,362.24). RSI(14)=69.18, MACD=+85.97 vs Sig=+82.38."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "NEUTRAL",
+          "confidence_pct": 74.0,
+          "summary": "Fundamental 63/100 (Bus 25/40, Moat 13/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 85/100 [BANKING]. Balanced valuation at P/E 38.6x. High capital efficiency (ROE 36.4%, ROCE 42.9%) underscores durable moat."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "RECALIBRATED",
+          "confidence_pct": 78.9,
+          "summary": "CRO Recalibrated: CAUTIOUS ACCUMULATE (78.9% conviction). Sized 4 shares (INR 10,364.64) | Entry 2,591.16 \u00b7 TP 2,759.10 / SL 2,528.68 (R:R 1:2.69)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 83.9,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 78.7/52.0, Conv 83.9%, Size x0.94): 5 sh (INR 13,356.50) | Target 2,868.88 / SL 2,601.88 (R:R 1:2.85)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 2671.3,
+        "change_pct": -0.4,
+        "rsi_14": 69.18,
+        "sma_20": 2563.68,
+        "projected_30d_target": 3362.24,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED+SCREENER_IN"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 2671.3,
+        "target": 2868.88,
+        "stop_loss": 2601.88,
+        "rr_ratio": 2.85,
+        "qty": 5,
+        "conviction": 83.9
+      },
+      "critical_review": {
+        "status": "live",
+        "stance": "CAUTIOUS ACCUMULATE",
+        "risk_rating": "MEDIUM",
+        "bull_case": "The stock exhibits strong upward momentum with a 96% bullish technical signal and a 30-day regression target of \u20b93362.24, supported by a robust business score of 25/40.",
+        "objections_raised": "The RSI of 69.18 suggests potential overextension, the trailing P/E of 38.58x is elevated, and the profit growth of 4.2% lags sales growth, indicating potential valuation concerns.",
+        "rationale": "While the technicals are strong, the elevated valuation and potential overbought conditions warrant a more cautious approach. A reduced position size and a slight discount on entry will be applied to mitigate risk and capture potential pullbacks.",
+        "model": "gemini-2.5-flash-lite",
+        "generated_at": "2026-11-26T02:00:12.138792+00:00"
+      },
+      "final_decision": {
+        "action": "CAUTIOUS ACCUMULATE",
+        "entry": 2591.16,
+        "target": 2759.1,
+        "stop_loss": 2528.68,
+        "rr_ratio": 2.69,
+        "qty": 4,
+        "conviction": 78.9,
+        "status": "PENDING",
+        "spot_vs_entry_pct": -3.0
+      },
+      "recalibration_deltas": {
+        "applied": true,
+        "entry_delta_pct": -3.0,
+        "target_delta_pct": -3.83,
+        "stop_delta_pct": -2.81,
+        "qty_delta": -1,
+        "conviction_delta": -5.0,
+        "reasons": [
+          "Applied 3.0% pullback discount to avoid chasing extended spot.",
+          "Tightened stop-loss distance by 10.0% to constrain downside MAE.",
+          "Trimmed target upside by 15.0% for conservative R:R alignment.",
+          "Adjusted position size multiplier to 0.75x based on conviction & risk.",
+          "Objection: The RSI of 69.18 suggests potential overextension, the trailing P/E of 38.58x is elevated, and the profit growth of 4.2% lags sales growth, indicating potential valuation concerns."
+        ],
+        "summary": "Applied CRO Calibration (HDFCAMC): BUY NOW -> CAUTIOUS ACCUMULATE | Entry \u20b92671.3 -> \u20b92591.16 | TP \u20b92868.88 -> \u20b92759.1 | SL \u20b92601.88 -> \u20b92528.68 (R:R 1:2.85 -> 1:2.69) | Qty 5 -> 4 sh (0.75x) | Conviction 83.9% -> 78.9%."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 2671.3,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060504+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-TIIL-69f47fe5",
+      "signature": "69f47fe5ee661436",
+      "symbol": "TIIL",
+      "name": "Technocraft Industries (India) Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060486+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060486+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:49.712361+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 73,
+        "business": 35,
+        "moat": 8,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 80,
+        "technical_score": 96.0,
+        "composite_score": 76.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 2,827.00 vs 20D SMA 2,755.69 (Upward Curve, 30D Reg Target 3,604.17). RSI(14)=64.98, MACD=+30.99 vs Sig=+19.59."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 76.5,
+          "summary": "Fundamental 73/100 (Bus 35/40, Moat 8/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 80/100 [IT]. Attractive valuation at P/E 17.1x with value margin of safety. High capital efficiency (ROE 18.4%, ROCE 15.6%) underscores durable moat. Strong top-line expansion (24.4% YoY) & profit growth (49.4% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 62.3,
+          "summary": "OUTLASTED 3 bear objection(s) (-39.0 dmg pts): Survival 62.3 >= 52.0 (Size x0.67)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 85.3,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 62.3/52.0, Conv 85.3%, Size x0.67): 3 sh (INR 8,481.00) | Target 3,043.49 / SL 2,760.49 (R:R 1:3.25)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 2827.0,
+        "change_pct": 1.22,
+        "rsi_14": 64.98,
+        "sma_20": 2755.69,
+        "projected_30d_target": 3604.17,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 2783.77,
+        "target": 3043.49,
+        "stop_loss": 2760.49,
+        "rr_ratio": 3.25,
+        "qty": 3,
+        "conviction": 85.3
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 5h59m34.21364003s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 5h59m34.21364003s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T02:00:11.978075+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 2827.0,
+        "target": 3043.49,
+        "stop_loss": 2760.49,
+        "rr_ratio": 3.25,
+        "qty": 3,
+        "conviction": 85.3,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 1.55,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 2827.0,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060486+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-LT-ef9f73ab",
+      "signature": "ef9f73abac0f32f5",
+      "symbol": "LT",
+      "name": "Larsen & Toubro Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060437+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060437+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:36.706222+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 67,
+        "business": 32,
+        "moat": 10,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 96.0,
+        "composite_score": 71.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 4,156.00 vs 20D SMA 4,050.29 (Upward Curve, 30D Reg Target 5,088.82). RSI(14)=67.86, MACD=+100.42 vs Sig=+100.10."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 71.0,
+          "summary": "Fundamental 67/100 (Bus 32/40, Moat 10/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [GENERAL]. Balanced valuation at P/E 32.0x. High capital efficiency (ROE 17.9%, ROCE 13.9%) underscores durable moat. Strong top-line expansion (16.9% YoY) & profit growth (32.5% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 93.8,
+          "summary": "OUTLASTED 0 bear objection(s) (-0.0 dmg pts): Survival 93.8 >= 52.0 (Size x1.00)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 82.3,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 93.8/52.0, Conv 82.3%, Size x1.00): 3 sh (INR 12,468.00) | Target 4,451.36 / SL 4,035.36 (R:R 1:2.45)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 4156.0,
+        "change_pct": 1.37,
+        "rsi_14": 67.86,
+        "sma_20": 4050.29,
+        "projected_30d_target": 5088.82,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 4077.58,
+        "target": 4451.36,
+        "stop_loss": 4035.36,
+        "rr_ratio": 2.45,
+        "qty": 3,
+        "conviction": 82.3
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 5h59m50.527311888s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 5h59m50.527311888s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T01:59:55.688327+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 4156.0,
+        "target": 4451.36,
+        "stop_loss": 4035.36,
+        "rr_ratio": 2.45,
+        "qty": 3,
+        "conviction": 82.3,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 1.92,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 4156.0,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060437+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-GHCL-7fe29da4",
+      "signature": "7fe29da451fee886",
+      "symbol": "GHCL",
+      "name": "GHCL Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060414+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060414+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:31.402217+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 85,
+        "business": 30,
+        "moat": 10,
+        "management": 20,
+        "risk": 15,
+        "porters_total": 70,
+        "technical_score": 96.0,
+        "composite_score": 77.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 431.20 vs 20D SMA 424.74 (Upward Curve, 30D Reg Target 563.87). RSI(14)=64.1, MACD=+11.54 vs Sig=+11.29."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 77.5,
+          "summary": "Fundamental 85/100 (Bus 30/40, Moat 10/20, Mgmt 20/20, Risk 15/20) \u00b7 Porter's 5 Forces 70/100 [IT]. Attractive valuation at P/E 7.3x with value margin of safety."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 92.8,
+          "summary": "OUTLASTED 1 bear objection(s) (-9.0 dmg pts): Survival 92.8 >= 52.0 (Size x1.00)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 85.8,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 92.8/52.0, Conv 85.8%, Size x1.00): 34 sh (INR 14,660.80) | Target 508.70 / SL 408.70 (R:R 1:3.44)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 431.2,
+        "change_pct": -1.0,
+        "rsi_14": 64.1,
+        "sma_20": 424.74,
+        "projected_30d_target": 563.87,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 416.57,
+        "target": 508.7,
+        "stop_loss": 408.7,
+        "rr_ratio": 3.44,
+        "qty": 34,
+        "conviction": 85.8
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h6.646707954s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h6.646707954s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T01:59:39.398695+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 431.2,
+        "target": 508.7,
+        "stop_loss": 408.7,
+        "rr_ratio": 3.44,
+        "qty": 34,
+        "conviction": 85.8,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 3.51,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 431.2,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060414+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-GAIL-a996b401",
+      "signature": "a996b401b82df238",
+      "symbol": "GAIL",
+      "name": "GAIL (India) Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060395+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060395+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:29.169381+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 92,
+        "business": 32,
+        "moat": 10,
+        "management": 20,
+        "risk": 20,
+        "porters_total": 65,
+        "technical_score": 96.0,
+        "composite_score": 78.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 187.50 vs 20D SMA 182.74 (Upward Curve, 30D Reg Target 225.94). RSI(14)=61.23, MACD=+4.62 vs Sig=+4.61."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 78.5,
+          "summary": "Fundamental 92/100 (Bus 32/40, Moat 10/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 65/100 [POWER]. Attractive valuation at P/E 9.8x with value margin of safety. Strong top-line expansion (32.6% YoY) & profit growth (139.3% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 93.4,
+          "summary": "OUTLASTED 1 bear objection(s) (-9.0 dmg pts): Survival 93.4 >= 52.0 (Size x1.00)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 86.4,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 93.4/52.0, Conv 86.4%, Size x1.00): 51 sh (INR 9,562.50) | Target 266.00 / SL 166.00 (R:R 1:3.65)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 187.5,
+        "change_pct": 1.02,
+        "rsi_14": 61.23,
+        "sma_20": 182.74,
+        "projected_30d_target": 225.94,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 173.53,
+        "target": 266.0,
+        "stop_loss": 166.0,
+        "rr_ratio": 3.65,
+        "qty": 51,
+        "conviction": 86.4
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h6.816152122s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h6.816152122s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T01:59:39.354962+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 187.5,
+        "target": 266.0,
+        "stop_loss": 166.0,
+        "rr_ratio": 3.65,
+        "qty": 51,
+        "conviction": 86.4,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 8.05,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 187.5,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060395+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-CDSL-669fd6af",
+      "signature": "669fd6afa99abe77",
+      "symbol": "CDSL",
+      "name": "Central Depository Services (India) Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060370+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060370+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:28.184382+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 83,
+        "business": 40,
+        "moat": 18,
+        "management": 5,
+        "risk": 20,
+        "porters_total": 99,
+        "technical_score": 96.0,
+        "composite_score": 91.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 1,413.00 vs 20D SMA 1,358.84 (Upward Curve, 30D Reg Target 1,777.42). RSI(14)=68.11, MACD=+35.98 vs Sig=+31.98."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 91.0,
+          "summary": "Fundamental 83/100 (Bus 40/40, Moat 18/20, Mgmt 5/20, Risk 20/20) \u00b7 Porter's 5 Forces 99/100 [BANKING]. Premium growth multiple (P/E 58.5x) pricing in strong execution. High capital efficiency (ROE 26.4%, ROCE 23.4%) underscores durable moat. Strong top-line expansion (22.2% YoY) & profit growth (24.0% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 89.2,
+          "summary": "OUTLASTED 2 bear objection(s) (-20.0 dmg pts): Survival 89.2 >= 52.0 (Size x1.00)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 93.3,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 89.2/52.0, Conv 93.3%, Size x1.00): 10 sh (INR 14,130.00) | Target 1,541.31 / SL 1,400.31 (R:R 1:10.11)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 1413.0,
+        "change_pct": 1.29,
+        "rsi_14": 68.11,
+        "sma_20": 1358.84,
+        "projected_30d_target": 1777.42,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 1404.75,
+        "target": 1541.31,
+        "stop_loss": 1400.31,
+        "rr_ratio": 10.11,
+        "qty": 10,
+        "conviction": 93.3
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h23.149776271s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h23.149776271s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T01:59:23.043824+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 1413.0,
+        "target": 1541.31,
+        "stop_loss": 1400.31,
+        "rr_ratio": 10.11,
+        "qty": 10,
+        "conviction": 93.3,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 0.59,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 1413.0,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060370+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-IOC-7d498b43",
+      "signature": "7d498b43d2e85e30",
+      "symbol": "IOC",
+      "name": "Indian Oil Corporation Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060347+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060347+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:17.511635+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 97,
+        "business": 32,
+        "moat": 10,
+        "management": 20,
+        "risk": 20,
+        "porters_total": 80,
+        "technical_score": 96.0,
+        "composite_score": 88.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 147.79 vs 20D SMA 141.92 (Upward Curve, 30D Reg Target 180.59). RSI(14)=64.12, MACD=+3.77 vs Sig=+3.51."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 88.5,
+          "summary": "Fundamental 97/100 (Bus 32/40, Moat 10/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 80/100 [POWER]. Attractive valuation at P/E 4.3x with value margin of safety. High capital efficiency (ROE 22.6%, ROCE 18.7%) underscores durable moat. Strong top-line expansion (42.2% YoY) & profit growth (173.6% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 100.0,
+          "summary": "OUTLASTED 0 bear objection(s) (-0.0 dmg pts): Survival 100.0 >= 52.0 (Size x1.00)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 91.9,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 100.0/52.0, Conv 91.9%, Size x1.00): 95 sh (INR 14,040.05) | Target 236.29 / SL 136.29 (R:R 1:7.7)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 147.79,
+        "change_pct": 1.92,
+        "rsi_14": 64.12,
+        "sma_20": 141.92,
+        "projected_30d_target": 180.59,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED+SCREENER_IN"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 140.31,
+        "target": 236.29,
+        "stop_loss": 136.29,
+        "rr_ratio": 7.7,
+        "qty": 95,
+        "conviction": 91.9
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h23.106212925s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h23.106212925s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T01:59:22.999380+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 147.79,
+        "target": 236.29,
+        "stop_loss": 136.29,
+        "rr_ratio": 7.7,
+        "qty": 95,
+        "conviction": 91.9,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 5.33,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 147.79,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060347+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-ADANIPOWER-90627d5a",
+      "signature": "90627d5ae35277d5",
+      "symbol": "ADANIPOWER",
+      "name": "Adani Power Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060323+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060323+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:14.878720+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 90,
+        "business": 40,
+        "moat": 20,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 99,
+        "technical_score": 96.0,
+        "composite_score": 94.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 206.00 vs 20D SMA 201.85 (Upward Curve, 30D Reg Target 248.98). RSI(14)=65.74, MACD=+3.52 vs Sig=+2.94."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 94.5,
+          "summary": "Fundamental 90/100 (Bus 40/40, Moat 20/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 99/100 [POWER]. Balanced valuation at P/E 21.8x. High capital efficiency (ROE 27.0%, ROCE 21.6%) underscores durable moat. Strong top-line expansion (44.5% YoY) & profit growth (134.6% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 82.2,
+          "summary": "OUTLASTED 2 bear objection(s) (-29.0 dmg pts): Survival 82.2 >= 52.0 (Size x1.00)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 95.2,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 82.2/52.0, Conv 95.2%, Size x1.00): 72 sh (INR 14,832.00) | Target 300.50 / SL 200.50 (R:R 1:17.18)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 206.0,
+        "change_pct": -0.91,
+        "rsi_14": 65.74,
+        "sma_20": 201.85,
+        "projected_30d_target": 248.98,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 202.43,
+        "target": 300.5,
+        "stop_loss": 200.5,
+        "rr_ratio": 17.18,
+        "qty": 72,
+        "conviction": 95.2
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h39.460452038s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h39.460452038s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T01:59:06.590879+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 206.0,
+        "target": 300.5,
+        "stop_loss": 200.5,
+        "rr_ratio": 17.18,
+        "qty": 72,
+        "conviction": 95.2,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 1.76,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 206.0,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060323+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-NTPC-621db8ee",
+      "signature": "621db8eec4fc3a70",
+      "symbol": "NTPC",
+      "name": "NTPC Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060296+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060296+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:13.922170+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 99,
+        "business": 40,
+        "moat": 15,
+        "management": 20,
+        "risk": 20,
+        "porters_total": 75,
+        "technical_score": 59.0,
+        "composite_score": 87.0
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 59.0,
+          "summary": "Spot 318.00 vs 20D SMA 319.01 (Upward Curve, 30D Reg Target 352.68). RSI(14)=46.31, MACD=+1.24 vs Sig=+1.55."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 87.0,
+          "summary": "Fundamental 99/100 (Bus 40/40, Moat 15/20, Mgmt 20/20, Risk 20/20) \u00b7 Porter's 5 Forces 75/100 [POWER]. Attractive valuation at P/E 10.4x with value margin of safety. Strong top-line expansion (21.2% YoY) & profit growth (38.6% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "VETOED",
+          "confidence_pct": 49.2,
+          "summary": "Survival score 49.2 < required 52.0 after 41.0 Bear Damage pts across 3 negative objections."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "FILTERED",
+          "confidence_pct": 74.4,
+          "summary": "Quality Gate Hold (SIP ONLY, Conv 74.4%, R:R 1:6.69, Survival 49.2): Excellent business fundamentals; stagger entries on technical consolidation."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 318.0,
+        "change_pct": 0.81,
+        "rsi_14": 46.31,
+        "sma_20": 319.01,
+        "projected_30d_target": 352.68,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "SIP ONLY",
+        "entry": 309.55,
+        "target": 405.0,
+        "stop_loss": 305.0,
+        "rr_ratio": 6.69,
+        "qty": 0,
+        "conviction": 74.4
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h39.505183448s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h39.505183448s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T01:59:06.590506+00:00"
+      },
+      "final_decision": {
+        "action": "SIP ONLY",
+        "entry": 309.55,
+        "target": 405.0,
+        "stop_loss": 305.0,
+        "rr_ratio": 6.69,
+        "qty": 0,
+        "conviction": 74.4,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 0.0,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 318.0,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060296+00:00"
+      }
+    },
+    {
+      "audit_id": "fnv2-aud-20261125-BAJAJ-AUTO-9b8c4a2a",
+      "signature": "9b8c4a2aae6fb033",
+      "symbol": "BAJAJ-AUTO",
+      "name": "Bajaj Auto Limited",
+      "currency": "INR",
+      "created_at": "2026-11-26T02:00:38.060234+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060234+00:00",
+      "market_date": "2026-11-25",
+      "market_timestamp": "2026-11-25T10:30:29+00:00",
+      "retrieval_timestamp": "2026-11-26T01:58:07.310301+00:00",
+      "versions": {
+        "platform_version": "Finsistant-V2.3-Audit",
+        "scoring_model": "StockSight-V2.1",
+        "quant_model": "PolyReg2-RSI14-MACD-v2",
+        "moreshwar_model": "MOVIQ-Dynamic-V2",
+        "orchestrator_model": "AgentRunner-3Bot-v2",
+        "critic_model": "gemini-2.5-flash"
+      },
+      "scores": {
+        "fundamental_total": 88,
+        "business": 40,
+        "moat": 18,
+        "management": 10,
+        "risk": 20,
+        "porters_total": 95,
+        "technical_score": 96.0,
+        "composite_score": 91.5
+      },
+      "agent_assessments": {
+        "TechBot_1": {
+          "role": "TechnicalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 96.0,
+          "summary": "Spot 10,868.00 vs 20D SMA 10,686.70 (Upward Curve, 30D Reg Target 12,854.93). RSI(14)=59.72, MACD=+65.42 vs Sig=+55.23."
+        },
+        "FundBot_1": {
+          "role": "FundamentalAnalyst",
+          "signal": "BULLISH",
+          "confidence_pct": 91.5,
+          "summary": "Fundamental 88/100 (Bus 40/40, Moat 18/20, Mgmt 10/20, Risk 20/20) \u00b7 Porter's 5 Forces 95/100 [BANKING]. Balanced valuation at P/E 23.2x. High capital efficiency (ROE 35.6%, ROCE 29.3%) underscores durable moat. Strong top-line expansion (57.4% YoY) & profit growth (63.8% YoY)."
+        },
+        "BearProsecutor_1": {
+          "role": "AdversarialProsecutorAgent",
+          "signal": "OUTLASTED",
+          "confidence_pct": 86.5,
+          "summary": "OUTLASTED 2 bear objection(s) (-23.0 dmg pts): Survival 86.5 >= 52.0 (Size x1.00)."
+        },
+        "ExecBot_1": {
+          "role": "ExecutionAgent",
+          "signal": "APPROVED",
+          "confidence_pct": 93.5,
+          "summary": "OUTLASTED PROSECUTION [BUY NOW] (Survival 86.5/52.0, Conv 93.5%, Size x1.00): 1 sh (INR 10,868.00) | Target 11,862.60 / SL 10,775.60 (R:R 1:10.76)."
+        }
+      },
+      "market_snapshot": {
+        "spot_price": 10868.0,
+        "change_pct": 2.11,
+        "rsi_14": 59.72,
+        "sma_20": 10686.7,
+        "projected_30d_target": 12854.93,
+        "regression_curve": "Upward Curve",
+        "data_source": "Official NSE MCP (cm-market + bhavcopy) + YAHOO_LIVE_FEED"
+      },
+      "original_decision": {
+        "action": "BUY NOW",
+        "entry": 10807.94,
+        "target": 11862.6,
+        "stop_loss": 10775.6,
+        "rr_ratio": 10.76,
+        "qty": 1,
+        "conviction": 93.5
+      },
+      "critical_review": {
+        "status": "error",
+        "stance": "GEMINI API ERROR",
+        "risk_rating": "UNKNOWN",
+        "bull_case": "",
+        "objections_raised": "HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h55.915131562s.",
+        "rationale": "Live Gemini critical analysis failed: HTTP 429 (gemini-2.5-flash-lite): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits. Please retry in 6h55.915131562s.. Zero simulated fallback applied.",
+        "model": "gemini-2.5-flash",
+        "generated_at": "2026-11-26T01:58:50.041770+00:00"
+      },
+      "final_decision": {
+        "action": "BUY NOW",
+        "entry": 10868.0,
+        "target": 11862.6,
+        "stop_loss": 10775.6,
+        "rr_ratio": 10.76,
+        "qty": 1,
+        "conviction": 93.5,
+        "status": "PENDING"
+      },
+      "recalibration_deltas": {
+        "applied": false,
+        "entry_delta_pct": 0.56,
+        "target_delta_pct": 0.0,
+        "stop_delta_pct": 0.0,
+        "qty_delta": 0,
+        "conviction_delta": 0.0,
+        "reasons": [
+          "No live Gemini CRO recalibration applied (raw quantitative levels retained)."
+        ],
+        "summary": "Initial quantitative levels active."
+      },
+      "outcome": {
+        "status": "OPEN",
+        "broker_executed": false,
+        "order_id": null,
+        "broker_fill_price": null,
+        "broker_timestamp": null,
+        "latest_mark_price": 10868.0,
+        "mark_date": "2026-11-25",
+        "realized_return_pct": null,
+        "unrealized_return_pct": 0.0,
+        "counterfactual_return_pct": null,
+        "mfe_pct": 0.0,
+        "mae_pct": 0.0,
+        "holding_days": 0,
+        "marked_at": "2026-11-26T02:00:38.060234+00:00"
+      }
+    },
     {
       "audit_id": "fnv2-aud-20261125-MINDACORP-fe42ce5e",
       "signature": "fe42ce5e3bad877f",
@@ -121,12 +1468,15 @@
         "latest_mark_price": 716.9,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990606+00:00"
+        "marked_at": "2026-11-26T02:00:38.059427+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -248,7 +1598,10 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990587+00:00"
+        "marked_at": "2026-11-26T02:00:38.059457+00:00",
+        "original_counterfactual_pct": 1.72,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "NO_INTERVENTION"
       }
     },
     {
@@ -370,12 +1723,15 @@
         "latest_mark_price": 2827.0,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990565+00:00"
+        "marked_at": "2026-11-26T02:00:38.059470+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -385,7 +1741,7 @@
       "name": "The Bombay Burmah Trading Corporation Limited",
       "currency": "INR",
       "created_at": "2026-11-25T18:34:57.990538+00:00",
-      "last_seen_at": "2026-11-25T18:34:57.990538+00:00",
+      "last_seen_at": "2026-11-26T02:00:38.060465+00:00",
       "market_date": "2026-11-25",
       "market_timestamp": "2026-11-25T10:30:29+00:00",
       "retrieval_timestamp": "2026-11-25T18:33:44.065618+00:00",
@@ -497,7 +1853,10 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990538+00:00"
+        "marked_at": "2026-11-26T02:00:38.059485+00:00",
+        "original_counterfactual_pct": 1.22,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "NO_INTERVENTION"
       }
     },
     {
@@ -619,12 +1978,15 @@
         "latest_mark_price": 4156.0,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990510+00:00"
+        "marked_at": "2026-11-26T02:00:38.059497+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -746,12 +2108,15 @@
         "latest_mark_price": 431.2,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990486+00:00"
+        "marked_at": "2026-11-26T02:00:38.059517+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -873,12 +2238,15 @@
         "latest_mark_price": 187.5,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990465+00:00"
+        "marked_at": "2026-11-26T02:00:38.059531+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1000,12 +2368,15 @@
         "latest_mark_price": 1413.0,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.04,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990443+00:00"
+        "marked_at": "2026-11-26T02:00:38.059555+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1127,12 +2498,15 @@
         "latest_mark_price": 147.79,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 2.56,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990420+00:00"
+        "marked_at": "2026-11-26T02:00:38.059571+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1256,7 +2630,10 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990398+00:00"
+        "marked_at": "2026-11-26T02:00:38.059584+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1376,11 +2753,14 @@
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
         "unrealized_return_pct": 0.0,
-        "counterfactual_return_pct": 0.0,
+        "counterfactual_return_pct": 2.73,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990372+00:00"
+        "marked_at": "2026-11-26T02:00:38.059596+00:00",
+        "original_counterfactual_pct": 2.73,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1502,12 +2882,15 @@
         "latest_mark_price": 10868.0,
         "mark_date": "2026-11-25",
         "realized_return_pct": null,
-        "unrealized_return_pct": 0.0,
+        "unrealized_return_pct": 1.01,
         "counterfactual_return_pct": null,
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.990318+00:00"
+        "marked_at": "2026-11-26T02:00:38.059610+00:00",
+        "original_counterfactual_pct": 0.0,
+        "original_counterfactual_status": "OPEN",
+        "cro_verdict": "PENDING_FORWARD_BARS"
       }
     },
     {
@@ -1634,7 +3017,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989621+00:00",
+        "marked_at": "2026-11-26T02:00:38.059616+00:00",
         "original_counterfactual_pct": -0.13,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1764,7 +3147,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989659+00:00",
+        "marked_at": "2026-11-26T02:00:38.059623+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -1894,7 +3277,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989682+00:00",
+        "marked_at": "2026-11-26T02:00:38.059629+00:00",
         "original_counterfactual_pct": -0.78,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2024,7 +3407,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989697+00:00",
+        "marked_at": "2026-11-26T02:00:38.059635+00:00",
         "original_counterfactual_pct": 0.28,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2154,7 +3537,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989711+00:00",
+        "marked_at": "2026-11-26T02:00:38.059640+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2284,7 +3667,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989725+00:00",
+        "marked_at": "2026-11-26T02:00:38.059645+00:00",
         "original_counterfactual_pct": 0.12,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2414,7 +3797,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989738+00:00",
+        "marked_at": "2026-11-26T02:00:38.059650+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2544,7 +3927,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989758+00:00",
+        "marked_at": "2026-11-26T02:00:38.059656+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2674,7 +4057,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989772+00:00",
+        "marked_at": "2026-11-26T02:00:38.059661+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2804,7 +4187,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989783+00:00",
+        "marked_at": "2026-11-26T02:00:38.059666+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -2934,7 +4317,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989796+00:00",
+        "marked_at": "2026-11-26T02:00:38.059671+00:00",
         "original_counterfactual_pct": 2.73,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -3063,7 +4446,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989809+00:00",
+        "marked_at": "2026-11-26T02:00:38.059676+00:00",
         "original_counterfactual_pct": 0.0,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -7119,7 +8502,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989820+00:00",
+        "marked_at": "2026-11-26T02:00:38.059685+00:00",
         "original_counterfactual_pct": 0.58,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -7603,7 +8986,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989828+00:00",
+        "marked_at": "2026-11-26T02:00:38.059691+00:00",
         "original_counterfactual_pct": 1.8,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -7727,7 +9110,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989835+00:00",
+        "marked_at": "2026-11-26T02:00:38.059697+00:00",
         "original_counterfactual_pct": -0.46,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -8214,7 +9597,7 @@
         "mfe_pct": 0.0,
         "mae_pct": 0.0,
         "holding_days": 0,
-        "marked_at": "2026-11-25T18:34:57.989842+00:00",
+        "marked_at": "2026-11-26T02:00:38.059702+00:00",
         "original_counterfactual_pct": -0.36,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -8576,7 +9959,7 @@
         "mfe_pct": 4.0,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989850+00:00",
+        "marked_at": "2026-11-26T02:00:38.059708+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 1.92,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -8824,7 +10207,7 @@
         "mfe_pct": 5.59,
         "mae_pct": -0.08,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989870+00:00",
+        "marked_at": "2026-11-26T02:00:38.059728+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 2.02,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -8948,7 +10331,7 @@
         "mfe_pct": 4.26,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989888+00:00",
+        "marked_at": "2026-11-26T02:00:38.059743+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 1.37,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -9320,7 +10703,7 @@
         "mfe_pct": 6.32,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989902+00:00",
+        "marked_at": "2026-11-26T02:00:38.059755+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 3.58,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -9692,7 +11075,7 @@
         "mfe_pct": 4.0,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989915+00:00",
+        "marked_at": "2026-11-26T02:00:38.059766+00:00",
         "original_counterfactual_pct": 1.92,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -10185,7 +11568,7 @@
         "mfe_pct": 5.05,
         "mae_pct": -0.59,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989928+00:00",
+        "marked_at": "2026-11-26T02:00:38.059777+00:00",
         "original_counterfactual_pct": 2.02,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -10309,7 +11692,7 @@
         "mfe_pct": 4.26,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989940+00:00",
+        "marked_at": "2026-11-26T02:00:38.059786+00:00",
         "original_counterfactual_pct": 1.37,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -10803,7 +12186,7 @@
         "mfe_pct": 4.72,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989952+00:00",
+        "marked_at": "2026-11-26T02:00:38.059797+00:00",
         "original_counterfactual_pct": 3.58,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -11048,7 +12431,7 @@
         "mfe_pct": 5.59,
         "mae_pct": -0.08,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989964+00:00",
+        "marked_at": "2026-11-26T02:00:38.059807+00:00",
         "original_counterfactual_pct": 2.02,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -11535,7 +12918,7 @@
         "mfe_pct": 4.24,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989975+00:00",
+        "marked_at": "2026-11-26T02:00:38.059817+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 2.68,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -12031,7 +13414,7 @@
         "mfe_pct": 7.68,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989986+00:00",
+        "marked_at": "2026-11-26T02:00:38.059829+00:00",
         "original_counterfactual_pct": 3.58,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -12279,7 +13662,7 @@
         "mfe_pct": 5.05,
         "mae_pct": -0.59,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.989996+00:00",
+        "marked_at": "2026-11-26T02:00:38.059840+00:00",
         "original_counterfactual_pct": 2.02,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -13023,7 +14406,7 @@
         "mfe_pct": 3.72,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.990007+00:00",
+        "marked_at": "2026-11-26T02:00:38.059852+00:00",
         "original_counterfactual_pct": 2.68,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -13519,7 +14902,7 @@
         "mfe_pct": 6.32,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.990018+00:00",
+        "marked_at": "2026-11-26T02:00:38.059864+00:00",
         "original_counterfactual_pct": 3.58,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -13767,7 +15150,7 @@
         "mfe_pct": 5.59,
         "mae_pct": -0.08,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990029+00:00",
+        "marked_at": "2026-11-26T02:00:38.059874+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 2.02,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -14387,7 +15770,7 @@
         "mfe_pct": 3.72,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.990042+00:00",
+        "marked_at": "2026-11-26T02:00:38.059905+00:00",
         "original_counterfactual_pct": 2.68,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -14883,7 +16266,7 @@
         "mfe_pct": 7.41,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.990052+00:00",
+        "marked_at": "2026-11-26T02:00:38.059919+00:00",
         "original_counterfactual_pct": 3.58,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -15131,7 +16514,7 @@
         "mfe_pct": 5.21,
         "mae_pct": -0.44,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.990063+00:00",
+        "marked_at": "2026-11-26T02:00:38.059931+00:00",
         "original_counterfactual_pct": -2.7,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -15872,7 +17255,7 @@
         "mfe_pct": 3.2,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.990075+00:00",
+        "marked_at": "2026-11-26T02:00:38.059945+00:00",
         "original_counterfactual_pct": 2.68,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -16368,7 +17751,7 @@
         "mfe_pct": 7.41,
         "mae_pct": 0.0,
         "holding_days": 1,
-        "marked_at": "2026-11-25T18:34:57.990087+00:00",
+        "marked_at": "2026-11-26T02:00:38.059958+00:00",
         "original_counterfactual_pct": 3.58,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -16616,7 +17999,7 @@
         "mfe_pct": 5.96,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990097+00:00",
+        "marked_at": "2026-11-26T02:00:38.059968+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": 2.38,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -17856,7 +19239,7 @@
         "mfe_pct": 3.08,
         "mae_pct": -0.17,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990112+00:00",
+        "marked_at": "2026-11-26T02:00:38.059985+00:00",
         "original_counterfactual_status": "OPEN",
         "original_counterfactual_pct": -0.25,
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -18104,7 +19487,7 @@
         "mfe_pct": 4.41,
         "mae_pct": -1.19,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990125+00:00",
+        "marked_at": "2026-11-26T02:00:38.059997+00:00",
         "original_counterfactual_pct": -2.7,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -18845,7 +20228,7 @@
         "mfe_pct": 3.02,
         "mae_pct": 0.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990139+00:00",
+        "marked_at": "2026-11-26T02:00:38.060029+00:00",
         "original_counterfactual_pct": -1.2,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -19217,7 +20600,7 @@
         "mfe_pct": 2.22,
         "mae_pct": -1.0,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990150+00:00",
+        "marked_at": "2026-11-26T02:00:38.060044+00:00",
         "original_counterfactual_pct": -1.09,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -19465,7 +20848,7 @@
         "mfe_pct": 4.95,
         "mae_pct": -0.69,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990162+00:00",
+        "marked_at": "2026-11-26T02:00:38.060057+00:00",
         "original_counterfactual_pct": -2.7,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -20085,7 +21468,7 @@
         "mfe_pct": 2.49,
         "mae_pct": -0.22,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990175+00:00",
+        "marked_at": "2026-11-26T02:00:38.060071+00:00",
         "original_counterfactual_pct": -1.2,
         "original_counterfactual_status": "STOP_HIT",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -20581,7 +21964,7 @@
         "mfe_pct": 2.74,
         "mae_pct": -0.5,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990187+00:00",
+        "marked_at": "2026-11-26T02:00:38.060084+00:00",
         "original_counterfactual_pct": -1.09,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -22029,7 +23412,7 @@
         "mfe_pct": 2.74,
         "mae_pct": -0.5,
         "holding_days": 2,
-        "marked_at": "2026-11-25T18:34:57.990201+00:00",
+        "marked_at": "2026-11-26T02:00:38.060101+00:00",
         "original_counterfactual_pct": -1.09,
         "original_counterfactual_status": "OPEN",
         "cro_verdict": "PENDING_FORWARD_BARS"
@@ -37545,6 +38928,6 @@
       }
     }
   ],
-  "last_scan_new_records": 12,
-  "total_records": 305
+  "last_scan_new_records": 11,
+  "total_records": 316
 }
