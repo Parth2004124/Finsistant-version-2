@@ -1,9 +1,9 @@
 {
   "schema_version": "m3_1_paper_daily_report_v1",
   "release_version": "3.2.0",
-  "generated_at_utc": "2026-11-25T13:41:33.995088+00:00",
-  "trading_date": "2026-11-25",
-  "data_availability_timestamp": "2026-11-25T13:41:10.527570+00:00",
+  "generated_at_utc": "2026-11-26T20:20:47.246386+00:00",
+  "trading_date": "2026-11-26",
+  "data_availability_timestamp": "2026-11-26T20:20:41.809227+00:00",
   "configuration_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
   "configuration_raw_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
   "strategy_identifier": "G_SIMPLE_TREND_BASELINE + EXP_E_COMBINED_EXEC_INTEL",
@@ -24,7 +24,7 @@
   "regime_determination": {
     "raw_regime": "BULL_TREND",
     "confirmed_regime": "BULL_TREND",
-    "confirmation_streak_days": 6,
+    "confirmation_streak_days": 7,
     "confirmation_required_days": 3,
     "allow_new_family_e_entries": true
   },
@@ -34,9 +34,9 @@
     "target_liquid_liquidbees_pct": 10.0,
     "target_gold_pct": 0.0,
     "actual_core_pct": 0.0,
-    "actual_tactical_pct": 23.62,
-    "actual_liquid_pct": 71.17,
-    "actual_cash_pct": 5.21
+    "actual_tactical_pct": 23.67,
+    "actual_liquid_pct": 71.13,
+    "actual_cash_pct": 5.2
   },
   "signals_generated": [],
   "simulated_orders_latest_session": [],
@@ -44,7 +44,7 @@
     {
       "kind": "CORE_REBALANCE",
       "target_core_inr": 0.0,
-      "signal_timestamp": "2026-11-25T15:30:00+05:30"
+      "signal_timestamp": "2026-11-26T15:30:00+05:30"
     }
   ],
   "execution_summary": {
@@ -59,88 +59,88 @@
   },
   "portfolio_nav": {
     "initial_capital_inr": 100000.0,
-    "current_nav_inr": 99861.33,
-    "daily_pnl_inr": 343.65,
-    "daily_return_pct": 0.3453,
-    "cumulative_return_pct": -0.1387,
-    "benchmark_niftybees_nav": 99949.02,
-    "benchmark_45_55_nav": 100003.94
+    "current_nav_inr": 99950.69,
+    "daily_pnl_inr": 89.37,
+    "daily_return_pct": 0.0895,
+    "cumulative_return_pct": -0.0493,
+    "benchmark_niftybees_nav": 100377.27,
+    "benchmark_45_55_nav": 100210.1
   },
   "risk_metrics": {
-    "as_of_date": "2026-11-25",
-    "sample_sessions": 3,
+    "as_of_date": "2026-11-26",
+    "sample_sessions": 4,
     "initial_capital_inr": 100000.0,
-    "current_nav_inr": 99861.33,
-    "daily_pnl_inr": 343.65,
-    "daily_return_pct": 0.3453,
-    "cumulative_pnl_inr": -138.67,
-    "cumulative_return_pct": -0.1387,
+    "current_nav_inr": 99950.69,
+    "daily_pnl_inr": 89.37,
+    "daily_return_pct": 0.0895,
+    "cumulative_pnl_inr": -49.31,
+    "cumulative_return_pct": -0.0493,
     "cagr_pct": null,
-    "cagr_sample_status": "INSUFFICIENT_SAMPLE (3/60 sessions)",
+    "cagr_sample_status": "INSUFFICIENT_SAMPLE (4/60 sessions)",
     "max_drawdown_pct": 0.48,
-    "current_drawdown_pct": 0.14,
+    "current_drawdown_pct": 0.05,
     "rolling_volatility_pct": null,
     "rolling_sharpe": null,
     "rolling_sortino": null,
-    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (3/20 sessions)",
+    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (4/20 sessions)",
     "exposure_by_instrument": [
       {
         "symbol": "LIQUIDBEES",
         "instrument_type": "LIQUID_ETF",
         "sector": "Liquid Cash ETF",
-        "market_value_inr": 71074.62,
-        "weight_pct": 71.17
+        "market_value_inr": 71091.98,
+        "weight_pct": 71.13
       },
       {
         "symbol": "BAJAJ-AUTO",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Automobile and Auto Components",
-        "market_value_inr": 10868.0,
-        "weight_pct": 10.88
+        "market_value_inr": 10850.0,
+        "weight_pct": 10.86
       },
       {
         "symbol": "NTPC",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Power",
-        "market_value_inr": 12720.0,
-        "weight_pct": 12.74
+        "market_value_inr": 12810.0,
+        "weight_pct": 12.82
       }
     ],
     "exposure_by_sector": [
       {
         "sector": "Power",
-        "weight_pct": 12.74
+        "weight_pct": 12.82
       },
       {
         "sector": "Automobile and Auto Components",
-        "weight_pct": 10.88
+        "weight_pct": 10.86
       }
     ],
     "core_etf_exposure_pct": 0.0,
-    "tactical_equity_exposure_pct": 23.62,
-    "equity_exposure_pct": 23.62,
+    "tactical_equity_exposure_pct": 23.67,
+    "equity_exposure_pct": 23.67,
     "gold_exposure_pct": 0.0,
     "gold_exposure_note": "0.0% \u2014 Frozen config G_SIMPLE_TREND_BASELINE has no Gold ETF (maps 60/30/10 & 45/10/45 to NIFTYBEES / Family E / LIQUIDBEES).",
-    "liquid_allocation_pct": 71.17,
-    "cash_pct": 5.21,
-    "cash_utilisation_pct": 94.79,
-    "max_single_stock_pct": 12.74,
-    "max_sector_exposure_pct": 12.74,
+    "liquid_allocation_pct": 71.13,
+    "cash_pct": 5.2,
+    "cash_utilisation_pct": 94.8,
+    "max_single_stock_pct": 12.82,
+    "max_sector_exposure_pct": 12.82,
     "turnover_inr": 94767.05,
     "turnover_x": 0.948,
     "total_transaction_costs_inr": 53.03,
     "cost_pct_of_gross_traded_value": 0.056,
     "realized_pnl_inr": 0.0,
-    "unrealized_pnl_inr": -156.03,
+    "unrealized_pnl_inr": -84.03,
     "cum_dividends_inr": 0.0,
-    "cum_liquid_yield_inr": 17.36
+    "cum_liquid_yield_inr": 34.73
   },
   "data_quality_state": "PARTIAL_DIAGNOSTIC_ONLY",
   "reconciliation_result": {
     "passed": true,
-    "as_of_date": "2026-11-25",
-    "nav_from_assets_inr": 99861.33,
-    "nav_from_equity_inr": 99861.33,
+    "as_of_date": "2026-11-26",
+    "nav_from_assets_inr": 99950.69,
+    "nav_from_equity_inr": 99950.69,
     "reconciliation_diff_inr": 0.0,
     "nav_diff_inr": 0.0,
     "settlement_diff_inr": 0.0,
@@ -149,12 +149,12 @@
     "settled_cash_inr": 5198.71,
     "unsettled_cash_inr": 0.0,
     "core_value_inr": 0.0,
-    "tactical_value_inr": 23588.0,
-    "liquid_value_inr": 71074.62,
+    "tactical_value_inr": 23660.0,
+    "liquid_value_inr": 71091.98,
     "realized_pnl_inr": 0.0,
-    "unrealized_pnl_inr": -156.03,
+    "unrealized_pnl_inr": -84.03,
     "cum_dividends_inr": 0.0,
-    "cum_liquid_yield_inr": 17.36,
+    "cum_liquid_yield_inr": 34.73,
     "cum_costs_inr": 53.03,
     "incomplete_checkpoints": [],
     "failure_reasons": []
@@ -163,16 +163,16 @@
   "safe_mode_reason": "",
   "audit_chain": {
     "valid": true,
-    "entries": 4,
-    "head_chain_sha256": "f6b5d6e9d767ce4ffb62175336993bad992f38bc34ffa7f1f0b106570f6e104d"
+    "entries": 5,
+    "head_chain_sha256": "f235f76aa175f576609ef4ecbe583cb032514e6260bcea14526a3f7d3e58d32c"
   },
   "prospective_validation": {
     "prospective_start_date": "2026-11-19",
-    "completed_unseen_sessions": 3,
+    "completed_unseen_sessions": 4,
     "minimum_required_sessions": 60,
     "target_sessions": 120,
-    "progress_to_min_pct": 5.0,
-    "progress_to_target_pct": 2.5,
+    "progress_to_min_pct": 6.67,
+    "progress_to_target_pct": 3.33,
     "validation_complete": false,
     "status_label": "IN_PROGRESS_INCOMPLETE_SAMPLE",
     "prospective_paper_trades": 3,
@@ -183,19 +183,19 @@
   "allocation_policy": "0% NIFTYBEES / 90% Tactical AI Picks / 10% Liquid (BULL_TREND)",
   "exit_signals": [],
   "ems_blotter": {
-    "generated_at_utc": "2026-11-25T13:41:33.961424+00:00",
+    "generated_at_utc": "2026-11-26T20:20:47.207345+00:00",
     "desk_status": "ACTIVE",
     "kill_switch_reasons": [],
     "counts": {
       "routed": 15,
       "compliance_blocked": 0,
-      "exceptions": 0
+      "exceptions": 1
     },
     "routed_orders": [
       {
         "symbol": "ADANIPOWER",
         "side": "BUY",
-        "qty": 54,
+        "qty": 53,
         "lifecycle_state": "ROUTED",
         "selected_algo": "NEXT_SESSION_OPEN",
         "matched_rules": [
@@ -209,21 +209,21 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 206.0,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 3577188637.42,
+          "arrival_price": 208.3,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 3547037082.07,
           "adv_participation_pct": 0.0003,
-          "hl_range_pct": 2.39,
-          "daily_vol_frac": 0.01709,
+          "hl_range_pct": 2.43,
+          "daily_vol_frac": 0.01708,
           "est_impact_bps": 2.06,
-          "est_spread_bps": 11.96,
+          "est_spread_bps": 12.15,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 42.02,
-          "difficulty_score": 21.4,
+          "est_total_cost_bps": 42.21,
+          "difficulty_score": 21.6,
           "difficulty_tier": "LOW",
           "selected_algo": "NEXT_SESSION_OPEN"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.960990+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.206854+00:00"
       },
       {
         "symbol": "BAJAJ-AUTO",
@@ -242,28 +242,28 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 10868.0,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 4422408940.4,
+          "arrival_price": 10850.0,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 4439670361.9,
           "adv_participation_pct": 0.0003,
-          "hl_range_pct": 2.08,
-          "daily_vol_frac": 0.01363,
-          "est_impact_bps": 2.05,
-          "est_spread_bps": 10.38,
+          "hl_range_pct": 2.09,
+          "daily_vol_frac": 0.012,
+          "est_impact_bps": 2.04,
+          "est_spread_bps": 10.44,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 40.43,
-          "difficulty_score": 17.9,
+          "est_total_cost_bps": 40.48,
+          "difficulty_score": 16.9,
           "difficulty_tier": "LOW",
           "selected_algo": "NEXT_SESSION_OPEN"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961026+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.206897+00:00"
       },
       {
-        "symbol": "IOC",
+        "symbol": "LTF",
         "side": "BUY",
-        "qty": 75,
+        "qty": 39,
         "lifecycle_state": "ROUTED",
-        "selected_algo": "NEXT_SESSION_OPEN",
+        "selected_algo": "LIMIT_ORDER_SIM",
         "matched_rules": [
           "RBLD_01_DATA_INTEGRITY",
           "RBLD_02_DESK_KILL_SWITCH",
@@ -275,156 +275,90 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 147.79,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 2052803231.14,
+          "arrival_price": 283.0,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 1222497007.77,
+          "adv_participation_pct": 0.0009,
+          "hl_range_pct": 3.09,
+          "daily_vol_frac": 0.02358,
+          "est_impact_bps": 2.15,
+          "est_spread_bps": 15.46,
+          "est_statutory_bps": 28.0,
+          "est_total_cost_bps": 45.61,
+          "difficulty_score": 28.6,
+          "difficulty_tier": "MODERATE",
+          "selected_algo": "LIMIT_ORDER_SIM"
+        },
+        "evaluated_at_utc": "2026-11-26T20:20:47.206929+00:00"
+      },
+      {
+        "symbol": "BANDHANBNK",
+        "side": "BUY",
+        "qty": 66,
+        "lifecycle_state": "ROUTED",
+        "selected_algo": "LIMIT_ORDER_SIM",
+        "matched_rules": [
+          "RBLD_01_DATA_INTEGRITY",
+          "RBLD_02_DESK_KILL_SWITCH",
+          "RBLD_03_PRICE_BAND_DRIFT",
+          "RBLD_04_MIN_LIQUIDITY_ADV",
+          "RBLD_05_SPREAD_VOL_LIMIT",
+          "RBLD_06_CONCENTRATION_CAPS"
+        ],
+        "blocked_rules": [],
+        "pre_trade_tca": {
+          "side": "BUY",
+          "arrival_price": 169.49,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 1687723232.73,
+          "adv_participation_pct": 0.0007,
+          "hl_range_pct": 3.01,
+          "daily_vol_frac": 0.02134,
+          "est_impact_bps": 2.12,
+          "est_spread_bps": 15.03,
+          "est_statutory_bps": 28.0,
+          "est_total_cost_bps": 45.15,
+          "difficulty_score": 26.8,
+          "difficulty_tier": "MODERATE",
+          "selected_algo": "LIMIT_ORDER_SIM"
+        },
+        "evaluated_at_utc": "2026-11-26T20:20:47.206956+00:00"
+      },
+      {
+        "symbol": "BAJAJFINSV",
+        "side": "BUY",
+        "qty": 5,
+        "lifecycle_state": "ROUTED",
+        "selected_algo": "LIMIT_ORDER_SIM",
+        "matched_rules": [
+          "RBLD_01_DATA_INTEGRITY",
+          "RBLD_02_DESK_KILL_SWITCH",
+          "RBLD_03_PRICE_BAND_DRIFT",
+          "RBLD_04_MIN_LIQUIDITY_ADV",
+          "RBLD_05_SPREAD_VOL_LIMIT",
+          "RBLD_06_CONCENTRATION_CAPS"
+        ],
+        "blocked_rules": [],
+        "pre_trade_tca": {
+          "side": "BUY",
+          "arrival_price": 1885.9,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 2247924612.32,
           "adv_participation_pct": 0.0005,
-          "hl_range_pct": 2.36,
-          "daily_vol_frac": 0.018,
-          "est_impact_bps": 2.09,
-          "est_spread_bps": 11.81,
+          "hl_range_pct": 2.6,
+          "daily_vol_frac": 0.01664,
+          "est_impact_bps": 2.08,
+          "est_spread_bps": 13.02,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 41.9,
-          "difficulty_score": 21.8,
-          "difficulty_tier": "LOW",
-          "selected_algo": "NEXT_SESSION_OPEN"
-        },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961054+00:00"
-      },
-      {
-        "symbol": "CDSL",
-        "side": "BUY",
-        "qty": 7,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "LIMIT_ORDER_SIM",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 1413.0,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 2522125282.63,
-          "adv_participation_pct": 0.0004,
-          "hl_range_pct": 3.2,
-          "daily_vol_frac": 0.02071,
-          "est_impact_bps": 2.09,
-          "est_spread_bps": 16.0,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 46.09,
-          "difficulty_score": 27.4,
+          "est_total_cost_bps": 43.1,
+          "difficulty_score": 22.2,
           "difficulty_tier": "MODERATE",
           "selected_algo": "LIMIT_ORDER_SIM"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961080+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.206982+00:00"
       },
       {
-        "symbol": "GAIL",
-        "side": "BUY",
-        "qty": 59,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "NEXT_SESSION_OPEN",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 187.5,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 1895203474.21,
-          "adv_participation_pct": 0.0006,
-          "hl_range_pct": 1.8,
-          "daily_vol_frac": 0.01776,
-          "est_impact_bps": 2.09,
-          "est_spread_bps": 9.02,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 39.11,
-          "difficulty_score": 19.1,
-          "difficulty_tier": "LOW",
-          "selected_algo": "NEXT_SESSION_OPEN"
-        },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961104+00:00"
-      },
-      {
-        "symbol": "GHCL",
-        "side": "BUY",
-        "qty": 25,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "LIMIT_ORDER_SIM",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 430.7,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 92560648.56,
-          "adv_participation_pct": 0.0121,
-          "hl_range_pct": 2.75,
-          "daily_vol_frac": 0.02718,
-          "est_impact_bps": 2.63,
-          "est_spread_bps": 13.74,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 44.37,
-          "difficulty_score": 29.4,
-          "difficulty_tier": "MODERATE",
-          "selected_algo": "LIMIT_ORDER_SIM"
-        },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961130+00:00"
-      },
-      {
-        "symbol": "LT",
-        "side": "BUY",
-        "qty": 2,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "NEXT_SESSION_OPEN",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 4156.0,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 9333013319.95,
-          "adv_participation_pct": 0.0001,
-          "hl_range_pct": 1.82,
-          "daily_vol_frac": 0.01381,
-          "est_impact_bps": 2.03,
-          "est_spread_bps": 9.12,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 39.15,
-          "difficulty_score": 16.8,
-          "difficulty_tier": "LOW",
-          "selected_algo": "NEXT_SESSION_OPEN"
-        },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961157+00:00"
-      },
-      {
-        "symbol": "BBTC",
+        "symbol": "ERIS",
         "side": "BUY",
         "qty": 8,
         "lifecycle_state": "ROUTED",
@@ -440,26 +374,59 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 1264.1,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 106824344.3,
-          "adv_participation_pct": 0.0105,
-          "hl_range_pct": 3.39,
-          "daily_vol_frac": 0.02497,
-          "est_impact_bps": 2.54,
-          "est_spread_bps": 16.96,
+          "arrival_price": 1302.8,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 109467078.38,
+          "adv_participation_pct": 0.0103,
+          "hl_range_pct": 3.3,
+          "daily_vol_frac": 0.01549,
+          "est_impact_bps": 2.33,
+          "est_spread_bps": 16.52,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 47.5,
-          "difficulty_score": 31.0,
+          "est_total_cost_bps": 46.85,
+          "difficulty_score": 25.0,
           "difficulty_tier": "MODERATE",
           "selected_algo": "LIMIT_ORDER_SIM"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961183+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.207008+00:00"
       },
       {
-        "symbol": "TIIL",
+        "symbol": "APOLLOHOSP",
         "side": "BUY",
-        "qty": 3,
+        "qty": 1,
+        "lifecycle_state": "ROUTED",
+        "selected_algo": "NEXT_SESSION_OPEN",
+        "matched_rules": [
+          "RBLD_01_DATA_INTEGRITY",
+          "RBLD_02_DESK_KILL_SWITCH",
+          "RBLD_03_PRICE_BAND_DRIFT",
+          "RBLD_04_MIN_LIQUIDITY_ADV",
+          "RBLD_05_SPREAD_VOL_LIMIT",
+          "RBLD_06_CONCENTRATION_CAPS"
+        ],
+        "blocked_rules": [],
+        "pre_trade_tca": {
+          "side": "BUY",
+          "arrival_price": 9222.5,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 5102681277.93,
+          "adv_participation_pct": 0.0002,
+          "hl_range_pct": 2.05,
+          "daily_vol_frac": 0.01911,
+          "est_impact_bps": 2.06,
+          "est_spread_bps": 10.23,
+          "est_statutory_bps": 28.0,
+          "est_total_cost_bps": 40.29,
+          "difficulty_score": 21.0,
+          "difficulty_tier": "LOW",
+          "selected_algo": "NEXT_SESSION_OPEN"
+        },
+        "evaluated_at_utc": "2026-11-26T20:20:47.207033+00:00"
+      },
+      {
+        "symbol": "CEMPRO",
+        "side": "BUY",
+        "qty": 7,
         "lifecycle_state": "ROUTED",
         "selected_algo": "LIMIT_ORDER_SIM",
         "matched_rules": [
@@ -473,28 +440,61 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 2849.2,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 76235568.75,
-          "adv_participation_pct": 0.0147,
-          "hl_range_pct": 4.17,
-          "daily_vol_frac": 0.01973,
-          "est_impact_bps": 2.5,
-          "est_spread_bps": 20.87,
+          "arrival_price": 1425.0,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 571476931.67,
+          "adv_participation_pct": 0.002,
+          "hl_range_pct": 3.66,
+          "daily_vol_frac": 0.02039,
+          "est_impact_bps": 2.19,
+          "est_spread_bps": 18.31,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 51.37,
-          "difficulty_score": 31.7,
+          "est_total_cost_bps": 48.5,
+          "difficulty_score": 29.4,
           "difficulty_tier": "MODERATE",
           "selected_algo": "LIMIT_ORDER_SIM"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961208+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.207073+00:00"
       },
       {
-        "symbol": "HDFCAMC",
+        "symbol": "ABCAPITAL",
+        "side": "BUY",
+        "qty": 27,
+        "lifecycle_state": "ROUTED",
+        "selected_algo": "LIMIT_ORDER_SIM",
+        "matched_rules": [
+          "RBLD_01_DATA_INTEGRITY",
+          "RBLD_02_DESK_KILL_SWITCH",
+          "RBLD_03_PRICE_BAND_DRIFT",
+          "RBLD_04_MIN_LIQUIDITY_ADV",
+          "RBLD_05_SPREAD_VOL_LIMIT",
+          "RBLD_06_CONCENTRATION_CAPS"
+        ],
+        "blocked_rules": [],
+        "pre_trade_tca": {
+          "side": "BUY",
+          "arrival_price": 413.5,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 1329625298.03,
+          "adv_participation_pct": 0.0008,
+          "hl_range_pct": 2.7,
+          "daily_vol_frac": 0.02061,
+          "est_impact_bps": 2.13,
+          "est_spread_bps": 13.51,
+          "est_statutory_bps": 28.0,
+          "est_total_cost_bps": 43.64,
+          "difficulty_score": 25.0,
+          "difficulty_tier": "MODERATE",
+          "selected_algo": "LIMIT_ORDER_SIM"
+        },
+        "evaluated_at_utc": "2026-11-26T20:20:47.207104+00:00"
+      },
+      {
+        "symbol": "LUMAXTECH",
         "side": "BUY",
         "qty": 4,
         "lifecycle_state": "ROUTED",
-        "selected_algo": "LIMIT_ORDER_SIM",
+        "selected_algo": "VOLATILITY_ADJUSTED",
         "matched_rules": [
           "RBLD_01_DATA_INTEGRITY",
           "RBLD_02_DESK_KILL_SWITCH",
@@ -506,21 +506,21 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 2671.3,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 2205627075.6,
-          "adv_participation_pct": 0.0005,
-          "hl_range_pct": 2.85,
-          "daily_vol_frac": 0.0193,
-          "est_impact_bps": 2.09,
-          "est_spread_bps": 14.26,
+          "arrival_price": 2336.2,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 519111486.54,
+          "adv_participation_pct": 0.0022,
+          "hl_range_pct": 3.91,
+          "daily_vol_frac": 0.03139,
+          "est_impact_bps": 2.31,
+          "est_spread_bps": 19.56,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 44.35,
-          "difficulty_score": 24.9,
-          "difficulty_tier": "MODERATE",
-          "selected_algo": "LIMIT_ORDER_SIM"
+          "est_total_cost_bps": 49.87,
+          "difficulty_score": 37.1,
+          "difficulty_tier": "HIGH",
+          "selected_algo": "VOLATILITY_ADJUSTED"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961232+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.207130+00:00"
       },
       {
         "symbol": "MINDACORP",
@@ -539,21 +539,21 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 717.85,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 270141682.31,
+          "arrival_price": 708.9,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 273146010.68,
           "adv_participation_pct": 0.0041,
-          "hl_range_pct": 3.89,
-          "daily_vol_frac": 0.02453,
+          "hl_range_pct": 3.85,
+          "daily_vol_frac": 0.02469,
           "est_impact_bps": 2.33,
-          "est_spread_bps": 19.46,
+          "est_spread_bps": 19.27,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 49.79,
-          "difficulty_score": 33.0,
+          "est_total_cost_bps": 49.6,
+          "difficulty_score": 32.9,
           "difficulty_tier": "MODERATE",
           "selected_algo": "LIMIT_ORDER_SIM"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961256+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.207155+00:00"
       },
       {
         "symbol": "SUNDARMFIN",
@@ -572,54 +572,21 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 4317.5,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 244206913.42,
-          "adv_participation_pct": 0.0046,
-          "hl_range_pct": 2.86,
-          "daily_vol_frac": 0.01714,
+          "arrival_price": 4287.2,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 251230621.08,
+          "adv_participation_pct": 0.0045,
+          "hl_range_pct": 2.88,
+          "daily_vol_frac": 0.01732,
           "est_impact_bps": 2.24,
-          "est_spread_bps": 14.3,
+          "est_spread_bps": 14.38,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 44.54,
-          "difficulty_score": 23.7,
+          "est_total_cost_bps": 44.62,
+          "difficulty_score": 23.9,
           "difficulty_tier": "MODERATE",
           "selected_algo": "LIMIT_ORDER_SIM"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961280+00:00"
-      },
-      {
-        "symbol": "TALBROAUTO",
-        "side": "BUY",
-        "qty": 28,
-        "lifecycle_state": "ROUTED",
-        "selected_algo": "SPREAD_AWARE",
-        "matched_rules": [
-          "RBLD_01_DATA_INTEGRITY",
-          "RBLD_02_DESK_KILL_SWITCH",
-          "RBLD_03_PRICE_BAND_DRIFT",
-          "RBLD_04_MIN_LIQUIDITY_ADV",
-          "RBLD_05_SPREAD_VOL_LIMIT",
-          "RBLD_06_CONCENTRATION_CAPS"
-        ],
-        "blocked_rules": [],
-        "pre_trade_tca": {
-          "side": "BUY",
-          "arrival_price": 390.7,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 321017163.59,
-          "adv_participation_pct": 0.0035,
-          "hl_range_pct": 5.05,
-          "daily_vol_frac": 0.02693,
-          "est_impact_bps": 2.34,
-          "est_spread_bps": 25.27,
-          "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 55.61,
-          "difficulty_score": 39.8,
-          "difficulty_tier": "HIGH",
-          "selected_algo": "SPREAD_AWARE"
-        },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961303+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.207181+00:00"
       },
       {
         "symbol": "TIMKEN",
@@ -638,21 +605,54 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 3081.7,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 129195172.98,
-          "adv_participation_pct": 0.0087,
-          "hl_range_pct": 1.99,
-          "daily_vol_frac": 0.01694,
-          "est_impact_bps": 2.33,
-          "est_spread_bps": 9.95,
+          "arrival_price": 3064.9,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 118306896.87,
+          "adv_participation_pct": 0.0095,
+          "hl_range_pct": 1.89,
+          "daily_vol_frac": 0.01712,
+          "est_impact_bps": 2.35,
+          "est_spread_bps": 9.45,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 40.28,
-          "difficulty_score": 19.7,
+          "est_total_cost_bps": 39.8,
+          "difficulty_score": 19.3,
           "difficulty_tier": "LOW",
           "selected_algo": "NEXT_SESSION_OPEN"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961325+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.207206+00:00"
+      },
+      {
+        "symbol": "ULTRACEMCO",
+        "side": "BUY",
+        "qty": 0,
+        "lifecycle_state": "ROUTED",
+        "selected_algo": "NEXT_SESSION_OPEN",
+        "matched_rules": [
+          "RBLD_01_DATA_INTEGRITY",
+          "RBLD_02_DESK_KILL_SWITCH",
+          "RBLD_03_PRICE_BAND_DRIFT",
+          "RBLD_04_MIN_LIQUIDITY_ADV",
+          "RBLD_05_SPREAD_VOL_LIMIT",
+          "RBLD_06_CONCENTRATION_CAPS"
+        ],
+        "blocked_rules": [],
+        "pre_trade_tca": {
+          "side": "BUY",
+          "arrival_price": 12737.0,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 3180743016.7,
+          "adv_participation_pct": 0.0004,
+          "hl_range_pct": 1.87,
+          "daily_vol_frac": 0.01675,
+          "est_impact_bps": 2.07,
+          "est_spread_bps": 9.36,
+          "est_statutory_bps": 28.0,
+          "est_total_cost_bps": 39.43,
+          "difficulty_score": 18.8,
+          "difficulty_tier": "LOW",
+          "selected_algo": "NEXT_SESSION_OPEN"
+        },
+        "evaluated_at_utc": "2026-11-26T20:20:47.207231+00:00"
       },
       {
         "symbol": "LUMAXIND",
@@ -671,25 +671,35 @@
         "blocked_rules": [],
         "pre_trade_tca": {
           "side": "BUY",
-          "arrival_price": 5445.8,
-          "order_notional_inr": 11195.74,
-          "adv_20d_inr": 50936154.77,
-          "adv_participation_pct": 0.022,
-          "hl_range_pct": 2.95,
-          "daily_vol_frac": 0.01622,
-          "est_impact_bps": 2.51,
-          "est_spread_bps": 14.73,
+          "arrival_price": 5495.2,
+          "order_notional_inr": 11234.4,
+          "adv_20d_inr": 48612060.32,
+          "adv_participation_pct": 0.0231,
+          "hl_range_pct": 2.99,
+          "daily_vol_frac": 0.01547,
+          "est_impact_bps": 2.5,
+          "est_spread_bps": 14.93,
           "est_statutory_bps": 28.0,
-          "est_total_cost_bps": 45.24,
-          "difficulty_score": 24.0,
+          "est_total_cost_bps": 45.43,
+          "difficulty_score": 23.8,
           "difficulty_tier": "MODERATE",
           "selected_algo": "LIMIT_ORDER_SIM"
         },
-        "evaluated_at_utc": "2026-11-25T13:41:33.961348+00:00"
+        "evaluated_at_utc": "2026-11-26T20:20:47.207256+00:00"
       }
     ],
     "compliance_blocked_orders": [],
-    "exception_queue": [],
+    "exception_queue": [
+      {
+        "exception_type": "FAILED_DATA_UNAVAILABLE",
+        "symbol": "GMRAIRPORT",
+        "source": "ORCHESTRATOR_SHORTLIST",
+        "reasons": [
+          "Missing required fundamental field 'roe' (refusing fake default)."
+        ],
+        "timestamp_utc": "2026-11-26T20:20:47.206756+00:00"
+      }
+    ],
     "rbld_rules": [
       {
         "rule_id": "RBLD_01_DATA_INTEGRITY",
@@ -774,18 +784,18 @@
     "universe_histories": 1182,
     "valid_eod_bars": 1182,
     "tech_scored_eligible": 1173,
-    "tech_bullish": 630,
+    "tech_bullish": 609,
     "shortlisted": 30,
-    "agents_ok": 30,
-    "agents_excluded": 0,
-    "agents_failed_data": 0,
-    "adversarial_killed": 6,
+    "agents_ok": 29,
+    "agents_excluded": 1,
+    "agents_failed_data": 1,
+    "adversarial_killed": 3,
     "exec_buy_approved": 16,
     "paper_candidates": 15,
     "skipped": {
       "no_bar": 0,
-      "illiquid": 0,
-      "short_history": 9,
+      "illiquid": 1,
+      "short_history": 8,
       "indicator_error": 0,
       "stale_last_bar": 0
     }

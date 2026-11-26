@@ -1,7 +1,7 @@
 {
-  "trading_date": "2026-11-25",
-  "checked_at_utc": "2026-11-25T13:41:33.986235+00:00",
-  "data_timestamp_utc": "2026-11-25T13:41:10.527570+00:00",
+  "trading_date": "2026-11-26",
+  "checked_at_utc": "2026-11-26T20:20:47.236857+00:00",
+  "data_timestamp_utc": "2026-11-26T20:20:41.809227+00:00",
   "overall_status": "PARTIAL_DIAGNOSTIC_ONLY",
   "niftybees_valid": true,
   "liquidbees_valid": true,
