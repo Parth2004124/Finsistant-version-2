@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-11-26T20:20:47.248589+00:00",
-  "as_of_date": "2026-11-26",
+  "generated_at_utc": "2026-11-27T20:06:17.314347+00:00",
+  "as_of_date": "2026-11-27",
   "overall_health": "HEALTHY",
   "should_enter_safe_mode": false,
   "safe_mode_triggers": [],
@@ -11,11 +11,11 @@
   },
   "alerts": [
     {
-      "alert_id": "ALT-E5CC94783D",
+      "alert_id": "ALT-B72ED7D080",
       "code": "DIAGNOSTIC_INDEX_DATA_BOUNDARY",
       "severity": "INFO",
-      "timestamp": "2026-11-26T20:20:47.243892+00:00",
-      "as_of_date": "2026-11-26",
+      "timestamp": "2026-11-27T20:06:17.309870+00:00",
+      "as_of_date": "2026-11-27",
       "affected_component": "market_data_validation",
       "observed_value": "PARTIAL_DIAGNOSTIC_ONLY",
       "threshold": "OK",
@@ -25,7 +25,7 @@
     }
   ],
   "prompt4_advisory_health": {
-    "date": "2026-11-26",
+    "date": "2026-11-27",
     "advisory_status": "NORMAL_OPERATING",
     "live_execution_enabled": false,
     "alerts": []

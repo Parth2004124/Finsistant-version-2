@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-11-25T13:40:04.556311+00:00",
-  "as_of_date": "2026-11-25",
+  "generated_at_utc": "2026-11-27T20:05:55.297780+00:00",
+  "as_of_date": "2026-11-26",
   "engine_state": {
     "engine_state": "RUNNING",
     "safe_mode_reason": "",
@@ -30,21 +30,21 @@
   },
   "reconciliation": {
     "passed": true,
-    "as_of_date": "2026-11-25",
-    "nav_from_assets_inr": 99256.44,
-    "nav_from_equity_inr": 99256.44,
+    "as_of_date": "2026-11-26",
+    "nav_from_assets_inr": 99446.11,
+    "nav_from_equity_inr": 99446.11,
     "reconciliation_diff_inr": 0.0,
     "nav_diff_inr": 0.0,
     "settlement_diff_inr": 0.0,
     "cost_ledger_diff_inr": 0.0,
     "dividend_ledger_diff_inr": 0.0,
-    "settled_cash_inr": 393.47,
-    "unsettled_cash_inr": 11640.38,
-    "core_value_inr": 60872.49,
-    "tactical_value_inr": 26350.1,
+    "settled_cash_inr": 12033.85,
+    "unsettled_cash_inr": 0.0,
+    "core_value_inr": 61133.31,
+    "tactical_value_inr": 26278.95,
     "liquid_value_inr": 0.0,
     "realized_pnl_inr": -133.62,
-    "unrealized_pnl_inr": -609.94,
+    "unrealized_pnl_inr": -420.27,
     "cum_dividends_inr": 0.0,
     "cum_liquid_yield_inr": 0.0,
     "cum_costs_inr": 96.35,
@@ -52,85 +52,85 @@
     "failure_reasons": []
   },
   "risk_metrics": {
-    "as_of_date": "2026-11-25",
-    "sample_sessions": 3,
+    "as_of_date": "2026-11-26",
+    "sample_sessions": 4,
     "initial_capital_inr": 100000.0,
-    "current_nav_inr": 99256.44,
-    "daily_pnl_inr": 1230.31,
-    "daily_return_pct": 1.2551,
-    "cumulative_pnl_inr": -743.56,
-    "cumulative_return_pct": -0.7436,
+    "current_nav_inr": 99446.11,
+    "daily_pnl_inr": 189.67,
+    "daily_return_pct": 0.1911,
+    "cumulative_pnl_inr": -553.89,
+    "cumulative_return_pct": -0.5539,
     "cagr_pct": null,
-    "cagr_sample_status": "INSUFFICIENT_SAMPLE (3/60 sessions)",
+    "cagr_sample_status": "INSUFFICIENT_SAMPLE (4/60 sessions)",
     "max_drawdown_pct": 1.97,
-    "current_drawdown_pct": 0.74,
+    "current_drawdown_pct": 0.55,
     "rolling_volatility_pct": null,
     "rolling_sharpe": null,
     "rolling_sortino": null,
-    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (3/20 sessions)",
+    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (4/20 sessions)",
     "exposure_by_instrument": [
       {
         "symbol": "NIFTYBEES",
         "instrument_type": "CORE_ETF",
         "sector": "Index Core ETF",
-        "market_value_inr": 60872.49,
-        "weight_pct": 61.33
+        "market_value_inr": 61133.31,
+        "weight_pct": 61.47
       },
       {
         "symbol": "CASTROLIND",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Oil Gas & Consumable Fuels",
-        "market_value_inr": 6659.1,
-        "weight_pct": 6.71
+        "market_value_inr": 6651.75,
+        "weight_pct": 6.69
       },
       {
         "symbol": "GAIL",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Oil Gas & Consumable Fuels",
-        "market_value_inr": 6562.5,
-        "weight_pct": 6.61
+        "market_value_inr": 6580.0,
+        "weight_pct": 6.62
       },
       {
         "symbol": "INDIANB",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Financial Services",
-        "market_value_inr": 6510.0,
-        "weight_pct": 6.56
+        "market_value_inr": 6531.0,
+        "weight_pct": 6.57
       },
       {
         "symbol": "UNIONBANK",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Financial Services",
-        "market_value_inr": 6618.5,
-        "weight_pct": 6.67
+        "market_value_inr": 6516.2,
+        "weight_pct": 6.55
       }
     ],
     "exposure_by_sector": [
       {
         "sector": "Oil Gas & Consumable Fuels",
-        "weight_pct": 13.32
+        "weight_pct": 13.31
       },
       {
         "sector": "Financial Services",
-        "weight_pct": 13.23
+        "weight_pct": 13.12
       }
     ],
-    "core_etf_exposure_pct": 61.33,
-    "tactical_equity_exposure_pct": 26.55,
-    "equity_exposure_pct": 87.88,
+    "core_etf_exposure_pct": 61.47,
+    "tactical_equity_exposure_pct": 26.43,
+    "equity_exposure_pct": 87.9,
     "gold_exposure_pct": 0.0,
     "gold_exposure_note": "0.0% \u2014 Frozen config G_SIMPLE_TREND_BASELINE has no Gold ETF (maps 60/30/10 & 45/10/45 to NIFTYBEES / Family E / LIQUIDBEES).",
     "liquid_allocation_pct": 0.0,
-    "cash_pct": 12.12,
-    "cash_utilisation_pct": 87.88,
-    "max_single_stock_pct": 6.71,
-    "max_sector_exposure_pct": 13.32,
+    "cash_pct": 12.1,
+    "cash_utilisation_pct": 87.9,
+    "max_single_stock_pct": 6.69,
+    "max_sector_exposure_pct": 13.31,
     "turnover_inr": 111217.37,
     "turnover_x": 1.112,
     "total_transaction_costs_inr": 96.35,
     "cost_pct_of_gross_traded_value": 0.0866,
     "realized_pnl_inr": -133.62,
-    "unrealized_pnl_inr": -609.94,
+    "unrealized_pnl_inr": -420.27,
     "cum_dividends_inr": 0.0,
     "cum_liquid_yield_inr": 0.0
   },
@@ -145,12 +145,12 @@
       "strategy_id": "G_SIMPLE_TREND_BASELINE",
       "qty": 207,
       "avg_entry_price": 294.35,
-      "last_price": 294.07,
-      "market_value_inr": 60872.49,
+      "last_price": 295.33,
+      "market_value_inr": 61133.31,
       "cost_basis_inr": 60930.45,
-      "unrealized_pnl_inr": -57.96,
+      "unrealized_pnl_inr": 202.86,
       "sl_price": 0.0,
-      "entry_date": "2026-11-25"
+      "entry_date": "2026-11-26"
     },
     {
       "position_id": "POS-20261123-INE172A01027-001",
@@ -165,14 +165,14 @@
       "exit_date": "",
       "qty": 35.0,
       "avg_entry_price": 190.43800857142855,
-      "last_price": 190.26,
+      "last_price": 190.05,
       "cost_basis_inr": 6673.241599999999,
       "buy_exec_notional_inr": 6665.3303,
       "buy_total_cost_inr": 10.6416,
       "sl_price": 174.4136023401857,
       "atr_entry": 6.163233165862637,
       "max_price": 191.08,
-      "bars_held": 2,
+      "bars_held": 3,
       "hold_max_days": 120,
       "be_locked": 0,
       "mae_pct": -0.4662979717599103,
@@ -182,8 +182,8 @@
       "exit_reason": "",
       "entry_regime": "BULL_TREND",
       "exit_regime": "",
-      "market_value_inr": 6659.1,
-      "unrealized_pnl_inr": -14.14
+      "market_value_inr": 6651.75,
+      "unrealized_pnl_inr": -21.49
     },
     {
       "position_id": "POS-20261123-INE129A01019-002",
@@ -198,14 +198,14 @@
       "exit_date": "",
       "qty": 35.0,
       "avg_entry_price": 191.34817142857142,
-      "last_price": 187.5,
+      "last_price": 188.0,
       "cost_basis_inr": 6705.133199999999,
       "buy_exec_notional_inr": 6697.186,
       "buy_total_cost_inr": 10.6832,
       "sl_price": 171.65653110685713,
       "atr_entry": 7.573707816043956,
       "max_price": 191.75,
-      "bars_held": 2,
+      "bars_held": 3,
       "hold_max_days": 120,
       "be_locked": 0,
       "mae_pct": -3.4378020858312652,
@@ -215,8 +215,8 @@
       "exit_reason": "",
       "entry_regime": "BULL_TREND",
       "exit_regime": "",
-      "market_value_inr": 6562.5,
-      "unrealized_pnl_inr": -142.63
+      "market_value_inr": 6580.0,
+      "unrealized_pnl_inr": -125.13
     },
     {
       "position_id": "POS-20261123-INE562A01011-003",
@@ -231,14 +231,14 @@
       "exit_date": "",
       "qty": 7.0,
       "avg_entry_price": 956.9149285714285,
-      "last_price": 930.0,
+      "last_price": 933.0,
       "cost_basis_inr": 6706.3519,
       "buy_exec_notional_inr": 6698.4045,
       "buy_total_cost_inr": 11.5519,
       "sl_price": 854.8944003767142,
       "atr_entry": 39.23866469027472,
       "max_price": 960.45,
-      "bars_held": 2,
+      "bars_held": 3,
       "hold_max_days": 120,
       "be_locked": 0,
       "mae_pct": -3.8420268587840534,
@@ -248,8 +248,8 @@
       "exit_reason": "",
       "entry_regime": "BULL_TREND",
       "exit_regime": "",
-      "market_value_inr": 6510.0,
-      "unrealized_pnl_inr": -196.35
+      "market_value_inr": 6531.0,
+      "unrealized_pnl_inr": -175.35
     },
     {
       "position_id": "POS-20261123-INE692A01016-004",
@@ -264,14 +264,14 @@
       "exit_date": "",
       "qty": 31.0,
       "avg_entry_price": 219.65400000000002,
-      "last_price": 213.5,
+      "last_price": 210.2,
       "cost_basis_inr": 6817.3521,
       "buy_exec_notional_inr": 6809.274,
       "buy_total_cost_inr": 12.542,
       "sl_price": 197.35824038400003,
       "atr_entry": 8.57529216,
       "max_price": 219.72,
-      "bars_held": 2,
+      "bars_held": 3,
       "hold_max_days": 120,
       "be_locked": 0,
       "mae_pct": -5.442195452848586,
@@ -281,15 +281,19 @@
       "exit_reason": "",
       "entry_regime": "BULL_TREND",
       "exit_regime": "",
-      "market_value_inr": 6618.5,
-      "unrealized_pnl_inr": -198.85
+      "market_value_inr": 6516.2,
+      "unrealized_pnl_inr": -301.15
     }
   ],
   "pending_next_session_orders": [
     {
       "kind": "CORE_REBALANCE",
-      "target_core_inr": 61095.94,
-      "signal_timestamp": "2026-11-25T15:30:00+05:30"
+      "target_core_inr": 61267.36,
+      "signal_timestamp": "2026-11-26T15:30:00+05:30"
+    },
+    {
+      "kind": "LIQUID_SWEEP",
+      "signal_timestamp": "2026-11-26T15:30:00+05:30"
     }
   ]
 }

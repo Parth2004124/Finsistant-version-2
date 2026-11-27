@@ -1,9 +1,9 @@
 {
   "schema_version": "m3_1_paper_daily_report_v1",
   "release_version": "3.1.0-rc1",
-  "generated_at_utc": "2026-11-25T13:40:04.555626+00:00",
-  "trading_date": "2026-11-25",
-  "data_availability_timestamp": "2026-11-25T13:40:04.525626+00:00",
+  "generated_at_utc": "2026-11-27T20:05:55.296961+00:00",
+  "trading_date": "2026-11-26",
+  "data_availability_timestamp": "2026-11-27T20:05:55.169079+00:00",
   "configuration_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
   "configuration_raw_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
   "strategy_identifier": "G_SIMPLE_TREND_BASELINE + EXP_E_COMBINED_EXEC_INTEL",
@@ -24,7 +24,7 @@
   "regime_determination": {
     "raw_regime": "BULL_TREND",
     "confirmed_regime": "BULL_TREND",
-    "confirmation_streak_days": 6,
+    "confirmation_streak_days": 7,
     "confirmation_required_days": 3,
     "allow_new_family_e_entries": true
   },
@@ -33,51 +33,22 @@
     "target_tactical_family_e_pct": 30.0,
     "target_liquid_liquidbees_pct": 10.0,
     "target_gold_pct": 0.0,
-    "actual_core_pct": 61.33,
-    "actual_tactical_pct": 26.55,
+    "actual_core_pct": 61.47,
+    "actual_tactical_pct": 26.43,
     "actual_liquid_pct": 0.0,
-    "actual_cash_pct": 12.12
+    "actual_cash_pct": 12.1
   },
   "signals_generated": [],
-  "simulated_orders_latest_session": [
-    {
-      "order_id": "M31P-20261125-CORS-001",
-      "trading_date": "2026-11-25",
-      "signal_timestamp": "2026-11-23T15:30:00+05:30",
-      "execution_timestamp": "2026-11-25T09:15:00+05:30",
-      "strategy_id": "G_SIMPLE_TREND_BASELINE",
-      "instrument_class": "EQUITY_ETF",
-      "sec_id": "NIFTYBEES",
-      "symbol": "NIFTYBEES",
-      "side": "SELL",
-      "requested_qty": 40.0,
-      "filled_qty": 40.0,
-      "expected_price": 291.48,
-      "actual_exec_price": 291.4065,
-      "gross_value_inr": 11659.2,
-      "slippage_bps": 2.522,
-      "slippage_inr": 2.94,
-      "brokerage_inr": 0.0,
-      "stt_inr": 0.12,
-      "exchange_fee_inr": 0.35,
-      "sebi_fee_inr": 0.01,
-      "gst_inr": 0.06,
-      "stamp_duty_inr": 0.0,
-      "dp_charge_inr": 15.34,
-      "total_cost_inr": 18.82,
-      "net_value_inr": 11640.38,
-      "execution_status": "FILLED",
-      "rejection_reason": "",
-      "ev_expected_net_bps": 0.0,
-      "ev_hurdle_bps": 200.0,
-      "observation_mode": "PROSPECTIVE_PAPER"
-    }
-  ],
+  "simulated_orders_latest_session": [],
   "pending_next_session_orders": [
     {
       "kind": "CORE_REBALANCE",
-      "target_core_inr": 61095.94,
-      "signal_timestamp": "2026-11-25T15:30:00+05:30"
+      "target_core_inr": 61267.36,
+      "signal_timestamp": "2026-11-26T15:30:00+05:30"
+    },
+    {
+      "kind": "LIQUID_SWEEP",
+      "signal_timestamp": "2026-11-26T15:30:00+05:30"
     }
   ],
   "execution_summary": {
@@ -92,114 +63,114 @@
   },
   "portfolio_nav": {
     "initial_capital_inr": 100000.0,
-    "current_nav_inr": 99256.44,
-    "daily_pnl_inr": 1230.31,
-    "daily_return_pct": 1.2551,
-    "cumulative_return_pct": -0.7436,
-    "benchmark_niftybees_nav": 99949.02,
-    "benchmark_45_55_nav": 100003.94
+    "current_nav_inr": 99446.11,
+    "daily_pnl_inr": 189.67,
+    "daily_return_pct": 0.1911,
+    "cumulative_return_pct": -0.5539,
+    "benchmark_niftybees_nav": 100377.27,
+    "benchmark_45_55_nav": 100210.1
   },
   "risk_metrics": {
-    "as_of_date": "2026-11-25",
-    "sample_sessions": 3,
+    "as_of_date": "2026-11-26",
+    "sample_sessions": 4,
     "initial_capital_inr": 100000.0,
-    "current_nav_inr": 99256.44,
-    "daily_pnl_inr": 1230.31,
-    "daily_return_pct": 1.2551,
-    "cumulative_pnl_inr": -743.56,
-    "cumulative_return_pct": -0.7436,
+    "current_nav_inr": 99446.11,
+    "daily_pnl_inr": 189.67,
+    "daily_return_pct": 0.1911,
+    "cumulative_pnl_inr": -553.89,
+    "cumulative_return_pct": -0.5539,
     "cagr_pct": null,
-    "cagr_sample_status": "INSUFFICIENT_SAMPLE (3/60 sessions)",
+    "cagr_sample_status": "INSUFFICIENT_SAMPLE (4/60 sessions)",
     "max_drawdown_pct": 1.97,
-    "current_drawdown_pct": 0.74,
+    "current_drawdown_pct": 0.55,
     "rolling_volatility_pct": null,
     "rolling_sharpe": null,
     "rolling_sortino": null,
-    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (3/20 sessions)",
+    "rolling_ratios_sample_status": "INSUFFICIENT_SAMPLE (4/20 sessions)",
     "exposure_by_instrument": [
       {
         "symbol": "NIFTYBEES",
         "instrument_type": "CORE_ETF",
         "sector": "Index Core ETF",
-        "market_value_inr": 60872.49,
-        "weight_pct": 61.33
+        "market_value_inr": 61133.31,
+        "weight_pct": 61.47
       },
       {
         "symbol": "CASTROLIND",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Oil Gas & Consumable Fuels",
-        "market_value_inr": 6659.1,
-        "weight_pct": 6.71
+        "market_value_inr": 6651.75,
+        "weight_pct": 6.69
       },
       {
         "symbol": "GAIL",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Oil Gas & Consumable Fuels",
-        "market_value_inr": 6562.5,
-        "weight_pct": 6.61
+        "market_value_inr": 6580.0,
+        "weight_pct": 6.62
       },
       {
         "symbol": "INDIANB",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Financial Services",
-        "market_value_inr": 6510.0,
-        "weight_pct": 6.56
+        "market_value_inr": 6531.0,
+        "weight_pct": 6.57
       },
       {
         "symbol": "UNIONBANK",
         "instrument_type": "TACTICAL_EQUITY",
         "sector": "Financial Services",
-        "market_value_inr": 6618.5,
-        "weight_pct": 6.67
+        "market_value_inr": 6516.2,
+        "weight_pct": 6.55
       }
     ],
     "exposure_by_sector": [
       {
         "sector": "Oil Gas & Consumable Fuels",
-        "weight_pct": 13.32
+        "weight_pct": 13.31
       },
       {
         "sector": "Financial Services",
-        "weight_pct": 13.23
+        "weight_pct": 13.12
       }
     ],
-    "core_etf_exposure_pct": 61.33,
-    "tactical_equity_exposure_pct": 26.55,
-    "equity_exposure_pct": 87.88,
+    "core_etf_exposure_pct": 61.47,
+    "tactical_equity_exposure_pct": 26.43,
+    "equity_exposure_pct": 87.9,
     "gold_exposure_pct": 0.0,
     "gold_exposure_note": "0.0% \u2014 Frozen config G_SIMPLE_TREND_BASELINE has no Gold ETF (maps 60/30/10 & 45/10/45 to NIFTYBEES / Family E / LIQUIDBEES).",
     "liquid_allocation_pct": 0.0,
-    "cash_pct": 12.12,
-    "cash_utilisation_pct": 87.88,
-    "max_single_stock_pct": 6.71,
-    "max_sector_exposure_pct": 13.32,
+    "cash_pct": 12.1,
+    "cash_utilisation_pct": 87.9,
+    "max_single_stock_pct": 6.69,
+    "max_sector_exposure_pct": 13.31,
     "turnover_inr": 111217.37,
     "turnover_x": 1.112,
     "total_transaction_costs_inr": 96.35,
     "cost_pct_of_gross_traded_value": 0.0866,
     "realized_pnl_inr": -133.62,
-    "unrealized_pnl_inr": -609.94,
+    "unrealized_pnl_inr": -420.27,
     "cum_dividends_inr": 0.0,
     "cum_liquid_yield_inr": 0.0
   },
   "data_quality_state": "PARTIAL_DIAGNOSTIC_ONLY",
   "reconciliation_result": {
     "passed": true,
-    "as_of_date": "2026-11-25",
-    "nav_from_assets_inr": 99256.44,
-    "nav_from_equity_inr": 99256.44,
+    "as_of_date": "2026-11-26",
+    "nav_from_assets_inr": 99446.11,
+    "nav_from_equity_inr": 99446.11,
     "reconciliation_diff_inr": 0.0,
     "nav_diff_inr": 0.0,
     "settlement_diff_inr": 0.0,
     "cost_ledger_diff_inr": 0.0,
     "dividend_ledger_diff_inr": 0.0,
-    "settled_cash_inr": 393.47,
-    "unsettled_cash_inr": 11640.38,
-    "core_value_inr": 60872.49,
-    "tactical_value_inr": 26350.1,
+    "settled_cash_inr": 12033.85,
+    "unsettled_cash_inr": 0.0,
+    "core_value_inr": 61133.31,
+    "tactical_value_inr": 26278.95,
     "liquid_value_inr": 0.0,
     "realized_pnl_inr": -133.62,
-    "unrealized_pnl_inr": -609.94,
+    "unrealized_pnl_inr": -420.27,
     "cum_dividends_inr": 0.0,
     "cum_liquid_yield_inr": 0.0,
     "cum_costs_inr": 96.35,
@@ -210,16 +181,16 @@
   "safe_mode_reason": "",
   "audit_chain": {
     "valid": true,
-    "entries": 6,
-    "head_chain_sha256": "e23ad19abd2c201bf3c30e5d625bedadb2c843b154faaf326c0b2357274d306a"
+    "entries": 7,
+    "head_chain_sha256": "822ca23ddb0a6593e50cd9601fc5ad3a26f0ac14ca11f96e9097894c22abbd6a"
   },
   "prospective_validation": {
     "prospective_start_date": "2026-11-19",
-    "completed_unseen_sessions": 3,
+    "completed_unseen_sessions": 4,
     "minimum_required_sessions": 60,
     "target_sessions": 120,
-    "progress_to_min_pct": 5.0,
-    "progress_to_target_pct": 2.5,
+    "progress_to_min_pct": 6.67,
+    "progress_to_target_pct": 3.33,
     "validation_complete": false,
     "status_label": "IN_PROGRESS_INCOMPLETE_SAMPLE",
     "prospective_paper_trades": 6,

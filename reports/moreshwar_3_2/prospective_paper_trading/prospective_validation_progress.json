@@ -1,21 +1,21 @@
 {
   "prospective_start_date": "2026-11-19",
-  "completed_unseen_sessions": 4,
+  "completed_unseen_sessions": 5,
   "minimum_required_sessions": 60,
   "target_sessions": 120,
-  "progress_to_min_pct": 6.67,
-  "progress_to_target_pct": 3.33,
+  "progress_to_min_pct": 8.33,
+  "progress_to_target_pct": 4.17,
   "validation_complete": false,
   "status_label": "IN_PROGRESS_INCOMPLETE_SAMPLE",
   "prospective_paper_trades": 3,
   "prospective_rejected_orders": 1,
-  "generated_at_utc": "2026-11-26T20:20:47.249243+00:00",
+  "generated_at_utc": "2026-11-27T20:06:17.315166+00:00",
   "configuration_verified": true,
   "configuration_sha256_prefix": "47a30f4bbd004c5f",
   "data_quality_status": "PARTIAL_DIAGNOSTIC_ONLY",
   "live_trading_enabled": false,
-  "benchmark_relative_return_pp": -0.43,
+  "benchmark_relative_return_pp": 0.34,
   "prospective_max_drawdown_pct": 0.48,
   "prospective_rolling_sharpe": null,
-  "sample_adequacy_note": "4 unseen prospective sessions completed (minimum 60, target 120)."
+  "sample_adequacy_note": "5 unseen prospective sessions completed (minimum 60, target 120)."
 }

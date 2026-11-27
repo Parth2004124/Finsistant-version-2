@@ -5,7 +5,7 @@
   "canonical_payload_sha256": "47a30f4bbd004c5f238cf97c549b4d41a10232c4cdf2a4966efecf75bf2d255a",
   "canonical_prefix_16": "47a30f4bbd004c5f",
   "raw_file_sha256": "658d17894618de9dc974b8748e1b2d25ba2e8020d5fc4dc99f9855b1a835f068",
-  "verified_at_utc": "2026-11-25T13:39:01.830355+00:00",
+  "verified_at_utc": "2026-11-27T20:05:18.373179+00:00",
   "selected_policy_id": "G_SIMPLE_TREND_BASELINE",
   "execution_config_id": "EXP_E_COMBINED_EXEC_INTEL",
   "admitted_tactical_strategies": [
