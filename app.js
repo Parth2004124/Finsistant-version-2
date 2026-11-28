@@ -4157,29 +4157,35 @@ function wireMoreshwarV31Controls() {
     const wr = m.win_rate_pct ?? ct.win_rate_pct;
     const pf = m.profit_factor ?? ct.profit_factor;
     const gatesPass = Number(m.gates_passed ?? 0);
-    const gatesTot = Number(m.gates_total ?? 6);
+    const gatesTot = Number(m.gates_total ?? 7);
+    const survTargetPct = Number(m.survival_target_pct ?? 20.0);
+    const targetNavInr = Number(m.target_nav_inr ?? 120000);
+    const paceGap = m.pace_gap_pct;
+    const stakesMode = String(m.stakes_mode || (retPct >= survTargetPct ? "SURVIVED" : "HIGH_STAKES_PURSUIT"));
+    const survStatus = String(m.survival_status || `FIGHTING FOR SURVIVAL (${retPct >= 0 ? "+" : ""}${retPct.toFixed(2)}% vs +${survTargetPct.toFixed(0)}% mandatory target)`);
     const fmtInr = (v) => `₹${Number(v || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const fmtPct = (v) => `${Number(v || 0) >= 0 ? "+" : ""}${Number(v || 0).toFixed(2)}%`;
 
     const mBadge = document.getElementById("mv32MissionBadge");
-    if (mBadge) mBadge.textContent = `MISSION: ${done} / ${target} SESSIONS (${m.progress_pct ?? 0}%)`;
+    if (mBadge) mBadge.textContent = `SURVIVAL: ${done}/${target} · NEED +${survTargetPct.toFixed(0)}%`;
     const lBadge = document.getElementById("mv32LearnStatusBadge");
-    if (lBadge) lBadge.textContent = `TECH ${Number(w.w_tech ?? 0.45).toFixed(2)} / FUND ${Number(w.w_fund ?? 0.55).toFixed(2)} · BAR ${Math.round(Number(w.min_conviction ?? 0.6) * 100)}%`;
+    if (lBadge) lBadge.textContent = `${stakesMode.replace(/_/g, " ")} · TECH ${Number(w.w_tech ?? 0.45).toFixed(2)} / FUND ${Number(w.w_fund ?? 0.55).toFixed(2)}`;
 
     const mtmDeployed = Number(mtm.open_rupees_deployed_inr ?? w.open_mtm_deployed_inr ?? 0);
     const mtmPnl = Number(mtm.open_unrealized_pnl_inr ?? w.open_mtm_pnl_inr ?? 0);
     const mtmRoic = mtm.open_mtm_roic_pct ?? w.open_mtm_roic_pct;
     const roicSub = ct.rupee_roic_pct != null
-      ? `ROIC ${fmtPct(ct.rupee_roic_pct)} · ₹${Number(ct.pnl_per_1000_rupees_inr || 0).toFixed(1)}/₹1k`
+      ? `ROIC ${fmtPct(ct.rupee_roic_pct)} vs +${survTargetPct.toFixed(0)}% · ₹${Number(ct.pnl_per_1000_rupees_inr || 0).toFixed(1)}/₹1k`
       : (mtmRoic != null
         ? `Open MTM ${fmtPct(mtmRoic)} on ${fmtInr(mtmDeployed)}`
-        : (wr != null ? `Win ${Number(wr).toFixed(1)}% · PF ${pf ?? "—"}` : "Awaiting first rupee exits"));
+        : (wr != null ? `Win ${Number(wr).toFixed(1)}% · PF ${pf ?? "—"}` : `Need ≥+${survTargetPct.toFixed(0)}% ROIC`));
 
+    const survColor = stakesMode === "SURVIVED" ? "var(--accent-emerald)" : "var(--accent-crimson)";
     const kpiHtml = `
       <div class="kpi-mini-card">
-        <div class="kpi-mini-lbl">80-SESSION MISSION</div>
-        <div class="kpi-mini-val" style="color:var(--accent-cyan);">${done} / ${target}</div>
-        <div class="kpi-mini-sub">${target - done} sessions left · ${m.real_money_ready ? "GRADUATED" : `Gate ${gatesPass}/${gatesTot}`}</div>
+        <div class="kpi-mini-lbl">SURVIVAL TARGET (≥+${survTargetPct.toFixed(0)}%)</div>
+        <div class="kpi-mini-val" style="color:${survColor};">${done} / ${target} · ${fmtPct(retPct)}</div>
+        <div class="kpi-mini-sub">Goal ${fmtInr(targetNavInr)} · ${paceGap != null ? `Pace ${fmtPct(paceGap)}` : `Gate ${gatesPass}/${gatesTot}`}</div>
       </div>
       <div class="kpi-mini-card">
         <div class="kpi-mini-lbl">PAPER NAV &amp; PROFIT</div>
@@ -4199,7 +4205,7 @@ function wireMoreshwarV31Controls() {
       <div class="kpi-mini-card">
         <div class="kpi-mini-lbl">ADAPTIVE BRAIN &amp; BEAR BAR</div>
         <div class="kpi-mini-val">${Math.round(Number(w.w_tech ?? 0.45) * 100)}% / ${Math.round(Number(w.w_fund ?? 0.55) * 100)}%</div>
-        <div class="kpi-mini-sub">Conv ≥${Math.round(Number(w.min_conviction ?? 0.6) * 100)}% · Surv ≥${Number(w.min_survival_score ?? 52).toFixed(0)}</div>
+        <div class="kpi-mini-sub">Conv ≥${Math.round(Number(w.min_conviction ?? 0.6) * 100)}% · Surv ≥${Number(w.min_survival_score ?? 58).toFixed(0)}</div>
       </div>
     `;
     const kpiEl = document.getElementById("mv32Kpis");
@@ -4249,15 +4255,16 @@ function wireMoreshwarV31Controls() {
       const atkMults = w.attack_multipliers || {};
       const atkTxt = Object.keys(atkMults).length
         ? Object.entries(atkMults).map(([k, v]) => `<code>${escHtml(k)} ×${Number(v).toFixed(2)}</code>`).join(" ")
-        : "Prior 1.00× (escalates automatically on every rupee lost under an ignored objection)";
+        : "Prior 1.00× (escalates up to 3.50× automatically on every rupee lost under an ignored objection)";
       const gates = m.graduation_gates || {};
       const gatePills = Object.entries(gates).map(([k, ok]) =>
         `<span class="tag-pill ${ok ? "tag-target" : "tag-score"}" style="font-size:10px;">${ok ? "PASS" : "WAIT"} ${escHtml(k.replace(/_/g, " "))}</span>`
       ).join(" ");
       const ic1Txt = h1.matured_sessions ? ` · 1D IC (${h1.matured_sessions}d): Tech <code>${h1.mean_ic_tech != null ? Number(h1.mean_ic_tech).toFixed(3) : "—"}</code> / Fund <code>${h1.mean_ic_fund != null ? Number(h1.mean_ic_fund).toFixed(3) : "—"}</code>` : "";
       adapEl.innerHTML =
+        `<div style="color:${survColor};"><strong>Survival Mandate:</strong> ${escHtml(survStatus)}</div>` +
         `<div><strong>Status:</strong> ${escHtml(w.status || "OBSERVING")}</div>` +
-        `<div><strong>Active Brain:</strong> TechBot <code>${Number(w.w_tech ?? 0.45).toFixed(2)}</code> · FundBot <code>${Number(w.w_fund ?? 0.55).toFixed(2)}</code> · Min Conviction <code>${(Number(w.min_conviction ?? 0.6) * 100).toFixed(0)}%</code> · Min Bear Survival <code>${Number(w.min_survival_score ?? 52).toFixed(1)}</code>${ic1Txt}</div>` +
+        `<div><strong>Active Brain:</strong> TechBot <code>${Number(w.w_tech ?? 0.45).toFixed(2)}</code> · FundBot <code>${Number(w.w_fund ?? 0.55).toFixed(2)}</code> · Min Conviction <code>${(Number(w.min_conviction ?? 0.6) * 100).toFixed(0)}%</code> · Min Bear Survival <code>${Number(w.min_survival_score ?? 58).toFixed(1)}</code>${ic1Txt}</div>` +
         `<div><strong>Per-Rupee Ledger:</strong> Closed <code>${fmtInr(ct.total_rupees_invested_inr || 0)}</code> (Net <code>${fmtInr(ct.total_realized_pnl_inr || 0)}</code>)${ct.pnl_per_1000_rupees_inr != null ? ` · <code>₹${Number(ct.pnl_per_1000_rupees_inr).toFixed(2)}/₹1k</code>` : ""} · Open MTM <code>${fmtInr(mtmDeployed)}</code> (<code>${mtmPnl >= 0 ? "+" : ""}${fmtInr(mtmPnl)}</code>)</div>` +
         `<div><strong>Adversarial Multipliers:</strong> ${atkTxt}</div>` +
         `<div><strong>Sector Calibration:</strong> ${secTxt}</div>` +

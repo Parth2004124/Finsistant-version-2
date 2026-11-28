@@ -22,9 +22,9 @@ from __future__ import annotations
 import math
 from typing import Any
 
-DEFAULT_MIN_SURVIVAL_SCORE = 52.0
+DEFAULT_MIN_SURVIVAL_SCORE = 58.0
 ATTACK_MULTIPLIER_MIN = 0.75
-ATTACK_MULTIPLIER_MAX = 2.25
+ATTACK_MULTIPLIER_MAX = 3.50
 
 
 def _clamp(val: float, lo: float, hi: float) -> float:
@@ -377,30 +377,31 @@ def prosecute_trade_candidate(
             f"Stop-loss at ₹{stop_loss:,.2f} ({stop_dist_pct:.2f}% away) sits inside routine 14D ATR noise ({c_risk['atr14_pct']:.2f}%) — high risk of random stop-out.",
         )
 
-    # 7. Net Expectancy & Execution Cost Drag Attack
+    # 7. Net Expectancy, 20%+ Compounding Hurdle & Execution Cost Drag Attack
     upside_pct = ((target / price) - 1.0) * 100.0 if (price > 0 and target > price) else 0.0
     cost_pct = est_round_trip_cost_bps / 100.0
     net_upside_pct = upside_pct - cost_pct
     net_rr = (net_upside_pct / stop_dist_pct) if stop_dist_pct > 0 else 0.0
-    if rr_ratio < 1.35 or net_upside_pct < 3.0 or net_rr < 1.25:
+    if rr_ratio < 1.45 or net_upside_pct <= 2.0 or net_rr < 1.30:
+        is_fatal = rr_ratio < 1.30 or net_upside_pct <= 2.0
         _add_attack(
             "RISK_REWARD_EXPECTANCY_FAIL",
-            "Insufficient Post-Cost Risk/Reward Asymmetry",
-            "FATAL_VETO" if (rr_ratio < 1.20 or net_upside_pct <= 1.2) else "SEVERE",
-            28.0 if (rr_ratio < 1.20 or net_upside_pct <= 1.2) else 16.0,
+            "Insufficient Post-Cost Risk/Reward for 20%+ Survival Target",
+            "FATAL_VETO" if is_fatal else "SEVERE",
+            32.0 if is_fatal else 19.0,
             f"Raw R:R=1:{rr_ratio:.2f}, TargetUpside={upside_pct:.2f}%, Friction={cost_pct:.2f}%, Net R:R=1:{net_rr:.2f}",
-            f"After STT, brokerage, DP, and slippage ({est_round_trip_cost_bps:.0f} bps), net upside ({net_upside_pct:.2f}%) fails to compensate downside risk.",
+            f"After STT, brokerage, DP, and slippage ({est_round_trip_cost_bps:.0f} bps), net upside ({net_upside_pct:.2f}%) cannot compound portfolio past the 20% survival hurdle.",
         )
-    elif rr_ratio < 1.65:
+    elif rr_ratio < 1.85 or net_upside_pct < 8.5:
         _add_attack(
             "RISK_REWARD_EXPECTANCY_FAIL",
-            "Marginal Expectancy Cushion",
-            "MODERATE",
-            8.0,
-            f"Raw R:R=1:{rr_ratio:.2f} (requires >38% breakeven accuracy post-costs)",
-            f"R:R of 1:{rr_ratio:.2f} leaves narrow room for execution slippage or gap-down openings.",
-            rebuttal_evidence=f"Tech ({tech_conf*100:.0f}%) & Fund ({fund_conf*100:.0f}%) alignment partially supports required win-rate." if (tech_conf >= 0.72 and fund_conf >= 0.75) else None,
-            mitigation_pts=3.5 if (tech_conf >= 0.72 and fund_conf >= 0.75) else 0.0,
+            "Sub-20% Compounding Upside Cushion",
+            "SEVERE" if net_upside_pct < 6.0 else "MODERATE",
+            15.0 if net_upside_pct < 6.0 else 10.0,
+            f"Raw R:R=1:{rr_ratio:.2f}, NetUpside={net_upside_pct:.2f}% (high-stakes hurdle >=8.5% upside, >=1.85 R:R)",
+            f"Shallow {net_upside_pct:.2f}% net upside / 1:{rr_ratio:.2f} R:R drags capital below the mandatory 20% survival pace.",
+            rebuttal_evidence=f"Tech ({tech_conf*100:.0f}%) & Fund ({fund_conf*100:.0f}%) alignment partially supports breakeven velocity." if (tech_conf >= 0.78 and fund_conf >= 0.80) else None,
+            mitigation_pts=3.5 if (tech_conf >= 0.78 and fund_conf >= 0.80) else 0.0,
         )
 
     # 8. Liquidity Impact & Intraday Spread Instability
