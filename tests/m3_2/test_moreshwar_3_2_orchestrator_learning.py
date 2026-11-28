@@ -360,6 +360,146 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
             self.assertGreaterEqual(upd["stop_tighten_mult"], 0.80)
             self.assertLessEqual(upd["stop_tighten_mult"], 1.10)
 
+    def test_daily_learning_from_1d_outcomes_and_open_mtm_without_closed_trades(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tdir = Path(tmp)
+            ldb = tdir / "learn.db"
+            pdb = tdir / "paper.db"
+            ledger = OrchestratorLearningLedger(ldb)
+
+            # Build 35 universe stocks so 1D IC computes cleanly on Session 1 -> Session 2
+            uni = [
+                {
+                    "sec_id": f"S{i}",
+                    "symbol": f"SYM{i}",
+                    "tech_conf": round(0.50 + 0.01 * (35 - i), 4),
+                    "rank_key": float(35 - i),
+                    "close": 100.0,
+                    "rsi_14": 76.0 if i < 3 else 58.0,
+                    "sector": "Power" if i < 5 else "IT",
+                }
+                for i in range(35)
+            ]
+            shortlist = [
+                {
+                    "sec_id": f"S{i}",
+                    "symbol": f"SYM{i}",
+                    "tech_rank": i + 1,
+                    "status": "AGENTS_OK",
+                    "tech_conf": uni[i]["tech_conf"],
+                    "fund_conf": round(0.45 + 0.05 * i, 4),
+                    "fundamental_total": 72,
+                    "porters_total": 70,
+                    "conviction": 0.72,
+                    "exec_action": "BUY",
+                    "eod_close": 100.0,
+                    "rsi_14": uni[i]["rsi_14"],
+                    "sector": uni[i]["sector"],
+                    "prosecution_verdict": "OUTLASTED",
+                    "survival_score": 56.0,
+                    "attack_ids": ["TECHNICAL_BLOWOFF_TRAP"] if i == 0 else [],
+                    "moreshwar_target": 112.0,
+                }
+                for i in range(8)
+            ]
+            ledger.record_scan({"trading_date": "2026-11-20", "universe_tech": uni, "shortlist": shortlist}, {"SYM0", "SYM1"})
+
+            # Mature real 1D outcomes where higher fund_conf outperformed & high tech_conf lagged -> negative Tech / positive Fund 1D IC
+            dates = ["2026-11-20", "2026-11-23"]
+            histories = {
+                f"S{i}": {
+                    "dates": dates,
+                    "close": [100.0, 100.0 * (1.0 - 0.0015 * (35 - i))],
+                }
+                for i in range(35)
+            }
+            matured = ledger.mature_outcomes(
+                today="2026-11-23",
+                equity_histories=histories,
+                nb_dates=dates,
+                nb_closes=[290.0, 290.0],
+            )
+            self.assertGreaterEqual(matured, 35)
+
+            # Open position still held (0 closed trades!), currently underwater with MAE -4.2% under ignored Bear attack
+            pconn = sqlite3.connect(str(pdb))
+            pconn.execute(
+                """CREATE TABLE positions (
+                    position_id TEXT PRIMARY KEY, instrument_type TEXT, sec_id TEXT, symbol TEXT, sector TEXT,
+                    status TEXT, entry_date TEXT, exit_date TEXT, qty REAL, last_price REAL,
+                    cost_basis_inr REAL, bars_held INTEGER, mae_pct REAL, mfe_pct REAL,
+                    dividends_received_inr REAL, realized_pnl_inr REAL, exit_reason TEXT
+                )"""
+            )
+            pconn.execute(
+                "INSERT INTO positions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                ("P_OPEN", "TACTICAL_EQUITY", "S0", "SYM0", "Power", "OPEN", "2026-11-23", "", 100.0, 96.0, 10000.0, 4, -4.2, 0.5, 0.0, 0.0, ""),
+            )
+            pconn.commit()
+            pconn.close()
+
+            mtm_synced = ledger.sync_open_positions_mtm(pdb, "2026-11-23")
+            self.assertEqual(mtm_synced, 1)
+
+            upd = ledger.update_weights("2026-11-23")
+            self.assertIn("LEARNING ACTIVE", upd["status"])
+            self.assertEqual(upd["learning"]["closed_trades"]["total_closed_trades"], 0)
+            self.assertGreater(upd["open_mtm_deployed_inr"], 0.0)
+            self.assertLess(upd["open_mtm_pnl_inr"], 0.0)
+            self.assertGreaterEqual(upd["learning"]["horizon_1d"]["matured_sessions"], 1)
+            self.assertLess(upd["w_tech"], 0.45)
+            self.assertGreater(upd["attack_multipliers"].get("TECHNICAL_BLOWOFF_TRAP", 1.0), 1.0)
+            self.assertLess(upd["stop_tighten_mult"], 1.0)
+
+    def test_evaluate_open_holdings_active_exits_and_proactive_rotation(self) -> None:
+        from finsistant_v2.m3_2.orchestrated_session import M32_EXEC_CFG_OVERRIDE
+
+        self.assertEqual(M32_EXEC_CFG_OVERRIDE["periodic_review_interval_days"], 1)
+        self.assertEqual(M32_EXEC_CFG_OVERRIDE["hold_max_days"], 20)
+        self.assertEqual(M32_EXEC_CFG_OVERRIDE["stop_model"], "F_HYBRID_STOP_PROFIT_PROTECT")
+        self.assertEqual(M32_EXEC_CFG_OVERRIDE["replacement_policy"], "PROACTIVE_EDGE_ROTATION")
+
+        def bull_snap(sym: str) -> dict:
+            px = {"TGT": 115.0, "TRAIL": 102.0, "STAG": 100.5, "ROT": 101.0}.get(sym, 102.0)
+            return {
+                "symbol": sym, "name": sym, "price": px, "sma_20": px * 0.96, "ema_12": px * 0.99,
+                "ema_26": px * 0.97, "rsi_14": 58.0, "macd": 1.2, "macd_signal": 0.9,
+                "projected_30d_target": px * 1.10, "regression_curve": "Upward Curve",
+                "fundamental_score": {"total": 76, "business": 30, "moat": 16, "management": 15, "risk": 15, "industry": "IT", "nlp": "Solid"},
+                "porters_score": {"total": 74},
+                "moreshwar_levels": {"entry_price": px * 0.98, "stop_loss": px * 0.92, "target": px * 1.15, "rr_ratio": 2.1},
+                "decision_matrix": {"action": "BUY NOW", "rationale": "Strong trend"},
+                "fundamental_source_category": "YAHOO_LIVE_FEED", "price_source_category": "YAHOO_LIVE_FEED",
+                "missing_fields": [],
+            }
+
+        scanner = OrchestratorUniverseScanner(OrchestratorScanConfig(shortlist_size=5, max_workers=1), analysis_fn=bull_snap)
+        open_positions = [
+            {"sec_id": "S_TGT", "symbol": "TGT", "sector": "IT", "avg_entry_price": 100.0, "last_price": 115.0, "bars_held": 4, "mfe_pct": 15.0},
+            {"sec_id": "S_TRAIL", "symbol": "TRAIL", "sector": "IT", "avg_entry_price": 100.0, "last_price": 102.0, "bars_held": 5, "mfe_pct": 7.5},
+            {"sec_id": "S_STAG", "symbol": "STAG", "sector": "IT", "avg_entry_price": 100.0, "last_price": 100.5, "bars_held": 12, "mfe_pct": 1.2},
+            {"sec_id": "S_ROT", "symbol": "ROT", "sector": "IT", "avg_entry_price": 100.0, "last_price": 101.0, "bars_held": 6, "mfe_pct": 2.0},
+        ]
+        exits = scanner.evaluate_open_holdings(
+            open_positions,
+            entry_targets={"S_TGT": 114.0},
+            top_candidates=[{"sec_id": "S_NEW", "symbol": "NEWCO", "score": 0.96}],
+            max_tactical_positions=2,  # After 3 exits above, only 1 remains (<2) so let's also test rotation separately below
+        )
+        reasons = {e["symbol"]: e["reason"] for e in exits}
+        self.assertEqual(reasons.get("TGT"), "TARGET_HIT_PROFIT_TAKE")
+        self.assertEqual(reasons.get("TRAIL"), "TRAILING_PROFIT_PROTECT")
+        self.assertEqual(reasons.get("STAG"), "TIME_DECAY_STAGNANT")
+
+        # Full-slot Proactive Edge Rotation check (no other exit triggers; best new candidate beats held conviction by >= 0.08)
+        rot_exits = scanner.evaluate_open_holdings(
+            [{"sec_id": "S_ROT", "symbol": "ROT", "sector": "IT", "avg_entry_price": 100.0, "last_price": 101.0, "bars_held": 6, "mfe_pct": 2.0}],
+            top_candidates=[{"sec_id": "S_NEW", "symbol": "NEWCO", "score": 0.96}],
+            max_tactical_positions=1,
+        )
+        self.assertEqual(len(rot_exits), 1)
+        self.assertEqual(rot_exits[0]["reason"], "PROACTIVE_EDGE_ROTATION")
+
 
 if __name__ == "__main__":
     unittest.main()

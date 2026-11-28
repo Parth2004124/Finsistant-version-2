@@ -4140,6 +4140,8 @@ function wireMoreshwarV31Controls() {
     const w = learn.weights || scan.weights || {};
     const stages = scan.stages || {};
     const ct = (learn.learning && learn.learning.closed_trades) || {};
+    const mtm = (learn.learning && learn.learning.open_mtm) || {};
+    const h1 = (learn.learning && learn.learning.horizon_1d) || {};
     const prosp = d.prospective_paper_trading || {};
     const pending = (prosp.execution_monitoring && prosp.execution_monitoring.pending_next_session_orders) || [];
     const recon = (prosp.risk_dashboard && prosp.risk_dashboard.reconciliation) || {};
@@ -4164,6 +4166,15 @@ function wireMoreshwarV31Controls() {
     const lBadge = document.getElementById("mv32LearnStatusBadge");
     if (lBadge) lBadge.textContent = `TECH ${Number(w.w_tech ?? 0.45).toFixed(2)} / FUND ${Number(w.w_fund ?? 0.55).toFixed(2)} · BAR ${Math.round(Number(w.min_conviction ?? 0.6) * 100)}%`;
 
+    const mtmDeployed = Number(mtm.open_rupees_deployed_inr ?? w.open_mtm_deployed_inr ?? 0);
+    const mtmPnl = Number(mtm.open_unrealized_pnl_inr ?? w.open_mtm_pnl_inr ?? 0);
+    const mtmRoic = mtm.open_mtm_roic_pct ?? w.open_mtm_roic_pct;
+    const roicSub = ct.rupee_roic_pct != null
+      ? `ROIC ${fmtPct(ct.rupee_roic_pct)} · ₹${Number(ct.pnl_per_1000_rupees_inr || 0).toFixed(1)}/₹1k`
+      : (mtmRoic != null
+        ? `Open MTM ${fmtPct(mtmRoic)} on ${fmtInr(mtmDeployed)}`
+        : (wr != null ? `Win ${Number(wr).toFixed(1)}% · PF ${pf ?? "—"}` : "Awaiting first rupee exits"));
+
     const kpiHtml = `
       <div class="kpi-mini-card">
         <div class="kpi-mini-lbl">80-SESSION MISSION</div>
@@ -4178,7 +4189,7 @@ function wireMoreshwarV31Controls() {
       <div class="kpi-mini-card">
         <div class="kpi-mini-lbl">PASSED / FAILED &amp; ROIC</div>
         <div class="kpi-mini-val">${passed} PASS / ${failed} FAIL</div>
-        <div class="kpi-mini-sub">${ct.rupee_roic_pct != null ? `ROIC ${fmtPct(ct.rupee_roic_pct)} · ₹${Number(ct.pnl_per_1000_rupees_inr || 0).toFixed(1)}/₹1k` : (wr != null ? `Win ${Number(wr).toFixed(1)}% · PF ${pf ?? "—"}` : "Awaiting first rupee exits")}</div>
+        <div class="kpi-mini-sub">${roicSub}</div>
       </div>
       <div class="kpi-mini-card">
         <div class="kpi-mini-lbl">FULL-UNIVERSE SCAN</div>
@@ -4243,10 +4254,11 @@ function wireMoreshwarV31Controls() {
       const gatePills = Object.entries(gates).map(([k, ok]) =>
         `<span class="tag-pill ${ok ? "tag-target" : "tag-score"}" style="font-size:10px;">${ok ? "PASS" : "WAIT"} ${escHtml(k.replace(/_/g, " "))}</span>`
       ).join(" ");
+      const ic1Txt = h1.matured_sessions ? ` · 1D IC (${h1.matured_sessions}d): Tech <code>${h1.mean_ic_tech != null ? Number(h1.mean_ic_tech).toFixed(3) : "—"}</code> / Fund <code>${h1.mean_ic_fund != null ? Number(h1.mean_ic_fund).toFixed(3) : "—"}</code>` : "";
       adapEl.innerHTML =
         `<div><strong>Status:</strong> ${escHtml(w.status || "OBSERVING")}</div>` +
-        `<div><strong>Active Brain:</strong> TechBot <code>${Number(w.w_tech ?? 0.45).toFixed(2)}</code> · FundBot <code>${Number(w.w_fund ?? 0.55).toFixed(2)}</code> · Min Conviction <code>${(Number(w.min_conviction ?? 0.6) * 100).toFixed(0)}%</code> · Min Bear Survival <code>${Number(w.min_survival_score ?? 52).toFixed(1)}</code></div>` +
-        `<div><strong>Per-Rupee Ledger:</strong> Invested <code>${fmtInr(ct.total_rupees_invested_inr || 0)}</code> · Net P&amp;L <code>${fmtInr(ct.total_realized_pnl_inr || 0)}</code>${ct.pnl_per_1000_rupees_inr != null ? ` · <code>₹${Number(ct.pnl_per_1000_rupees_inr).toFixed(2)}/₹1k</code>` : ""}</div>` +
+        `<div><strong>Active Brain:</strong> TechBot <code>${Number(w.w_tech ?? 0.45).toFixed(2)}</code> · FundBot <code>${Number(w.w_fund ?? 0.55).toFixed(2)}</code> · Min Conviction <code>${(Number(w.min_conviction ?? 0.6) * 100).toFixed(0)}%</code> · Min Bear Survival <code>${Number(w.min_survival_score ?? 52).toFixed(1)}</code>${ic1Txt}</div>` +
+        `<div><strong>Per-Rupee Ledger:</strong> Closed <code>${fmtInr(ct.total_rupees_invested_inr || 0)}</code> (Net <code>${fmtInr(ct.total_realized_pnl_inr || 0)}</code>)${ct.pnl_per_1000_rupees_inr != null ? ` · <code>₹${Number(ct.pnl_per_1000_rupees_inr).toFixed(2)}/₹1k</code>` : ""} · Open MTM <code>${fmtInr(mtmDeployed)}</code> (<code>${mtmPnl >= 0 ? "+" : ""}${fmtInr(mtmPnl)}</code>)</div>` +
         `<div><strong>Adversarial Multipliers:</strong> ${atkTxt}</div>` +
         `<div><strong>Sector Calibration:</strong> ${secTxt}</div>` +
         `<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">${gatePills}</div>`;
@@ -4255,15 +4267,26 @@ function wireMoreshwarV31Controls() {
     const lesBody = document.getElementById("mv32LessonsBody");
     if (lesBody) {
       const lessons = Array.isArray(ct.recent_lessons) ? ct.recent_lessons : [];
-      lesBody.innerHTML = lessons.length
-        ? lessons.slice(0, 10).map((l) => `<tr>
+      const openRows = Array.isArray(mtm.rows) ? mtm.rows : [];
+      const combinedRows = [
+        ...lessons.slice(0, 10).map((l) => `<tr>
             <td><strong>${escHtml(l.symbol)}</strong><div style="font-size:10px;color:var(--text-muted);">${escHtml(l.exit_date)} · ₹${Number(l.cost_basis_inr || 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}</div></td>
             <td><span class="tag-pill ${l.outcome === "PASSED" ? "tag-target" : "tag-stop"}">${escHtml(l.outcome)}</span></td>
             <td style="color:${Number(l.return_pct) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${fmtPct(l.return_pct)}</td>
             <td>${escHtml(l.exit_reason || "—")}</td>
             <td style="font-size:11px;">${escHtml(l.lesson_summary || "")}</td>
-          </tr>`).join("")
-        : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No closed trades yet — every rupee invested and exited automatically logs a PASSED/FAILED post-mortem and hardens agent weights &amp; Bear Prosecutor multipliers.</td></tr>`;
+          </tr>`),
+        ...openRows.slice(0, Math.max(0, 10 - lessons.length)).map((o) => `<tr>
+            <td><strong>${escHtml(o.symbol)}</strong><div style="font-size:10px;color:var(--text-muted);">Entry ${escHtml(o.entry_date)} · ₹${Number(o.cost_basis_inr || 0).toLocaleString("en-IN", { maximumFractionDigits: 0 })}</div></td>
+            <td><span class="tag-pill tag-entry">OPEN MTM</span></td>
+            <td style="color:${Number(o.return_pct) >= 0 ? "var(--accent-emerald)" : "var(--accent-crimson)"};">${fmtPct(o.return_pct)}</td>
+            <td>${Number(o.bars_held || 0)}d held</td>
+            <td style="font-size:11px;">Live MTM ₹${Number(o.unrealized_pnl_inr || 0).toFixed(2)} (MAE ${o.mae_pct != null ? Number(o.mae_pct).toFixed(2) + "%" : "—"} / MFE ${o.mfe_pct != null ? "+" + Number(o.mfe_pct).toFixed(2) + "%" : "—"}) feeding daily learning</td>
+          </tr>`),
+      ];
+      lesBody.innerHTML = combinedRows.length
+        ? combinedRows.join("")
+        : `<tr><td colspan="5" style="display:table-cell !important;text-align:center;color:var(--text-muted);">No closed or active MTM positions yet — every rupee invested and exited automatically logs a PASSED/FAILED post-mortem and hardens agent weights &amp; Bear Prosecutor multipliers.</td></tr>`;
     }
 
     const rptBrief = document.getElementById("rptM32Brief");
