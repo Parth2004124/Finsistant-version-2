@@ -52,18 +52,19 @@ MIN_UNIVERSE_OBS_PER_SESSION = 30
 MIN_SHORTLIST_OBS_PER_SESSION = 5
 
 W_TECH_MIN, W_TECH_MAX = 0.25, 0.75
-MIN_CONV_FLOOR, MIN_CONV_CEIL = 0.56, 0.76
+MIN_CONV_FLOOR, MIN_CONV_CEIL = 0.56, 0.78
 RSI_PEN_MIN, RSI_PEN_MAX = 0.0, 0.12
 SECTOR_ADJ_LIMIT = 0.05
 PRIOR_STOP_TIGHTEN_MULT = 1.0
 STOP_MULT_MIN, STOP_MULT_MAX = 0.80, 1.10
-SURVIVAL_FLOOR, SURVIVAL_CEIL = 48.0, 74.0
+SURVIVAL_FLOOR, SURVIVAL_CEIL = 54.0, 82.0
+SURVIVAL_TARGET_PROFIT_PCT = 20.0
 
 MAX_WEIGHT_STEP = 0.03
 MAX_CONV_STEP = 0.02
 MAX_RSI_PEN_STEP = 0.02
 MAX_STOP_MULT_STEP = 0.05
-MAX_SURVIVAL_STEP = 4.0
+MAX_SURVIVAL_STEP = 5.0
 SHRINKAGE_K_TRADES = 6.0
 SHRINKAGE_K_SESSIONS = 8.0
 
@@ -1083,12 +1084,15 @@ class OrchestratorLearningLedger:
                 if low_wr is not None and low_wr < 0.45 and (hi_wr is None or hi_wr > low_wr + 0.10):
                     target_conv = PRIOR_MIN_CONVICTION + 0.12 * shrink_c
                     notes.append(f"low_conv_wr={low_wr:.0%} -> tightening min_conviction")
-                elif overall_wr >= 0.60 and (ct_sum.get("profit_factor") or 0.0) >= 1.4 and net_rupee_pnl > 0:
-                    target_conv = PRIOR_MIN_CONVICTION - 0.04 * shrink_c
-                    notes.append(f"strong_wr={overall_wr:.0%} -> deploying conviction bar")
+                elif overall_wr >= 0.60 and (ct_sum.get("profit_factor") or 0.0) >= 1.50 and (rupee_roic_pct or 0.0) >= SURVIVAL_TARGET_PROFIT_PCT:
+                    target_conv = PRIOR_MIN_CONVICTION - 0.03 * shrink_c
+                    notes.append(f"survival_cleared ROIC={rupee_roic_pct:+.1f}% (>=20%) -> deploying conviction bar")
                 elif overall_wr < 0.45 or (total_rupees_invested > 0 and net_rupee_pnl < 0):
-                    target_conv = PRIOR_MIN_CONVICTION + 0.10 * shrink_c
+                    target_conv = PRIOR_MIN_CONVICTION + 0.12 * shrink_c
                     notes.append(f"net_rupee_loss (₹{net_rupee_pnl:+,.0f}) -> tightening min_conviction")
+                elif total_rupees_invested > 0 and (rupee_roic_pct or 0.0) < SURVIVAL_TARGET_PROFIT_PCT:
+                    target_conv = PRIOR_MIN_CONVICTION + 0.05 * shrink_c
+                    notes.append(f"sub-20% ROIC ({rupee_roic_pct:+.1f}%) -> raising conviction bar")
             elif n_open > 0 or shortlist_obs_1d:
                 # Session-level calibration from open MTM ROIC and 1D queued excess return
                 if open_rupees_deployed > 0 and open_mtm_roic is not None and open_mtm_roic <= -1.0:
@@ -1235,19 +1239,19 @@ class OrchestratorLearningLedger:
                     continue
                 shrink_a = t_cnt / (t_cnt + 3.0)
                 if pnl < 0:
-                    loss_ratio = min(0.25, abs(pnl) / inv)
-                    mult = _clamp(1.0 + shrink_a * (0.20 + loss_ratio * 4.5), 1.05, ATTACK_MULTIPLIER_MAX)
+                    loss_ratio = min(0.30, abs(pnl) / inv)
+                    mult = _clamp(1.0 + shrink_a * (0.35 + loss_ratio * 6.0), 1.12, ATTACK_MULTIPLIER_MAX)
                     new_atk_mult[aid] = round(mult, 4)
-                    notes.append(f"₹{abs(pnl):,.0f} rupee drawdown under {aid} -> x{mult:.2f}")
-                elif n_trades > 0 and t_cnt >= 3 and fail_cnt == 0 and (pnl / inv) >= 0.04:
-                    mult = _clamp(1.0 - 0.18 * shrink_a, ATTACK_MULTIPLIER_MIN, 1.0)
+                    notes.append(f"₹{abs(pnl):,.0f} rupee drawdown under {aid} -> HIGH-STAKES x{mult:.2f}")
+                elif n_trades > 0 and t_cnt >= 3 and fail_cnt == 0 and (pnl / inv) >= 0.08:
+                    mult = _clamp(1.0 - 0.15 * shrink_a, ATTACK_MULTIPLIER_MIN, 1.0)
                     new_atk_mult[aid] = round(mult, 4)
 
             target_surv = DEFAULT_MIN_SURVIVAL_SCORE
             marginal = [
                 (r, src_w)
                 for r, src_w in weighted_positions
-                if r.get("survival_score") is not None and float(r["survival_score"]) < 62.0
+                if r.get("survival_score") is not None and float(r["survival_score"]) < 66.0
             ]
             if marginal:
                 marg_pnl = sum(
@@ -1257,13 +1261,16 @@ class OrchestratorLearningLedger:
                 marg_inv = sum(float(r.get("cost_basis_inr") or 0.0) * src_w for r, src_w in marginal)
                 if marg_inv > 0 and marg_pnl < 0:
                     eff_m = sum(src_w for _, src_w in marginal)
-                    shrink_ms = eff_m / (eff_m + 3.0)
-                    target_surv = DEFAULT_MIN_SURVIVAL_SCORE + min(18.0, (abs(marg_pnl) / marg_inv) * 100.0 * 1.2 * shrink_ms + 3.0)
-                    notes.append(f"marginal survival lost ₹{abs(marg_pnl):,.0f} -> raising min_survival_score")
+                    shrink_ms = eff_m / (eff_m + 2.5)
+                    target_surv = DEFAULT_MIN_SURVIVAL_SCORE + min(22.0, (abs(marg_pnl) / marg_inv) * 100.0 * 1.4 * shrink_ms + 5.0)
+                    notes.append(f"marginal survival lost ₹{abs(marg_pnl):,.0f} -> ratcheting min_survival_score")
             elif total_rupees_invested > 0 and net_rupee_pnl < 0:
-                target_surv = DEFAULT_MIN_SURVIVAL_SCORE + 5.0 * (n_trades / (n_trades + 4.0))
+                target_surv = DEFAULT_MIN_SURVIVAL_SCORE + 8.0 * (n_trades / (n_trades + 3.0))
+            elif total_rupees_invested > 0 and (rupee_roic_pct or 0.0) < SURVIVAL_TARGET_PROFIT_PCT:
+                shortfall = SURVIVAL_TARGET_PROFIT_PCT - max(0.0, float(rupee_roic_pct or 0.0))
+                target_surv = DEFAULT_MIN_SURVIVAL_SCORE + min(8.0, shortfall * 0.35) * (n_trades / (n_trades + 4.0))
             elif open_rupees_deployed > 0 and open_mtm_pnl < 0:
-                target_surv = DEFAULT_MIN_SURVIVAL_SCORE + min(4.0, (abs(open_mtm_pnl) / open_rupees_deployed) * 80.0)
+                target_surv = DEFAULT_MIN_SURVIVAL_SCORE + min(6.0, (abs(open_mtm_pnl) / open_rupees_deployed) * 100.0)
             target_surv = _clamp(target_surv, SURVIVAL_FLOOR, SURVIVAL_CEIL)
             new_min_surv = round(
                 _clamp(min_surv_prev + _clamp(target_surv - min_surv_prev, -MAX_SURVIVAL_STEP, MAX_SURVIVAL_STEP), SURVIVAL_FLOOR, SURVIVAL_CEIL),
@@ -1390,21 +1397,50 @@ class OrchestratorLearningLedger:
             nb_ret = ((nb_nav / max(1.0, init_cap)) - 1.0) * 100.0
             alpha_vs_nb = round(cum_ret_pct - nb_ret, 2)
 
+        target_ret_pct = SURVIVAL_TARGET_PROFIT_PCT
+        target_nav_inr = round(init_cap * (1.0 + target_ret_pct / 100.0), 2)
+        expected_pace_pct = round(target_ret_pct * (min(sessions_done, MISSION_TARGET_SESSIONS) / float(MISSION_TARGET_SESSIONS)), 2)
+        pace_gap_pct = round(cum_ret_pct - expected_pace_pct, 2)
+        survival_gap_pct = round(cum_ret_pct - target_ret_pct, 2)
+        closed_roic = ct.get("rupee_roic_pct")
+
         gates = {
             "sessions_80_completed": sessions_done >= MISSION_TARGET_SESSIONS,
-            "positive_net_profit": cum_ret_pct > 0.0,
-            "beats_niftybees_benchmark": (alpha_vs_nb is not None and alpha_vs_nb > 0.0),
-            "profit_factor_ge_1_25": (ct["total_closed_trades"] >= 10 and (ct["profit_factor"] or 0.0) >= 1.25),
+            "survival_target_20pct_profit": cum_ret_pct >= target_ret_pct,
+            "invested_roic_ge_20pct": (ct["total_closed_trades"] > 0 and float(closed_roic or 0.0) >= target_ret_pct),
+            "beats_niftybees_by_5pct": (alpha_vs_nb is not None and alpha_vs_nb >= 5.0),
+            "profit_factor_ge_1_50": (ct["total_closed_trades"] >= 10 and (ct["profit_factor"] or 0.0) >= 1.50),
             "max_drawdown_le_12pct": max_dd_pct <= 12.0,
             "reconciliation_clean": recon_pass and eng_state != "SAFE_MODE",
         }
         passed_gates = sum(1 for v in gates.values() if v)
+        if cum_ret_pct >= target_ret_pct:
+            stakes_mode = "SURVIVED"
+            survival_status = f"SURVIVAL CLEARED (+{cum_ret_pct:.2f}% >= +{target_ret_pct:.0f}% target)"
+        elif sessions_done >= MISSION_TARGET_SESSIONS:
+            stakes_mode = "TERMINATED"
+            survival_status = f"SYSTEM TERMINATED — FAILED +{target_ret_pct:.0f}% SURVIVAL TARGET ({cum_ret_pct:+.2f}%)"
+        elif pace_gap_pct < -2.0 or (closed_roic is not None and closed_roic < 0.0):
+            stakes_mode = "CRITICAL_ENDANGERMENT"
+            survival_status = f"CRITICAL ENDANGERMENT ({cum_ret_pct:+.2f}% vs +{expected_pace_pct:.2f}% pace · need +{target_ret_pct:.0f}% to survive)"
+        else:
+            stakes_mode = "HIGH_STAKES_PURSUIT"
+            survival_status = f"FIGHTING FOR SURVIVAL ({cum_ret_pct:+.2f}% vs +{target_ret_pct:.0f}% mandatory target)"
+
         return {
-            "mission_name": "80-Session Maximum-Profit Orchestrator Mock Test",
+            "mission_name": "80-Session +20% Survival Target Mock Test",
             "target_sessions": MISSION_TARGET_SESSIONS,
             "completed_sessions": sessions_done,
             "remaining_sessions": max(0, MISSION_TARGET_SESSIONS - sessions_done),
             "progress_pct": round(min(100.0, (sessions_done / float(MISSION_TARGET_SESSIONS)) * 100.0), 1),
+            "survival_target_pct": target_ret_pct,
+            "target_nav_inr": target_nav_inr,
+            "expected_pace_pct": expected_pace_pct,
+            "pace_gap_pct": pace_gap_pct,
+            "survival_gap_pct": survival_gap_pct,
+            "stakes_mode": stakes_mode,
+            "survival_status": survival_status,
+            "invested_roic_pct": closed_roic,
             "current_nav_inr": round(nav, 2),
             "cumulative_profit_inr": cum_pnl_inr,
             "cumulative_return_pct": round(cum_ret_pct, 2),

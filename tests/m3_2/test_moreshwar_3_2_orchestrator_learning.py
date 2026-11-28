@@ -491,7 +491,7 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
         self.assertEqual(reasons.get("TRAIL"), "TRAILING_PROFIT_PROTECT")
         self.assertEqual(reasons.get("STAG"), "TIME_DECAY_STAGNANT")
 
-        # Full-slot Proactive Edge Rotation check (no other exit triggers; best new candidate beats held conviction by >= 0.08)
+        # Full-slot Proactive Edge Rotation check (no other exit triggers; best new candidate beats held conviction by >= 0.06)
         rot_exits = scanner.evaluate_open_holdings(
             [{"sec_id": "S_ROT", "symbol": "ROT", "sector": "IT", "avg_entry_price": 100.0, "last_price": 101.0, "bars_held": 6, "mfe_pct": 2.0}],
             top_candidates=[{"sec_id": "S_NEW", "symbol": "NEWCO", "score": 0.96}],
@@ -499,6 +499,56 @@ class TestMoreshwar32OrchestratorAndLearning(unittest.TestCase):
         )
         self.assertEqual(len(rot_exits), 1)
         self.assertEqual(rot_exits[0]["reason"], "PROACTIVE_EDGE_ROTATION")
+
+    def test_20pct_survival_target_gates_and_termination(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tdir = Path(tmp)
+            ledger = OrchestratorLearningLedger(tdir / "learn.db")
+
+            # Seed 10 winning closed trades totaling +24% ROIC on invested rupees
+            lconn = ledger._connect()
+            try:
+                for i in range(10):
+                    lconn.execute(
+                        "INSERT INTO trade_lessons ("
+                        "position_id, sec_id, symbol, sector, signal_date, entry_date, exit_date, bars_held, exit_reason, "
+                        "cost_basis_inr, realized_pnl_inr, dividends_inr, total_pnl_inr, return_pct, mae_pct, mfe_pct, "
+                        "outcome, tech_conf, fund_conf, conviction, rsi_14, lesson_summary, recorded_at_utc"
+                        ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        (
+                            f"P{i}", f"S{i}", f"W{i}", "IT", "2026-11-20", "2026-11-23", f"2026-12-{(i%20)+1:02d}",
+                            8, "TARGET_HIT_PROFIT_TAKE", 10000.0, 2400.0, 0.0, 2400.0, 24.0, -1.0, 25.0,
+                            "PASSED", 0.80, 0.85, 0.83, 60.0, "20%+ win", "2026-12-20T00:00:00Z",
+                        ),
+                    )
+                lconn.commit()
+            finally:
+                lconn.close()
+
+            # Scenario 1: 80/80 completed but NAV only +14.0% (< +20% mandatory survival target) -> TERMINATED!
+            fail_m = ledger.build_mission_status(
+                {
+                    "risk_metrics": {"sample_sessions": 80, "current_nav_inr": 114000.0, "initial_capital_inr": 100000.0, "cumulative_return_pct": 14.0, "max_drawdown_pct": 4.0},
+                    "prospective_daily_navs": [{"nav_inr": 114000.0, "cumulative_return_pct": 14.0, "benchmark_niftybees_nav": 105000.0, "drawdown_pct": 4.0}],
+                }
+            )
+            self.assertEqual(fail_m["survival_target_pct"], 20.0)
+            self.assertEqual(fail_m["stakes_mode"], "TERMINATED")
+            self.assertIn("TERMINATED", fail_m["survival_status"])
+            self.assertFalse(fail_m["graduation_gates"]["survival_target_20pct_profit"])
+            self.assertFalse(fail_m["real_money_ready"])
+
+            # Scenario 2: 80/80 completed with +23.5% NAV return, +24% closed ROIC, +15.5% alpha over NiftyBees -> SURVIVED!
+            pass_m = ledger.build_mission_status(
+                {
+                    "risk_metrics": {"sample_sessions": 80, "current_nav_inr": 123500.0, "initial_capital_inr": 100000.0, "cumulative_return_pct": 23.5, "max_drawdown_pct": 4.0},
+                    "prospective_daily_navs": [{"nav_inr": 123500.0, "cumulative_return_pct": 23.5, "benchmark_niftybees_nav": 108000.0, "drawdown_pct": 4.0}],
+                }
+            )
+            self.assertEqual(pass_m["stakes_mode"], "SURVIVED")
+            self.assertTrue(pass_m["graduation_gates"]["survival_target_20pct_profit"])
+            self.assertTrue(pass_m["graduation_gates"]["invested_roic_ge_20pct"])
+            self.assertTrue(pass_m["real_money_ready"])
 
 
 if __name__ == "__main__":
