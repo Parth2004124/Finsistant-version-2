@@ -800,17 +800,17 @@ class OrchestratorUniverseScanner:
                 exit_reason = f"ORCHESTRATOR_{badge or 'SELL'}"
             elif orig_target > entry_px > 0 and cur_px >= orig_target:
                 exit_reason = "TARGET_HIT_PROFIT_TAKE"
-            elif unreal_pct >= 12.0:
-                exit_reason = "TARGET_HIT_12PCT"
-            elif mfe_pct >= 5.0 and unreal_pct <= (mfe_pct * 0.45) and unreal_pct < (mfe_pct - 2.5):
+            elif unreal_pct >= 22.0:
+                exit_reason = "TARGET_HIT_22PCT"
+            elif mfe_pct >= 6.0 and unreal_pct <= (mfe_pct * 0.45) and unreal_pct < (mfe_pct - 2.5):
                 exit_reason = "TRAILING_PROFIT_PROTECT"
-            elif (bars_held >= 7 and unreal_pct < 1.0 and (tech_now < 0.65 or conv_now < min_conv)) or (
-                bars_held >= 12 and unreal_pct <= 2.0
+            elif (bars_held >= 6 and unreal_pct < 1.5 and (tech_now < 0.65 or conv_now < min_conv)) or (
+                bars_held >= 10 and unreal_pct < 3.0
             ):
                 exit_reason = "TIME_DECAY_STAGNANT"
-            elif bars_held >= 2 and surv_now < (min_surv - 6.0) and unreal_pct < 2.0:
+            elif bars_held >= 2 and surv_now < (min_surv - 5.0) and unreal_pct < 2.0:
                 exit_reason = "BEAR_PROSECUTION_DOWNGRADE"
-            elif conv_now < max(0.48, min_conv - 0.08):
+            elif conv_now < max(0.50, min_conv - 0.07):
                 exit_reason = "CONVICTION_FADE_EXIT"
 
             if exit_reason is not None:
@@ -828,7 +828,7 @@ class OrchestratorUniverseScanner:
                         "summary": f"{exit_reason} (ret={unreal_pct:+.2f}%, MFE=+{mfe_pct:.2f}%, held={bars_held}d, surv={surv_now:.1f})",
                     }
                 )
-            elif bars_held >= 5 and unreal_pct < 3.0:
+            elif bars_held >= 4 and unreal_pct < 4.0:
                 rotation_pool.append(
                     {
                         "sec_id": sid,
@@ -854,7 +854,7 @@ class OrchestratorUniverseScanner:
             if fresh and rotation_pool:
                 best_cand = fresh[0]
                 weakest = rotation_pool[0]
-                if float(best_cand.get("score") or 0.0) >= float(weakest["conviction"]) + 0.08:
+                if float(best_cand.get("score") or 0.0) >= float(weakest["conviction"]) + 0.06:
                     exits.append(
                         {
                             "sec_id": weakest["sec_id"],
