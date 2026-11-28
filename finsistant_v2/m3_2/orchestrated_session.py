@@ -67,6 +67,15 @@ M32_EXEC_CFG_OVERRIDE: dict[str, Any] = {
     "max_single_stock_pct": 15.0,
     "hurdle_mode": "DYNAMIC_VOL",
     "sizing_mode": "F_HYBRID_RISK_ALPHA",
+    "stop_model": "F_HYBRID_STOP_PROFIT_PROTECT",
+    "hold_max_days": 20,
+    "replacement_policy": "PROACTIVE_EDGE_ROTATION",
+    "min_hold_days_before_rotate": 5,
+    "min_replacement_edge_bps": 150.0,
+    "protect_winner_pct": 5.0,
+    "periodic_review_interval_days": 1,
+    "replenish_min_gap_days": 1,
+    "cooldown_days": 3,
 }
 
 
@@ -157,8 +166,9 @@ class OrchestratedSessionRunner:
         nb_dates = snap.pop("niftybees_dates")
         nb_closes = snap.pop("niftybees_closes_full")
 
-        # Learn from prior closed trades + newly matured 5D/10D/20D real outcomes BEFORE scanning today
+        # Learn from prior closed trades + open MTM positions + newly matured 1D/5D/10D/20D real outcomes BEFORE scanning today
         new_lessons = self.ledger.sync_closed_trades(self.orch.engine.db_path)
+        mtm_pre = self.ledger.sync_open_positions_mtm(self.orch.engine.db_path, trading_date)
         matured = self.ledger.mature_outcomes(
             today=trading_date, equity_histories=histories, nb_dates=nb_dates, nb_closes=nb_closes
         )
@@ -177,6 +187,23 @@ class OrchestratedSessionRunner:
         )
         blotter = EMSOrderBlotter(desk_halted=desk_halted, kill_switch_reasons=ks_reasons)
 
+        scan = self.scanner.scan(
+            trading_date=trading_date,
+            equity_histories=histories,
+            eq_bars=snap["equity_bars"],
+            learned_params=upd,
+            capital_inr=nav,
+        )
+        # Record any scanner symbol failures explicitly into EMS exception blotter
+        for row in scan.get("shortlist") or []:
+            if str(row.get("status") or "") in ("FAILED_DATA_UNAVAILABLE", "EXCLUDED_PRICE_DISCREPANCY"):
+                blotter.record_data_exception(
+                    str(row.get("symbol") or ""),
+                    str(row.get("error") or row.get("status")),
+                    source="ORCHESTRATOR_SHORTLIST",
+                )
+
+        entry_targets = self.ledger.get_entry_targets_for_open_positions(snap_open)
         exit_signals = self.scanner.evaluate_open_holdings(
             snap_open,
             learned_params=upd,
@@ -184,6 +211,9 @@ class OrchestratedSessionRunner:
             trading_date=trading_date,
             equity_histories=histories,
             eq_bars=snap["equity_bars"],
+            entry_targets=entry_targets,
+            top_candidates=scan.get("candidates") or [],
+            max_tactical_positions=int(M32_EXEC_CFG_OVERRIDE["max_tactical_positions"]),
         )
         self.last_exit_signals = list(exit_signals)
         for ex in exit_signals:
@@ -206,27 +236,15 @@ class OrchestratedSessionRunner:
             )
             blotter.record_compliance_result(ex_verdict, qty=0)
 
-        scan = self.scanner.scan(
-            trading_date=trading_date,
-            equity_histories=histories,
-            eq_bars=snap["equity_bars"],
-            learned_params=upd,
-            capital_inr=nav,
-        )
-        # Record any scanner symbol failures explicitly into EMS exception blotter
-        for row in scan.get("shortlist") or []:
-            if str(row.get("status") or "") in ("FAILED_DATA_UNAVAILABLE", "EXCLUDED_PRICE_DISCREPANCY"):
-                blotter.record_data_exception(
-                    str(row.get("symbol") or ""),
-                    str(row.get("error") or row.get("status")),
-                    source="ORCHESTRATOR_SHORTLIST",
-                )
-
         shortlist_by_sid = {str(r.get("sec_id")): r for r in (scan.get("shortlist") or [])}
+        exiting_sids = {str(ex.get("sec_id") or "") for ex in exit_signals}
         open_sec_exp: dict[str, float] = {}
         for p in snap_open:
+            if str(p.get("sec_id") or "") in exiting_sids:
+                continue
             sn = str(p.get("sector") or "UNKNOWN_SECTOR")
             open_sec_exp[sn] = open_sec_exp.get(sn, 0.0) + float(p.get("qty") or 0) * float(p.get("last_price") or 0.0)
+        eff_open_count = max(0, len(snap_open) - len(exiting_sids))
         base_slot_inr = (nav * 0.90) / max(1, int(M32_EXEC_CFG_OVERRIDE["max_tactical_positions"]))
         tca_adder = float(btca_summary.get("tca_hurdle_adder_bps") or 0.0)
 
@@ -252,7 +270,7 @@ class OrchestratedSessionRunner:
                 bar_valid=bool(bar.get("valid", True)),
                 price_discrepancy_pct=float(sl_row.get("price_discrepancy_pct") or 0.0),
                 sector_exposure_after_pct=sec_after_pct,
-                open_positions_count=len(snap_open),
+                open_positions_count=eff_open_count,
                 max_positions=int(M32_EXEC_CFG_OVERRIDE["max_tactical_positions"]),
                 desk_halted=desk_halted,
                 desk_halt_reasons=ks_reasons,
@@ -272,6 +290,7 @@ class OrchestratedSessionRunner:
         scan["candidates"] = approved_candidates
         scan["outcomes_matured_this_run"] = matured
         scan["trade_lessons_synced_pre_scan"] = new_lessons
+        scan["open_mtm_synced_pre_scan"] = mtm_pre
         scan["exit_signals"] = list(exit_signals)
         scan["ems_blotter"] = self.last_blotter
         self.last_scan = scan
@@ -297,11 +316,12 @@ class OrchestratedSessionRunner:
 
     def finalize_reports(self, trading_date: str, *, session_orders: list[dict[str, Any]] | None = None) -> None:
         paper_snap = self.orch.engine.get_full_ledger_snapshot()
-        # Sync Post-Trade BTCA execution analytics & closed-trade post-mortems immediately
+        # Sync Post-Trade BTCA execution analytics, closed-trade post-mortems & live open MTM immediately
         if session_orders:
             self.ledger.sync_btca_executions(session_orders)
         post_lessons = self.ledger.sync_closed_trades(self.orch.engine.db_path)
-        if post_lessons > 0:
+        post_mtm = self.ledger.sync_open_positions_mtm(self.orch.engine.db_path, trading_date)
+        if post_lessons > 0 or post_mtm > 0:
             self.ledger.update_weights(trading_date)
 
         scan = self.last_scan
@@ -320,6 +340,7 @@ class OrchestratedSessionRunner:
             public["ems_blotter"] = self.last_blotter
             public["allocation_policy"] = "0% NIFTYBEES / 90% Tactical AI Picks / 10% Liquid (BULL_TREND)"
             public["trade_lessons_synced_post_session"] = post_lessons
+            public["open_mtm_synced_post_session"] = post_mtm
             self.scan_dir.mkdir(parents=True, exist_ok=True)
             text = json.dumps(public, indent=2, default=str)
             (self.scan_dir / "latest_scan.json").write_text(text, encoding="utf-8")

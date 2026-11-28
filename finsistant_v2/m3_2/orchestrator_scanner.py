@@ -658,6 +658,7 @@ class OrchestratorUniverseScanner:
                     "survival_score": float(r.get("survival_score") or 0.0),
                     "size_multiplier": float(r.get("prosecution_size_mult") or 1.0),
                     "stop_ratio": float(r["stop_ratio"]),
+                    "take_profit": float(r.get("moreshwar_target") or 0.0),
                     "tech_conf": r["tech_conf"],
                     "fund_conf": r["fund_conf"],
                     "tech_rank": r["tech_rank"],
@@ -723,18 +724,28 @@ class OrchestratorUniverseScanner:
         trading_date: str | None = None,
         equity_histories: dict[str, dict[str, Any]] | None = None,
         eq_bars: dict[str, dict[str, Any]] | None = None,
+        entry_targets: dict[str, float] | None = None,
+        top_candidates: list[dict[str, Any]] | None = None,
+        max_tactical_positions: int = 8,
     ) -> list[dict[str, Any]]:
-        """Re-evaluate open tactical positions via TechBot+FundBot+ExecBot (is_holding=True) for active EXIT/SELL."""
+        """Re-evaluate open tactical positions for target hits, profit protection, time-decay, Bear downgrade & rotation."""
         if not open_positions:
             return []
         params = dict(learned_params or {})
         weights = (float(params.get("w_tech", PRIOR_W_TECH)), float(params.get("w_fund", PRIOR_W_FUND)))
         min_conv = float(params.get("min_conviction", PRIOR_MIN_CONVICTION))
         rsi_pen = float(params.get("rsi_overbought_penalty", PRIOR_RSI_OVERBOUGHT_PENALTY))
+        min_surv = float(params.get("min_survival_score", DEFAULT_MIN_SURVIVAL_SCORE))
         sec_adj_map = params.get("sector_adjustments") or {}
+        atk_mults = dict(params.get("attack_multipliers") or {})
         h_map = equity_histories or {}
         b_map = eq_bars or {}
+        targets_map = entry_targets or {}
+
         exits: list[dict[str, Any]] = []
+        rotation_pool: list[dict[str, Any]] = []
+        held_sids: set[str] = {str(p.get("sec_id") or "") for p in open_positions if p.get("sec_id")}
+
         for pos in open_positions:
             sym = str(pos.get("symbol") or "").strip().upper()
             sid = str(pos.get("sec_id") or "")
@@ -765,22 +776,102 @@ class OrchestratorUniverseScanner:
                 "min_conviction": min_conv,
                 "rsi_overbought_penalty": rsi_pen,
                 "sector_adjustment": float(sec_adj_map.get(str(pos.get("sector") or ""), 0.0)),
-                "attack_multipliers": dict(params.get("attack_multipliers") or {}),
-                "min_survival_score": float(params.get("min_survival_score", DEFAULT_MIN_SURVIVAL_SCORE)),
+                "attack_multipliers": atk_mults,
+                "min_survival_score": min_surv,
             }
-            for agent in (self.tech_agent, self.fund_agent, self.exec_agent):
+            for agent in (self.tech_agent, self.fund_agent, self.prosecutor_agent, self.exec_agent):
                 ctx[agent.role_key] = agent.evaluate(ctx)
             exe = ctx["execution"]
+            pros = (ctx.get("prosecution") or {}).get("metrics") or {}
             badge = str(exe.get("decision_badge") or "")
+            conv_now = float(exe.get("conviction") or 0.0)
+            tech_now = float((ctx.get("technical") or {}).get("confidence") or 0.5)
+            surv_now = float(pros.get("survival_score") or 50.0)
+
+            entry_px = float(pos.get("avg_entry_price") or snap.get("price") or 0.0)
+            cur_px = float((bar or {}).get("close") or pos.get("last_price") or snap.get("price") or 0.0)
+            bars_held = int(pos.get("bars_held") or 0)
+            unreal_pct = (((cur_px / entry_px) - 1.0) * 100.0) if (entry_px > 0 and cur_px > 0) else 0.0
+            mfe_pct = max(float(pos.get("mfe_pct") or 0.0), unreal_pct)
+            orig_target = float(targets_map.get(sid) or 0.0)
+
+            exit_reason: str | None = None
             if exe.get("action") == "SELL" or badge in ("EXIT", "REDUCE"):
-                exits.append({
-                    "sec_id": sid,
-                    "symbol": sym,
-                    "action": exe.get("action"),
-                    "decision_badge": badge,
-                    "conviction": float(exe.get("conviction") or 0.0),
-                    "reason": f"ORCHESTRATOR_{badge or 'SELL'}",
-                    "summary": exe.get("summary", ""),
-                })
+                exit_reason = f"ORCHESTRATOR_{badge or 'SELL'}"
+            elif orig_target > entry_px > 0 and cur_px >= orig_target:
+                exit_reason = "TARGET_HIT_PROFIT_TAKE"
+            elif unreal_pct >= 12.0:
+                exit_reason = "TARGET_HIT_12PCT"
+            elif mfe_pct >= 5.0 and unreal_pct <= (mfe_pct * 0.45) and unreal_pct < (mfe_pct - 2.5):
+                exit_reason = "TRAILING_PROFIT_PROTECT"
+            elif (bars_held >= 7 and unreal_pct < 1.0 and (tech_now < 0.65 or conv_now < min_conv)) or (
+                bars_held >= 12 and unreal_pct <= 2.0
+            ):
+                exit_reason = "TIME_DECAY_STAGNANT"
+            elif bars_held >= 2 and surv_now < (min_surv - 6.0) and unreal_pct < 2.0:
+                exit_reason = "BEAR_PROSECUTION_DOWNGRADE"
+            elif conv_now < max(0.48, min_conv - 0.08):
+                exit_reason = "CONVICTION_FADE_EXIT"
+
+            if exit_reason is not None:
+                exits.append(
+                    {
+                        "sec_id": sid,
+                        "symbol": sym,
+                        "action": "SELL",
+                        "decision_badge": badge or "EXIT",
+                        "conviction": conv_now,
+                        "survival_score": surv_now,
+                        "unrealized_pct": round(unreal_pct, 2),
+                        "bars_held": bars_held,
+                        "reason": exit_reason,
+                        "summary": f"{exit_reason} (ret={unreal_pct:+.2f}%, MFE=+{mfe_pct:.2f}%, held={bars_held}d, surv={surv_now:.1f})",
+                    }
+                )
+            elif bars_held >= 5 and unreal_pct < 3.0:
+                rotation_pool.append(
+                    {
+                        "sec_id": sid,
+                        "symbol": sym,
+                        "conviction": conv_now,
+                        "survival_score": surv_now,
+                        "unrealized_pct": unreal_pct,
+                        "bars_held": bars_held,
+                        "badge": badge,
+                    }
+                )
+
+        # Proactive Edge Rotation: if portfolio slots are full after exits and a fresh candidate has a clear edge
+        remaining_open = len(open_positions) - len(exits)
+        if remaining_open >= max(1, int(max_tactical_positions)) and rotation_pool and top_candidates:
+            fresh = [
+                c
+                for c in top_candidates
+                if str(c.get("sec_id") or "") not in held_sids
+            ]
+            fresh.sort(key=lambda c: -float(c.get("score") or 0.0))
+            rotation_pool.sort(key=lambda r: (r["conviction"], r["unrealized_pct"]))
+            if fresh and rotation_pool:
+                best_cand = fresh[0]
+                weakest = rotation_pool[0]
+                if float(best_cand.get("score") or 0.0) >= float(weakest["conviction"]) + 0.08:
+                    exits.append(
+                        {
+                            "sec_id": weakest["sec_id"],
+                            "symbol": weakest["symbol"],
+                            "action": "SELL",
+                            "decision_badge": "ROTATE",
+                            "conviction": weakest["conviction"],
+                            "survival_score": weakest["survival_score"],
+                            "unrealized_pct": round(weakest["unrealized_pct"], 2),
+                            "bars_held": weakest["bars_held"],
+                            "reason": "PROACTIVE_EDGE_ROTATION",
+                            "summary": (
+                                f"PROACTIVE_EDGE_ROTATION: {best_cand['symbol']} "
+                                f"(conv={float(best_cand.get('score') or 0)*100:.1f}%) replaces stagnant {weakest['symbol']} "
+                                f"(conv={weakest['conviction']*100:.1f}%, ret={weakest['unrealized_pct']:+.2f}%)"
+                            ),
+                        }
+                    )
         return exits
 

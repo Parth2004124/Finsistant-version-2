@@ -215,6 +215,30 @@ class OrchestratorLearningLedger:
                     execution_status TEXT NOT NULL,
                     recorded_at_utc TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS open_mtm_observations (
+                    position_id TEXT PRIMARY KEY,
+                    as_of_date TEXT NOT NULL,
+                    sec_id TEXT NOT NULL,
+                    symbol TEXT NOT NULL,
+                    sector TEXT,
+                    signal_date TEXT,
+                    entry_date TEXT NOT NULL,
+                    bars_held INTEGER NOT NULL,
+                    cost_basis_inr REAL NOT NULL,
+                    market_value_inr REAL NOT NULL,
+                    unrealized_pnl_inr REAL NOT NULL,
+                    return_pct REAL NOT NULL,
+                    mae_pct REAL,
+                    mfe_pct REAL,
+                    tech_conf REAL,
+                    fund_conf REAL,
+                    conviction REAL,
+                    rsi_14 REAL,
+                    survival_score REAL,
+                    attack_ids_json TEXT,
+                    take_profit REAL,
+                    recorded_at_utc TEXT NOT NULL
+                );
                 """
             )
             # Safe schema migration for any existing v3.2 alpha DB created before extra columns
@@ -228,6 +252,7 @@ class OrchestratorLearningLedger:
                     ("prosecution_verdict", "TEXT"),
                     ("survival_score", "REAL"),
                     ("attack_ids_json", "TEXT"),
+                    ("take_profit", "REAL"),
                 ],
             )
             self._ensure_columns(
@@ -292,8 +317,8 @@ class OrchestratorLearningLedger:
             conn.executemany(
                 "INSERT INTO scan_shortlist (trading_date, sec_id, symbol, tech_rank, status, tech_conf, fund_conf, "
                 "fundamental_total, porters_total, conviction, exec_action, eod_close, queued, rsi_14, sector, "
-                "prosecution_verdict, survival_score, attack_ids_json) "
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "prosecution_verdict, survival_score, attack_ids_json, take_profit) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 [
                     (
                         dt,
@@ -314,6 +339,7 @@ class OrchestratorLearningLedger:
                         r.get("prosecution_verdict"),
                         r.get("survival_score"),
                         json.dumps(r.get("attack_ids") or []),
+                        r.get("moreshwar_target") if r.get("moreshwar_target") is not None else r.get("take_profit"),
                     )
                     for r in scan["shortlist"]
                 ],
@@ -321,6 +347,146 @@ class OrchestratorLearningLedger:
             conn.commit()
         finally:
             conn.close()
+
+    def get_entry_targets_for_open_positions(self, open_positions: list[dict[str, Any]]) -> dict[str, float]:
+        """Look up original MOVIQ take-profit target prices stored when each open position was shortlisted."""
+        if not open_positions:
+            return {}
+        conn = self._connect()
+        out: dict[str, float] = {}
+        try:
+            for pos in open_positions:
+                sid = str(pos.get("sec_id") or "")
+                entry_dt = str(pos.get("entry_date") or "")
+                if not sid or not entry_dt:
+                    continue
+                row = conn.execute(
+                    "SELECT take_profit FROM scan_shortlist WHERE sec_id=? AND trading_date < ? AND take_profit IS NOT NULL "
+                    "ORDER BY trading_date DESC LIMIT 1",
+                    (sid, entry_dt),
+                ).fetchone()
+                if row and row["take_profit"] is not None and float(row["take_profit"]) > 0.0:
+                    out[sid] = float(row["take_profit"])
+        finally:
+            conn.close()
+        return out
+
+    # ------------------------------------------------------------------
+    # 1b. Sync OPEN positions mark-to-market trajectory for daily learning
+    # ------------------------------------------------------------------
+    def sync_open_positions_mtm(self, paper_db_path: Path, as_of_date: str) -> int:
+        """Record live mark-to-market rupee P&L and MAE/MFE on active OPEN positions so every session teaches."""
+        paper_db_path = Path(paper_db_path)
+        if not paper_db_path.exists():
+            return 0
+        pconn = sqlite3.connect(str(paper_db_path), timeout=30.0)
+        pconn.row_factory = sqlite3.Row
+        try:
+            open_rows = pconn.execute(
+                "SELECT * FROM positions WHERE status = 'OPEN' ORDER BY entry_date ASC, position_id ASC"
+            ).fetchall()
+        except sqlite3.OperationalError:
+            return 0
+        finally:
+            pconn.close()
+
+        conn = self._connect()
+        synced = 0
+        try:
+            open_pids: set[str] = set()
+            for pos in open_rows:
+                p_keys = pos.keys() if hasattr(pos, "keys") else ()
+                itype = str(pos["instrument_type"] or "") if "instrument_type" in p_keys else "TACTICAL_EQUITY"
+                if itype and itype != "TACTICAL_EQUITY":
+                    continue
+                pid = str(pos["position_id"])
+                open_pids.add(pid)
+                bars_held = int(pos["bars_held"] or 0) if "bars_held" in p_keys else 1
+                if bars_held < 1:
+                    continue
+                sec_id = str(pos["sec_id"])
+                sym = str(pos["symbol"])
+                entry_dt = str(pos["entry_date"])
+                cost_basis = max(1e-6, float(pos["cost_basis_inr"] or 0.0))
+                qty = float(pos["qty"] or 0.0) if "qty" in p_keys else 0.0
+                last_px = float(pos["last_price"] or 0.0) if "last_price" in p_keys else 0.0
+                mkt_val = (qty * last_px) if (qty > 0 and last_px > 0) else cost_basis
+                divs = float(pos["dividends_received_inr"] or 0.0) if "dividends_received_inr" in p_keys else 0.0
+                unreal_pnl = (mkt_val - cost_basis) + divs
+                ret_pct = (unreal_pnl / cost_basis) * 100.0
+                mae = float(pos["mae_pct"]) if ("mae_pct" in p_keys and pos["mae_pct"] is not None) else None
+                mfe = float(pos["mfe_pct"]) if ("mfe_pct" in p_keys and pos["mfe_pct"] is not None) else None
+
+                sl = conn.execute(
+                    "SELECT trading_date, tech_conf, fund_conf, conviction, rsi_14, sector, survival_score, attack_ids_json, take_profit "
+                    "FROM scan_shortlist WHERE sec_id=? AND trading_date < ? ORDER BY trading_date DESC LIMIT 1",
+                    (sec_id, entry_dt),
+                ).fetchone()
+                if sl is None:
+                    sl = conn.execute(
+                        "SELECT trading_date, tech_conf, NULL AS fund_conf, NULL AS conviction, rsi_14, sector, "
+                        "NULL AS survival_score, '[]' AS attack_ids_json, NULL AS take_profit "
+                        "FROM scan_universe WHERE sec_id=? AND trading_date <= ? ORDER BY trading_date DESC LIMIT 1",
+                        (sec_id, entry_dt),
+                    ).fetchone()
+                sig_dt = str(sl["trading_date"]) if sl else None
+                t_c = float(sl["tech_conf"]) if (sl and sl["tech_conf"] is not None) else None
+                f_c = float(sl["fund_conf"]) if (sl and sl["fund_conf"] is not None) else None
+                conv = float(sl["conviction"]) if (sl and sl["conviction"] is not None) else None
+                rsi = float(sl["rsi_14"]) if (sl and sl["rsi_14"] is not None) else None
+                surv_score = float(sl["survival_score"]) if (sl and sl["survival_score"] is not None) else None
+                tp_px = float(sl["take_profit"]) if (sl and sl["take_profit"] is not None) else None
+                atk_json = str(sl["attack_ids_json"] or "[]") if sl else "[]"
+                sector = str((pos["sector"] if "sector" in p_keys else None) or (sl["sector"] if sl else "UNKNOWN_SECTOR"))
+
+                conn.execute(
+                    "INSERT OR REPLACE INTO open_mtm_observations ("
+                    "position_id, as_of_date, sec_id, symbol, sector, signal_date, entry_date, bars_held, "
+                    "cost_basis_inr, market_value_inr, unrealized_pnl_inr, return_pct, mae_pct, mfe_pct, "
+                    "tech_conf, fund_conf, conviction, rsi_14, survival_score, attack_ids_json, take_profit, recorded_at_utc"
+                    ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    (
+                        pid, str(as_of_date), sec_id, sym, sector, sig_dt, entry_dt, bars_held,
+                        round(cost_basis, 2), round(mkt_val, 2), round(unreal_pnl, 2), round(ret_pct, 3),
+                        round(mae, 3) if mae is not None else None,
+                        round(mfe, 3) if mfe is not None else None,
+                        t_c, f_c, conv, rsi, surv_score, atk_json, tp_px, _utc_now_iso(),
+                    ),
+                )
+                synced += 1
+
+            # Remove any observations whose position is no longer OPEN (now moved to trade_lessons)
+            stale = [
+                r[0]
+                for r in conn.execute("SELECT position_id FROM open_mtm_observations").fetchall()
+                if r[0] not in open_pids
+            ]
+            if stale:
+                conn.executemany("DELETE FROM open_mtm_observations WHERE position_id=?", [(p,) for p in stale])
+            conn.commit()
+        finally:
+            conn.close()
+        return synced
+
+    def open_mtm_summary(self) -> dict[str, Any]:
+        conn = self._connect()
+        try:
+            rows = [
+                dict(r)
+                for r in conn.execute("SELECT * FROM open_mtm_observations ORDER BY entry_date ASC, position_id ASC").fetchall()
+            ]
+        finally:
+            conn.close()
+        tot_inv = round(sum(float(r.get("cost_basis_inr") or 0.0) for r in rows), 2)
+        tot_pnl = round(sum(float(r.get("unrealized_pnl_inr") or 0.0) for r in rows), 2)
+        mtm_roic = round((tot_pnl / tot_inv) * 100.0, 3) if tot_inv > 0 else None
+        return {
+            "count": len(rows),
+            "open_rupees_deployed_inr": tot_inv,
+            "open_unrealized_pnl_inr": tot_pnl,
+            "open_mtm_roic_pct": mtm_roic,
+            "rows": rows,
+        }
 
     # ------------------------------------------------------------------
     # 2. Sync EVERY closed paper trade into per-rupee post-mortem lessons
@@ -617,85 +783,100 @@ class OrchestratorLearningLedger:
             "recent_lessons": rows[:25],
         }
 
+    def _compute_horizon_stats(self, conn: sqlite3.Connection, horizon: int) -> dict[str, Any]:
+        dates = [
+            r[0]
+            for r in conn.execute(
+                "SELECT DISTINCT trading_date FROM outcomes WHERE horizon=? ORDER BY trading_date", (horizon,)
+            )
+        ]
+        per_session: list[dict[str, Any]] = []
+        ic_t_all: list[float] = []
+        ic_f_all: list[float] = []
+        pick_excess: list[float] = []
+        shortlist_excess: list[float] = []
+        universe_excess: list[float] = []
+        for dt in dates:
+            u = conn.execute(
+                "SELECT u.tech_conf, u.rank_key, o.excess FROM scan_universe u JOIN outcomes o "
+                "ON o.trading_date=u.trading_date AND o.sec_id=u.sec_id AND o.horizon=? WHERE u.trading_date=?",
+                (horizon, dt),
+            ).fetchall()
+            s = conn.execute(
+                "SELECT s.fund_conf, s.conviction, s.queued, o.excess FROM scan_shortlist s JOIN outcomes o "
+                "ON o.trading_date=s.trading_date AND o.sec_id=s.sec_id AND o.horizon=? "
+                "WHERE s.trading_date=? AND s.status='AGENTS_OK'",
+                (horizon, dt),
+            ).fetchall()
+            ic_t = None
+            if len(u) >= MIN_UNIVERSE_OBS_PER_SESSION:
+                composite = [float(r["tech_conf"]) * 1000.0 + float(np.clip(r["rank_key"], -50, 50)) for r in u]
+                ic_t = spearman_ic(composite, [float(r["excess"]) for r in u])
+            ic_f = None
+            if len(s) >= MIN_SHORTLIST_OBS_PER_SESSION:
+                ic_f = spearman_ic([float(r["fund_conf"]) for r in s], [float(r["excess"]) for r in s])
+            if ic_t is not None:
+                ic_t_all.append(ic_t)
+            if ic_f is not None:
+                ic_f_all.append(ic_f)
+            universe_excess.extend(float(r["excess"]) for r in u)
+            shortlist_excess.extend(float(r["excess"]) for r in s)
+            pick_excess.extend(float(r["excess"]) for r in s if int(r["queued"]) == 1)
+            per_session.append(
+                {
+                    "trading_date": dt,
+                    "n_universe": len(u),
+                    "n_shortlist": len(s),
+                    "ic_tech": None if ic_t is None else round(ic_t, 4),
+                    "ic_fund": None if ic_f is None else round(ic_f, 4),
+                }
+            )
+
+        def _mean_pct(v: list[float]) -> float | None:
+            return round(float(np.mean(v)) * 100.0, 4) if v else None
+
+        both = [r for r in per_session if r["ic_tech"] is not None and r["ic_fund"] is not None]
+        return {
+            "horizon_trading_days": horizon,
+            "matured_sessions": len(per_session),
+            "sessions_with_both_ics": len(both),
+            "mean_ic_tech": None if not ic_t_all else round(float(np.mean(ic_t_all)), 4),
+            "mean_ic_fund": None if not ic_f_all else round(float(np.mean(ic_f_all)), 4),
+            "mean_excess_vs_niftybees_pct": {
+                "universe_all_eligible": _mean_pct(universe_excess),
+                "agent_shortlist": _mean_pct(shortlist_excess),
+                "queued_paper_picks": _mean_pct(pick_excess),
+            },
+            "observations": {
+                "universe": len(universe_excess),
+                "shortlist": len(shortlist_excess),
+                "queued_picks": len(pick_excess),
+            },
+            "per_session": per_session[-80:],
+        }
+
     def learning_report(self, horizon: int = LEARNING_HORIZON) -> dict[str, Any]:
         conn = self._connect()
         try:
-            dates = [
-                r[0]
-                for r in conn.execute(
-                    "SELECT DISTINCT trading_date FROM outcomes WHERE horizon=? ORDER BY trading_date", (horizon,)
-                )
-            ]
-            per_session: list[dict[str, Any]] = []
-            ic_t_all: list[float] = []
-            ic_f_all: list[float] = []
-            pick_excess: list[float] = []
-            shortlist_excess: list[float] = []
-            universe_excess: list[float] = []
-            for dt in dates:
-                u = conn.execute(
-                    "SELECT u.tech_conf, u.rank_key, o.excess FROM scan_universe u JOIN outcomes o "
-                    "ON o.trading_date=u.trading_date AND o.sec_id=u.sec_id AND o.horizon=? WHERE u.trading_date=?",
-                    (horizon, dt),
-                ).fetchall()
-                s = conn.execute(
-                    "SELECT s.fund_conf, s.conviction, s.queued, o.excess FROM scan_shortlist s JOIN outcomes o "
-                    "ON o.trading_date=s.trading_date AND o.sec_id=s.sec_id AND o.horizon=? "
-                    "WHERE s.trading_date=? AND s.status='AGENTS_OK'",
-                    (horizon, dt),
-                ).fetchall()
-                ic_t = None
-                if len(u) >= MIN_UNIVERSE_OBS_PER_SESSION:
-                    composite = [float(r["tech_conf"]) * 1000.0 + float(np.clip(r["rank_key"], -50, 50)) for r in u]
-                    ic_t = spearman_ic(composite, [float(r["excess"]) for r in u])
-                ic_f = None
-                if len(s) >= MIN_SHORTLIST_OBS_PER_SESSION:
-                    ic_f = spearman_ic([float(r["fund_conf"]) for r in s], [float(r["excess"]) for r in s])
-                if ic_t is not None:
-                    ic_t_all.append(ic_t)
-                if ic_f is not None:
-                    ic_f_all.append(ic_f)
-                universe_excess.extend(float(r["excess"]) for r in u)
-                shortlist_excess.extend(float(r["excess"]) for r in s)
-                pick_excess.extend(float(r["excess"]) for r in s if int(r["queued"]) == 1)
-                per_session.append(
-                    {
-                        "trading_date": dt,
-                        "n_universe": len(u),
-                        "n_shortlist": len(s),
-                        "ic_tech": None if ic_t is None else round(ic_t, 4),
-                        "ic_fund": None if ic_f is None else round(ic_f, 4),
-                    }
-                )
-
-            def _mean_pct(v: list[float]) -> float | None:
-                return round(float(np.mean(v)) * 100.0, 4) if v else None
-
-            both = [r for r in per_session if r["ic_tech"] is not None and r["ic_fund"] is not None]
-            return {
-                "horizon_trading_days": horizon,
-                "matured_sessions": len(per_session),
-                "sessions_with_both_ics": len(both),
-                "mean_ic_tech": None if not ic_t_all else round(float(np.mean(ic_t_all)), 4),
-                "mean_ic_fund": None if not ic_f_all else round(float(np.mean(ic_f_all)), 4),
-                "mean_excess_vs_niftybees_pct": {
-                    "universe_all_eligible": _mean_pct(universe_excess),
-                    "agent_shortlist": _mean_pct(shortlist_excess),
-                    "queued_paper_picks": _mean_pct(pick_excess),
-                },
-                "observations": {
-                    "universe": len(universe_excess),
-                    "shortlist": len(shortlist_excess),
-                    "queued_picks": len(pick_excess),
-                },
-                "closed_trades": self.closed_trade_summary(),
-                "per_session": per_session[-80:],
-            }
+            primary = self._compute_horizon_stats(conn, horizon)
+            h1 = primary if int(horizon) == 1 else self._compute_horizon_stats(conn, 1)
         finally:
             conn.close()
 
+        active_hz: int | None = None
+        if primary["sessions_with_both_ics"] > 0 or primary["matured_sessions"] > 0:
+            active_hz = int(horizon)
+        elif h1["sessions_with_both_ics"] > 0 or h1["matured_sessions"] > 0:
+            active_hz = 1
+
+        primary["horizon_1d"] = {k: v for k, v in h1.items() if k != "per_session"}
+        primary["active_learning_horizon"] = active_hz
+        primary["open_mtm"] = self.open_mtm_summary()
+        primary["closed_trades"] = self.closed_trade_summary()
+        return primary
+
     # ------------------------------------------------------------------
-    # 5. Current & Adaptive Parameters (learns from EVERY passed/failed trade)
+    # 5. Current & Adaptive Parameters (learns EVERY session + on every rupee)
     # ------------------------------------------------------------------
     def current_params(self) -> dict[str, Any]:
         conn = self._connect()
@@ -703,6 +884,7 @@ class OrchestratorLearningLedger:
             r = conn.execute("SELECT * FROM weight_history ORDER BY trading_date DESC LIMIT 1").fetchone()
         finally:
             conn.close()
+        mtm_sum = self.open_mtm_summary()
         if r is None:
             return {
                 "w_tech": PRIOR_W_TECH,
@@ -715,8 +897,11 @@ class OrchestratorLearningLedger:
                 "min_survival_score": DEFAULT_MIN_SURVIVAL_SCORE,
                 "total_rupees_invested_inr": 0.0,
                 "rupee_roic_pct": None,
+                "open_mtm_deployed_inr": mtm_sum["open_rupees_deployed_inr"],
+                "open_mtm_pnl_inr": mtm_sum["open_unrealized_pnl_inr"],
+                "open_mtm_roic_pct": mtm_sum["open_mtm_roic_pct"],
                 "tca_hurdle_adder_bps": float(self.btca_report().get("tca_hurdle_adder_bps") or 0.0),
-                "status": "SESSION 1/80 · PRIOR_FIXED (awaiting first closed trades & matured outcomes)",
+                "status": "SESSION 1/80 · PRIOR_FIXED (awaiting first closed trades, open MTM & matured outcomes)",
             }
         try:
             sec_adj = json.loads(r["sector_adjustments_json"] or "{}")
@@ -750,6 +935,9 @@ class OrchestratorLearningLedger:
             "min_survival_score": _clamp(min_surv, SURVIVAL_FLOOR, SURVIVAL_CEIL),
             "total_rupees_invested_inr": round(tot_inv, 2),
             "rupee_roic_pct": r_roic,
+            "open_mtm_deployed_inr": mtm_sum["open_rupees_deployed_inr"],
+            "open_mtm_pnl_inr": mtm_sum["open_unrealized_pnl_inr"],
+            "open_mtm_roic_pct": mtm_sum["open_mtm_roic_pct"],
             "tca_hurdle_adder_bps": float(self.btca_report().get("tca_hurdle_adder_bps") or 0.0),
             "status": str(r["status"]),
         }
@@ -759,7 +947,7 @@ class OrchestratorLearningLedger:
         return (p["w_tech"], p["w_fund"]), p["status"]
 
     def update_weights(self, trading_date: str) -> dict[str, Any]:
-        """Update agent weights, conviction bar, RSI guard, sector bias, stops, and adversarial rules from every rupee invested."""
+        """Update agent weights, conviction bar, RSI guard, sector bias, stops, and adversarial rules EVERY session."""
         report = self.learning_report()
         prev = self.current_params()
         w_t_prev = float(prev["w_tech"])
@@ -772,55 +960,96 @@ class OrchestratorLearningLedger:
         conn = self._connect()
         try:
             lessons = [dict(r) for r in conn.execute("SELECT * FROM trade_lessons ORDER BY exit_date ASC").fetchall()]
-            shortlist_obs = [
+            open_mtm = [dict(r) for r in conn.execute("SELECT * FROM open_mtm_observations ORDER BY entry_date ASC").fetchall()]
+            shortlist_obs_5d = [
                 dict(r)
                 for r in conn.execute(
-                    "SELECT s.sector, s.rsi_14, s.conviction, o.excess FROM scan_shortlist s "
+                    "SELECT s.sector, s.rsi_14, s.conviction, s.queued, o.excess FROM scan_shortlist s "
                     "JOIN outcomes o ON o.trading_date=s.trading_date AND o.sec_id=s.sec_id AND o.horizon=? "
                     "WHERE s.status='AGENTS_OK'",
                     (LEARNING_HORIZON,),
+                ).fetchall()
+            ]
+            shortlist_obs_1d = [
+                dict(r)
+                for r in conn.execute(
+                    "SELECT s.sector, s.rsi_14, s.conviction, s.queued, o.excess FROM scan_shortlist s "
+                    "JOIN outcomes o ON o.trading_date=s.trading_date AND o.sec_id=s.sec_id AND o.horizon=1 "
+                    "WHERE s.status='AGENTS_OK'",
                 ).fetchall()
             ]
         finally:
             conn.close()
 
         n_trades = len(lessons)
+        n_open = len(open_mtm)
         n_pass = sum(1 for r in lessons if r["outcome"] == "PASSED")
         n_fail = n_trades - n_pass
-        n_ic = int(report["sessions_with_both_ics"])
-        ic_t, ic_f = report["mean_ic_tech"], report["mean_ic_fund"]
+
+        h1_sum = report.get("horizon_1d") or {}
+        n_ic_5 = int(report["sessions_with_both_ics"])
+        ic_t_5, ic_f_5 = report["mean_ic_tech"], report["mean_ic_fund"]
+        n_ic_1 = int(h1_sum.get("sessions_with_both_ics") or 0)
+        ic_t_1, ic_f_1 = h1_sum.get("mean_ic_tech"), h1_sum.get("mean_ic_fund")
+        n_matured_1 = int(h1_sum.get("matured_sessions") or 0)
+
         ct_sum = report.get("closed_trades") or {}
+        mtm_sum = report.get("open_mtm") or {}
         total_rupees_invested = float(ct_sum.get("total_rupees_invested_inr") or 0.0)
         net_rupee_pnl = float(ct_sum.get("total_realized_pnl_inr") or 0.0)
         rupee_roic_pct = ct_sum.get("rupee_roic_pct")
+        open_rupees_deployed = float(mtm_sum.get("open_rupees_deployed_inr") or 0.0)
+        open_mtm_pnl = float(mtm_sum.get("open_unrealized_pnl_inr") or 0.0)
+        open_mtm_roic = mtm_sum.get("open_mtm_roic_pct")
 
         notes: list[str] = []
 
-        # (A) Rupee-weighted Agent blend weight (w_tech vs w_fund) + matured IC
+        # Combined rupee-weighted position experiences: finalized closed trades (1.0x) + live open MTM (0.35x)
+        weighted_positions: list[tuple[dict[str, Any], float]] = (
+            [(r, 1.0) for r in lessons] + [(r, 0.35) for r in open_mtm]
+        )
+
+        # (A) Rupee-weighted Agent blend weight (w_tech vs w_fund) + matured 5D/1D IC
         trade_delta = 0.0
-        if n_trades > 0:
-            num, den, count_t = 0.0, 0.0, 0.0
-            for r in lessons:
-                if r["tech_conf"] is None or r["fund_conf"] is None:
+        if weighted_positions:
+            num, den, eff_cnt = 0.0, 0.0, 0.0
+            for r, src_w in weighted_positions:
+                if r.get("tech_conf") is None or r.get("fund_conf") is None:
                     continue
-                rupee_w = max(100.0, float(r.get("cost_basis_inr") or 0.0))
+                rupee_w = max(100.0, float(r.get("cost_basis_inr") or 0.0)) * src_w
                 ret_clipped = _clamp(float(r["return_pct"]) / 10.0, -1.5, 1.5)
                 diff_agent = float(r["tech_conf"]) - float(r["fund_conf"])
                 num += rupee_w * ret_clipped * diff_agent
                 den += rupee_w
-                count_t += 1.0
-            if den > 0 and count_t > 0:
-                shrink_t = count_t / (count_t + SHRINKAGE_K_TRADES)
+                eff_cnt += src_w
+            if den > 0 and eff_cnt > 0:
+                shrink_t = eff_cnt / (eff_cnt + SHRINKAGE_K_TRADES)
                 trade_delta = _clamp((num / den) * 1.2 * shrink_t, -0.20, 0.20)
-                notes.append(f"rupee_attr_delta={trade_delta:+.3f} (₹{den:,.0f} across n={int(count_t)})")
+                notes.append(f"rupee_attr_delta={trade_delta:+.3f} (closed={n_trades}, open_mtm={n_open})")
+
+        ic_delta_5 = 0.0
+        if n_ic_5 > 0 and ic_t_5 is not None and ic_f_5 is not None:
+            shrink_s5 = n_ic_5 / (n_ic_5 + SHRINKAGE_K_SESSIONS)
+            ic_delta_5 = _clamp(1.8 * (ic_t_5 - ic_f_5) * shrink_s5, -0.20, 0.20)
+
+        ic_delta_1 = 0.0
+        if n_ic_1 > 0 and ic_t_1 is not None and ic_f_1 is not None:
+            shrink_s1 = n_ic_1 / (n_ic_1 + 6.0)
+            ic_delta_1 = _clamp(1.3 * (ic_t_1 - ic_f_1) * shrink_s1, -0.14, 0.14)
 
         ic_delta = 0.0
-        if n_ic > 0 and ic_t is not None and ic_f is not None:
-            shrink_s = n_ic / (n_ic + SHRINKAGE_K_SESSIONS)
-            ic_delta = _clamp(1.8 * (ic_t - ic_f) * shrink_s, -0.20, 0.20)
-            notes.append(f"ic_delta={ic_delta:+.3f} (ic_t={ic_t:+.3f}, ic_f={ic_f:+.3f}, n={n_ic})")
+        if n_ic_5 > 0 and n_ic_1 > 0:
+            ic_delta = 0.65 * ic_delta_5 + 0.35 * ic_delta_1
+            notes.append(f"ic_blend(5D n={n_ic_5}, 1D n={n_ic_1})={ic_delta:+.3f}")
+        elif n_ic_5 > 0:
+            ic_delta = ic_delta_5
+            notes.append(f"ic_5d={ic_delta:+.3f} (ic_t={ic_t_5:+.3f}, ic_f={ic_f_5:+.3f}, n={n_ic_5})")
+        elif n_ic_1 > 0:
+            ic_delta = ic_delta_1
+            notes.append(f"ic_1d={ic_delta:+.3f} (ic_t={ic_t_1:+.3f}, ic_f={ic_f_1:+.3f}, n={n_ic_1})")
 
-        if n_trades == 0 and n_ic == 0:
+        has_any_signal = (n_trades > 0) or (n_open > 0) or (n_ic_5 > 0) or (n_ic_1 > 0) or (len(shortlist_obs_1d) > 0)
+        if not has_any_signal:
             new_t = w_t_prev
             new_min_conv = min_conv_prev
             new_rsi_pen = rsi_pen_prev
@@ -828,15 +1057,21 @@ class OrchestratorLearningLedger:
             new_min_surv = min_surv_prev
             new_atk_mult = prev_atk_mult
             sector_adj: dict[str, float] = {}
-            status = "OBSERVING (0 closed trades, ₹0 closed basis) — adversarial priors active"
-            notes.append("No closed trades or matured 5D outcomes yet; priors held.")
+            status = "OBSERVING (Session 1 — awaiting first 1D outcomes & open/closed rupee trajectory)"
+            notes.append("No closed trades, open MTM bars, or matured 1D/5D outcomes yet; priors held.")
         else:
-            combined_delta = (0.60 * trade_delta + 0.40 * ic_delta) if (n_trades > 0 and n_ic > 0) else (trade_delta or ic_delta)
+            has_pos_attr = bool(weighted_positions and trade_delta != 0.0)
+            has_ic_attr = (n_ic_5 > 0) or (n_ic_1 > 0)
+            if has_pos_attr and has_ic_attr:
+                pos_w = 0.60 if n_trades > 0 else 0.35
+                combined_delta = pos_w * trade_delta + (1.0 - pos_w) * ic_delta
+            else:
+                combined_delta = trade_delta or ic_delta
             target_t = _clamp(PRIOR_W_TECH + combined_delta, W_TECH_MIN, W_TECH_MAX)
             step_t = _clamp(target_t - w_t_prev, -MAX_WEIGHT_STEP, MAX_WEIGHT_STEP)
             new_t = _clamp(w_t_prev + step_t, W_TECH_MIN, W_TECH_MAX)
 
-            # (B) Adaptive min_conviction bar from closed trades & rupee ROIC
+            # (B) Adaptive min_conviction bar from closed trades, open MTM & 1D shortlist alpha
             target_conv = PRIOR_MIN_CONVICTION
             if n_trades > 0:
                 low_c = [r for r in lessons if r["conviction"] is not None and float(r["conviction"]) < 0.70]
@@ -854,26 +1089,46 @@ class OrchestratorLearningLedger:
                 elif overall_wr < 0.45 or (total_rupees_invested > 0 and net_rupee_pnl < 0):
                     target_conv = PRIOR_MIN_CONVICTION + 0.10 * shrink_c
                     notes.append(f"net_rupee_loss (₹{net_rupee_pnl:+,.0f}) -> tightening min_conviction")
+            elif n_open > 0 or shortlist_obs_1d:
+                # Session-level calibration from open MTM ROIC and 1D queued excess return
+                if open_rupees_deployed > 0 and open_mtm_roic is not None and open_mtm_roic <= -1.0:
+                    target_conv = PRIOR_MIN_CONVICTION + min(0.05, abs(open_mtm_roic) * 0.008)
+                    notes.append(f"open_mtm_roic={open_mtm_roic:+.2f}% -> nudging min_conviction")
+                elif shortlist_obs_1d:
+                    queued_1d = [float(r["excess"]) for r in shortlist_obs_1d if int(r.get("queued") or 0) == 1]
+                    if queued_1d and float(np.mean(queued_1d)) < -0.003:
+                        target_conv = PRIOR_MIN_CONVICTION + 0.02
+                        notes.append("1D_queued_excess negative -> nudging min_conviction")
+                    elif queued_1d and float(np.mean(queued_1d)) > 0.006:
+                        target_conv = PRIOR_MIN_CONVICTION - 0.01
             target_conv = _clamp(target_conv, MIN_CONV_FLOOR, MIN_CONV_CEIL)
             new_min_conv = _clamp(min_conv_prev + _clamp(target_conv - min_conv_prev, -MAX_CONV_STEP, MAX_CONV_STEP), MIN_CONV_FLOOR, MIN_CONV_CEIL)
 
-            # (C) Overbought RSI (>72) guard weighted by actual rupees deployed + shortlist outcomes
+            # (C) Overbought RSI (>72) guard weighted by closed + open MTM rupees + matured 5D/1D shortlist
             ob_vals: list[tuple[float, float]] = [
-                (_clamp(float(r["return_pct"]) / 100.0, -0.25, 0.25), max(100.0, float(r.get("cost_basis_inr") or 0.0)))
-                for r in lessons
+                (_clamp(float(r["return_pct"]) / 100.0, -0.25, 0.25), max(100.0, float(r.get("cost_basis_inr") or 0.0)) * src_w)
+                for r, src_w in weighted_positions
                 if r["rsi_14"] is not None and float(r["rsi_14"]) > 72.0
             ] + [
                 (_clamp(float(r["excess"]), -0.25, 0.25), 5000.0)
-                for r in shortlist_obs
+                for r in shortlist_obs_5d
+                if r["rsi_14"] is not None and float(r["rsi_14"]) > 72.0
+            ] + [
+                (_clamp(float(r["excess"]), -0.25, 0.25), 1800.0)
+                for r in shortlist_obs_1d
                 if r["rsi_14"] is not None and float(r["rsi_14"]) > 72.0
             ]
             norm_vals: list[tuple[float, float]] = [
-                (_clamp(float(r["return_pct"]) / 100.0, -0.25, 0.25), max(100.0, float(r.get("cost_basis_inr") or 0.0)))
-                for r in lessons
+                (_clamp(float(r["return_pct"]) / 100.0, -0.25, 0.25), max(100.0, float(r.get("cost_basis_inr") or 0.0)) * src_w)
+                for r, src_w in weighted_positions
                 if r["rsi_14"] is not None and float(r["rsi_14"]) <= 72.0
             ] + [
                 (_clamp(float(r["excess"]), -0.25, 0.25), 5000.0)
-                for r in shortlist_obs
+                for r in shortlist_obs_5d
+                if r["rsi_14"] is not None and float(r["rsi_14"]) <= 72.0
+            ] + [
+                (_clamp(float(r["excess"]), -0.25, 0.25), 1800.0)
+                for r in shortlist_obs_1d
                 if r["rsi_14"] is not None and float(r["rsi_14"]) <= 72.0
             ]
             target_rsi_pen = PRIOR_RSI_OVERBOUGHT_PENALTY
@@ -887,18 +1142,22 @@ class OrchestratorLearningLedger:
                     notes.append(f"rsi>72 underperformed by {gap*100:.2f}% -> pen={target_rsi_pen:.3f}")
             new_rsi_pen = _clamp(rsi_pen_prev + _clamp(target_rsi_pen - rsi_pen_prev, -MAX_RSI_PEN_STEP, MAX_RSI_PEN_STEP), RSI_PEN_MIN, RSI_PEN_MAX)
 
-            # (D) Per-sector rupee-weighted Bayesian edge calibration
+            # (D) Per-sector rupee-weighted Bayesian edge calibration (closed + open MTM + 5D/1D shortlist)
             sec_buckets: dict[str, list[tuple[float, float]]] = {}
-            for r in lessons:
+            for r, src_w in weighted_positions:
                 sec = str(r.get("sector") or "")
                 if sec and sec != "UNKNOWN_SECTOR":
                     sec_buckets.setdefault(sec, []).append(
-                        (_clamp(float(r["return_pct"]) / 100.0, -0.15, 0.15), max(100.0, float(r.get("cost_basis_inr") or 0.0)))
+                        (_clamp(float(r["return_pct"]) / 100.0, -0.15, 0.15), max(100.0, float(r.get("cost_basis_inr") or 0.0)) * src_w)
                     )
-            for r in shortlist_obs:
+            for r in shortlist_obs_5d:
                 sec = str(r.get("sector") or "")
                 if sec and sec != "UNKNOWN_SECTOR":
                     sec_buckets.setdefault(sec, []).append((_clamp(float(r["excess"]), -0.15, 0.15) * 0.5, 4000.0))
+            for r in shortlist_obs_1d:
+                sec = str(r.get("sector") or "")
+                if sec and sec != "UNKNOWN_SECTOR":
+                    sec_buckets.setdefault(sec, []).append((_clamp(float(r["excess"]), -0.15, 0.15) * 0.35, 1500.0))
             sector_adj = {}
             for sec, vw_list in sec_buckets.items():
                 if len(vw_list) >= 2:
@@ -908,7 +1167,7 @@ class OrchestratorLearningLedger:
                     if abs(adj) >= 0.003:
                         sector_adj[sec] = adj
 
-            # (E) Stop-loss multiplier [0.80, 1.10] calibrated from MFE giveback & stop-out rate (step ±0.05)
+            # (E) Stop-loss multiplier [0.80, 1.10] calibrated from MFE giveback, stop-out rate & open MAE
             target_stop_mult = PRIOR_STOP_TIGHTEN_MULT
             if n_trades > 0:
                 givebacks = [
@@ -929,6 +1188,12 @@ class OrchestratorLearningLedger:
                 elif n_pass >= 4 and (n_pass / n_trades) >= 0.60 and avg_giveback < 3.0:
                     target_stop_mult = PRIOR_STOP_TIGHTEN_MULT + 0.08 * shrink_m
                     notes.append(f"clean_wins={n_pass}/{n_trades} low_giveback={avg_giveback:.1f}% -> easing stop_mult")
+            elif n_open > 0:
+                open_maes = [abs(min(0.0, float(r["mae_pct"]))) for r in open_mtm if r.get("mae_pct") is not None]
+                avg_open_mae = float(np.mean(open_maes)) if open_maes else 0.0
+                if avg_open_mae >= 3.5:
+                    target_stop_mult = PRIOR_STOP_TIGHTEN_MULT - min(0.10, (avg_open_mae - 2.5) * 0.025)
+                    notes.append(f"open_avg_mae=-{avg_open_mae:.1f}% -> tightening stop_mult")
             target_stop_mult = _clamp(target_stop_mult, STOP_MULT_MIN, STOP_MULT_MAX)
             new_stop_mult = _clamp(
                 stop_mult_prev + _clamp(target_stop_mult - stop_mult_prev, -MAX_STOP_MULT_STEP, MAX_STOP_MULT_STEP),
@@ -936,46 +1201,88 @@ class OrchestratorLearningLedger:
                 STOP_MULT_MAX,
             )
 
-            # (F) Per-rupee Adversarial Attack Escalation & Survival Bar Hardening
-            new_atk_mult: dict[str, float] = {}
+            # (F) Per-rupee Adversarial Attack Escalation & Survival Bar Hardening (closed + open MTM)
+            combined_atk_map: dict[str, dict[str, Any]] = {}
             for row in ct_sum.get("attack_rupee_attribution") or []:
                 aid = str(row["attack_id"])
-                inv = float(row.get("rupees_invested_inr") or 0.0)
-                pnl = float(row.get("net_rupee_pnl_inr") or 0.0)
-                t_cnt = int(row.get("trades") or 0)
-                fail_cnt = int(row.get("failed_trades") or 0)
-                if inv <= 0 or t_cnt == 0:
+                combined_atk_map[aid] = {
+                    "inv": float(row.get("rupees_invested_inr") or 0.0),
+                    "pnl": float(row.get("net_rupee_pnl_inr") or 0.0),
+                    "cnt": float(row.get("trades") or 0.0),
+                    "fail_cnt": float(row.get("failed_trades") or 0.0),
+                }
+            for r in open_mtm:
+                try:
+                    atk_ids = json.loads(r.get("attack_ids_json") or "[]")
+                except Exception:
+                    atk_ids = []
+                if not isinstance(atk_ids, list):
+                    continue
+                cb = float(r.get("cost_basis_inr") or 0.0) * 0.35
+                pnl = float(r.get("unrealized_pnl_inr") or 0.0) * 0.35
+                for aid in atk_ids:
+                    b = combined_atk_map.setdefault(str(aid), {"inv": 0.0, "pnl": 0.0, "cnt": 0.0, "fail_cnt": 0.0})
+                    b["inv"] += cb
+                    b["pnl"] += pnl
+                    b["cnt"] += 0.5
+                    if pnl < 0:
+                        b["fail_cnt"] += 0.5
+
+            new_atk_mult: dict[str, float] = {}
+            for aid, b in combined_atk_map.items():
+                inv, pnl, t_cnt, fail_cnt = b["inv"], b["pnl"], b["cnt"], b["fail_cnt"]
+                if inv <= 0 or t_cnt <= 0:
                     continue
                 shrink_a = t_cnt / (t_cnt + 3.0)
                 if pnl < 0:
-                    # Objection was flagged, we invested rupees anyway, and LOST -> escalate damage multiplier permanently
                     loss_ratio = min(0.25, abs(pnl) / inv)
                     mult = _clamp(1.0 + shrink_a * (0.20 + loss_ratio * 4.5), 1.05, ATTACK_MULTIPLIER_MAX)
                     new_atk_mult[aid] = round(mult, 4)
-                    notes.append(f"₹{abs(pnl):,.0f} lost under {aid} ({fail_cnt}/{t_cnt} failed) -> x{mult:.2f}")
-                elif t_cnt >= 3 and fail_cnt == 0 and (pnl / inv) >= 0.04:
+                    notes.append(f"₹{abs(pnl):,.0f} rupee drawdown under {aid} -> x{mult:.2f}")
+                elif n_trades > 0 and t_cnt >= 3 and fail_cnt == 0 and (pnl / inv) >= 0.04:
                     mult = _clamp(1.0 - 0.18 * shrink_a, ATTACK_MULTIPLIER_MIN, 1.0)
                     new_atk_mult[aid] = round(mult, 4)
 
             target_surv = DEFAULT_MIN_SURVIVAL_SCORE
-            marginal = [r for r in lessons if r.get("survival_score") is not None and float(r["survival_score"]) < 62.0]
+            marginal = [
+                (r, src_w)
+                for r, src_w in weighted_positions
+                if r.get("survival_score") is not None and float(r["survival_score"]) < 62.0
+            ]
             if marginal:
-                marg_pnl = sum(float(r.get("total_pnl_inr") or 0.0) for r in marginal)
-                marg_inv = sum(float(r.get("cost_basis_inr") or 0.0) for r in marginal)
+                marg_pnl = sum(
+                    float(r.get("total_pnl_inr") if r.get("total_pnl_inr") is not None else r.get("unrealized_pnl_inr") or 0.0) * src_w
+                    for r, src_w in marginal
+                )
+                marg_inv = sum(float(r.get("cost_basis_inr") or 0.0) * src_w for r, src_w in marginal)
                 if marg_inv > 0 and marg_pnl < 0:
-                    shrink_ms = len(marginal) / (len(marginal) + 3.0)
+                    eff_m = sum(src_w for _, src_w in marginal)
+                    shrink_ms = eff_m / (eff_m + 3.0)
                     target_surv = DEFAULT_MIN_SURVIVAL_SCORE + min(18.0, (abs(marg_pnl) / marg_inv) * 100.0 * 1.2 * shrink_ms + 3.0)
                     notes.append(f"marginal survival lost ₹{abs(marg_pnl):,.0f} -> raising min_survival_score")
             elif total_rupees_invested > 0 and net_rupee_pnl < 0:
                 target_surv = DEFAULT_MIN_SURVIVAL_SCORE + 5.0 * (n_trades / (n_trades + 4.0))
+            elif open_rupees_deployed > 0 and open_mtm_pnl < 0:
+                target_surv = DEFAULT_MIN_SURVIVAL_SCORE + min(4.0, (abs(open_mtm_pnl) / open_rupees_deployed) * 80.0)
             target_surv = _clamp(target_surv, SURVIVAL_FLOOR, SURVIVAL_CEIL)
             new_min_surv = round(
                 _clamp(min_surv_prev + _clamp(target_surv - min_surv_prev, -MAX_SURVIVAL_STEP, MAX_SURVIVAL_STEP), SURVIVAL_FLOOR, SURVIVAL_CEIL),
                 2,
             )
 
-            roic_str = f" · ROIC {rupee_roic_pct:+.2f}% on ₹{total_rupees_invested:,.0f}" if rupee_roic_pct is not None else ""
-            status = f"LEARNING ACTIVE ({n_pass} passed / {n_fail} failed · {n_ic} matured sessions{roic_str})"
+            roic_parts = []
+            if rupee_roic_pct is not None:
+                roic_parts.append(f"Closed ROIC {rupee_roic_pct:+.2f}% on ₹{total_rupees_invested:,.0f}")
+            if n_open > 0 and open_mtm_roic is not None:
+                roic_parts.append(f"Open MTM {open_mtm_roic:+.2f}% on ₹{open_rupees_deployed:,.0f}")
+            ic_parts = []
+            if n_ic_5 > 0:
+                ic_parts.append(f"{n_ic_5}×5D IC")
+            if n_ic_1 > 0 or n_matured_1 > 0:
+                ic_parts.append(f"{max(n_ic_1, n_matured_1)}×1D IC")
+            hz_str = " + ".join(ic_parts) if ic_parts else "0 matured"
+            extra_str = (" · " + " · ".join(roic_parts)) if roic_parts else ""
+            status = f"LEARNING ACTIVE ({n_pass} passed / {n_fail} failed · {n_open} open · {hz_str}{extra_str})"
 
         new_f = round(1.0 - new_t, 4)
         new_t = round(new_t, 4)
@@ -983,6 +1290,9 @@ class OrchestratorLearningLedger:
         new_rsi_pen = round(new_rsi_pen, 4)
         new_stop_mult = round(new_stop_mult, 4)
         note_str = "; ".join(notes) if notes else "Weights updated cleanly."
+        eff_matured_sessions = n_ic_5 if n_ic_5 > 0 else max(n_ic_1, n_matured_1)
+        eff_ic_t = ic_t_5 if (n_ic_5 > 0 and ic_t_5 is not None) else ic_t_1
+        eff_ic_f = ic_f_5 if (n_ic_5 > 0 and ic_f_5 is not None) else ic_f_1
 
         conn = self._connect()
         try:
@@ -1005,12 +1315,12 @@ class OrchestratorLearningLedger:
                     round(total_rupees_invested, 2),
                     rupee_roic_pct,
                     status,
-                    n_ic,
+                    eff_matured_sessions,
                     n_trades,
                     n_pass,
                     n_fail,
-                    ic_t,
-                    ic_f,
+                    eff_ic_t,
+                    eff_ic_f,
                     note_str,
                     _utc_now_iso(),
                 ),
@@ -1030,6 +1340,9 @@ class OrchestratorLearningLedger:
             "min_survival_score": new_min_surv,
             "total_rupees_invested_inr": round(total_rupees_invested, 2),
             "rupee_roic_pct": rupee_roic_pct,
+            "open_mtm_deployed_inr": round(open_rupees_deployed, 2),
+            "open_mtm_pnl_inr": round(open_mtm_pnl, 2),
+            "open_mtm_roic_pct": open_mtm_roic,
             "status": status,
             "note": note_str,
             "learning": report,
